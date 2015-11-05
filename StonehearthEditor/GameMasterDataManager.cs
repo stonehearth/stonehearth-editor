@@ -57,13 +57,17 @@ namespace StonehearthEditor
          if (selectedNode.Parent != null && !selectedNode.Parent.Text.Equals("campaigns"))
          {
             string module = selectedNode.Parent.Text;
-            foreach (GameMasterNode node in mCampaignNodes)
+            SelectCampaign(graphOwner, selectedNode.Parent.Text, selectedNode.Text);
+         }
+      }
+      public void SelectCampaign(IGraphOwner graphOwner, string module, string name)
+      {
+         foreach (GameMasterNode node in mCampaignNodes)
+         {
+            if (name.Equals(node.Name) && node.Module.Equals(module))
             {
-               if (selectedNode.Text.Equals(node.Name) && node.Module.Equals(module))
-               {
-                  mCurrentGraphRoot = node;
-                  RefreshGraph(graphOwner);
-               }
+               mCurrentGraphRoot = node;
+               RefreshGraph(graphOwner);
             }
          }
       }
@@ -246,7 +250,6 @@ namespace StonehearthEditor
          campaignsTree.ExpandAll();
          treeView.Nodes.Add(campaignsTree);
       }
-
       public bool AddNewGenericScriptNode(IGraphOwner owner, string scriptNodeName, string filePath)
       {
          if (mCurrentGraphRoot == null)
@@ -263,6 +266,20 @@ namespace StonehearthEditor
          RefreshGraph(owner);
          //(mCurrentGraphRoot.NodeData as CampaignNodeData).CreateNewNode(filePath);
          return true;
+      }
+
+      public bool DeleteNode(string nodePath)
+      {
+         GameMasterNode node = GetGameMasterNode(nodePath);
+         if (node == null)
+         {
+            return false;
+         }
+         File.Delete(nodePath);
+         mGameMasterNodes.Remove(nodePath);
+
+
+         return false;
       }
    }
 }

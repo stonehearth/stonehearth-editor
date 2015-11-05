@@ -61,6 +61,7 @@
          this.saveNewEncounterNodeDialog = new System.Windows.Forms.SaveFileDialog();
          this.modsFolderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
          this.openEncounterFileButton = new System.Windows.Forms.Button();
+         this.deleteNodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
          this.aliasContextMenu.SuspendLayout();
          this.manifestTabRightSide.SuspendLayout();
          this.tabControl.SuspendLayout();
@@ -254,9 +255,10 @@
          // 
          this.encounterGraphContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.copyGameMasterNode,
-            this.addNewGameMasterNode});
+            this.addNewGameMasterNode,
+            this.deleteNodeToolStripMenuItem});
          this.encounterGraphContextMenu.Name = "encounterGraphContextMenu";
-         this.encounterGraphContextMenu.Size = new System.Drawing.Size(156, 48);
+         this.encounterGraphContextMenu.Size = new System.Drawing.Size(156, 92);
          // 
          // copyGameMasterNode
          // 
@@ -421,6 +423,13 @@
          this.openEncounterFileButton.UseVisualStyleBackColor = true;
          this.openEncounterFileButton.Click += new System.EventHandler(this.openEncounterFileButton_Click);
          // 
+         // deleteNodeToolStripMenuItem
+         // 
+         this.deleteNodeToolStripMenuItem.Name = "deleteNodeToolStripMenuItem";
+         this.deleteNodeToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+         this.deleteNodeToolStripMenuItem.Text = "Delete";
+         this.deleteNodeToolStripMenuItem.Click += new System.EventHandler(this.deleteNodeToolStripMenuItem_Click);
+         // 
          // StonehearthEditor
          // 
          this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
@@ -486,6 +495,7 @@
       private System.Windows.Forms.SaveFileDialog saveNewEncounterNodeDialog;
       private System.Windows.Forms.FolderBrowserDialog modsFolderBrowserDialog;
       private System.Windows.Forms.Button openEncounterFileButton;
+      private System.Windows.Forms.ToolStripMenuItem deleteNodeToolStripMenuItem;
    }
 }
 

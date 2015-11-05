@@ -54,18 +54,24 @@ namespace StonehearthEditor
       private void LoadModFiles()
       {
          i18nTooltip.Show(string.Empty, nodeInfoJsonPreview, 0);
-         UpdateSelectedNodeInfo(null);
          new ModuleDataManager(mModsDirectoryPath);
          ModuleDataManager.GetInstance().Load();
          ModuleDataManager.GetInstance().FillAliasTree(manifestTreeView);
 
+         StartGameMasterDataManager();
+      }
+      private void StartGameMasterDataManager()
+      {
+         UpdateSelectedNodeInfo(null);
+         graphViewer.Graph = null;
          new GameMasterDataManager();
          GameMasterDataManager.GetInstance().Load();
-
+         addNewGameMasterNode.DropDownItems.Clear();
          foreach (string name in GameMasterDataManager.GetInstance().GetGenericScriptNodeNames())
          {
             addNewGameMasterNode.DropDownItems.Add(name);
          }
+         encounterTreeView.Nodes.Clear();
          GameMasterDataManager.GetInstance().FillEncounterNodeTree(encounterTreeView);
       }
 
@@ -169,7 +175,7 @@ namespace StonehearthEditor
             copyGameMasterNode.Text = "Clone " + node.Name;
             copyGameMasterNode.Enabled = true;
             openEncounterFileButton.Visible = true;
-
+            deleteNodeToolStripMenuItem.Visible = true;
          } else
          {
             mSelectedNode = null;
@@ -182,6 +188,7 @@ namespace StonehearthEditor
             copyGameMasterNode.Text = "Clone Node";
             copyGameMasterNode.Enabled = false;
             openEncounterFileButton.Visible = false;
+            deleteNodeToolStripMenuItem.Visible = false;
          }
       }
 
@@ -324,6 +331,27 @@ namespace StonehearthEditor
          {
             string path = mSelectedNode.Path;
             System.Diagnostics.Process.Start(@path);
+         }
+      }
+
+      private void deleteNodeToolStripMenuItem_Click(object sender, EventArgs e)
+      {
+         if (mSelectedNode != null)
+         {
+            string path = mSelectedNode.Path;
+            DialogResult result = MessageBox.Show("Are you sure you want to delete " + path + "?", "Confirm Delete", MessageBoxButtons.OKCancel);
+            if (result == DialogResult.OK)
+            {
+               GameMasterNode currentCampaign = GameMasterDataManager.GetInstance().GraphRoot;
+               string currentCampaignName = currentCampaign != null ? currentCampaign.Name : null;
+               string currentCampaignMod = currentCampaign != null ? currentCampaign.Module : null;
+               File.Delete(path);
+               StartGameMasterDataManager();
+               if (currentCampaignName != null)
+               {
+                  GameMasterDataManager.GetInstance().SelectCampaign(this, currentCampaignMod, currentCampaignName);
+               }
+            }
          }
       }
 

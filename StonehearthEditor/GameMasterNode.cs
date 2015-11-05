@@ -37,7 +37,6 @@ namespace StonehearthEditor
 
       private Dictionary<string, string> mEncounters = new Dictionary<string, string>();
       private GameMasterNodeType mNodeType = GameMasterNodeType.UNKNOWN;
-
       public GameMasterNode(string module, string filePath)
       {
          mModule = module;
@@ -79,7 +78,6 @@ namespace StonehearthEditor
       {
          get { return mJson; }
       }
-
       public string Module
       {
          get { return mModule; }
@@ -228,7 +226,6 @@ namespace StonehearthEditor
          UpdateGraphNode(graphNode);
          UpdateOutEdges(graph);
       }
-
       public virtual void UpdateGraphNode(Node graphNode)
       {
          graphNode.Attr.LabelWidthToHeightRatio = 1;
