@@ -60,6 +60,7 @@
          this.i18nTooltip = new System.Windows.Forms.ToolTip(this.components);
          this.saveNewEncounterNodeDialog = new System.Windows.Forms.SaveFileDialog();
          this.modsFolderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
+         this.openEncounterFileButton = new System.Windows.Forms.Button();
          this.aliasContextMenu.SuspendLayout();
          this.manifestTabRightSide.SuspendLayout();
          this.tabControl.SuspendLayout();
@@ -310,6 +311,7 @@
          // nodeInfoPanel
          // 
          this.nodeInfoPanel.BackColor = System.Drawing.Color.Silver;
+         this.nodeInfoPanel.Controls.Add(this.openEncounterFileButton);
          this.nodeInfoPanel.Controls.Add(this.nodeInfoSubType);
          this.nodeInfoPanel.Controls.Add(this.nodeInfoType);
          this.nodeInfoPanel.Controls.Add(this.nodeInfoName);
@@ -409,6 +411,16 @@
          this.modsFolderBrowserDialog.Description = "Stonehearth Mods Root Directory";
          this.modsFolderBrowserDialog.ShowNewFolderButton = false;
          // 
+         // openEncounterFileButton
+         // 
+         this.openEncounterFileButton.Location = new System.Drawing.Point(606, 2);
+         this.openEncounterFileButton.Name = "openEncounterFileButton";
+         this.openEncounterFileButton.Size = new System.Drawing.Size(75, 23);
+         this.openEncounterFileButton.TabIndex = 4;
+         this.openEncounterFileButton.Text = "Open File";
+         this.openEncounterFileButton.UseVisualStyleBackColor = true;
+         this.openEncounterFileButton.Click += new System.EventHandler(this.openEncounterFileButton_Click);
+         // 
          // StonehearthEditor
          // 
          this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
@@ -473,6 +485,7 @@
       private System.Windows.Forms.ToolTip i18nTooltip;
       private System.Windows.Forms.SaveFileDialog saveNewEncounterNodeDialog;
       private System.Windows.Forms.FolderBrowserDialog modsFolderBrowserDialog;
+      private System.Windows.Forms.Button openEncounterFileButton;
    }
 }
 

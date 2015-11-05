@@ -168,6 +168,7 @@ namespace StonehearthEditor
 
             copyGameMasterNode.Text = "Clone " + node.Name;
             copyGameMasterNode.Enabled = true;
+            openEncounterFileButton.Visible = true;
 
          } else
          {
@@ -180,6 +181,7 @@ namespace StonehearthEditor
 
             copyGameMasterNode.Text = "Clone Node";
             copyGameMasterNode.Enabled = false;
+            openEncounterFileButton.Visible = false;
          }
       }
 
@@ -315,6 +317,16 @@ namespace StonehearthEditor
          }
          GameMasterDataManager.GetInstance().AddNewGenericScriptNode(this, mSelectedNewScriptNode, filePath);
       }
+
+      private void openEncounterFileButton_Click(object sender, EventArgs e)
+      {
+         if (mSelectedNode!= null)
+         {
+            string path = mSelectedNode.Path;
+            System.Diagnostics.Process.Start(@path);
+         }
+      }
+
       private class CloneDialogCallback : InputDialog.IDialogCallback
       {
          private GameMasterNode mNode;
