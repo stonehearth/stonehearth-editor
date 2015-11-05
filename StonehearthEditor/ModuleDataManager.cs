@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -101,7 +102,11 @@ namespace StonehearthEditor
          Module mod = GetMod(modName);
          if (mod != null)
          {
-            return mod.EnglishLocalizationJson.SelectToken(key).ToString();
+            JToken token = mod.EnglishLocalizationJson.SelectToken(key);
+            if (token != null)
+            {
+               return token.ToString();
+            }
          }
          return key;
       }
