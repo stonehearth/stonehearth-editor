@@ -1,0 +1,5 @@
+# Stonehearth Editor #
+##########
+StonehearthEditor/bin/*
+StonehearthEditor/obj/*
+.vs/*
