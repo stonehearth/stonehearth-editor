@@ -38,6 +38,21 @@ namespace StonehearthEditor
 
       private void Form1_Load(object sender, EventArgs e)
       {
+         if (string.IsNullOrEmpty(mModsDirectoryPath))
+         {
+            DialogResult result = modsFolderBrowserDialog.ShowDialog();
+            if (result == DialogResult.OK)
+            {
+               mModsDirectoryPath = modsFolderBrowserDialog.SelectedPath;
+               Properties.Settings.Default["ModsDirectory"] = mModsDirectoryPath;
+               Properties.Settings.Default.Save();
+            }
+         }
+         LoadModFiles();
+      }
+
+      private void LoadModFiles()
+      {
          i18nTooltip.Show(string.Empty, nodeInfoJsonPreview, 0);
          UpdateSelectedNodeInfo(null);
          new ModuleDataManager(mModsDirectoryPath);
@@ -300,7 +315,6 @@ namespace StonehearthEditor
          }
          GameMasterDataManager.GetInstance().AddNewGenericScriptNode(this, mSelectedNewScriptNode, filePath);
       }
-
       private class CloneDialogCallback : InputDialog.IDialogCallback
       {
          private GameMasterNode mNode;

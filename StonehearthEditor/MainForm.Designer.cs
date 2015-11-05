@@ -59,6 +59,7 @@
          this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
          this.i18nTooltip = new System.Windows.Forms.ToolTip(this.components);
          this.saveNewEncounterNodeDialog = new System.Windows.Forms.SaveFileDialog();
+         this.modsFolderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
          this.aliasContextMenu.SuspendLayout();
          this.manifestTabRightSide.SuspendLayout();
          this.tabControl.SuspendLayout();
@@ -254,7 +255,7 @@
             this.copyGameMasterNode,
             this.addNewGameMasterNode});
          this.encounterGraphContextMenu.Name = "encounterGraphContextMenu";
-         this.encounterGraphContextMenu.Size = new System.Drawing.Size(156, 70);
+         this.encounterGraphContextMenu.Size = new System.Drawing.Size(156, 48);
          // 
          // copyGameMasterNode
          // 
@@ -403,6 +404,11 @@
          this.saveNewEncounterNodeDialog.RestoreDirectory = true;
          this.saveNewEncounterNodeDialog.FileOk += new System.ComponentModel.CancelEventHandler(this.saveNewEncounterNodeDialog_FileOk);
          // 
+         // modsFolderBrowserDialog
+         // 
+         this.modsFolderBrowserDialog.Description = "Stonehearth Mods Root Directory";
+         this.modsFolderBrowserDialog.ShowNewFolderButton = false;
+         // 
          // StonehearthEditor
          // 
          this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
@@ -466,6 +472,7 @@
       private System.Windows.Forms.ToolStripButton toolstripSaveButton;
       private System.Windows.Forms.ToolTip i18nTooltip;
       private System.Windows.Forms.SaveFileDialog saveNewEncounterNodeDialog;
+      private System.Windows.Forms.FolderBrowserDialog modsFolderBrowserDialog;
    }
 }
 

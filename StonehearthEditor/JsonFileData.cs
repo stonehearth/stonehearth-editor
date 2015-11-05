@@ -26,8 +26,6 @@ namespace StonehearthEditor
       private JSONTYPE mJsonType = JSONTYPE.NONE;
       private XDocument mFile;
       private ModuleFile mOwner;
-      private XDocument mIconic;
-      private XDocument mGhost;
 
       public JsonFileData(ModuleFile owner)
       {

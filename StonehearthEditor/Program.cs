@@ -14,7 +14,7 @@ namespace StonehearthEditor
       [STAThread]
       static void Main(string[] args)
       {
-         string path = "C:/Radiant/stonehearth/source/stonehearth_data/mods";
+         string path = (string)Properties.Settings.Default["ModsDirectory"];
          if (args.Length > 0)
          {
             path = args[0];
