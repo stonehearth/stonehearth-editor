@@ -45,10 +45,12 @@
          this.encounterGraphContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
          this.copyGameMasterNode = new System.Windows.Forms.ToolStripMenuItem();
          this.addNewGameMasterNode = new System.Windows.Forms.ToolStripMenuItem();
+         this.deleteNodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
          this.encounterRightSideFilePath = new System.Windows.Forms.TextBox();
          this.panel1 = new System.Windows.Forms.Panel();
          this.nodeInfoJsonPreview = new System.Windows.Forms.RichTextBox();
          this.nodeInfoPanel = new System.Windows.Forms.Panel();
+         this.openEncounterFileButton = new System.Windows.Forms.Button();
          this.nodeInfoSubType = new System.Windows.Forms.Label();
          this.nodeInfoType = new System.Windows.Forms.Label();
          this.nodeInfoName = new System.Windows.Forms.Label();
@@ -60,8 +62,6 @@
          this.i18nTooltip = new System.Windows.Forms.ToolTip(this.components);
          this.saveNewEncounterNodeDialog = new System.Windows.Forms.SaveFileDialog();
          this.modsFolderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
-         this.openEncounterFileButton = new System.Windows.Forms.Button();
-         this.deleteNodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
          this.aliasContextMenu.SuspendLayout();
          this.manifestTabRightSide.SuspendLayout();
          this.tabControl.SuspendLayout();
@@ -244,6 +244,7 @@
          this.graphViewer.ZoomFraction = 0.5D;
          this.graphViewer.ZoomWhenMouseWheelScroll = true;
          this.graphViewer.ZoomWindowThreshold = 0.05D;
+         this.graphViewer.GraphLoadingEnded += new System.EventHandler(this.graphViewer_GraphLoadingEnded);
          this.graphViewer.EdgeAdded += new System.EventHandler(this.graphViewer_EdgeAdded);
          this.graphViewer.EdgeRemoved += new System.EventHandler(this.graphViewer_EdgeRemoved);
          this.graphViewer.MouseMove += new System.Windows.Forms.MouseEventHandler(this.graphViewer_MouseMove);
@@ -258,7 +259,7 @@
             this.addNewGameMasterNode,
             this.deleteNodeToolStripMenuItem});
          this.encounterGraphContextMenu.Name = "encounterGraphContextMenu";
-         this.encounterGraphContextMenu.Size = new System.Drawing.Size(156, 92);
+         this.encounterGraphContextMenu.Size = new System.Drawing.Size(156, 70);
          // 
          // copyGameMasterNode
          // 
@@ -275,6 +276,13 @@
          this.addNewGameMasterNode.Size = new System.Drawing.Size(155, 22);
          this.addNewGameMasterNode.Text = "Add New Node";
          this.addNewGameMasterNode.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.addNewGameMasterNode_DropDownItemClicked);
+         // 
+         // deleteNodeToolStripMenuItem
+         // 
+         this.deleteNodeToolStripMenuItem.Name = "deleteNodeToolStripMenuItem";
+         this.deleteNodeToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+         this.deleteNodeToolStripMenuItem.Text = "Delete";
+         this.deleteNodeToolStripMenuItem.Click += new System.EventHandler(this.deleteNodeToolStripMenuItem_Click);
          // 
          // encounterRightSideFilePath
          // 
@@ -322,6 +330,16 @@
          this.nodeInfoPanel.Name = "nodeInfoPanel";
          this.nodeInfoPanel.Size = new System.Drawing.Size(748, 30);
          this.nodeInfoPanel.TabIndex = 1;
+         // 
+         // openEncounterFileButton
+         // 
+         this.openEncounterFileButton.Location = new System.Drawing.Point(606, 2);
+         this.openEncounterFileButton.Name = "openEncounterFileButton";
+         this.openEncounterFileButton.Size = new System.Drawing.Size(75, 23);
+         this.openEncounterFileButton.TabIndex = 4;
+         this.openEncounterFileButton.Text = "Open File";
+         this.openEncounterFileButton.UseVisualStyleBackColor = true;
+         this.openEncounterFileButton.Click += new System.EventHandler(this.openEncounterFileButton_Click);
          // 
          // nodeInfoSubType
          // 
@@ -412,23 +430,6 @@
          // 
          this.modsFolderBrowserDialog.Description = "Stonehearth Mods Root Directory";
          this.modsFolderBrowserDialog.ShowNewFolderButton = false;
-         // 
-         // openEncounterFileButton
-         // 
-         this.openEncounterFileButton.Location = new System.Drawing.Point(606, 2);
-         this.openEncounterFileButton.Name = "openEncounterFileButton";
-         this.openEncounterFileButton.Size = new System.Drawing.Size(75, 23);
-         this.openEncounterFileButton.TabIndex = 4;
-         this.openEncounterFileButton.Text = "Open File";
-         this.openEncounterFileButton.UseVisualStyleBackColor = true;
-         this.openEncounterFileButton.Click += new System.EventHandler(this.openEncounterFileButton_Click);
-         // 
-         // deleteNodeToolStripMenuItem
-         // 
-         this.deleteNodeToolStripMenuItem.Name = "deleteNodeToolStripMenuItem";
-         this.deleteNodeToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
-         this.deleteNodeToolStripMenuItem.Text = "Delete";
-         this.deleteNodeToolStripMenuItem.Click += new System.EventHandler(this.deleteNodeToolStripMenuItem_Click);
          // 
          // StonehearthEditor
          // 

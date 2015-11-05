@@ -223,6 +223,7 @@ namespace StonehearthEditor
          }
       }
 
+      private Timer refreshGraphTimer = null;
       private void graphViewer_EdgeAdded(object sender, EventArgs e)
       {
          Edge edge = (Edge)sender;
@@ -230,6 +231,26 @@ namespace StonehearthEditor
          {
             // Shouldn't add this edge. Undo it
             graphViewer.Undo();
+         } else
+         {
+          if (refreshGraphTimer == null)
+            {
+               refreshGraphTimer = new Timer();
+               refreshGraphTimer.Interval = 100;
+               refreshGraphTimer.Enabled = true;
+               refreshGraphTimer.Tick += new EventHandler(OnRefreshTimerTick);
+               refreshGraphTimer.Start();
+            }  
+         }
+      }
+
+      private void OnRefreshTimerTick(object sender, EventArgs e)
+      {
+         GameMasterDataManager.GetInstance().RefreshGraph(this);
+         if (refreshGraphTimer != null)
+         {
+            refreshGraphTimer.Stop();
+            refreshGraphTimer = null;
          }
       }
 
@@ -353,6 +374,11 @@ namespace StonehearthEditor
                }
             }
          }
+      }
+
+      private void graphViewer_GraphLoadingEnded(object sender, EventArgs e)
+      {
+         GameMasterDataManager.GetInstance().RefreshGraph(this);
       }
 
       private class CloneDialogCallback : InputDialog.IDialogCallback
