@@ -233,7 +233,8 @@ namespace StonehearthEditor
             graphViewer.Undo();
          } else
          {
-          if (refreshGraphTimer == null)
+            GameMasterDataManager.GetInstance().SaveModifiedFiles();
+            if (refreshGraphTimer == null)
             {
                refreshGraphTimer = new Timer();
                refreshGraphTimer.Interval = 100;

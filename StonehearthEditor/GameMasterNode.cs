@@ -743,10 +743,33 @@ namespace StonehearthEditor
             // This item is already part of the out edges
             return false;
          }
-
          if (!mOutEdgeStrings.Contains(inEdge))
          {
-            mOutEdgeStrings.Add(inEdge);
+            // This out edge isn't already in the list of possible out edges, see if we can add it.
+            switch (mEncounterType)
+            {
+               case "generator":
+                  // Cannot add more than one edge to generator
+                  return false;
+               case "random_out_edge":
+                  JObject randomOutEdgesDictionary = (NodeFile.Json["random_out_edge_info"]["out_edges"] as JObject);
+                  randomOutEdgesDictionary.Add(inEdge, JObject.Parse(@"{""weight"":1 }"));
+                  mOutEdgeStrings.Add(inEdge);
+                  break;
+               case "collection_quest":
+                  return false;
+               case "dialog_tree":
+                  // We can't add to a dialog tree, you have to specify a node.
+                  return false;
+               case "counter":
+                  // Cannot add to a counter because it either does fail or success
+                  return false;
+               default:
+                  NodeFile.Json.Remove("out_edge");
+                  mOutEdgeStrings.Add(inEdge);
+                  NodeFile.Json.Add("out_edge", JsonConvert.SerializeObject(mOutEdgeStrings));
+                  break;
+            }
          }
 
          if (nodeFile.Owner != NodeFile.Owner)
