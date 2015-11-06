@@ -49,6 +49,8 @@ namespace StonehearthEditor
             }
          }
          LoadModFiles();
+         int initialTab = (int) Properties.Settings.Default["InitialTab"];
+         tabControl.SelectedIndex = initialTab;
       }
 
       private void LoadModFiles()
@@ -377,9 +379,11 @@ namespace StonehearthEditor
          }
       }
 
-      private void graphViewer_GraphLoadingEnded(object sender, EventArgs e)
+      private void tabControl_Selected(object sender, TabControlEventArgs e)
       {
-         GameMasterDataManager.GetInstance().RefreshGraph(this);
+         //e.TabPageIndex;
+         Properties.Settings.Default["InitialTab"] = e.TabPageIndex;
+         Properties.Settings.Default.Save();
       }
 
       private class CloneDialogCallback : InputDialog.IDialogCallback

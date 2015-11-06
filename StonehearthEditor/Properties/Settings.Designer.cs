@@ -34,5 +34,17 @@ namespace StonehearthEditor.Properties {
                 this["ModsDirectory"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int InitialTab {
+            get {
+                return ((int)(this["InitialTab"]));
+            }
+            set {
+                this["InitialTab"] = value;
+            }
+        }
     }
 }

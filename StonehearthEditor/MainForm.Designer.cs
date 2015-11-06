@@ -151,14 +151,15 @@
          // 
          // tabControl
          // 
-         this.tabControl.Controls.Add(this.encounterTab);
          this.tabControl.Controls.Add(this.manifestTab);
+         this.tabControl.Controls.Add(this.encounterTab);
          this.tabControl.Dock = System.Windows.Forms.DockStyle.Fill;
          this.tabControl.Location = new System.Drawing.Point(0, 0);
          this.tabControl.Name = "tabControl";
          this.tabControl.SelectedIndex = 0;
          this.tabControl.Size = new System.Drawing.Size(1012, 497);
          this.tabControl.TabIndex = 3;
+         this.tabControl.Selected += new System.Windows.Forms.TabControlEventHandler(this.tabControl_Selected);
          // 
          // encounterTab
          // 
@@ -244,7 +245,6 @@
          this.graphViewer.ZoomFraction = 0.5D;
          this.graphViewer.ZoomWhenMouseWheelScroll = true;
          this.graphViewer.ZoomWindowThreshold = 0.05D;
-         this.graphViewer.GraphLoadingEnded += new System.EventHandler(this.graphViewer_GraphLoadingEnded);
          this.graphViewer.EdgeAdded += new System.EventHandler(this.graphViewer_EdgeAdded);
          this.graphViewer.EdgeRemoved += new System.EventHandler(this.graphViewer_EdgeRemoved);
          this.graphViewer.MouseMove += new System.Windows.Forms.MouseEventHandler(this.graphViewer_MouseMove);
