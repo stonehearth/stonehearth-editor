@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.Msagl.Drawing;
-using Microsoft.Msagl;
 using Microsoft.Msagl.Layout.Layered;
 
 namespace StonehearthEditor

@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Xml;
-using System.Runtime.Serialization.Json;
-using System.Xml.Linq;
-using System.IO;
+﻿using Newtonsoft.Json.Linq;
+using System;
 
 namespace StonehearthEditor
 {
@@ -24,7 +19,7 @@ namespace StonehearthEditor
    public class JsonFileData
    {
       private JSONTYPE mJsonType = JSONTYPE.NONE;
-      private XDocument mFile;
+      private JObject mJson;
       private ModuleFile mOwner;
 
       public JsonFileData(ModuleFile owner)
@@ -32,16 +27,13 @@ namespace StonehearthEditor
          mOwner = owner;
       }
 
-      public void Load(StreamReader sr)
+      public void Load(string json)
       {
-         XmlDictionaryReaderQuotas quota = new XmlDictionaryReaderQuotas();
-         quota.MaxNameTableCharCount = 500000;
-         XmlDictionaryReader reader = JsonReaderWriterFactory.CreateJsonReader(sr.BaseStream, quota);
-         mFile = XDocument.Load(reader);
-         XElement type = mFile.Root.Element("type");
-         if (type != null && type.Value != null)
+         mJson = JObject.Parse(json);
+         JToken typeObject = mJson["type"];
+         if (typeObject != null)
          {
-            string typeString = type.Value.Trim().ToUpper();
+            string typeString = typeObject.ToString().Trim().ToUpper();
             foreach (JSONTYPE jsonType in Enum.GetValues(typeof(JSONTYPE)))
             {
                if (typeString.Equals(jsonType.ToString()))
@@ -53,31 +45,11 @@ namespace StonehearthEditor
 
          if (mJsonType == JSONTYPE.ENTITY || mJsonType == JSONTYPE.NONE)
          {
-            XElement components = mFile.Root.Element("components");
+            
+            JToken components = mJson["components"];
             if (components != null)
             {
                // Look for stonehearth:entity_forms
-               foreach (XElement component in components.Elements())
-               {
-                  string name = component.Name.ToString();
-                  string value = component.Value;
-                  if (component.Attribute("item") != null)
-                  {
-                     name = component.Attribute("item").Value;
-                  }
-
-                  if (name.Equals("stonehearth:entity_forms"))
-                  {
-                     mJsonType = JSONTYPE.ENTITY;
-                     // Grab the iconic and the ghost forms
-                     XElement iconic = component.Element("iconic_form");
-                     if (iconic != null)
-                     {
-                        string iconicFilePath = iconic.Value;
-
-                     }
-                  }
-               }
             }
          }
       }

@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Xml;
-using System.Runtime.Serialization.Json;
-using System.Xml.Linq;
 using System.IO;
 using Newtonsoft.Json.Linq;
 
@@ -13,7 +10,7 @@ namespace StonehearthEditor
    {
       private string mPath;
       private string mName;
-      private XDocument mManifestDocument;
+      private JObject mManifestJson;
       private Dictionary<String, ModuleFile> mAliases = new Dictionary<String, ModuleFile>();
       private JObject mEnglishLocalizationJson;
       public Module(string modPath)
@@ -46,27 +43,21 @@ namespace StonehearthEditor
       {
          string stonehearthModManifest = Path + "/manifest.json";
 
-         XmlDictionaryReaderQuotas quota = new XmlDictionaryReaderQuotas();
-         quota.MaxNameTableCharCount = 500000;
          if (System.IO.File.Exists(stonehearthModManifest))
          {
             using (StreamReader sr = new StreamReader(stonehearthModManifest, Encoding.UTF8))
             {
-               XmlDictionaryReader reader = JsonReaderWriterFactory.CreateJsonReader(sr.BaseStream, quota);
-               mManifestDocument = XDocument.Load(reader);
-               XElement aliases = mManifestDocument.Root.Element("aliases");
+               string fileString = sr.ReadToEnd();
+               mManifestJson = JObject.Parse(fileString);
+               
+               JToken aliases = mManifestJson["aliases"];
                if (aliases != null)
                {
-                  foreach (XElement alias in aliases.Elements())
+                  foreach (JToken item in aliases.Children())
                   {
-                     string name = alias.Name.ToString();
-                     string value = alias.Value;
-                     if (alias.Attribute("item") != null)
-                     {
-                        name = alias.Attribute("item").Value;
-                     }
-                     name = name.Trim();
-                     value = value.Trim();
+                     JProperty alias = item as JProperty;
+                     string name = alias.Name.Trim();
+                     string value = alias.Value.ToString().Trim();
 
                      ModuleFile moduleFile = new ModuleFile(this, name, value);
                      moduleFile.TryLoad();

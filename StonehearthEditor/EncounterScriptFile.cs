@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Xml;
-using System.Runtime.Serialization.Json;
-using System.Xml.Linq;
+﻿using System.Text;
 using System.IO;
 
 namespace StonehearthEditor

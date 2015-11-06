@@ -4,13 +4,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using System.Xml.Linq;
 
 namespace StonehearthEditor
 {
-   public static class JsonHelper {
+   public static class JsonHelper
+   {
       public static string GetJsonStringValue(XElement root, string elementName)
       {
          string returned = String.Empty;
@@ -34,7 +33,8 @@ namespace StonehearthEditor
                {
                   returned.Add(child.Value);
                }
-            } else
+            }
+            else
             {
                returned.Add(selectedElement.Value);
             }
@@ -70,7 +70,8 @@ namespace StonehearthEditor
          XElement selectedElement = root.Element(elementName);
          if (selectedElement != null)
          {
-            foreach (XElement element in selectedElement.Elements()) {
+            foreach (XElement element in selectedElement.Elements())
+            {
                string name = element.Name.ToString();
                string value = element.Value;
                if (element.Attribute("item") != null)
@@ -97,7 +98,8 @@ namespace StonehearthEditor
                if (property.Value.HasValues)
                {
                   returned.Add(property.Name, property.Value.First.ToString());
-               } else
+               }
+               else
                {
                   returned.Add(property.Name, property.Value.ToString());
                }
@@ -122,8 +124,8 @@ namespace StonehearthEditor
 
          if (fileJson.IndexOf('.') < 0)
          {
-            string folderName = fullPath.Substring(fullPath.LastIndexOf('/'));
-            fullPath = fullPath + "/" + fullPath + ".json";
+            string folderName = fullPath.Substring(fullPath.LastIndexOf('/') + 1);
+            fullPath = fullPath + "/" + folderName + ".json";
          }
          if (fullPath.StartsWith("/"))
          {
