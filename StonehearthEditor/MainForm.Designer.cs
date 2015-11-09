@@ -30,7 +30,7 @@
       {
          this.components = new System.ComponentModel.Container();
          System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(StonehearthEditor));
-         this.manifestTreeView = new System.Windows.Forms.TreeView();
+         this.treeView = new System.Windows.Forms.TreeView();
          this.manifestImageList = new System.Windows.Forms.ImageList(this.components);
          this.aliasContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
          this.aliasContextDuplicate = new System.Windows.Forms.ToolStripMenuItem();
@@ -38,6 +38,9 @@
          this.filePreviewBox = new System.Windows.Forms.RichTextBox();
          this.selectedFilePathLabel = new System.Windows.Forms.Label();
          this.tabControl = new System.Windows.Forms.TabControl();
+         this.manifestTab = new System.Windows.Forms.TabPage();
+         this.manifestLeftSide = new System.Windows.Forms.Panel();
+         this.searchBox = new System.Windows.Forms.TextBox();
          this.encounterTab = new System.Windows.Forms.TabPage();
          this.splitContainer1 = new System.Windows.Forms.SplitContainer();
          this.encounterTabRightSide = new System.Windows.Forms.Panel();
@@ -57,7 +60,6 @@
          this.encounterTreeView = new System.Windows.Forms.TreeView();
          this.toolStrip1 = new System.Windows.Forms.ToolStrip();
          this.toolstripSaveButton = new System.Windows.Forms.ToolStripButton();
-         this.manifestTab = new System.Windows.Forms.TabPage();
          this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
          this.i18nTooltip = new System.Windows.Forms.ToolTip(this.components);
          this.saveNewEncounterNodeDialog = new System.Windows.Forms.SaveFileDialog();
@@ -65,6 +67,8 @@
          this.aliasContextMenu.SuspendLayout();
          this.manifestTabRightSide.SuspendLayout();
          this.tabControl.SuspendLayout();
+         this.manifestTab.SuspendLayout();
+         this.manifestLeftSide.SuspendLayout();
          this.encounterTab.SuspendLayout();
          ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
          this.splitContainer1.Panel1.SuspendLayout();
@@ -75,22 +79,21 @@
          this.panel1.SuspendLayout();
          this.nodeInfoPanel.SuspendLayout();
          this.toolStrip1.SuspendLayout();
-         this.manifestTab.SuspendLayout();
          this.SuspendLayout();
          // 
-         // manifestTreeView
+         // treeView
          // 
-         this.manifestTreeView.Dock = System.Windows.Forms.DockStyle.Left;
-         this.manifestTreeView.ImageIndex = 0;
-         this.manifestTreeView.ImageList = this.manifestImageList;
-         this.manifestTreeView.Location = new System.Drawing.Point(3, 3);
-         this.manifestTreeView.MaximumSize = new System.Drawing.Size(400, 0);
-         this.manifestTreeView.MinimumSize = new System.Drawing.Size(350, 0);
-         this.manifestTreeView.Name = "manifestTreeView";
-         this.manifestTreeView.SelectedImageIndex = 0;
-         this.manifestTreeView.Size = new System.Drawing.Size(350, 465);
-         this.manifestTreeView.TabIndex = 1;
-         this.manifestTreeView.MouseClick += new System.Windows.Forms.MouseEventHandler(this.manifestTreeView_OnMouseClick);
+         this.treeView.Dock = System.Windows.Forms.DockStyle.Fill;
+         this.treeView.ImageIndex = 0;
+         this.treeView.ImageList = this.manifestImageList;
+         this.treeView.Location = new System.Drawing.Point(0, 0);
+         this.treeView.MaximumSize = new System.Drawing.Size(400, 0);
+         this.treeView.MinimumSize = new System.Drawing.Size(350, 0);
+         this.treeView.Name = "treeView";
+         this.treeView.SelectedImageIndex = 0;
+         this.treeView.Size = new System.Drawing.Size(350, 465);
+         this.treeView.TabIndex = 1;
+         this.treeView.MouseClick += new System.Windows.Forms.MouseEventHandler(this.manifestTreeView_OnMouseClick);
          // 
          // manifestImageList
          // 
@@ -124,7 +127,7 @@
          // 
          this.manifestTabRightSide.Controls.Add(this.filePreviewBox);
          this.manifestTabRightSide.Controls.Add(this.selectedFilePathLabel);
-         this.manifestTabRightSide.Dock = System.Windows.Forms.DockStyle.Fill;
+         this.manifestTabRightSide.Dock = System.Windows.Forms.DockStyle.Right;
          this.manifestTabRightSide.Location = new System.Drawing.Point(353, 3);
          this.manifestTabRightSide.Name = "manifestTabRightSide";
          this.manifestTabRightSide.Size = new System.Drawing.Size(648, 465);
@@ -160,6 +163,36 @@
          this.tabControl.Size = new System.Drawing.Size(1012, 497);
          this.tabControl.TabIndex = 3;
          this.tabControl.Selected += new System.Windows.Forms.TabControlEventHandler(this.tabControl_Selected);
+         // 
+         // manifestTab
+         // 
+         this.manifestTab.Controls.Add(this.manifestLeftSide);
+         this.manifestTab.Controls.Add(this.manifestTabRightSide);
+         this.manifestTab.Location = new System.Drawing.Point(4, 22);
+         this.manifestTab.Name = "manifestTab";
+         this.manifestTab.Padding = new System.Windows.Forms.Padding(3);
+         this.manifestTab.Size = new System.Drawing.Size(1004, 471);
+         this.manifestTab.TabIndex = 0;
+         this.manifestTab.Text = "Manifest";
+         this.manifestTab.UseVisualStyleBackColor = true;
+         // 
+         // manifestLeftSide
+         // 
+         this.manifestLeftSide.Controls.Add(this.searchBox);
+         this.manifestLeftSide.Controls.Add(this.treeView);
+         this.manifestLeftSide.Dock = System.Windows.Forms.DockStyle.Left;
+         this.manifestLeftSide.Location = new System.Drawing.Point(3, 3);
+         this.manifestLeftSide.Name = "manifestLeftSide";
+         this.manifestLeftSide.Size = new System.Drawing.Size(200, 465);
+         this.manifestLeftSide.TabIndex = 4;
+         // 
+         // searchBox
+         // 
+         this.searchBox.Dock = System.Windows.Forms.DockStyle.Top;
+         this.searchBox.Location = new System.Drawing.Point(0, 0);
+         this.searchBox.Name = "searchBox";
+         this.searchBox.Size = new System.Drawing.Size(200, 20);
+         this.searchBox.TabIndex = 3;
          // 
          // encounterTab
          // 
@@ -402,18 +435,6 @@
          this.toolstripSaveButton.Text = "Save modified files";
          this.toolstripSaveButton.Click += new System.EventHandler(this.toolstripSaveButton_Click);
          // 
-         // manifestTab
-         // 
-         this.manifestTab.Controls.Add(this.manifestTabRightSide);
-         this.manifestTab.Controls.Add(this.manifestTreeView);
-         this.manifestTab.Location = new System.Drawing.Point(4, 22);
-         this.manifestTab.Name = "manifestTab";
-         this.manifestTab.Padding = new System.Windows.Forms.Padding(3);
-         this.manifestTab.Size = new System.Drawing.Size(1004, 471);
-         this.manifestTab.TabIndex = 0;
-         this.manifestTab.Text = "Manifest";
-         this.manifestTab.UseVisualStyleBackColor = true;
-         // 
          // saveToolStripMenuItem
          // 
          this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
@@ -445,6 +466,9 @@
          this.manifestTabRightSide.ResumeLayout(false);
          this.manifestTabRightSide.PerformLayout();
          this.tabControl.ResumeLayout(false);
+         this.manifestTab.ResumeLayout(false);
+         this.manifestLeftSide.ResumeLayout(false);
+         this.manifestLeftSide.PerformLayout();
          this.encounterTab.ResumeLayout(false);
          this.encounterTab.PerformLayout();
          this.splitContainer1.Panel1.ResumeLayout(false);
@@ -459,13 +483,12 @@
          this.nodeInfoPanel.PerformLayout();
          this.toolStrip1.ResumeLayout(false);
          this.toolStrip1.PerformLayout();
-         this.manifestTab.ResumeLayout(false);
          this.ResumeLayout(false);
 
       }
 
       #endregion
-      private System.Windows.Forms.TreeView manifestTreeView;
+      private System.Windows.Forms.TreeView treeView;
       private System.Windows.Forms.ContextMenuStrip aliasContextMenu;
       private System.Windows.Forms.ToolStripMenuItem aliasContextDuplicate;
       private System.Windows.Forms.Panel manifestTabRightSide;
@@ -497,6 +520,8 @@
       private System.Windows.Forms.FolderBrowserDialog modsFolderBrowserDialog;
       private System.Windows.Forms.Button openEncounterFileButton;
       private System.Windows.Forms.ToolStripMenuItem deleteNodeToolStripMenuItem;
+      private System.Windows.Forms.Panel manifestLeftSide;
+      private System.Windows.Forms.TextBox searchBox;
    }
 }
 

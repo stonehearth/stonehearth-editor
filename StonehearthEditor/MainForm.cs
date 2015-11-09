@@ -52,7 +52,7 @@ namespace StonehearthEditor
          i18nTooltip.Show(string.Empty, nodeInfoJsonPreview, 0);
          new ModuleDataManager(mModsDirectoryPath);
          ModuleDataManager.GetInstance().Load();
-         ModuleDataManager.GetInstance().FillAliasTree(manifestTreeView);
+         ModuleDataManager.GetInstance().FillAliasTree(treeView);
 
          StartGameMasterDataManager();
       }
@@ -93,13 +93,13 @@ namespace StonehearthEditor
       private void manifestTreeView_OnMouseClick(object sender, MouseEventArgs e)
       {
          // Select the clicked node
-         manifestTreeView.SelectedNode = manifestTreeView.GetNodeAt(e.X, e.Y);
-         ModuleFile file = ModuleDataManager.GetInstance().GetSelectedModuleFile(manifestTreeView.SelectedNode);
+         treeView.SelectedNode = treeView.GetNodeAt(e.X, e.Y);
+         ModuleFile file = ModuleDataManager.GetInstance().GetSelectedModuleFile(treeView.SelectedNode);
          if (file != null)
          {
             if (e.Button == System.Windows.Forms.MouseButtons.Right)
             {
-               aliasContextMenu.Show(manifestTreeView, e.Location);
+               aliasContextMenu.Show(treeView, e.Location);
             }
             filePreviewBox.Text = file.FlatFileData;
             selectedFilePathLabel.Text = file.ResolvedPath;
