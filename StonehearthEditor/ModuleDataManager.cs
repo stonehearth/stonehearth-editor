@@ -16,6 +16,7 @@ namespace StonehearthEditor
       }
       private string mModsDirectoryPath;
       private Dictionary<String, Module> mModules = new Dictionary<String, Module>();
+      private List<TreeNode> mModuleTreeNodes = new List<TreeNode>();
       public ModuleDataManager(string modsDirectoryPath)
       {
          mModsDirectoryPath = modsDirectoryPath;
@@ -38,9 +39,10 @@ namespace StonehearthEditor
             module.Load();
             mModules.Add(module.Name, module);
          }
-      }
 
-      public void FillAliasTree(TreeView treeView)
+         GenerateAliasTree();
+      }
+      private void GenerateAliasTree()
       {
          foreach (Module module in mModules.Values)
          {
@@ -58,8 +60,48 @@ namespace StonehearthEditor
             TreeNode treeNode = new TreeNode(module.Name, nodes.ToArray());
             treeNode.ImageIndex = 100;
             treeNode.SelectedImageIndex = 100;
-            treeView.Nodes.Add(treeNode);
+            mModuleTreeNodes.Add(treeNode);
          }
+      }
+
+      public void FilterAliasTree(TreeView treeView, string searchTerm)
+      {
+         treeView.BeginUpdate(); //blocks repainting tree till all objects loaded
+
+         // filter
+         treeView.Nodes.Clear();
+         if (string.IsNullOrEmpty(searchTerm))
+         {
+            treeView.Nodes.AddRange(mModuleTreeNodes.ToArray());
+         }
+         else
+         {
+            List<TreeNode> filteredNodes = new List<TreeNode>();
+            foreach (Module module in mModules.Values)
+            {
+               ICollection<ModuleFile> aliases = module.GetAliases();
+               List<TreeNode> nodes = new List<TreeNode>();
+               foreach (ModuleFile alias in aliases)
+               {
+                  if (alias.Name.Contains(searchTerm))
+                  {
+                     JSONTYPE type = alias.FileData != null ? alias.FileData.JsonType : JSONTYPE.NONE;
+                     nodes.Add(new TreeNode(alias.Name, (int)type, (int)type));
+                  }
+               }
+               if (nodes.Count > 0)
+               {
+                  TreeNode treeNode = new TreeNode(module.Name, nodes.ToArray());
+                  treeNode.ImageIndex = 100;
+                  treeNode.SelectedImageIndex = 100;
+                  filteredNodes.Add(treeNode);
+                  treeNode.ExpandAll();
+               }
+            }
+            treeView.Nodes.AddRange(filteredNodes.ToArray());
+         }
+         //enables redrawing tree after all objects have been added
+         treeView.EndUpdate();
       }
 
       public ModuleFile GetSelectedModuleFile(TreeNode selected)

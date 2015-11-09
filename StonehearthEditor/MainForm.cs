@@ -52,7 +52,7 @@ namespace StonehearthEditor
          i18nTooltip.Show(string.Empty, nodeInfoJsonPreview, 0);
          new ModuleDataManager(mModsDirectoryPath);
          ModuleDataManager.GetInstance().Load();
-         ModuleDataManager.GetInstance().FillAliasTree(treeView);
+         ModuleDataManager.GetInstance().FilterAliasTree(treeView, null);
 
          StartGameMasterDataManager();
       }
@@ -378,6 +378,12 @@ namespace StonehearthEditor
          //e.TabPageIndex;
          Properties.Settings.Default["InitialTab"] = e.TabPageIndex;
          Properties.Settings.Default.Save();
+      }
+
+      private void searchBox_TextChanged(object sender, EventArgs e)
+      {
+         string searchTerm = searchBox.Text;
+         ModuleDataManager.GetInstance().FilterAliasTree(treeView, searchTerm);
       }
 
       private class CloneDialogCallback : InputDialog.IDialogCallback
