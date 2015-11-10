@@ -116,6 +116,7 @@
          this.manifestImageList.Images.SetKeyName(6, "command.png");
          this.manifestImageList.Images.SetKeyName(7, "animation.png");
          this.manifestImageList.Images.SetKeyName(8, "encounter.png");
+         this.manifestImageList.Images.SetKeyName(9, "job.png");
          // 
          // aliasContextMenu
          // 

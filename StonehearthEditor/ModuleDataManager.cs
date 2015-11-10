@@ -57,15 +57,19 @@ namespace StonehearthEditor
             {
                if (alias.FileType == FileType.JSON && alias.FileData != null)
                {
-                  JSONTYPE type = alias.FileData.JsonType;
-                  nodes.Add(new TreeNode(alias.Name, (int)type, (int)type));
+                  TreeNode newNode = alias.GetTreeNode();
+                  nodes.Add(newNode);
                }
             }
 
-            TreeNode treeNode = new TreeNode(module.Name, nodes.ToArray());
-            treeNode.ImageIndex = 100;
-            treeNode.SelectedImageIndex = 100;
-            mModuleTreeNodes.Add(treeNode);
+            if (nodes.Count > 0)
+            {
+               TreeNode treeNode = new TreeNode(module.Name, nodes.ToArray());
+               treeNode.ExpandAll();
+               treeNode.ImageIndex = 100;
+               treeNode.SelectedImageIndex = 100;
+               mModuleTreeNodes.Add(treeNode);
+            }
          }
       }
 
@@ -90,7 +94,7 @@ namespace StonehearthEditor
                {
                   if (alias.Name.Contains(searchTerm))
                   {
-                     JSONTYPE type = alias.FileData != null ? alias.FileData.JsonType : JSONTYPE.NONE;
+                     JSONTYPE type = alias.FileData != null ? (alias.FileData as JsonFileData).JsonType : JSONTYPE.NONE;
                      nodes.Add(new TreeNode(alias.Name, (int)type, (int)type));
                   }
                }

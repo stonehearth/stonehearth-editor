@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using System.Windows.Forms;
 
 namespace StonehearthEditor
 {
@@ -16,9 +17,10 @@ namespace StonehearthEditor
       COMMAND = 6,
       ANIMATION = 7,
       ENCOUNTER = 8,
+      JOB = 9,
    };
 
-   public class JsonFileData
+   public class JsonFileData : FileData
    {
       private JSONTYPE mJsonType = JSONTYPE.NONE;
       private JObject mJson;
@@ -31,7 +33,7 @@ namespace StonehearthEditor
          mOwner = owner;
       }
 
-      public void Load(string jsonString)
+      public override void Load(string jsonString)
       {
          ParseLinkedAliases(jsonString);
          ParseLinkedFiles(jsonString);
@@ -56,6 +58,7 @@ namespace StonehearthEditor
             if (entityFormsComponent != null)
             {
                // Look for stonehearth:entity_forms
+
                
             }
          }
@@ -94,17 +97,28 @@ namespace StonehearthEditor
          }
       }
 
+      public override void UpdateTreeNode(TreeNode node)
+      {
+         node.SelectedImageIndex = (int) JsonType;
+         node.ImageIndex = (int)JsonType;
+      }
+
       public JSONTYPE JsonType
       {
          get { return mJsonType; }
       }
-      public List<ModuleFile> LinkedAliases
+      public override List<ModuleFile> LinkedAliases
       {
          get { return mLinkedAliases; }
       }
-      public List<string> LinkedFiles
+      public override List<FileData> LinkedFiles
       {
-         get { return mLinkedFiles; }
+         get { return null; }
+      }
+
+      public override string Path
+      {
+         get { return mOwner.ResolvedPath; }
       }
    }
 }

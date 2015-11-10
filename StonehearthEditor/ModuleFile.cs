@@ -20,7 +20,7 @@ namespace StonehearthEditor
       private string mOriginalFilePath;
       private string mRootFile;
       private string mFlatFileData;
-      private JsonFileData mFileData = null;
+      private FileData mFileData = null;
       private FileType mType = FileType.UNKNOWN;
       public bool IsModified = false;
 
@@ -75,12 +75,12 @@ namespace StonehearthEditor
                listView.Items.Add(dependency.Module.Name + ":" + dependency.Name);
             }
          }
-         List<string> fileDep = mFileData != null ? mFileData.LinkedFiles : null;
+         List<FileData> fileDep = mFileData != null ? mFileData.LinkedFiles : null;
          if (fileDep != null)
          {
-            foreach (string filePath in fileDep)
+            foreach (FileData filePath in fileDep)
             {
-               listView.Items.Add(filePath);
+               listView.Items.Add(filePath.Path);
             }
          }
       }
@@ -111,6 +111,16 @@ namespace StonehearthEditor
          }
       }
 
+      public TreeNode GetTreeNode()
+      {
+         TreeNode treeNode = new TreeNode(Name);
+         if (mFileData != null)
+         {
+            mFileData.UpdateTreeNode(treeNode);
+         }
+         return treeNode;
+      }
+
       public string Name
       {
          get { return mAlias; }
@@ -124,7 +134,7 @@ namespace StonehearthEditor
       {
          get { return mType; }
       }
-      public JsonFileData FileData
+      public FileData FileData
       {
          get { return mFileData; }
       }
