@@ -12,7 +12,7 @@ namespace StonehearthEditor
    {
       private string mFlatFileData;
       public abstract List<ModuleFile> LinkedAliases { get; }
-      public abstract List<FileData> LinkedFiles { get; }
+      public abstract List<string> LinkedFilePaths { get; }
 
       public abstract string Path { get; }
 

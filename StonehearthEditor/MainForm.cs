@@ -1,6 +1,7 @@
 ﻿using Microsoft.Msagl.Drawing;
 using Microsoft.Msagl.GraphViewerGdi;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -136,12 +137,14 @@ namespace StonehearthEditor
          if (file != null && file != mSelectedModuleFile)
          {
             filePreviewTabs.TabPages.Clear();
+            openFileButtonPanel.Controls.Clear();
             mSelectedModuleFile = file;
             selectedFilePathLabel.Text = file.ResolvedPath;
             file.FillDependencyListItems(dependenciesListView);
             if (mSelectedModuleFile.FileType == FileType.JSON)
             {
                JsonFileData fileData = mSelectedModuleFile.FileData as JsonFileData;
+               List<string> addedOpenFiles = new List<string>();
                foreach(JsonFileData openedFile in fileData.OpenedJsonFiles)
                {
                   TabPage newTabPage = new TabPage();
@@ -150,9 +153,34 @@ namespace StonehearthEditor
                   filePreview.Dock = DockStyle.Fill;
                   newTabPage.Controls.Add(filePreview);
                   filePreviewTabs.TabPages.Add(newTabPage);
+
+                  foreach (string linkedFilePath in openedFile.LinkedFilePaths)
+                  {
+                     if (addedOpenFiles.Contains(linkedFilePath))
+                     {
+                        continue;
+                     }
+                     addedOpenFiles.Add(linkedFilePath);
+                     string extension = Path.GetExtension(linkedFilePath);
+                     if (extension == ".qb")
+                     {
+                        string fileName = Path.GetFileNameWithoutExtension(linkedFilePath);
+                        string qmoPath = JsonHelper.NormalizeSystemPath(Path.GetDirectoryName(linkedFilePath)) + "/" + fileName + ".qmo";
+                        Button openFileButton = new Button();
+                        openFileButton.Name = System.IO.File.Exists(qmoPath) ? qmoPath : linkedFilePath;
+                        openFileButton.BackgroundImage = global::StonehearthEditor.Properties.Resources.qmofileicon_small;
+                        openFileButton.BackgroundImageLayout = ImageLayout.None;
+                        openFileButton.Text = Path.GetFileName(openFileButton.Name);
+                        openFileButton.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+                        openFileButton.UseVisualStyleBackColor = true;
+                        openFileButton.Click += new System.EventHandler(this.openFileButton_Click);
+                        openFileButton.Padding = new Padding(22, 2, 2, 2);
+                        openFileButton.AutoSize = true;
+                        openFileButtonPanel.Controls.Add(openFileButton);
+                     }
+                  }
                }
             }
-
          }
          else
          {
@@ -160,6 +188,7 @@ namespace StonehearthEditor
             filePreviewTabs.TabPages.Clear();
             selectedFilePathLabel.Text = "";
             dependenciesListView.Clear();
+            openFileButtonPanel.Controls.Clear();
          }
       }
 
@@ -312,6 +341,12 @@ namespace StonehearthEditor
       {
          // Save graph editor stuff
          GameMasterDataManager.GetInstance().SaveModifiedFiles();
+      }
+      private void openFileButton_Click(object sender, EventArgs e)
+      {
+         // open file
+         Button button = sender as Button;
+         System.Diagnostics.Process.Start(@button.Name);         
       }
 
       private void nodeInfoJsonPreview_Leave(object sender, EventArgs e)

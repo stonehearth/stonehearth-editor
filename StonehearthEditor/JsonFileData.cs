@@ -27,7 +27,7 @@ namespace StonehearthEditor
       private string mPath;
       private string mFileName;
       private List<ModuleFile> mLinkedAliases = new List<ModuleFile>();
-      private List<string> mLinkedFiles = new List<string>();
+      private List<string> mLinkedFilePaths = new List<string>();
       private List<JsonFileData> mOpenedJsonFiles = new List<JsonFileData>();
 
       public JsonFileData(string path)
@@ -40,8 +40,6 @@ namespace StonehearthEditor
       {
          mOpenedJsonFiles.Add(this);
          string jsonString = FlatFileData;
-         ParseLinkedAliases(jsonString);
-         ParseLinkedFiles(jsonString);
          mJson = JObject.Parse(jsonString);
          JToken typeObject = mJson["type"];
          if (typeObject != null)
@@ -64,16 +62,6 @@ namespace StonehearthEditor
             if (entityFormsComponent != null)
             {
                // Look for stonehearth:entity_forms
-               JToken iconicForm = entityFormsComponent["iconic_form"];
-               if (iconicForm != null)
-               {
-                  string iconicFilePath = JsonHelper.GetFileFromFileJson(iconicForm.ToString(), directory);
-                  iconicFilePath = JsonHelper.NormalizeSystemPath(iconicFilePath);
-                  JsonFileData iconic = new JsonFileData(iconicFilePath);
-                  iconic.Load();
-                  mOpenedJsonFiles.Add(iconic);
-               }
-
                JToken ghostForm = entityFormsComponent["ghost_form"];
                if (ghostForm != null)
                {
@@ -83,17 +71,30 @@ namespace StonehearthEditor
                   ghost.Load();
                   mOpenedJsonFiles.Add(ghost);
                }
+               JToken iconicForm = entityFormsComponent["iconic_form"];
+               if (iconicForm != null)
+               {
+                  string iconicFilePath = JsonHelper.GetFileFromFileJson(iconicForm.ToString(), directory);
+                  iconicFilePath = JsonHelper.NormalizeSystemPath(iconicFilePath);
+                  JsonFileData iconic = new JsonFileData(iconicFilePath);
+                  iconic.Load();
+                  mOpenedJsonFiles.Add(iconic);
+               }
             }
          }
+
+         ParseLinkedAliases(jsonString);
+         ParseLinkedFiles(jsonString);
       }
       private void ParseLinkedFiles(string jsonString)
       {
+         string directory = System.IO.Path.GetDirectoryName(Path);
          Regex matcher = new Regex("file\\([\\S]+\\)");
          foreach (Match match in matcher.Matches(jsonString))
          {
-            string linkedFile = JsonHelper.GetFileFromFileJson(match.Value, Path);
+            string linkedFile = JsonHelper.GetFileFromFileJson(match.Value, directory);
             linkedFile = JsonHelper.NormalizeSystemPath(linkedFile);
-            mLinkedFiles.Add(linkedFile);
+            mLinkedFilePaths.Add(linkedFile);
          }
       }
 
@@ -134,9 +135,9 @@ namespace StonehearthEditor
       {
          get { return mLinkedAliases; }
       }
-      public override List<FileData> LinkedFiles
+      public override List<string> LinkedFilePaths
       {
-         get { return null; }
+         get { return mLinkedFilePaths; }
       }
       public List<JsonFileData> OpenedJsonFiles
       {

@@ -43,7 +43,7 @@
          this.searchButton = new System.Windows.Forms.Button();
          this.splitContainer3 = new System.Windows.Forms.SplitContainer();
          this.filePreviewTabs = new System.Windows.Forms.TabControl();
-         this.linkedFilePanel = new System.Windows.Forms.Panel();
+         this.openFileButtonPanel = new System.Windows.Forms.FlowLayoutPanel();
          this.dependenciesListView = new System.Windows.Forms.ListView();
          this.encounterTab = new System.Windows.Forms.TabPage();
          this.splitContainer1 = new System.Windows.Forms.SplitContainer();
@@ -231,7 +231,7 @@
          // splitContainer3.Panel1
          // 
          this.splitContainer3.Panel1.Controls.Add(this.filePreviewTabs);
-         this.splitContainer3.Panel1.Controls.Add(this.linkedFilePanel);
+         this.splitContainer3.Panel1.Controls.Add(this.openFileButtonPanel);
          // 
          // splitContainer3.Panel2
          // 
@@ -243,19 +243,19 @@
          // filePreviewTabs
          // 
          this.filePreviewTabs.Dock = System.Windows.Forms.DockStyle.Fill;
-         this.filePreviewTabs.Location = new System.Drawing.Point(0, 37);
+         this.filePreviewTabs.Location = new System.Drawing.Point(0, 33);
          this.filePreviewTabs.Name = "filePreviewTabs";
          this.filePreviewTabs.SelectedIndex = 0;
-         this.filePreviewTabs.Size = new System.Drawing.Size(500, 499);
+         this.filePreviewTabs.Size = new System.Drawing.Size(500, 503);
          this.filePreviewTabs.TabIndex = 2;
          // 
-         // linkedFilePanel
+         // openFileButtonPanel
          // 
-         this.linkedFilePanel.Dock = System.Windows.Forms.DockStyle.Top;
-         this.linkedFilePanel.Location = new System.Drawing.Point(0, 0);
-         this.linkedFilePanel.Name = "linkedFilePanel";
-         this.linkedFilePanel.Size = new System.Drawing.Size(500, 37);
-         this.linkedFilePanel.TabIndex = 2;
+         this.openFileButtonPanel.Dock = System.Windows.Forms.DockStyle.Top;
+         this.openFileButtonPanel.Location = new System.Drawing.Point(0, 0);
+         this.openFileButtonPanel.Name = "openFileButtonPanel";
+         this.openFileButtonPanel.Size = new System.Drawing.Size(500, 33);
+         this.openFileButtonPanel.TabIndex = 0;
          // 
          // dependenciesListView
          // 
@@ -653,12 +653,12 @@
       private System.Windows.Forms.ListView dependenciesListView;
       private System.Windows.Forms.SplitContainer splitContainer3;
       private System.Windows.Forms.TabControl filePreviewTabs;
-      private System.Windows.Forms.Panel linkedFilePanel;
       private System.Windows.Forms.MenuStrip mainFormMenu;
       private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
       private System.Windows.Forms.ToolStripMenuItem saveAllToolStripMenuItem;
       private System.Windows.Forms.ToolStripMenuItem reloadToolStripMenuItem;
       private System.Windows.Forms.ToolStripMenuItem changeModDirectoryToolStripMenuItem;
+      private System.Windows.Forms.FlowLayoutPanel openFileButtonPanel;
    }
 }
 

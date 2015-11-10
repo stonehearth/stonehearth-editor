@@ -63,12 +63,12 @@ namespace StonehearthEditor
                listView.Items.Add(dependency.Module.Name + ":" + dependency.Name);
             }
          }
-         List<FileData> fileDep = mFileData != null ? mFileData.LinkedFiles : null;
+         List<string> fileDep = mFileData != null ? mFileData.LinkedFilePaths : null;
          if (fileDep != null)
          {
-            foreach (FileData filePath in fileDep)
+            foreach (string filePath in fileDep)
             {
-               listView.Items.Add(filePath.Path);
+               listView.Items.Add(filePath);
             }
          }
       }
