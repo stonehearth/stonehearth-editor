@@ -1,5 +1,7 @@
 ﻿using System.Text;
 using System.IO;
+using System.Collections.Generic;
+using System.Windows.Forms;
 
 namespace StonehearthEditor
 {
@@ -60,9 +62,35 @@ namespace StonehearthEditor
          }
       }
 
+      public List<ModuleFile> GetDependencies()
+      {
+         if (mFileData != null)
+         {
+            return mFileData.LinkedAliases;
+         }
+         return null;
+      }
+
+      public void FillDependencyListItems(ListView listView)
+      {
+         listView.Items.Clear();
+         List<ModuleFile> dependencies = GetDependencies();
+         if (dependencies != null)
+         {
+            foreach(ModuleFile dependency in dependencies)
+            {
+               listView.Items.Add(dependency.Module.Name + ":" + dependency.Name);
+            }
+         }
+      }
+
       public string Name
       {
          get { return mAlias; }
+      }
+      public Module Module
+      {
+         get { return mModule; }
       }
 
       public FileType FileType

@@ -39,7 +39,7 @@ namespace StonehearthEditor
       {
          get { return mEnglishLocalizationJson; }
       }
-      public void Load()
+      public void InitializeFromManifest()
       {
          string stonehearthModManifest = Path + "/manifest.json";
 
@@ -60,7 +60,6 @@ namespace StonehearthEditor
                      string value = alias.Value.ToString().Trim();
 
                      ModuleFile moduleFile = new ModuleFile(this, name, value);
-                     moduleFile.TryLoad();
                      mAliases.Add(name, moduleFile);
                   }
                }
@@ -75,6 +74,13 @@ namespace StonehearthEditor
                string fileString = sr.ReadToEnd();
                mEnglishLocalizationJson = JObject.Parse(fileString);
             }
+         }
+      }
+
+      public void LoadFiles()
+      {
+         foreach (ModuleFile moduleFile in mAliases.Values) { 
+            moduleFile.TryLoad();
          }
       }
 

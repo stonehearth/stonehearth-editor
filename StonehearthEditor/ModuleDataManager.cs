@@ -36,8 +36,13 @@ namespace StonehearthEditor
          {
             string formatted = JsonHelper.NormalizeSystemPath(modPath);
             Module module = new Module(formatted);
-            module.Load();
+            module.InitializeFromManifest();
             mModules.Add(module.Name, module);
+         }
+
+         foreach(Module module in mModules.Values)
+         {
+            module.LoadFiles();
          }
 
          GenerateAliasTree();
@@ -148,6 +153,12 @@ namespace StonehearthEditor
             }
          }
          return key;
+      }
+
+      // Call to clone an alias
+      public bool CloneAlias(ModuleFile module, string newName)
+      {
+         return false;
       }
    }
 }

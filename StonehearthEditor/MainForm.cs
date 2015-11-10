@@ -84,10 +84,38 @@ namespace StonehearthEditor
       private void aliasContextMenuDuplicate_Click(object sender, EventArgs e)
       {
          ToolStripMenuItem menuItem = sender as ToolStripMenuItem;
-         if (menuItem != null)
+         if (menuItem == null)
          {
-            Console.Write(menuItem.ToString());
+            return;
          }
+         TreeNode selectedNode = treeView.SelectedNode;
+         if (selectedNode == null || selectedNode.Parent == null)
+         {
+            return;
+         }
+         string module = selectedNode.Parent.Text;
+         string alias = selectedNode.Text;
+         Module mod = ModuleDataManager.GetInstance().GetMod(module);
+         if (mod == null)
+         {
+            return;
+         }
+         ModuleFile aliasFile = mod.GetAliasFile(alias);
+         if (aliasFile == null)
+         {
+            return;
+         }
+         if (aliasFile.FileType != FileType.JSON)
+         {
+            return; // best not dupe non-json files
+         }
+
+         CloneAliasCallback callback = new CloneAliasCallback(this, aliasFile);
+         int lastColon = alias.LastIndexOf(':');
+         string aliasShortName = lastColon > -1 ? alias.Substring(lastColon + 1) : alias;
+         InputDialog dialog = new InputDialog("Clone " + module + ":" + alias, "Type name of duplicated alias", aliasShortName, "Clone!");
+         dialog.SetCallback(callback);
+         dialog.ShowDialog();
       }
 
       private void manifestTreeView_OnMouseClick(object sender, MouseEventArgs e)
@@ -103,12 +131,18 @@ namespace StonehearthEditor
             }
             filePreviewBox.Text = file.FlatFileData;
             selectedFilePathLabel.Text = file.ResolvedPath;
+            file.FillDependencyListItems(dependenciesListView);
          }
          else
          {
             filePreviewBox.Text = "";
             selectedFilePathLabel.Text = "";
          }
+      }
+
+      private void link_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+      {
+         Console.WriteLine("Link clicked: " + e.Link.LinkData.ToString());
       }
 
       private void filePreviewBox_TextChanged(object sender, EventArgs e)
@@ -415,6 +449,41 @@ namespace StonehearthEditor
                return false;
             }
             GameMasterDataManager.GetInstance().CloneNode(mViewer, mNode, potentialNewNodeName);
+            return true;
+         }
+      }
+
+      private class CloneAliasCallback : InputDialog.IDialogCallback
+      {
+         private ModuleFile mModuleFile;
+         private StonehearthEditor mViewer;
+         public CloneAliasCallback(StonehearthEditor viewer, ModuleFile moduleFile)
+         {
+            mViewer = viewer;
+            mModuleFile = moduleFile;
+         }
+         public void onCancelled()
+         {
+            // Do nothing. user cancelled
+         }
+
+         public bool OnAccept(string inputMessage)
+         {
+            // Do the cloning
+            string potentialNewNodeName = inputMessage.Trim();
+            if (potentialNewNodeName.Length <= 1)
+            {
+               MessageBox.Show("You must enter a name longer than 1 character for the clone!");
+               return false;
+            }
+            int lastColon = mModuleFile.Name.LastIndexOf(':');
+            string aliasShortName = lastColon > -1 ? mModuleFile.Name.Substring(lastColon + 1) : mModuleFile.Name;
+            if (potentialNewNodeName.Equals(aliasShortName))
+            {
+               MessageBox.Show("You must enter a new unique name for the clone!");
+               return false;
+            }
+            ModuleDataManager.GetInstance().CloneAlias(mModuleFile, potentialNewNodeName);
             return true;
          }
       }

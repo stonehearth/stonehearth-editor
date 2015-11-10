@@ -1,5 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace StonehearthEditor
 {
@@ -21,15 +23,19 @@ namespace StonehearthEditor
       private JSONTYPE mJsonType = JSONTYPE.NONE;
       private JObject mJson;
       private ModuleFile mOwner;
+      private List<ModuleFile> mLinkedAliases = new List<ModuleFile>();
+      private List<string> mLinkedFiles = new List<string>();
 
       public JsonFileData(ModuleFile owner)
       {
          mOwner = owner;
       }
 
-      public void Load(string json)
+      public void Load(string jsonString)
       {
-         mJson = JObject.Parse(json);
+         ParseLinkedAliases(jsonString);
+
+         mJson = JObject.Parse(jsonString);
          JToken typeObject = mJson["type"];
          if (typeObject != null)
          {
@@ -45,18 +51,46 @@ namespace StonehearthEditor
 
          if (mJsonType == JSONTYPE.ENTITY || mJsonType == JSONTYPE.NONE)
          {
-            
-            JToken components = mJson["components"];
-            if (components != null)
+
+            JToken entityFormsComponent = mJson.SelectToken("components.stonehearth:entity_forms");
+            if (entityFormsComponent != null)
             {
                // Look for stonehearth:entity_forms
+               
             }
+         }
+      }
+
+      private void ParseLinkedAliases(string jsonString)
+      {
+         Regex matcher = new Regex("\"([A-z|_|-]+\\:[\\S]*)\"");
+         foreach (Match match in matcher.Matches(jsonString))
+         {
+            string fullAlias = match.Groups[1].Value;
+            int indexOfColon = fullAlias.IndexOf(':');
+            string module = fullAlias.Substring(0, indexOfColon);
+            string alias = fullAlias.Substring(indexOfColon + 1);
+            Module mod = ModuleDataManager.GetInstance().GetMod(module);
+            if (mod == null)
+            {
+               continue;
+            }
+            ModuleFile linkedAlias = mod.GetAliasFile(alias);
+            if (linkedAlias == null)
+            {
+               continue;
+            }
+            mLinkedAliases.Add(linkedAlias);
          }
       }
 
       public JSONTYPE JsonType
       {
          get { return mJsonType; }
+      }
+      public List<ModuleFile> LinkedAliases
+      {
+         get { return mLinkedAliases; }
       }
    }
 }
