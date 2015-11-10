@@ -66,6 +66,7 @@
          this.searchButton = new System.Windows.Forms.Button();
          this.searchPanel = new System.Windows.Forms.Panel();
          this.dependenciesListView = new System.Windows.Forms.ListView();
+         this.splitContainer3 = new System.Windows.Forms.SplitContainer();
          this.aliasContextMenu.SuspendLayout();
          this.tabControl.SuspendLayout();
          this.manifestTab.SuspendLayout();
@@ -84,6 +85,10 @@
          this.splitContainer2.Panel2.SuspendLayout();
          this.splitContainer2.SuspendLayout();
          this.searchPanel.SuspendLayout();
+         ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).BeginInit();
+         this.splitContainer3.Panel1.SuspendLayout();
+         this.splitContainer3.Panel2.SuspendLayout();
+         this.splitContainer3.SuspendLayout();
          this.SuspendLayout();
          // 
          // treeView
@@ -130,9 +135,9 @@
          // 
          this.filePreviewBox.Dock = System.Windows.Forms.DockStyle.Fill;
          this.filePreviewBox.Font = new System.Drawing.Font("Courier New", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-         this.filePreviewBox.Location = new System.Drawing.Point(0, 13);
+         this.filePreviewBox.Location = new System.Drawing.Point(0, 0);
          this.filePreviewBox.Name = "filePreviewBox";
-         this.filePreviewBox.Size = new System.Drawing.Size(736, 560);
+         this.filePreviewBox.Size = new System.Drawing.Size(500, 560);
          this.filePreviewBox.TabIndex = 1;
          this.filePreviewBox.Text = "";
          // 
@@ -449,8 +454,7 @@
          // 
          // splitContainer2.Panel2
          // 
-         this.splitContainer2.Panel2.Controls.Add(this.dependenciesListView);
-         this.splitContainer2.Panel2.Controls.Add(this.filePreviewBox);
+         this.splitContainer2.Panel2.Controls.Add(this.splitContainer3);
          this.splitContainer2.Panel2.Controls.Add(this.selectedFilePathLabel);
          this.splitContainer2.Size = new System.Drawing.Size(1109, 573);
          this.splitContainer2.SplitterDistance = 369;
@@ -480,13 +484,30 @@
          // 
          // dependenciesListView
          // 
-         this.dependenciesListView.Dock = System.Windows.Forms.DockStyle.Right;
-         this.dependenciesListView.Location = new System.Drawing.Point(499, 13);
+         this.dependenciesListView.Dock = System.Windows.Forms.DockStyle.Fill;
+         this.dependenciesListView.Location = new System.Drawing.Point(0, 0);
          this.dependenciesListView.Name = "dependenciesListView";
-         this.dependenciesListView.Size = new System.Drawing.Size(237, 560);
+         this.dependenciesListView.Size = new System.Drawing.Size(232, 560);
          this.dependenciesListView.TabIndex = 2;
          this.dependenciesListView.UseCompatibleStateImageBehavior = false;
          this.dependenciesListView.View = System.Windows.Forms.View.List;
+         // 
+         // splitContainer3
+         // 
+         this.splitContainer3.Dock = System.Windows.Forms.DockStyle.Fill;
+         this.splitContainer3.Location = new System.Drawing.Point(0, 13);
+         this.splitContainer3.Name = "splitContainer3";
+         // 
+         // splitContainer3.Panel1
+         // 
+         this.splitContainer3.Panel1.Controls.Add(this.filePreviewBox);
+         // 
+         // splitContainer3.Panel2
+         // 
+         this.splitContainer3.Panel2.Controls.Add(this.dependenciesListView);
+         this.splitContainer3.Size = new System.Drawing.Size(736, 560);
+         this.splitContainer3.SplitterDistance = 500;
+         this.splitContainer3.TabIndex = 3;
          // 
          // StonehearthEditor
          // 
@@ -522,6 +543,10 @@
          this.splitContainer2.ResumeLayout(false);
          this.searchPanel.ResumeLayout(false);
          this.searchPanel.PerformLayout();
+         this.splitContainer3.Panel1.ResumeLayout(false);
+         this.splitContainer3.Panel2.ResumeLayout(false);
+         ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).EndInit();
+         this.splitContainer3.ResumeLayout(false);
          this.ResumeLayout(false);
 
       }
@@ -563,6 +588,7 @@
       private System.Windows.Forms.Button searchButton;
       private System.Windows.Forms.Panel searchPanel;
       private System.Windows.Forms.ListView dependenciesListView;
+      private System.Windows.Forms.SplitContainer splitContainer3;
    }
 }
 

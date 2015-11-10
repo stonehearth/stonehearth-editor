@@ -34,7 +34,7 @@ namespace StonehearthEditor
       public void Load(string jsonString)
       {
          ParseLinkedAliases(jsonString);
-
+         ParseLinkedFiles(jsonString);
          mJson = JObject.Parse(jsonString);
          JToken typeObject = mJson["type"];
          if (typeObject != null)
@@ -58,6 +58,16 @@ namespace StonehearthEditor
                // Look for stonehearth:entity_forms
                
             }
+         }
+      }
+      private void ParseLinkedFiles(string jsonString)
+      {
+         Regex matcher = new Regex("file\\([\\S]+\\)");
+         foreach (Match match in matcher.Matches(jsonString))
+         {
+            string linkedFile = JsonHelper.GetFileFromFileJson(match.Value, mOwner.ResolvedPath);
+            linkedFile = JsonHelper.NormalizeSystemPath(linkedFile);
+            mLinkedFiles.Add(linkedFile);
          }
       }
 
@@ -91,6 +101,10 @@ namespace StonehearthEditor
       public List<ModuleFile> LinkedAliases
       {
          get { return mLinkedAliases; }
+      }
+      public List<string> LinkedFiles
+      {
+         get { return mLinkedFiles; }
       }
    }
 }

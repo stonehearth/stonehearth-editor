@@ -62,24 +62,23 @@ namespace StonehearthEditor
          }
       }
 
-      public List<ModuleFile> GetDependencies()
-      {
-         if (mFileData != null)
-         {
-            return mFileData.LinkedAliases;
-         }
-         return null;
-      }
-
       public void FillDependencyListItems(ListView listView)
       {
          listView.Items.Clear();
-         List<ModuleFile> dependencies = GetDependencies();
+         List<ModuleFile> dependencies = mFileData != null ? mFileData.LinkedAliases : null;
          if (dependencies != null)
          {
             foreach(ModuleFile dependency in dependencies)
             {
                listView.Items.Add(dependency.Module.Name + ":" + dependency.Name);
+            }
+         }
+         List<string> fileDep = mFileData != null ? mFileData.LinkedFiles : null;
+         if (fileDep != null)
+         {
+            foreach (string filePath in fileDep)
+            {
+               listView.Items.Add(filePath);
             }
          }
       }
