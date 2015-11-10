@@ -113,13 +113,22 @@ namespace StonehearthEditor
          treeView.EndUpdate();
       }
 
-      public ModuleFile GetSelectedModuleFile(TreeNode selected)
+      public FileData GetSelectedFileData(TreeNode selected)
       {
-         if (selected != null && selected.Parent != null)
+         if (selected != null)
          {
-            Module module = mModules[selected.Parent.Text];
-            ModuleFile file = module.GetAliasFile(selected.Text);
-            return file;
+            string fullPath = selected.FullPath;
+            string[] path = fullPath.Split('\\');
+            if (path.Length <= 1)
+            {
+               return null;
+            }
+            Module module = mModules[path[0]];
+            ModuleFile file = module.GetAliasFile(path[1]);
+            if (file != null)
+            {
+               return file.GetFileData(path);
+            }
          }
          return null;
       }

@@ -23,7 +23,7 @@ namespace StonehearthEditor
 
       private double mPreviousMouseX, mPreviousMouseY;
       private GameMasterNode mSelectedNode = null;
-      private ModuleFile mSelectedModuleFile = null;
+      private FileData mSelectedFileData = null;
       private int mI18nTooltipLine = -1;
 
       public StonehearthEditor(string path)
@@ -124,28 +124,28 @@ namespace StonehearthEditor
       {
          // Select the clicked node
          treeView.SelectedNode = treeView.GetNodeAt(e.X, e.Y);
-         ModuleFile file = ModuleDataManager.GetInstance().GetSelectedModuleFile(treeView.SelectedNode);
+         FileData file = ModuleDataManager.GetInstance().GetSelectedFileData(treeView.SelectedNode);
          if (file != null && e.Button == System.Windows.Forms.MouseButtons.Right)
          {
             aliasContextMenu.Show(treeView, e.Location);
          }
-         SetSelectedModuleFile(file);
+         SetSelectedFileData(file);
       }
 
-      private void SetSelectedModuleFile(ModuleFile file)
+      private void SetSelectedFileData(FileData file)
       {
-         if (file != null && file != mSelectedModuleFile)
+         if (file != null && file != mSelectedFileData)
          {
             filePreviewTabs.TabPages.Clear();
             openFileButtonPanel.Controls.Clear();
-            mSelectedModuleFile = file;
-            selectedFilePathLabel.Text = file.ResolvedPath;
+            selectedFilePathLabel.Text = file.Path;
             file.FillDependencyListItems(dependenciesListView);
-            if (mSelectedModuleFile.FileType == FileType.JSON)
+            mSelectedFileData = file;
+            JsonFileData fileData = mSelectedFileData as JsonFileData;
+            if (fileData != null)
             {
-               JsonFileData fileData = mSelectedModuleFile.FileData as JsonFileData;
                List<string> addedOpenFiles = new List<string>();
-               foreach(JsonFileData openedFile in fileData.OpenedJsonFiles)
+               foreach(FileData openedFile in fileData.OpenedFiles)
                {
                   TabPage newTabPage = new TabPage();
                   newTabPage.Text = openedFile.FileName;
@@ -184,7 +184,7 @@ namespace StonehearthEditor
          }
          else
          {
-            mSelectedModuleFile = null;
+            mSelectedFileData = null;
             filePreviewTabs.TabPages.Clear();
             selectedFilePathLabel.Text = "";
             dependenciesListView.Clear();
@@ -367,9 +367,9 @@ namespace StonehearthEditor
             {
                GameMasterDataManager.GetInstance().TryModifyJson(this, mSelectedNode, json);
             }
-            if (mSelectedModuleFile != null)
+            if (mSelectedFileData != null)
             {
-               mSelectedModuleFile.TrySaveFile();
+               mSelectedFileData.TrySaveFile();
             }
             GameMasterDataManager.GetInstance().SaveModifiedFiles();
          }
@@ -517,9 +517,9 @@ namespace StonehearthEditor
          {
             GameMasterDataManager.GetInstance().TryModifyJson(this, mSelectedNode, json);
          }
-         if (mSelectedModuleFile != null)
+         if (mSelectedFileData != null)
          {
-            mSelectedModuleFile.TrySaveFile();
+            mSelectedFileData.TrySaveFile();
          }
          GameMasterDataManager.GetInstance().SaveModifiedFiles();
       }
@@ -529,7 +529,7 @@ namespace StonehearthEditor
          if (tabControl.SelectedTab == manifestTab)
          {
             // Reload the manifest tab.
-            SetSelectedModuleFile(null);
+            SetSelectedFileData(null);
             new ModuleDataManager(mModsDirectoryPath);
             ModuleDataManager.GetInstance().Load();
             ModuleDataManager.GetInstance().FilterAliasTree(treeView, null);

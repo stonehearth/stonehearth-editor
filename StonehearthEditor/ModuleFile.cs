@@ -52,27 +52,6 @@ namespace StonehearthEditor
          mFileData.Load();
       }
 
-      public void FillDependencyListItems(ListView listView)
-      {
-         listView.Items.Clear();
-         List<ModuleFile> dependencies = mFileData != null ? mFileData.LinkedAliases : null;
-         if (dependencies != null)
-         {
-            foreach(ModuleFile dependency in dependencies)
-            {
-               listView.Items.Add(dependency.Module.Name + ":" + dependency.Name);
-            }
-         }
-         List<string> fileDep = mFileData != null ? mFileData.LinkedFilePaths : null;
-         if (fileDep != null)
-         {
-            foreach (string filePath in fileDep)
-            {
-               listView.Items.Add(filePath);
-            }
-         }
-      }
-
       public void SetFlatFileData(string newFileData)
       {
          mFileData.TrySetFlatFileData(newFileData);
@@ -97,6 +76,34 @@ namespace StonehearthEditor
                Console.WriteLine("Could not write to file " + ResolvedPath + " because of exception: " + e.Message);
             }
          }
+      }
+      public FileData GetFileData(string[] path)
+      {
+         if (path.Length == 2)
+         {
+            return this.FileData;
+         }
+         return FindFileData(FileData, path, 2);
+      }
+      
+      private FileData FindFileData(FileData start, string[] path, int startIndex)
+      {
+         if (startIndex >= path.Length || start == null)
+         {
+            return start;
+         }
+         string subfileName = path[startIndex];
+         FileData found = null;
+         foreach (FileData openedFile in start.OpenedFiles)
+         {
+            if (openedFile.FileName.Equals(subfileName))
+            {
+               found = openedFile;
+               break;
+            }
+         }
+         
+         return FindFileData(found, path, startIndex + 1);
       }
 
       public TreeNode GetTreeNode()

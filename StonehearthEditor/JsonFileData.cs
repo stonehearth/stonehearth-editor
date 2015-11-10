@@ -25,15 +25,13 @@ namespace StonehearthEditor
       private JSONTYPE mJsonType = JSONTYPE.NONE;
       private JObject mJson;
       private string mPath;
-      private string mFileName;
       private List<ModuleFile> mLinkedAliases = new List<ModuleFile>();
       private List<string> mLinkedFilePaths = new List<string>();
-      private List<JsonFileData> mOpenedJsonFiles = new List<JsonFileData>();
+      private List<FileData> mOpenedJsonFiles = new List<FileData>();
 
       public JsonFileData(string path)
       {
          mPath = path;
-         mFileName = System.IO.Path.GetFileNameWithoutExtension(Path);
       }
 
       protected override void LoadInternal()
@@ -53,39 +51,65 @@ namespace StonehearthEditor
                }
             }
          }
-
-         string directory = System.IO.Path.GetDirectoryName(Path);
-
-         if (mJsonType == JSONTYPE.ENTITY)
-         {
-            JToken entityFormsComponent = mJson.SelectToken("components.stonehearth:entity_forms");
-            if (entityFormsComponent != null)
-            {
-               // Look for stonehearth:entity_forms
-               JToken ghostForm = entityFormsComponent["ghost_form"];
-               if (ghostForm != null)
-               {
-                  string ghostFilePath = JsonHelper.GetFileFromFileJson(ghostForm.ToString(), directory);
-                  ghostFilePath = JsonHelper.NormalizeSystemPath(ghostFilePath);
-                  JsonFileData ghost = new JsonFileData(ghostFilePath);
-                  ghost.Load();
-                  mOpenedJsonFiles.Add(ghost);
-               }
-               JToken iconicForm = entityFormsComponent["iconic_form"];
-               if (iconicForm != null)
-               {
-                  string iconicFilePath = JsonHelper.GetFileFromFileJson(iconicForm.ToString(), directory);
-                  iconicFilePath = JsonHelper.NormalizeSystemPath(iconicFilePath);
-                  JsonFileData iconic = new JsonFileData(iconicFilePath);
-                  iconic.Load();
-                  mOpenedJsonFiles.Add(iconic);
-               }
-            }
-         }
-
          ParseLinkedAliases(jsonString);
          ParseLinkedFiles(jsonString);
+         ParseJsonSpecificData();
       }
+      private void ParseJsonSpecificData()
+      {
+         string directory = System.IO.Path.GetDirectoryName(Path);
+         switch(mJsonType)
+         {
+            case JSONTYPE.ENTITY:
+               JToken entityFormsComponent = mJson.SelectToken("components.stonehearth:entity_forms");
+               if (entityFormsComponent != null)
+               {
+                  // Look for stonehearth:entity_forms
+                  JToken ghostForm = entityFormsComponent["ghost_form"];
+                  if (ghostForm != null)
+                  {
+                     string ghostFilePath = JsonHelper.GetFileFromFileJson(ghostForm.ToString(), directory);
+                     ghostFilePath = JsonHelper.NormalizeSystemPath(ghostFilePath);
+                     JsonFileData ghost = new JsonFileData(ghostFilePath);
+                     ghost.Load();
+                     mOpenedJsonFiles.Add(ghost);
+                  }
+                  JToken iconicForm = entityFormsComponent["iconic_form"];
+                  if (iconicForm != null)
+                  {
+                     string iconicFilePath = JsonHelper.GetFileFromFileJson(iconicForm.ToString(), directory);
+                     iconicFilePath = JsonHelper.NormalizeSystemPath(iconicFilePath);
+                     JsonFileData iconic = new JsonFileData(iconicFilePath);
+                     iconic.Load();
+                     mOpenedJsonFiles.Add(iconic);
+                  }
+               }
+               break;
+            case JSONTYPE.JOB:
+               // Parse crafter stuff
+               JToken crafter = mJson["crafter"];
+               if (crafter != null)
+               {
+                  // This is a crafter, load its recipes
+                  string recipeListLocation = crafter["recipe_list"].ToString();
+                  recipeListLocation = JsonHelper.GetFileFromFileJson(recipeListLocation, directory);
+                  JsonFileData recipes = new JsonFileData(recipeListLocation);
+                  recipes.Load();
+                  foreach (string recipePath in recipes.LinkedFilePaths)
+                  {
+                     JsonFileData recipe = new JsonFileData(recipePath);
+                     recipe.Load();
+                     recipes.mOpenedJsonFiles.Add(recipe);
+                  }
+                  mOpenedJsonFiles.Add(recipes);
+               }
+               break;
+            case JSONTYPE.RECIPE:
+
+               break;
+         }
+      }
+
       private void ParseLinkedFiles(string jsonString)
       {
          string directory = System.IO.Path.GetDirectoryName(Path);
@@ -125,6 +149,23 @@ namespace StonehearthEditor
       {
          node.SelectedImageIndex = (int) JsonType;
          node.ImageIndex = (int)JsonType;
+         if (JsonType == JSONTYPE.JOB)
+         {
+            if (mOpenedJsonFiles.Count > 1)
+            {
+               FileData recipeJsonData = mOpenedJsonFiles[1];
+               TreeNode recipes = new TreeNode(recipeJsonData.FileName);
+               foreach (string recipePath in recipeJsonData.LinkedFilePaths)
+               {
+                  string recipeName = System.IO.Path.GetFileNameWithoutExtension(recipePath);
+                  TreeNode recipeNode = new TreeNode(recipeName);
+                  recipeNode.ImageIndex = (int)JSONTYPE.RECIPE;
+                  recipeNode.SelectedImageIndex = (int)JSONTYPE.RECIPE;
+                  recipes.Nodes.Add(recipeNode);
+               }
+               node.Nodes.Add(recipes);
+            }
+         }
       }
 
       public JSONTYPE JsonType
@@ -139,18 +180,17 @@ namespace StonehearthEditor
       {
          get { return mLinkedFilePaths; }
       }
-      public List<JsonFileData> OpenedJsonFiles
-      {
-         get { return mOpenedJsonFiles; }
-      }
 
       public override string Path
       {
          get { return mPath; }
       }
-      public string FileName
+      public override List<FileData> OpenedFiles
       {
-         get { return mFileName; }
+         get
+         {
+            return mOpenedJsonFiles;
+         }
       }
    }
 }
