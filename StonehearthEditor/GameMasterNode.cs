@@ -95,7 +95,8 @@ namespace StonehearthEditor
 
       public void OnFileChanged(Dictionary<string, GameMasterNode> allNodes)
       {
-         string fileType = mJson["type"].ToString().ToUpper();
+         JToken fileTypeToken = mJson["type"];
+         string fileType = fileTypeToken != null? fileTypeToken.ToString().ToUpper() : "";
          GameMasterNodeType newNodeType = mNodeType;
          foreach (GameMasterNodeType nodeType in Enum.GetValues(typeof(GameMasterNodeType)))
          {
