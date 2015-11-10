@@ -2,6 +2,7 @@
 using System.IO;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using System;
 
 namespace StonehearthEditor
 {
@@ -21,6 +22,7 @@ namespace StonehearthEditor
       private string mFlatFileData;
       private JsonFileData mFileData = null;
       private FileType mType = FileType.UNKNOWN;
+      public bool IsModified = false;
 
       public ModuleFile(Module module, string alias, string filePath)
       {
@@ -79,6 +81,32 @@ namespace StonehearthEditor
             foreach (string filePath in fileDep)
             {
                listView.Items.Add(filePath);
+            }
+         }
+      }
+
+      public void SetFlatFileData(string newFileData)
+      {
+         mFlatFileData = newFileData;
+         IsModified = true;
+      }
+
+      public void TrySaveFile()
+      {
+         if (IsModified)
+         {
+            try
+            {
+               using (StreamWriter wr = new StreamWriter(ResolvedPath, false, new UTF8Encoding(false)))
+               {
+                  string jsonAsString = mFlatFileData;
+                  wr.Write(jsonAsString);
+               }
+               IsModified = false;
+            }
+            catch (Exception e)
+            {
+               Console.WriteLine("Could not write to file " + ResolvedPath + " because of exception: " + e.Message);
             }
          }
       }

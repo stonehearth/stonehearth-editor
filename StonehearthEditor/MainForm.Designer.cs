@@ -38,7 +38,12 @@
          this.selectedFilePathLabel = new System.Windows.Forms.Label();
          this.tabControl = new System.Windows.Forms.TabControl();
          this.manifestTab = new System.Windows.Forms.TabPage();
+         this.splitContainer2 = new System.Windows.Forms.SplitContainer();
+         this.searchPanel = new System.Windows.Forms.Panel();
          this.searchBox = new System.Windows.Forms.TextBox();
+         this.searchButton = new System.Windows.Forms.Button();
+         this.splitContainer3 = new System.Windows.Forms.SplitContainer();
+         this.dependenciesListView = new System.Windows.Forms.ListView();
          this.encounterTab = new System.Windows.Forms.TabPage();
          this.splitContainer1 = new System.Windows.Forms.SplitContainer();
          this.encounterTabRightSide = new System.Windows.Forms.Panel();
@@ -62,14 +67,18 @@
          this.i18nTooltip = new System.Windows.Forms.ToolTip(this.components);
          this.saveNewEncounterNodeDialog = new System.Windows.Forms.SaveFileDialog();
          this.modsFolderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
-         this.splitContainer2 = new System.Windows.Forms.SplitContainer();
-         this.searchButton = new System.Windows.Forms.Button();
-         this.searchPanel = new System.Windows.Forms.Panel();
-         this.dependenciesListView = new System.Windows.Forms.ListView();
-         this.splitContainer3 = new System.Windows.Forms.SplitContainer();
          this.aliasContextMenu.SuspendLayout();
          this.tabControl.SuspendLayout();
          this.manifestTab.SuspendLayout();
+         ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
+         this.splitContainer2.Panel1.SuspendLayout();
+         this.splitContainer2.Panel2.SuspendLayout();
+         this.splitContainer2.SuspendLayout();
+         this.searchPanel.SuspendLayout();
+         ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).BeginInit();
+         this.splitContainer3.Panel1.SuspendLayout();
+         this.splitContainer3.Panel2.SuspendLayout();
+         this.splitContainer3.SuspendLayout();
          this.encounterTab.SuspendLayout();
          ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
          this.splitContainer1.Panel1.SuspendLayout();
@@ -80,15 +89,6 @@
          this.panel1.SuspendLayout();
          this.nodeInfoPanel.SuspendLayout();
          this.toolStrip1.SuspendLayout();
-         ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
-         this.splitContainer2.Panel1.SuspendLayout();
-         this.splitContainer2.Panel2.SuspendLayout();
-         this.splitContainer2.SuspendLayout();
-         this.searchPanel.SuspendLayout();
-         ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).BeginInit();
-         this.splitContainer3.Panel1.SuspendLayout();
-         this.splitContainer3.Panel2.SuspendLayout();
-         this.splitContainer3.SuspendLayout();
          this.SuspendLayout();
          // 
          // treeView
@@ -110,7 +110,7 @@
          this.manifestImageList.Images.SetKeyName(0, "none.png");
          this.manifestImageList.Images.SetKeyName(1, "entity.png");
          this.manifestImageList.Images.SetKeyName(2, "buff.png");
-         this.manifestImageList.Images.SetKeyName(3, "buff.png");
+         this.manifestImageList.Images.SetKeyName(3, "ai_pack.png");
          this.manifestImageList.Images.SetKeyName(4, "effect.png");
          this.manifestImageList.Images.SetKeyName(5, "recipe.png");
          this.manifestImageList.Images.SetKeyName(6, "command.png");
@@ -140,6 +140,8 @@
          this.filePreviewBox.Size = new System.Drawing.Size(500, 560);
          this.filePreviewBox.TabIndex = 1;
          this.filePreviewBox.Text = "";
+         this.filePreviewBox.WordWrap = false;
+         this.filePreviewBox.TextChanged += new System.EventHandler(this.filePreviewBox_TextChanged);
          // 
          // selectedFilePathLabel
          // 
@@ -173,6 +175,35 @@
          this.manifestTab.Text = "Manifest";
          this.manifestTab.UseVisualStyleBackColor = true;
          // 
+         // splitContainer2
+         // 
+         this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
+         this.splitContainer2.Location = new System.Drawing.Point(3, 3);
+         this.splitContainer2.Name = "splitContainer2";
+         // 
+         // splitContainer2.Panel1
+         // 
+         this.splitContainer2.Panel1.Controls.Add(this.treeView);
+         this.splitContainer2.Panel1.Controls.Add(this.searchPanel);
+         // 
+         // splitContainer2.Panel2
+         // 
+         this.splitContainer2.Panel2.Controls.Add(this.splitContainer3);
+         this.splitContainer2.Panel2.Controls.Add(this.selectedFilePathLabel);
+         this.splitContainer2.Size = new System.Drawing.Size(1109, 573);
+         this.splitContainer2.SplitterDistance = 369;
+         this.splitContainer2.TabIndex = 2;
+         // 
+         // searchPanel
+         // 
+         this.searchPanel.Controls.Add(this.searchBox);
+         this.searchPanel.Controls.Add(this.searchButton);
+         this.searchPanel.Dock = System.Windows.Forms.DockStyle.Top;
+         this.searchPanel.Location = new System.Drawing.Point(0, 0);
+         this.searchPanel.Name = "searchPanel";
+         this.searchPanel.Size = new System.Drawing.Size(369, 26);
+         this.searchPanel.TabIndex = 5;
+         // 
          // searchBox
          // 
          this.searchBox.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -182,6 +213,45 @@
          this.searchBox.TabIndex = 3;
          this.searchBox.WordWrap = false;
          this.searchBox.TextChanged += new System.EventHandler(this.searchBox_TextChanged);
+         // 
+         // searchButton
+         // 
+         this.searchButton.Dock = System.Windows.Forms.DockStyle.Right;
+         this.searchButton.Image = ((System.Drawing.Image)(resources.GetObject("searchButton.Image")));
+         this.searchButton.ImageAlign = System.Drawing.ContentAlignment.TopLeft;
+         this.searchButton.Location = new System.Drawing.Point(346, 0);
+         this.searchButton.Margin = new System.Windows.Forms.Padding(0);
+         this.searchButton.Name = "searchButton";
+         this.searchButton.Size = new System.Drawing.Size(23, 26);
+         this.searchButton.TabIndex = 4;
+         this.searchButton.UseVisualStyleBackColor = true;
+         // 
+         // splitContainer3
+         // 
+         this.splitContainer3.Dock = System.Windows.Forms.DockStyle.Fill;
+         this.splitContainer3.Location = new System.Drawing.Point(0, 13);
+         this.splitContainer3.Name = "splitContainer3";
+         // 
+         // splitContainer3.Panel1
+         // 
+         this.splitContainer3.Panel1.Controls.Add(this.filePreviewBox);
+         // 
+         // splitContainer3.Panel2
+         // 
+         this.splitContainer3.Panel2.Controls.Add(this.dependenciesListView);
+         this.splitContainer3.Size = new System.Drawing.Size(736, 560);
+         this.splitContainer3.SplitterDistance = 500;
+         this.splitContainer3.TabIndex = 3;
+         // 
+         // dependenciesListView
+         // 
+         this.dependenciesListView.Dock = System.Windows.Forms.DockStyle.Fill;
+         this.dependenciesListView.Location = new System.Drawing.Point(0, 0);
+         this.dependenciesListView.Name = "dependenciesListView";
+         this.dependenciesListView.Size = new System.Drawing.Size(232, 560);
+         this.dependenciesListView.TabIndex = 2;
+         this.dependenciesListView.UseCompatibleStateImageBehavior = false;
+         this.dependenciesListView.View = System.Windows.Forms.View.List;
          // 
          // encounterTab
          // 
@@ -441,74 +511,6 @@
          this.modsFolderBrowserDialog.Description = "Stonehearth Mods Root Directory";
          this.modsFolderBrowserDialog.ShowNewFolderButton = false;
          // 
-         // splitContainer2
-         // 
-         this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
-         this.splitContainer2.Location = new System.Drawing.Point(3, 3);
-         this.splitContainer2.Name = "splitContainer2";
-         // 
-         // splitContainer2.Panel1
-         // 
-         this.splitContainer2.Panel1.Controls.Add(this.treeView);
-         this.splitContainer2.Panel1.Controls.Add(this.searchPanel);
-         // 
-         // splitContainer2.Panel2
-         // 
-         this.splitContainer2.Panel2.Controls.Add(this.splitContainer3);
-         this.splitContainer2.Panel2.Controls.Add(this.selectedFilePathLabel);
-         this.splitContainer2.Size = new System.Drawing.Size(1109, 573);
-         this.splitContainer2.SplitterDistance = 369;
-         this.splitContainer2.TabIndex = 2;
-         // 
-         // searchButton
-         // 
-         this.searchButton.Dock = System.Windows.Forms.DockStyle.Right;
-         this.searchButton.Image = ((System.Drawing.Image)(resources.GetObject("searchButton.Image")));
-         this.searchButton.ImageAlign = System.Drawing.ContentAlignment.TopLeft;
-         this.searchButton.Location = new System.Drawing.Point(346, 0);
-         this.searchButton.Margin = new System.Windows.Forms.Padding(0);
-         this.searchButton.Name = "searchButton";
-         this.searchButton.Size = new System.Drawing.Size(23, 26);
-         this.searchButton.TabIndex = 4;
-         this.searchButton.UseVisualStyleBackColor = true;
-         // 
-         // searchPanel
-         // 
-         this.searchPanel.Controls.Add(this.searchBox);
-         this.searchPanel.Controls.Add(this.searchButton);
-         this.searchPanel.Dock = System.Windows.Forms.DockStyle.Top;
-         this.searchPanel.Location = new System.Drawing.Point(0, 0);
-         this.searchPanel.Name = "searchPanel";
-         this.searchPanel.Size = new System.Drawing.Size(369, 26);
-         this.searchPanel.TabIndex = 5;
-         // 
-         // dependenciesListView
-         // 
-         this.dependenciesListView.Dock = System.Windows.Forms.DockStyle.Fill;
-         this.dependenciesListView.Location = new System.Drawing.Point(0, 0);
-         this.dependenciesListView.Name = "dependenciesListView";
-         this.dependenciesListView.Size = new System.Drawing.Size(232, 560);
-         this.dependenciesListView.TabIndex = 2;
-         this.dependenciesListView.UseCompatibleStateImageBehavior = false;
-         this.dependenciesListView.View = System.Windows.Forms.View.List;
-         // 
-         // splitContainer3
-         // 
-         this.splitContainer3.Dock = System.Windows.Forms.DockStyle.Fill;
-         this.splitContainer3.Location = new System.Drawing.Point(0, 13);
-         this.splitContainer3.Name = "splitContainer3";
-         // 
-         // splitContainer3.Panel1
-         // 
-         this.splitContainer3.Panel1.Controls.Add(this.filePreviewBox);
-         // 
-         // splitContainer3.Panel2
-         // 
-         this.splitContainer3.Panel2.Controls.Add(this.dependenciesListView);
-         this.splitContainer3.Size = new System.Drawing.Size(736, 560);
-         this.splitContainer3.SplitterDistance = 500;
-         this.splitContainer3.TabIndex = 3;
-         // 
          // StonehearthEditor
          // 
          this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
@@ -522,6 +524,17 @@
          this.aliasContextMenu.ResumeLayout(false);
          this.tabControl.ResumeLayout(false);
          this.manifestTab.ResumeLayout(false);
+         this.splitContainer2.Panel1.ResumeLayout(false);
+         this.splitContainer2.Panel2.ResumeLayout(false);
+         this.splitContainer2.Panel2.PerformLayout();
+         ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
+         this.splitContainer2.ResumeLayout(false);
+         this.searchPanel.ResumeLayout(false);
+         this.searchPanel.PerformLayout();
+         this.splitContainer3.Panel1.ResumeLayout(false);
+         this.splitContainer3.Panel2.ResumeLayout(false);
+         ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).EndInit();
+         this.splitContainer3.ResumeLayout(false);
          this.encounterTab.ResumeLayout(false);
          this.encounterTab.PerformLayout();
          this.splitContainer1.Panel1.ResumeLayout(false);
@@ -536,17 +549,6 @@
          this.nodeInfoPanel.PerformLayout();
          this.toolStrip1.ResumeLayout(false);
          this.toolStrip1.PerformLayout();
-         this.splitContainer2.Panel1.ResumeLayout(false);
-         this.splitContainer2.Panel2.ResumeLayout(false);
-         this.splitContainer2.Panel2.PerformLayout();
-         ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
-         this.splitContainer2.ResumeLayout(false);
-         this.searchPanel.ResumeLayout(false);
-         this.searchPanel.PerformLayout();
-         this.splitContainer3.Panel1.ResumeLayout(false);
-         this.splitContainer3.Panel2.ResumeLayout(false);
-         ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).EndInit();
-         this.splitContainer3.ResumeLayout(false);
          this.ResumeLayout(false);
 
       }

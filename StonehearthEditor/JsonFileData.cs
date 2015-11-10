@@ -10,7 +10,7 @@ namespace StonehearthEditor
       NONE = 0,
       ENTITY = 1,
       BUFF = 2,
-      DEBUFF = 3,
+      AI_PACK = 3,
       EFFECT = 4,
       RECIPE = 5,
       COMMAND = 6,
@@ -49,7 +49,7 @@ namespace StonehearthEditor
             }
          }
 
-         if (mJsonType == JSONTYPE.ENTITY || mJsonType == JSONTYPE.NONE)
+         if (mJsonType == JSONTYPE.ENTITY)
          {
 
             JToken entityFormsComponent = mJson.SelectToken("components.stonehearth:entity_forms");

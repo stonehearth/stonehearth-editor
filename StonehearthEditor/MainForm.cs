@@ -22,6 +22,7 @@ namespace StonehearthEditor
 
       private double mPreviousMouseX, mPreviousMouseY;
       private GameMasterNode mSelectedNode = null;
+      private ModuleFile mSelectedModuleFile = null;
       private int mI18nTooltipLine = -1;
 
       public StonehearthEditor(string path)
@@ -129,12 +130,15 @@ namespace StonehearthEditor
             {
                aliasContextMenu.Show(treeView, e.Location);
             }
+            mSelectedModuleFile = file;
             filePreviewBox.Text = file.FlatFileData;
             selectedFilePathLabel.Text = file.ResolvedPath;
             file.FillDependencyListItems(dependenciesListView);
+            
          }
          else
          {
+            mSelectedModuleFile = null;
             filePreviewBox.Text = "";
             selectedFilePathLabel.Text = "";
          }
@@ -147,7 +151,10 @@ namespace StonehearthEditor
 
       private void filePreviewBox_TextChanged(object sender, EventArgs e)
       {
-
+         if (mSelectedModuleFile != null)
+         {
+            mSelectedModuleFile.SetFlatFileData(filePreviewBox.Text);
+         }
       }
 
       private void panel1_Paint(object sender, PaintEventArgs e)
@@ -313,6 +320,10 @@ namespace StonehearthEditor
             if (mSelectedNode != null)
             {
                GameMasterDataManager.GetInstance().TryModifyJson(this, mSelectedNode, json);
+            }
+            if (mSelectedModuleFile != null)
+            {
+               mSelectedModuleFile.TrySaveFile();
             }
             GameMasterDataManager.GetInstance().SaveModifiedFiles();
          }
