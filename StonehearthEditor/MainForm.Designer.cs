@@ -34,7 +34,6 @@
          this.manifestImageList = new System.Windows.Forms.ImageList(this.components);
          this.aliasContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
          this.aliasContextDuplicate = new System.Windows.Forms.ToolStripMenuItem();
-         this.filePreviewBox = new System.Windows.Forms.RichTextBox();
          this.selectedFilePathLabel = new System.Windows.Forms.Label();
          this.tabControl = new System.Windows.Forms.TabControl();
          this.manifestTab = new System.Windows.Forms.TabPage();
@@ -43,6 +42,8 @@
          this.searchBox = new System.Windows.Forms.TextBox();
          this.searchButton = new System.Windows.Forms.Button();
          this.splitContainer3 = new System.Windows.Forms.SplitContainer();
+         this.filePreviewTabs = new System.Windows.Forms.TabControl();
+         this.linkedFilePanel = new System.Windows.Forms.Panel();
          this.dependenciesListView = new System.Windows.Forms.ListView();
          this.encounterTab = new System.Windows.Forms.TabPage();
          this.splitContainer1 = new System.Windows.Forms.SplitContainer();
@@ -67,6 +68,11 @@
          this.i18nTooltip = new System.Windows.Forms.ToolTip(this.components);
          this.saveNewEncounterNodeDialog = new System.Windows.Forms.SaveFileDialog();
          this.modsFolderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
+         this.mainFormMenu = new System.Windows.Forms.MenuStrip();
+         this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+         this.saveAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+         this.reloadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+         this.changeModDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
          this.aliasContextMenu.SuspendLayout();
          this.tabControl.SuspendLayout();
          this.manifestTab.SuspendLayout();
@@ -89,6 +95,7 @@
          this.panel1.SuspendLayout();
          this.nodeInfoPanel.SuspendLayout();
          this.toolStrip1.SuspendLayout();
+         this.mainFormMenu.SuspendLayout();
          this.SuspendLayout();
          // 
          // treeView
@@ -99,7 +106,7 @@
          this.treeView.Location = new System.Drawing.Point(0, 26);
          this.treeView.Name = "treeView";
          this.treeView.SelectedImageIndex = 0;
-         this.treeView.Size = new System.Drawing.Size(369, 547);
+         this.treeView.Size = new System.Drawing.Size(369, 523);
          this.treeView.TabIndex = 1;
          this.treeView.MouseClick += new System.Windows.Forms.MouseEventHandler(this.manifestTreeView_OnMouseClick);
          // 
@@ -132,18 +139,6 @@
          this.aliasContextDuplicate.Text = "Clone";
          this.aliasContextDuplicate.Click += new System.EventHandler(this.aliasContextMenuDuplicate_Click);
          // 
-         // filePreviewBox
-         // 
-         this.filePreviewBox.Dock = System.Windows.Forms.DockStyle.Fill;
-         this.filePreviewBox.Font = new System.Drawing.Font("Courier New", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-         this.filePreviewBox.Location = new System.Drawing.Point(0, 0);
-         this.filePreviewBox.Name = "filePreviewBox";
-         this.filePreviewBox.Size = new System.Drawing.Size(500, 560);
-         this.filePreviewBox.TabIndex = 1;
-         this.filePreviewBox.Text = "";
-         this.filePreviewBox.WordWrap = false;
-         this.filePreviewBox.TextChanged += new System.EventHandler(this.filePreviewBox_TextChanged);
-         // 
          // selectedFilePathLabel
          // 
          this.selectedFilePathLabel.AutoSize = true;
@@ -158,10 +153,10 @@
          this.tabControl.Controls.Add(this.manifestTab);
          this.tabControl.Controls.Add(this.encounterTab);
          this.tabControl.Dock = System.Windows.Forms.DockStyle.Fill;
-         this.tabControl.Location = new System.Drawing.Point(0, 0);
+         this.tabControl.Location = new System.Drawing.Point(0, 24);
          this.tabControl.Name = "tabControl";
          this.tabControl.SelectedIndex = 0;
-         this.tabControl.Size = new System.Drawing.Size(1123, 605);
+         this.tabControl.Size = new System.Drawing.Size(1123, 581);
          this.tabControl.TabIndex = 3;
          this.tabControl.Selected += new System.Windows.Forms.TabControlEventHandler(this.tabControl_Selected);
          // 
@@ -171,7 +166,7 @@
          this.manifestTab.Location = new System.Drawing.Point(4, 22);
          this.manifestTab.Name = "manifestTab";
          this.manifestTab.Padding = new System.Windows.Forms.Padding(3);
-         this.manifestTab.Size = new System.Drawing.Size(1115, 579);
+         this.manifestTab.Size = new System.Drawing.Size(1115, 555);
          this.manifestTab.TabIndex = 0;
          this.manifestTab.Text = "Manifest";
          this.manifestTab.UseVisualStyleBackColor = true;
@@ -191,7 +186,7 @@
          // 
          this.splitContainer2.Panel2.Controls.Add(this.splitContainer3);
          this.splitContainer2.Panel2.Controls.Add(this.selectedFilePathLabel);
-         this.splitContainer2.Size = new System.Drawing.Size(1109, 573);
+         this.splitContainer2.Size = new System.Drawing.Size(1109, 549);
          this.splitContainer2.SplitterDistance = 369;
          this.splitContainer2.TabIndex = 2;
          // 
@@ -235,21 +230,39 @@
          // 
          // splitContainer3.Panel1
          // 
-         this.splitContainer3.Panel1.Controls.Add(this.filePreviewBox);
+         this.splitContainer3.Panel1.Controls.Add(this.filePreviewTabs);
+         this.splitContainer3.Panel1.Controls.Add(this.linkedFilePanel);
          // 
          // splitContainer3.Panel2
          // 
          this.splitContainer3.Panel2.Controls.Add(this.dependenciesListView);
-         this.splitContainer3.Size = new System.Drawing.Size(736, 560);
+         this.splitContainer3.Size = new System.Drawing.Size(736, 536);
          this.splitContainer3.SplitterDistance = 500;
          this.splitContainer3.TabIndex = 3;
+         // 
+         // filePreviewTabs
+         // 
+         this.filePreviewTabs.Dock = System.Windows.Forms.DockStyle.Fill;
+         this.filePreviewTabs.Location = new System.Drawing.Point(0, 37);
+         this.filePreviewTabs.Name = "filePreviewTabs";
+         this.filePreviewTabs.SelectedIndex = 0;
+         this.filePreviewTabs.Size = new System.Drawing.Size(500, 499);
+         this.filePreviewTabs.TabIndex = 2;
+         // 
+         // linkedFilePanel
+         // 
+         this.linkedFilePanel.Dock = System.Windows.Forms.DockStyle.Top;
+         this.linkedFilePanel.Location = new System.Drawing.Point(0, 0);
+         this.linkedFilePanel.Name = "linkedFilePanel";
+         this.linkedFilePanel.Size = new System.Drawing.Size(500, 37);
+         this.linkedFilePanel.TabIndex = 2;
          // 
          // dependenciesListView
          // 
          this.dependenciesListView.Dock = System.Windows.Forms.DockStyle.Fill;
          this.dependenciesListView.Location = new System.Drawing.Point(0, 0);
          this.dependenciesListView.Name = "dependenciesListView";
-         this.dependenciesListView.Size = new System.Drawing.Size(232, 560);
+         this.dependenciesListView.Size = new System.Drawing.Size(232, 536);
          this.dependenciesListView.TabIndex = 2;
          this.dependenciesListView.UseCompatibleStateImageBehavior = false;
          this.dependenciesListView.View = System.Windows.Forms.View.List;
@@ -262,7 +275,7 @@
          this.encounterTab.Location = new System.Drawing.Point(4, 22);
          this.encounterTab.Name = "encounterTab";
          this.encounterTab.Padding = new System.Windows.Forms.Padding(3);
-         this.encounterTab.Size = new System.Drawing.Size(1115, 579);
+         this.encounterTab.Size = new System.Drawing.Size(1115, 555);
          this.encounterTab.TabIndex = 1;
          this.encounterTab.Text = "Encounter Designer";
          this.encounterTab.UseVisualStyleBackColor = true;
@@ -282,8 +295,8 @@
          // 
          this.splitContainer1.Panel2.Controls.Add(this.panel1);
          this.splitContainer1.Panel2.Controls.Add(this.nodeInfoPanel);
-         this.splitContainer1.Size = new System.Drawing.Size(859, 548);
-         this.splitContainer1.SplitterDistance = 373;
+         this.splitContainer1.Size = new System.Drawing.Size(859, 524);
+         this.splitContainer1.SplitterDistance = 356;
          this.splitContainer1.TabIndex = 3;
          // 
          // encounterTabRightSide
@@ -293,7 +306,7 @@
          this.encounterTabRightSide.Dock = System.Windows.Forms.DockStyle.Fill;
          this.encounterTabRightSide.Location = new System.Drawing.Point(0, 0);
          this.encounterTabRightSide.Name = "encounterTabRightSide";
-         this.encounterTabRightSide.Size = new System.Drawing.Size(859, 373);
+         this.encounterTabRightSide.Size = new System.Drawing.Size(859, 356);
          this.encounterTabRightSide.TabIndex = 1;
          // 
          // graphViewer
@@ -327,7 +340,7 @@
          this.graphViewer.SaveButtonVisible = true;
          this.graphViewer.SaveGraphButtonVisible = true;
          this.graphViewer.SaveInVectorFormatEnabled = true;
-         this.graphViewer.Size = new System.Drawing.Size(859, 353);
+         this.graphViewer.Size = new System.Drawing.Size(859, 336);
          this.graphViewer.TabIndex = 0;
          this.graphViewer.TightOffsetForRouting = 0.125D;
          this.graphViewer.ToolBarIsVisible = true;
@@ -394,7 +407,7 @@
          this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
          this.panel1.Location = new System.Drawing.Point(0, 30);
          this.panel1.Name = "panel1";
-         this.panel1.Size = new System.Drawing.Size(859, 141);
+         this.panel1.Size = new System.Drawing.Size(859, 134);
          this.panel1.TabIndex = 5;
          // 
          // nodeInfoJsonPreview
@@ -404,7 +417,7 @@
          this.nodeInfoJsonPreview.Location = new System.Drawing.Point(0, 0);
          this.nodeInfoJsonPreview.Margin = new System.Windows.Forms.Padding(10);
          this.nodeInfoJsonPreview.Name = "nodeInfoJsonPreview";
-         this.nodeInfoJsonPreview.Size = new System.Drawing.Size(859, 141);
+         this.nodeInfoJsonPreview.Size = new System.Drawing.Size(859, 134);
          this.nodeInfoJsonPreview.TabIndex = 4;
          this.nodeInfoJsonPreview.Text = "";
          this.nodeInfoJsonPreview.WordWrap = false;
@@ -471,7 +484,7 @@
          this.encounterTreeView.Location = new System.Drawing.Point(3, 28);
          this.encounterTreeView.Name = "encounterTreeView";
          this.encounterTreeView.PathSeparator = "/";
-         this.encounterTreeView.Size = new System.Drawing.Size(250, 548);
+         this.encounterTreeView.Size = new System.Drawing.Size(250, 524);
          this.encounterTreeView.TabIndex = 0;
          this.encounterTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.encounterTreeView_AfterSelect);
          // 
@@ -512,12 +525,57 @@
          this.modsFolderBrowserDialog.Description = "Stonehearth Mods Root Directory";
          this.modsFolderBrowserDialog.ShowNewFolderButton = false;
          // 
+         // mainFormMenu
+         // 
+         this.mainFormMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.fileToolStripMenuItem});
+         this.mainFormMenu.Location = new System.Drawing.Point(0, 0);
+         this.mainFormMenu.Name = "mainFormMenu";
+         this.mainFormMenu.Size = new System.Drawing.Size(1123, 24);
+         this.mainFormMenu.TabIndex = 2;
+         this.mainFormMenu.Text = "menuStrip1";
+         // 
+         // fileToolStripMenuItem
+         // 
+         this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.saveAllToolStripMenuItem,
+            this.reloadToolStripMenuItem,
+            this.changeModDirectoryToolStripMenuItem});
+         this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
+         this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
+         this.fileToolStripMenuItem.Text = "File";
+         // 
+         // saveAllToolStripMenuItem
+         // 
+         this.saveAllToolStripMenuItem.Name = "saveAllToolStripMenuItem";
+         this.saveAllToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.S)));
+         this.saveAllToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
+         this.saveAllToolStripMenuItem.Text = "Save All";
+         this.saveAllToolStripMenuItem.Click += new System.EventHandler(this.saveAllToolStripMenuItem_Click);
+         // 
+         // reloadToolStripMenuItem
+         // 
+         this.reloadToolStripMenuItem.Name = "reloadToolStripMenuItem";
+         this.reloadToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F5;
+         this.reloadToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
+         this.reloadToolStripMenuItem.Text = "Reload";
+         this.reloadToolStripMenuItem.Click += new System.EventHandler(this.reloadToolStripMenuItem_Click);
+         // 
+         // changeModDirectoryToolStripMenuItem
+         // 
+         this.changeModDirectoryToolStripMenuItem.Name = "changeModDirectoryToolStripMenuItem";
+         this.changeModDirectoryToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
+         this.changeModDirectoryToolStripMenuItem.Text = "Change Mod Directory";
+         // 
          // StonehearthEditor
          // 
          this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
          this.ClientSize = new System.Drawing.Size(1123, 605);
          this.Controls.Add(this.tabControl);
+         this.Controls.Add(this.mainFormMenu);
          this.KeyPreview = true;
+         this.MainMenuStrip = this.mainFormMenu;
          this.Name = "StonehearthEditor";
          this.Text = "Stonehearth Editor";
          this.Load += new System.EventHandler(this.Form1_Load);
@@ -550,7 +608,10 @@
          this.nodeInfoPanel.PerformLayout();
          this.toolStrip1.ResumeLayout(false);
          this.toolStrip1.PerformLayout();
+         this.mainFormMenu.ResumeLayout(false);
+         this.mainFormMenu.PerformLayout();
          this.ResumeLayout(false);
+         this.PerformLayout();
 
       }
 
@@ -558,7 +619,6 @@
       private System.Windows.Forms.TreeView treeView;
       private System.Windows.Forms.ContextMenuStrip aliasContextMenu;
       private System.Windows.Forms.ToolStripMenuItem aliasContextDuplicate;
-      private System.Windows.Forms.RichTextBox filePreviewBox;
       private System.Windows.Forms.Label selectedFilePathLabel;
       private System.Windows.Forms.ImageList manifestImageList;
       private System.Windows.Forms.TabControl tabControl;
@@ -592,6 +652,13 @@
       private System.Windows.Forms.Panel searchPanel;
       private System.Windows.Forms.ListView dependenciesListView;
       private System.Windows.Forms.SplitContainer splitContainer3;
+      private System.Windows.Forms.TabControl filePreviewTabs;
+      private System.Windows.Forms.Panel linkedFilePanel;
+      private System.Windows.Forms.MenuStrip mainFormMenu;
+      private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
+      private System.Windows.Forms.ToolStripMenuItem saveAllToolStripMenuItem;
+      private System.Windows.Forms.ToolStripMenuItem reloadToolStripMenuItem;
+      private System.Windows.Forms.ToolStripMenuItem changeModDirectoryToolStripMenuItem;
    }
 }
 

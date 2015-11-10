@@ -124,37 +124,48 @@ namespace StonehearthEditor
          // Select the clicked node
          treeView.SelectedNode = treeView.GetNodeAt(e.X, e.Y);
          ModuleFile file = ModuleDataManager.GetInstance().GetSelectedModuleFile(treeView.SelectedNode);
-         if (file != null)
+         if (file != null && e.Button == System.Windows.Forms.MouseButtons.Right)
          {
-            if (e.Button == System.Windows.Forms.MouseButtons.Right)
-            {
-               aliasContextMenu.Show(treeView, e.Location);
-            }
+            aliasContextMenu.Show(treeView, e.Location);
+         }
+         SetSelectedModuleFile(file);
+      }
+
+      private void SetSelectedModuleFile(ModuleFile file)
+      {
+         if (file != null && file != mSelectedModuleFile)
+         {
+            filePreviewTabs.TabPages.Clear();
             mSelectedModuleFile = file;
-            filePreviewBox.Text = file.FlatFileData;
             selectedFilePathLabel.Text = file.ResolvedPath;
             file.FillDependencyListItems(dependenciesListView);
-            
+            if (mSelectedModuleFile.FileType == FileType.JSON)
+            {
+               JsonFileData fileData = mSelectedModuleFile.FileData as JsonFileData;
+               foreach(JsonFileData openedFile in fileData.OpenedJsonFiles)
+               {
+                  TabPage newTabPage = new TabPage();
+                  newTabPage.Text = openedFile.FileName;
+                  FilePreview filePreview = new FilePreview(openedFile);
+                  filePreview.Dock = DockStyle.Fill;
+                  newTabPage.Controls.Add(filePreview);
+                  filePreviewTabs.TabPages.Add(newTabPage);
+               }
+            }
+
          }
          else
          {
             mSelectedModuleFile = null;
-            filePreviewBox.Text = "";
+            filePreviewTabs.TabPages.Clear();
             selectedFilePathLabel.Text = "";
+            dependenciesListView.Clear();
          }
       }
 
       private void link_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
       {
          Console.WriteLine("Link clicked: " + e.Link.LinkData.ToString());
-      }
-
-      private void filePreviewBox_TextChanged(object sender, EventArgs e)
-      {
-         if (mSelectedModuleFile != null)
-         {
-            mSelectedModuleFile.SetFlatFileData(filePreviewBox.Text);
-         }
       }
 
       private void panel1_Paint(object sender, PaintEventArgs e)
@@ -461,6 +472,32 @@ namespace StonehearthEditor
             }
             GameMasterDataManager.GetInstance().CloneNode(mViewer, mNode, potentialNewNodeName);
             return true;
+         }
+      }
+
+      private void saveAllToolStripMenuItem_Click(object sender, EventArgs e)
+      {
+         string json = nodeInfoJsonPreview.Text;
+         if (mSelectedNode != null)
+         {
+            GameMasterDataManager.GetInstance().TryModifyJson(this, mSelectedNode, json);
+         }
+         if (mSelectedModuleFile != null)
+         {
+            mSelectedModuleFile.TrySaveFile();
+         }
+         GameMasterDataManager.GetInstance().SaveModifiedFiles();
+      }
+
+      private void reloadToolStripMenuItem_Click(object sender, EventArgs e)
+      {
+         if (tabControl.SelectedTab == manifestTab)
+         {
+            // Reload the manifest tab.
+            SetSelectedModuleFile(null);
+            new ModuleDataManager(mModsDirectoryPath);
+            ModuleDataManager.GetInstance().Load();
+            ModuleDataManager.GetInstance().FilterAliasTree(treeView, null);
          }
       }
 

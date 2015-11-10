@@ -12,14 +12,12 @@ namespace StonehearthEditor
       LUA = 1,
       JSON = 2,
    };
-
    public class ModuleFile
    {
       private Module mModule;
       private string mAlias;
       private string mOriginalFilePath;
       private string mRootFile;
-      private string mFlatFileData;
       private FileData mFileData = null;
       private FileType mType = FileType.UNKNOWN;
       public bool IsModified = false;
@@ -50,18 +48,8 @@ namespace StonehearthEditor
          {
             return;
          }
-
-         if (System.IO.File.Exists(mRootFile))
-         {
-            using (StreamReader sr = new StreamReader(mRootFile, Encoding.UTF8))
-            {
-               mFlatFileData = sr.ReadToEnd();
-               sr.BaseStream.Position = 0;
-               sr.DiscardBufferedData();
-               mFileData = new JsonFileData(this);
-               mFileData.Load(mFlatFileData);
-            }
-         }
+         mFileData = new JsonFileData(ResolvedPath);
+         mFileData.Load();
       }
 
       public void FillDependencyListItems(ListView listView)
@@ -87,7 +75,7 @@ namespace StonehearthEditor
 
       public void SetFlatFileData(string newFileData)
       {
-         mFlatFileData = newFileData;
+         mFileData.TrySetFlatFileData(newFileData);
          IsModified = true;
       }
 
@@ -99,7 +87,7 @@ namespace StonehearthEditor
             {
                using (StreamWriter wr = new StreamWriter(ResolvedPath, false, new UTF8Encoding(false)))
                {
-                  string jsonAsString = mFlatFileData;
+                  string jsonAsString = mFileData.FlatFileData;
                   wr.Write(jsonAsString);
                }
                IsModified = false;
@@ -140,7 +128,7 @@ namespace StonehearthEditor
       }
       public string FlatFileData
       {
-         get { return mFlatFileData; }
+         get { return mFileData.FlatFileData; }
       }
 
       public string OriginalPath
