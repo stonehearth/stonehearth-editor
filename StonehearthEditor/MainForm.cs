@@ -65,9 +65,12 @@ namespace StonehearthEditor
          new GameMasterDataManager();
          GameMasterDataManager.GetInstance().Load();
          addNewGameMasterNode.DropDownItems.Clear();
-         foreach (string name in GameMasterDataManager.GetInstance().GetGenericScriptNodeNames())
+         foreach (EncounterScriptFile scriptFile in GameMasterDataManager.GetInstance().GetGenericScriptNodes())
          {
-            addNewGameMasterNode.DropDownItems.Add(name);
+            if (scriptFile.DefaultJson.Length > 0)
+            {
+               addNewGameMasterNode.DropDownItems.Add(scriptFile.Name);
+            }
          }
          encounterTreeView.Nodes.Clear();
          GameMasterDataManager.GetInstance().FillEncounterNodeTree(encounterTreeView);
@@ -205,7 +208,10 @@ namespace StonehearthEditor
       private void encounterTreeView_AfterSelect(object sender, TreeViewEventArgs e)
       {
          GameMasterDataManager.GetInstance().OnCampaignSelected(this, e.Node);
-         addNewGameMasterNode.Enabled = true;
+         if (GameMasterDataManager.GetInstance().GraphRoot != null)
+         {
+            addNewGameMasterNode.Enabled = true;
+         }
       }
 
       private void nodeInfoSubType_Click(object sender, EventArgs e)
@@ -410,7 +416,7 @@ namespace StonehearthEditor
       private void addNewGameMasterNode_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
       {
          ToolStripItem clickedItem = e.ClickedItem;
-         if (clickedItem != null)
+         if (clickedItem != null && GameMasterDataManager.GetInstance().GraphRoot != null)
          {
             mSelectedNewScriptNode = clickedItem.Text;
             saveNewEncounterNodeDialog.InitialDirectory = Path.GetFullPath(GameMasterDataManager.GetInstance().GraphRoot.Directory);

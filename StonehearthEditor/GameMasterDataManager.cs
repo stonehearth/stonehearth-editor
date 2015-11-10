@@ -77,9 +77,9 @@ namespace StonehearthEditor
          return null;
       }
 
-      public ICollection<string> GetGenericScriptNodeNames()
+      public ICollection<EncounterScriptFile> GetGenericScriptNodes()
       {
-         return mGenericScriptNodes.Keys;
+         return mGenericScriptNodes.Values;
       }
 
       public bool CloneNode(IGraphOwner graphOwner, GameMasterNode original, string cloneName)
@@ -254,13 +254,11 @@ namespace StonehearthEditor
          }
          EncounterScriptFile scriptFile = mGenericScriptNodes[scriptNodeName];
          scriptFile.WriteDefaultToFile(filePath);
-         //string newPath = mDirectory + '/' + newFileName + ".json";
          GameMasterNode newNode = new GameMasterNode(mCurrentGraphRoot.Module, filePath);
          mGameMasterNodes.Add(newNode.Path, newNode);
          newNode.Load(mGameMasterNodes);
          (mCurrentGraphRoot.NodeData as CampaignNodeData).OrphanedNodes.Add(newNode);
          RefreshGraph(owner);
-         //(mCurrentGraphRoot.NodeData as CampaignNodeData).CreateNewNode(filePath);
          return true;
       }
 
