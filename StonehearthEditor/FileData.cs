@@ -58,13 +58,24 @@ namespace StonehearthEditor
       public void FillDependencyListItems(ListView listView)
       {
          listView.Items.Clear();
+         HashSet<string> listedDependencies = new HashSet<string>();
          foreach (ModuleFile dependency in LinkedAliases)
          {
-            listView.Items.Add(dependency.Module.Name + ":" + dependency.Name);
+            string alias = dependency.Module.Name + ":" + dependency.Name;
+            if (!listedDependencies.Contains(alias))
+            {
+               listedDependencies.Add(alias);
+               listView.Items.Add(alias);
+            }
          }
          foreach (string filePath in LinkedFilePaths)
          {
-            listView.Items.Add(filePath);
+            string filePathWithoutBase = filePath.Replace(ModuleDataManager.GetInstance().ModsDirectoryPath, "");
+            if (!listedDependencies.Contains(filePathWithoutBase))
+            {
+               listedDependencies.Add(filePathWithoutBase);
+               listView.Items.Add(filePathWithoutBase);
+            }
          }
       }
 

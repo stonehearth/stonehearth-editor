@@ -106,6 +106,13 @@ namespace StonehearthEditor
                }
                break;
             case JSONTYPE.RECIPE:
+               JToken portrait = mJson["portrait"];
+               if (portrait != null)
+               {
+                  string portraitImageLocation = portrait.ToString();
+                  portraitImageLocation = JsonHelper.GetFileFromFileJson(portraitImageLocation, directory);
+                  mLinkedFilePaths.Add(portraitImageLocation);
+               }
 
                break;
          }

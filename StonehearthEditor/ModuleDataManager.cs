@@ -19,7 +19,7 @@ namespace StonehearthEditor
       private List<TreeNode> mModuleTreeNodes = new List<TreeNode>();
       public ModuleDataManager(string modsDirectoryPath)
       {
-         mModsDirectoryPath = modsDirectoryPath;
+         mModsDirectoryPath = JsonHelper.NormalizeSystemPath(modsDirectoryPath);
          sInstance = this;
       }
 
