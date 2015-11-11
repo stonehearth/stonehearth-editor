@@ -153,6 +153,7 @@ namespace StonehearthEditor
             if (fileData != null)
             {
                List<string> addedOpenFiles = new List<string>();
+               bool hasImage = false;
                foreach(FileData openedFile in fileData.OpenedFiles)
                {
                   TabPage newTabPage = new TabPage();
@@ -191,7 +192,11 @@ namespace StonehearthEditor
                         openFileButtonPanel.Controls.Add(openFileButton);
                      } else if (extension ==".png")
                      {
-                        iconView.ImageLocation = linkedFilePath;
+                        if (!hasImage)
+                        {
+                           iconView.ImageLocation = linkedFilePath;
+                           hasImage = true;
+                        }
                      }
                   }
                }

@@ -74,6 +74,7 @@
          this.reloadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
          this.changeModDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
          this.iconView = new System.Windows.Forms.PictureBox();
+         this.panel2 = new System.Windows.Forms.Panel();
          this.aliasContextMenu.SuspendLayout();
          this.tabControl.SuspendLayout();
          this.manifestTab.SuspendLayout();
@@ -98,6 +99,7 @@
          this.toolStrip1.SuspendLayout();
          this.mainFormMenu.SuspendLayout();
          ((System.ComponentModel.ISupportInitialize)(this.iconView)).BeginInit();
+         this.panel2.SuspendLayout();
          this.SuspendLayout();
          // 
          // treeView
@@ -238,7 +240,7 @@
          // splitContainer3.Panel2
          // 
          this.splitContainer3.Panel2.Controls.Add(this.dependenciesListView);
-         this.splitContainer3.Panel2.Controls.Add(this.iconView);
+         this.splitContainer3.Panel2.Controls.Add(this.panel2);
          this.splitContainer3.Size = new System.Drawing.Size(736, 536);
          this.splitContainer3.SplitterDistance = 500;
          this.splitContainer3.TabIndex = 3;
@@ -573,13 +575,21 @@
          // 
          // iconView
          // 
-         this.iconView.Dock = System.Windows.Forms.DockStyle.Top;
-         this.iconView.Location = new System.Drawing.Point(0, 0);
+         this.iconView.Location = new System.Drawing.Point(3, 0);
          this.iconView.Name = "iconView";
          this.iconView.Size = new System.Drawing.Size(232, 232);
-         this.iconView.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+         this.iconView.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
          this.iconView.TabIndex = 3;
          this.iconView.TabStop = false;
+         // 
+         // panel2
+         // 
+         this.panel2.Controls.Add(this.iconView);
+         this.panel2.Dock = System.Windows.Forms.DockStyle.Top;
+         this.panel2.Location = new System.Drawing.Point(0, 0);
+         this.panel2.Name = "panel2";
+         this.panel2.Size = new System.Drawing.Size(232, 232);
+         this.panel2.TabIndex = 4;
          // 
          // StonehearthEditor
          // 
@@ -605,7 +615,6 @@
          this.searchPanel.PerformLayout();
          this.splitContainer3.Panel1.ResumeLayout(false);
          this.splitContainer3.Panel2.ResumeLayout(false);
-         this.splitContainer3.Panel2.PerformLayout();
          ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).EndInit();
          this.splitContainer3.ResumeLayout(false);
          this.encounterTab.ResumeLayout(false);
@@ -625,6 +634,7 @@
          this.mainFormMenu.ResumeLayout(false);
          this.mainFormMenu.PerformLayout();
          ((System.ComponentModel.ISupportInitialize)(this.iconView)).EndInit();
+         this.panel2.ResumeLayout(false);
          this.ResumeLayout(false);
          this.PerformLayout();
 
@@ -675,6 +685,7 @@
       private System.Windows.Forms.ToolStripMenuItem changeModDirectoryToolStripMenuItem;
       private System.Windows.Forms.FlowLayoutPanel openFileButtonPanel;
       private System.Windows.Forms.PictureBox iconView;
+      private System.Windows.Forms.Panel panel2;
    }
 }
 
