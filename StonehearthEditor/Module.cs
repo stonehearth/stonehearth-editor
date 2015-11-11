@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 
 namespace StonehearthEditor
 {
@@ -76,19 +77,40 @@ namespace StonehearthEditor
             }
          }
       }
-
       public void LoadFiles()
       {
          foreach (ModuleFile moduleFile in mAliases.Values) { 
             moduleFile.TryLoad();
          }
       }
-
       public ModuleFile GetAliasFile(string alias)
       {
          ModuleFile returned = null;
          mAliases.TryGetValue(alias, out returned);
          return returned;
+      }
+      public void WriteToManifestJson(string alias, string path)
+      {
+         JToken aliases = mManifestJson["aliases"];
+         if (aliases == null)
+         {
+            mManifestJson.Add("aliases", null);
+            aliases = mManifestJson["aliases"];
+         }
+         (aliases as JObject).Add(alias, path);
+         string manifestPath = Path + "/manifest.json";
+         using (StreamWriter wr = new StreamWriter(manifestPath, false, new UTF8Encoding(false)))
+         {
+            using (JsonTextWriter jsonTextWriter = new JsonTextWriter(wr))
+            {
+               jsonTextWriter.Formatting = Newtonsoft.Json.Formatting.Indented;
+               jsonTextWriter.Indentation = 3;
+               jsonTextWriter.IndentChar = ' ';
+
+               JsonSerializer jsonSeralizer = new JsonSerializer();
+               jsonSeralizer.Serialize(jsonTextWriter, mManifestJson);
+            }
+         }
       }
    }
 }

@@ -18,6 +18,7 @@ namespace StonehearthEditor
       private string mAlias;
       private string mOriginalFilePath;
       private string mRootFile;
+      private string mShortName;
       private FileData mFileData = null;
       private FileType mType = FileType.UNKNOWN;
       public ModuleFile(Module module, string alias, string filePath)
@@ -26,6 +27,8 @@ namespace StonehearthEditor
          mAlias = alias;
          mOriginalFilePath = filePath;
          mRootFile = JsonHelper.GetFileFromFileJson(filePath, module.Path);
+         int lastColon = Name.LastIndexOf(':');
+         mShortName = lastColon > -1 ? Name.Substring(lastColon + 1) : Name;
          DetermineFileType();
       }
 
@@ -130,6 +133,29 @@ namespace StonehearthEditor
       public string ResolvedPath
       {
          get { return mRootFile; }
+      }
+
+      public bool Clone(string newFileName, HashSet<string> alreadyCloned)
+      {
+         string newAlias = mAlias.Replace(mShortName, newFileName);
+         string newPath = ResolvedPath.Replace(mShortName, newFileName);
+         if (!FileData.Clone(newPath, mShortName, newFileName, alreadyCloned))
+         {
+            return false;
+         }
+         string fileLocation = "file(" + newPath.Replace(mModule.Path + "/", "") + ")";
+         ModuleFile file = new ModuleFile(Module, newAlias, fileLocation);
+         file.TryLoad();
+         if (file.FileData != null)
+         {
+            mModule.WriteToManifestJson(newAlias, fileLocation);
+            return true;
+         }
+         return false;
+      }
+
+      public string ShortName {
+         get { return mShortName; }
       }
    }
 }

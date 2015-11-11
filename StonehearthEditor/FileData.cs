@@ -38,7 +38,6 @@ namespace StonehearthEditor
          }
       }
       public void TrySaveFile() {
-         // TODO(yshan): actually save
          if (mIsModified)
          {
             try
@@ -58,25 +57,32 @@ namespace StonehearthEditor
       public void FillDependencyListItems(ListView listView)
       {
          listView.Items.Clear();
-         HashSet<string> listedDependencies = new HashSet<string>();
+         foreach(string dependency in GetDependencySet())
+         {
+            listView.Items.Add(dependency);
+         }
+      }
+
+      protected HashSet<string> GetDependencySet()
+      {
+         HashSet<string> dependenciesSet = new HashSet<string>();
          foreach (ModuleFile dependency in LinkedAliases)
          {
             string alias = dependency.Module.Name + ":" + dependency.Name;
-            if (!listedDependencies.Contains(alias))
+            if (!dependenciesSet.Contains(alias))
             {
-               listedDependencies.Add(alias);
-               listView.Items.Add(alias);
+               dependenciesSet.Add(alias);
             }
          }
          foreach (string filePath in LinkedFilePaths)
          {
             string filePathWithoutBase = filePath.Replace(ModuleDataManager.GetInstance().ModsDirectoryPath, "");
-            if (!listedDependencies.Contains(filePathWithoutBase))
+            if (!dependenciesSet.Contains(filePathWithoutBase))
             {
-               listedDependencies.Add(filePathWithoutBase);
-               listView.Items.Add(filePathWithoutBase);
+               dependenciesSet.Add(filePathWithoutBase);
             }
          }
+         return dependenciesSet;
       }
 
       public void Load()
@@ -102,6 +108,82 @@ namespace StonehearthEditor
 
       protected virtual bool TryChangeFlatFileData(string newData)
       {
+         return true;
+      }
+      protected FileData GetLinkedFileData(string path)
+      {
+         foreach(FileData data in OpenedFiles)
+         {
+            if (data.Path == path)
+            {
+               return data;
+            }
+         }
+         foreach (FileData data in RelatedFiles)
+         {
+            if (data.Path == path)
+            {
+               return data;
+            }
+         }
+         return null;
+      }
+      public virtual bool Clone(string newPath, string oldName, string newFileName, HashSet<string> alreadyCloned)
+      {
+         //Ensure directory exists
+         string directory = System.IO.Path.GetDirectoryName(newPath);
+         System.IO.Directory.CreateDirectory(directory);
+         // Figure out what dependency files need to exist
+         foreach(string dependency in GetDependencySet())
+         {
+            if (!alreadyCloned.Contains(dependency) && dependency.Contains(oldName))
+            {
+               // We want to clone this dependency
+               if (dependency.Contains(":"))
+               {
+                  // this dependency is an alias. Clone the alias.
+                  ModuleFile linkedAlias = ModuleDataManager.GetInstance().GetModuleFile(dependency);
+                  if (linkedAlias != null)
+                  {
+                     alreadyCloned.Add(dependency);
+                     string aliasNewName = linkedAlias.ShortName.Replace(oldName, newFileName);
+                     linkedAlias.Clone(aliasNewName, alreadyCloned);
+                  }
+               } else
+               {
+                  // This dependency is a flat file.
+                  string linkedPath = ModuleDataManager.GetInstance().ModsDirectoryPath + dependency;
+                  string newDependencyPath = ModuleDataManager.GetInstance().ModsDirectoryPath + dependency.Replace(oldName, newFileName);
+                  FileData linkedFile = GetLinkedFileData(linkedPath);
+                  alreadyCloned.Add(newDependencyPath);
+                  if (linkedFile != null)
+                  {
+                     linkedFile.Clone(newDependencyPath, oldName, newFileName, alreadyCloned);
+                  } else
+                  {
+                     string newDependencyDirectory = System.IO.Path.GetDirectoryName(newDependencyPath);
+                     System.IO.Directory.CreateDirectory(newDependencyDirectory);
+                     System.IO.File.Copy(linkedPath, newDependencyPath);
+                     string extension = System.IO.Path.GetExtension(newDependencyPath);
+                     if (extension == ".qb")
+                     {
+                        string qmo = linkedPath.Replace(".qb", ".qmo");
+                        if (System.IO.File.Exists(qmo))
+                        {
+                           string newQmo = newDependencyPath.Replace(".qb", ".qmo");
+                           System.IO.File.Copy(qmo, newQmo);
+                        }
+                     }
+                  }
+               }
+            }
+         }
+
+         string newFlatFile = FlatFileData.Replace(oldName, newFileName);
+         using (StreamWriter wr = new StreamWriter(newPath, false, new UTF8Encoding(false)))
+         {
+            wr.Write(newFlatFile);
+         }
          return true;
       }
    }

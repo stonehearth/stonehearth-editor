@@ -139,6 +139,20 @@ namespace StonehearthEditor
          return null;
       }
 
+      public ModuleFile GetModuleFile(string fullAlias)
+      {
+         int indexOfColon = fullAlias.IndexOf(':');
+         string module = fullAlias.Substring(0, indexOfColon);
+         string alias = fullAlias.Substring(indexOfColon + 1);
+         Module mod = ModuleDataManager.GetInstance().GetMod(module);
+         if (mod == null)
+         {
+            return null;
+         }
+         return mod.GetAliasFile(alias);
+      }
+
+
       public ICollection<Module> GetAllModules()
       {
          return mModules.Values;
@@ -174,10 +188,11 @@ namespace StonehearthEditor
          return key;
       }
 
-      // Call to clone an alias
+      // Call to clone an alias. top level. nested clone calls should call the module directly.
       public bool CloneAlias(ModuleFile module, string newName)
       {
-         return false;
+         HashSet<string> alreadyCloned = new HashSet<string>();
+         return module.Clone(newName, alreadyCloned);
       }
    }
 }

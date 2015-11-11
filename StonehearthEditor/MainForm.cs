@@ -116,9 +116,7 @@ namespace StonehearthEditor
          }
 
          CloneAliasCallback callback = new CloneAliasCallback(this, aliasFile);
-         int lastColon = alias.LastIndexOf(':');
-         string aliasShortName = lastColon > -1 ? alias.Substring(lastColon + 1) : alias;
-         InputDialog dialog = new InputDialog("Clone " + module + ":" + alias, "Type name of duplicated alias", aliasShortName, "Clone!");
+         InputDialog dialog = new InputDialog("Clone " + module + ":" + alias, "Type name of duplicated alias", aliasFile.ShortName, "Clone!");
          dialog.SetCallback(callback);
          dialog.ShowDialog();
       }
@@ -194,8 +192,11 @@ namespace StonehearthEditor
                      {
                         if (!hasImage)
                         {
-                           iconView.ImageLocation = linkedFilePath;
-                           hasImage = true;
+                           if (System.IO.File.Exists(linkedFilePath))
+                           {
+                              iconView.ImageLocation = linkedFilePath;
+                              hasImage = true;
+                           }
                         }
                      }
                   }
@@ -569,13 +570,10 @@ namespace StonehearthEditor
          if (selectedItem.Contains(":"))
          {
             // item is a alias item. we should navigate there.
-            int indexOfColon = selectedItem.IndexOf(':');
-            string module = selectedItem.Substring(0, indexOfColon);
-            string alias = selectedItem.Substring(indexOfColon + 1);
-            FileData file = ModuleDataManager.GetInstance().GetSelectedFileData(module + "\\" + alias);
+            ModuleFile file = ModuleDataManager.GetInstance().GetModuleFile(selectedItem);
             if (file != null)
             {
-               SetSelectedFileData(file);
+               SetSelectedFileData(file.FileData);
             }
          } else
          {
@@ -590,7 +588,6 @@ namespace StonehearthEditor
                }
             }
          }
-         Console.WriteLine("selected " + selectedItem);
       }
       private class CloneAliasCallback : InputDialog.IDialogCallback
       {
@@ -615,9 +612,7 @@ namespace StonehearthEditor
                MessageBox.Show("You must enter a name longer than 1 character for the clone!");
                return false;
             }
-            int lastColon = mModuleFile.Name.LastIndexOf(':');
-            string aliasShortName = lastColon > -1 ? mModuleFile.Name.Substring(lastColon + 1) : mModuleFile.Name;
-            if (potentialNewNodeName.Equals(aliasShortName))
+            if (potentialNewNodeName.Equals(mModuleFile.ShortName))
             {
                MessageBox.Show("You must enter a new unique name for the clone!");
                return false;

@@ -136,15 +136,7 @@ namespace StonehearthEditor
          foreach (Match match in matcher.Matches(jsonString))
          {
             string fullAlias = match.Groups[1].Value;
-            int indexOfColon = fullAlias.IndexOf(':');
-            string module = fullAlias.Substring(0, indexOfColon);
-            string alias = fullAlias.Substring(indexOfColon + 1);
-            Module mod = ModuleDataManager.GetInstance().GetMod(module);
-            if (mod == null)
-            {
-               continue;
-            }
-            ModuleFile linkedAlias = mod.GetAliasFile(alias);
+            ModuleFile linkedAlias = ModuleDataManager.GetInstance().GetModuleFile(fullAlias);
             if (linkedAlias == null)
             {
                continue;
