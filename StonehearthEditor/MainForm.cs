@@ -100,7 +100,7 @@ namespace StonehearthEditor
          }
 
          CloneAliasCallback callback = new CloneAliasCallback(this, selectedFileData);
-         InputDialog dialog = new InputDialog("Clone " + selectedFileData.FileName, "Type name of duplicated", selectedFileData.FileName, "Clone!");
+         InputDialog dialog = new InputDialog("Clone " + selectedFileData.FileName, "Type name of duplicated. If recipe, leave out the '_recipe' at the end.", selectedFileData.GetNameForCloning(), "Clone!");
          dialog.SetCallback(callback);
          dialog.ShowDialog();
       }
@@ -534,6 +534,11 @@ namespace StonehearthEditor
 
       private void reloadToolStripMenuItem_Click(object sender, EventArgs e)
       {
+         Reload();
+      }
+
+      public void Reload()
+      {
          if (tabControl.SelectedTab == manifestTab)
          {
             // Reload the manifest tab.
@@ -596,7 +601,7 @@ namespace StonehearthEditor
                MessageBox.Show("You must enter a name longer than 1 character for the clone!");
                return false;
             }
-            if (potentialNewNodeName.Equals(mFileData.FileName))
+            if (potentialNewNodeName.Equals(mFileData.GetNameForCloning()))
             {
                MessageBox.Show("You must enter a new unique name for the clone!");
                return false;
@@ -626,7 +631,10 @@ namespace StonehearthEditor
 
          public bool OnAccept(HashSet<string> unwantedItems)
          {
-            ModuleDataManager.GetInstance().ExecuteClone(mFileData, mNewName, unwantedItems);
+            if (ModuleDataManager.GetInstance().ExecuteClone(mFileData, mNewName, unwantedItems))
+            {
+               mViewer.Reload();
+            }
             return true;
          }
       }

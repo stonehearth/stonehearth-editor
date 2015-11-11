@@ -129,6 +129,16 @@ namespace StonehearthEditor
          return null;
       }
 
+      public virtual bool ShouldCloneDependency(string dependencyName, string oldName)
+      {
+         return dependencyName.Contains(oldName);
+      }
+
+      public virtual string GetNameForCloning()
+      {
+         return FileName;
+      }
+
       /// <summary>
       /// 
       /// </summary>
@@ -140,11 +150,6 @@ namespace StonehearthEditor
       /// <returns></returns>
       public virtual bool Clone(string newPath, string oldName, string newFileName, HashSet<string> alreadyCloned, bool execute)
       {
-         if (alreadyCloned.Contains(newPath))
-         {
-            // circular logics?
-            return true;
-         }
          //Ensure directory exists
          string directory = System.IO.Path.GetDirectoryName(newPath);
          alreadyCloned.Add(newPath);
@@ -155,7 +160,7 @@ namespace StonehearthEditor
          // Figure out what dependency files need to exist
          foreach(string dependency in GetDependencySet())
          {
-            if (dependency.Contains(oldName))
+            if (ShouldCloneDependency(dependency, oldName))
             {
                // We want to clone this dependency
                if (dependency.Contains(":"))
@@ -164,11 +169,11 @@ namespace StonehearthEditor
                   ModuleFile linkedAlias = ModuleDataManager.GetInstance().GetModuleFile(dependency);
                   if (linkedAlias != null)
                   {
-                     string aliasNewName = linkedAlias.ShortName.Replace(oldName, newFileName);
+                     string aliasNewName = dependency.Replace(oldName, newFileName);
                      if (!alreadyCloned.Contains(aliasNewName))
                      {
                         alreadyCloned.Add(aliasNewName);
-                        linkedAlias.Clone(aliasNewName, alreadyCloned, execute);
+                        linkedAlias.Clone(oldName, newFileName, alreadyCloned, execute);
                      }
                   }
                } else
@@ -186,18 +191,22 @@ namespace StonehearthEditor
                      }
                      else
                      {
+                        string extension = System.IO.Path.GetExtension(newDependencyPath);
+                        string qmo = linkedPath.Replace(".qb", ".qmo");
+                        string newQmo = newDependencyPath.Replace(".qb", ".qmo");
+                        if (System.IO.File.Exists(qmo))
+                        {
+                           alreadyCloned.Add(newQmo);
+                        }
                         if (execute)
                         {
                            string newDependencyDirectory = System.IO.Path.GetDirectoryName(newDependencyPath);
                            System.IO.Directory.CreateDirectory(newDependencyDirectory);
                            System.IO.File.Copy(linkedPath, newDependencyPath);
-                           string extension = System.IO.Path.GetExtension(newDependencyPath);
                            if (extension == ".qb")
                            {
-                              string qmo = linkedPath.Replace(".qb", ".qmo");
                               if (System.IO.File.Exists(qmo))
                               {
-                                 string newQmo = newDependencyPath.Replace(".qb", ".qmo");
                                  System.IO.File.Copy(qmo, newQmo);
                               }
                            }

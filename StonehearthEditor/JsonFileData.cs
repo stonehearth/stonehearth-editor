@@ -175,6 +175,52 @@ namespace StonehearthEditor
          }
       }
 
+      public override bool Clone(string newPath, string oldName, string newFileName, HashSet<string> alreadyCloned, bool execute)
+      {
+         string oldNameToUse = oldName;
+         if (JsonType == JSONTYPE.RECIPE)
+         {
+            oldNameToUse = oldName.Replace("_recipe", "");
+         }
+
+         string newNameToUse = newFileName;
+         if (JsonType == JSONTYPE.RECIPE)
+         {
+            newNameToUse = newFileName.Replace("_recipe", "");
+         }
+
+         return base.Clone(newPath, oldNameToUse, newNameToUse, alreadyCloned, execute);
+      }
+
+      public override bool ShouldCloneDependency(string dependencyName, string oldName)
+      {
+         if (JsonType == JSONTYPE.RECIPE)
+         {
+            JToken produces = mJson["produces"];
+            if (produces != null)
+            {
+               foreach (JToken child in produces.Children())
+               {
+                  if (child["item"] != null && child["item"].ToString().Equals(dependencyName))
+                  {
+                     return true;
+                  }
+               }
+            }
+         }
+         return base.ShouldCloneDependency(dependencyName, oldName);
+      }
+
+      public override string GetNameForCloning()
+      {
+         string fileName = FileName;
+         if (JsonType == JSONTYPE.RECIPE)
+         {
+            fileName = fileName.Replace("_recipe", "");
+         }
+         return fileName;
+      }
+
       public void SetModuleFile(ModuleFile moduleFile)
       {
          mOwner = moduleFile;

@@ -40,6 +40,7 @@
          // 
          // dependenciesListBox
          // 
+         this.dependenciesListBox.CheckOnClick = true;
          this.dependenciesListBox.Dock = System.Windows.Forms.DockStyle.Fill;
          this.dependenciesListBox.FormattingEnabled = true;
          this.dependenciesListBox.Location = new System.Drawing.Point(10, 10);

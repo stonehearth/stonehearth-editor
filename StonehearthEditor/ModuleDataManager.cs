@@ -205,7 +205,7 @@ namespace StonehearthEditor
       // Call to clone an alias. top level. nested clone calls should call the module directly.
       public bool ExecuteClone(ModuleFile module, string newName, HashSet<string> unwantedItems)
       {
-         return module.Clone(newName, unwantedItems, true);
+         return module.Clone(module.ShortName, newName, unwantedItems, true);
       }
 
       public bool ExecuteClone(FileData file, string newName, HashSet<string> unwantedItems)
@@ -215,14 +215,14 @@ namespace StonehearthEditor
          {
             return ExecuteClone(owningFile, newName, unwantedItems);
          }
-         string newPath = file.Path.Replace(file.FileName, newName);
-         return file.Clone(newPath, file.FileName, newName, unwantedItems, true);
+         string newPath = file.Path.Replace(file.GetNameForCloning(), newName);
+         return file.Clone(newPath, file.GetNameForCloning(), newName, unwantedItems, true);
       }
 
       public HashSet<string> PreviewCloneDependencies(ModuleFile module, string newName)
       {
          HashSet<string> alreadyCloned = new HashSet<string>();
-         module.Clone(newName, alreadyCloned, false);
+         module.Clone(module.ShortName, newName, alreadyCloned, false);
          return alreadyCloned;
       }
       public HashSet<string> PreviewCloneDependencies(FileData file, string newName)
@@ -233,9 +233,9 @@ namespace StonehearthEditor
             return PreviewCloneDependencies(owningFile, newName);
          }
          HashSet<string> alreadyCloned = new HashSet<string>();
-         string newPath = file.Path.Replace(file.FileName, newName);
+         string newPath = file.Path.Replace(file.GetNameForCloning(), newName);
 
-         file.Clone(newPath, file.FileName, newName, alreadyCloned, false);
+         file.Clone(newPath, file.GetNameForCloning(), newName, alreadyCloned, false);
          return alreadyCloned;
       }
    }

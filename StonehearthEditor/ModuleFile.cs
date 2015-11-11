@@ -29,6 +29,13 @@ namespace StonehearthEditor
          mRootFile = JsonHelper.GetFileFromFileJson(filePath, module.Path);
          int lastColon = Name.LastIndexOf(':');
          mShortName = lastColon > -1 ? Name.Substring(lastColon + 1) : Name;
+         if (mShortName.Equals("fine"))
+         {
+            string oneBefore = Name.Substring(0, lastColon);
+            int secondToLastColon = oneBefore.LastIndexOf(':');
+            oneBefore = secondToLastColon > -1 ? oneBefore.Substring(secondToLastColon + 1) : oneBefore;
+            mShortName = oneBefore;
+         }
          DetermineFileType();
       }
 
@@ -137,11 +144,11 @@ namespace StonehearthEditor
          get { return mRootFile; }
       }
 
-      public bool Clone(string newFileName, HashSet<string> alreadyCloned, bool execute)
+      public bool Clone(string oldName, string newFileName, HashSet<string> alreadyCloned, bool execute)
       {
-         string newAlias = mAlias.Replace(mShortName, newFileName);
-         string newPath = ResolvedPath.Replace(mShortName, newFileName);
-         if (!FileData.Clone(newPath, mShortName, newFileName, alreadyCloned, execute))
+         string newAlias = mAlias.Replace(oldName, newFileName);
+         string newPath = ResolvedPath.Replace(oldName, newFileName);
+         if (!FileData.Clone(newPath, oldName, newFileName, alreadyCloned, execute))
          {
             return false;
          }
