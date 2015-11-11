@@ -558,7 +558,40 @@ namespace StonehearthEditor
             ModuleDataManager.GetInstance().FilterAliasTree(treeView, null);
          }
       }
-
+      private void dependenciesListView_MouseDoubleClick(object sender, MouseEventArgs e)
+      {
+         if (mSelectedFileData == null)
+         {
+            return;
+         }
+         ListViewItem item = dependenciesListView.GetItemAt(e.X, e.Y);
+         string selectedItem = item.Text;
+         if (selectedItem.Contains(":"))
+         {
+            // item is a alias item. we should navigate there.
+            int indexOfColon = selectedItem.IndexOf(':');
+            string module = selectedItem.Substring(0, indexOfColon);
+            string alias = selectedItem.Substring(indexOfColon + 1);
+            FileData file = ModuleDataManager.GetInstance().GetSelectedFileData(module + "\\" + alias);
+            if (file != null)
+            {
+               SetSelectedFileData(file);
+            }
+         } else
+         {
+            string fileName = Path.GetFileNameWithoutExtension(selectedItem);
+            foreach(TabPage tabPage in filePreviewTabs.TabPages)
+            {
+               string tabName = tabPage.Text.Replace("*", "").Trim();
+               if (tabName.Equals(fileName))
+               {
+                  filePreviewTabs.SelectedTab = tabPage;
+                  break;
+               }
+            }
+         }
+         Console.WriteLine("selected " + selectedItem);
+      }
       private class CloneAliasCallback : InputDialog.IDialogCallback
       {
          private ModuleFile mModuleFile;

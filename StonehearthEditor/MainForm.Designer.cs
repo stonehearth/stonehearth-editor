@@ -44,7 +44,11 @@
          this.splitContainer3 = new System.Windows.Forms.SplitContainer();
          this.filePreviewTabs = new System.Windows.Forms.TabControl();
          this.openFileButtonPanel = new System.Windows.Forms.FlowLayoutPanel();
+         this.panel3 = new System.Windows.Forms.Panel();
          this.dependenciesListView = new System.Windows.Forms.ListView();
+         this.dependenciesLabel = new System.Windows.Forms.Label();
+         this.panel2 = new System.Windows.Forms.Panel();
+         this.iconView = new System.Windows.Forms.PictureBox();
          this.encounterTab = new System.Windows.Forms.TabPage();
          this.splitContainer1 = new System.Windows.Forms.SplitContainer();
          this.encounterTabRightSide = new System.Windows.Forms.Panel();
@@ -73,10 +77,6 @@
          this.saveAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
          this.reloadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
          this.changeModDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-         this.iconView = new System.Windows.Forms.PictureBox();
-         this.panel2 = new System.Windows.Forms.Panel();
-         this.panel3 = new System.Windows.Forms.Panel();
-         this.dependenciesLabel = new System.Windows.Forms.Label();
          this.aliasContextMenu.SuspendLayout();
          this.tabControl.SuspendLayout();
          this.manifestTab.SuspendLayout();
@@ -89,6 +89,9 @@
          this.splitContainer3.Panel1.SuspendLayout();
          this.splitContainer3.Panel2.SuspendLayout();
          this.splitContainer3.SuspendLayout();
+         this.panel3.SuspendLayout();
+         this.panel2.SuspendLayout();
+         ((System.ComponentModel.ISupportInitialize)(this.iconView)).BeginInit();
          this.encounterTab.SuspendLayout();
          ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
          this.splitContainer1.Panel1.SuspendLayout();
@@ -100,9 +103,6 @@
          this.nodeInfoPanel.SuspendLayout();
          this.toolStrip1.SuspendLayout();
          this.mainFormMenu.SuspendLayout();
-         ((System.ComponentModel.ISupportInitialize)(this.iconView)).BeginInit();
-         this.panel2.SuspendLayout();
-         this.panel3.SuspendLayout();
          this.SuspendLayout();
          // 
          // treeView
@@ -265,15 +265,57 @@
          this.openFileButtonPanel.Size = new System.Drawing.Size(500, 33);
          this.openFileButtonPanel.TabIndex = 0;
          // 
+         // panel3
+         // 
+         this.panel3.BackColor = System.Drawing.Color.Transparent;
+         this.panel3.Controls.Add(this.dependenciesListView);
+         this.panel3.Controls.Add(this.dependenciesLabel);
+         this.panel3.Dock = System.Windows.Forms.DockStyle.Fill;
+         this.panel3.Location = new System.Drawing.Point(0, 232);
+         this.panel3.Name = "panel3";
+         this.panel3.Size = new System.Drawing.Size(232, 304);
+         this.panel3.TabIndex = 5;
+         // 
          // dependenciesListView
          // 
          this.dependenciesListView.Dock = System.Windows.Forms.DockStyle.Fill;
          this.dependenciesListView.Location = new System.Drawing.Point(0, 13);
+         this.dependenciesListView.MultiSelect = false;
          this.dependenciesListView.Name = "dependenciesListView";
          this.dependenciesListView.Size = new System.Drawing.Size(232, 291);
          this.dependenciesListView.TabIndex = 2;
          this.dependenciesListView.UseCompatibleStateImageBehavior = false;
          this.dependenciesListView.View = System.Windows.Forms.View.List;
+         this.dependenciesListView.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.dependenciesListView_MouseDoubleClick);
+         // 
+         // dependenciesLabel
+         // 
+         this.dependenciesLabel.AutoSize = true;
+         this.dependenciesLabel.Dock = System.Windows.Forms.DockStyle.Top;
+         this.dependenciesLabel.Location = new System.Drawing.Point(0, 0);
+         this.dependenciesLabel.Margin = new System.Windows.Forms.Padding(3, 10, 3, 3);
+         this.dependenciesLabel.Name = "dependenciesLabel";
+         this.dependenciesLabel.Size = new System.Drawing.Size(79, 13);
+         this.dependenciesLabel.TabIndex = 3;
+         this.dependenciesLabel.Text = "Dependencies:";
+         // 
+         // panel2
+         // 
+         this.panel2.Controls.Add(this.iconView);
+         this.panel2.Dock = System.Windows.Forms.DockStyle.Top;
+         this.panel2.Location = new System.Drawing.Point(0, 0);
+         this.panel2.Name = "panel2";
+         this.panel2.Size = new System.Drawing.Size(232, 232);
+         this.panel2.TabIndex = 4;
+         // 
+         // iconView
+         // 
+         this.iconView.Location = new System.Drawing.Point(3, 0);
+         this.iconView.Name = "iconView";
+         this.iconView.Size = new System.Drawing.Size(232, 232);
+         this.iconView.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+         this.iconView.TabIndex = 3;
+         this.iconView.TabStop = false;
          // 
          // encounterTab
          // 
@@ -576,46 +618,6 @@
          this.changeModDirectoryToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
          this.changeModDirectoryToolStripMenuItem.Text = "Change Mod Directory";
          // 
-         // iconView
-         // 
-         this.iconView.Location = new System.Drawing.Point(3, 0);
-         this.iconView.Name = "iconView";
-         this.iconView.Size = new System.Drawing.Size(232, 232);
-         this.iconView.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-         this.iconView.TabIndex = 3;
-         this.iconView.TabStop = false;
-         // 
-         // panel2
-         // 
-         this.panel2.Controls.Add(this.iconView);
-         this.panel2.Dock = System.Windows.Forms.DockStyle.Top;
-         this.panel2.Location = new System.Drawing.Point(0, 0);
-         this.panel2.Name = "panel2";
-         this.panel2.Size = new System.Drawing.Size(232, 232);
-         this.panel2.TabIndex = 4;
-         // 
-         // panel3
-         // 
-         this.panel3.BackColor = System.Drawing.Color.Transparent;
-         this.panel3.Controls.Add(this.dependenciesListView);
-         this.panel3.Controls.Add(this.dependenciesLabel);
-         this.panel3.Dock = System.Windows.Forms.DockStyle.Fill;
-         this.panel3.Location = new System.Drawing.Point(0, 232);
-         this.panel3.Name = "panel3";
-         this.panel3.Size = new System.Drawing.Size(232, 304);
-         this.panel3.TabIndex = 5;
-         // 
-         // dependenciesLabel
-         // 
-         this.dependenciesLabel.AutoSize = true;
-         this.dependenciesLabel.Dock = System.Windows.Forms.DockStyle.Top;
-         this.dependenciesLabel.Location = new System.Drawing.Point(0, 0);
-         this.dependenciesLabel.Margin = new System.Windows.Forms.Padding(3, 10, 3, 3);
-         this.dependenciesLabel.Name = "dependenciesLabel";
-         this.dependenciesLabel.Size = new System.Drawing.Size(79, 13);
-         this.dependenciesLabel.TabIndex = 3;
-         this.dependenciesLabel.Text = "Dependencies:";
-         // 
          // StonehearthEditor
          // 
          this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
@@ -642,6 +644,10 @@
          this.splitContainer3.Panel2.ResumeLayout(false);
          ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).EndInit();
          this.splitContainer3.ResumeLayout(false);
+         this.panel3.ResumeLayout(false);
+         this.panel3.PerformLayout();
+         this.panel2.ResumeLayout(false);
+         ((System.ComponentModel.ISupportInitialize)(this.iconView)).EndInit();
          this.encounterTab.ResumeLayout(false);
          this.encounterTab.PerformLayout();
          this.splitContainer1.Panel1.ResumeLayout(false);
@@ -658,10 +664,6 @@
          this.toolStrip1.PerformLayout();
          this.mainFormMenu.ResumeLayout(false);
          this.mainFormMenu.PerformLayout();
-         ((System.ComponentModel.ISupportInitialize)(this.iconView)).EndInit();
-         this.panel2.ResumeLayout(false);
-         this.panel3.ResumeLayout(false);
-         this.panel3.PerformLayout();
          this.ResumeLayout(false);
          this.PerformLayout();
 

@@ -118,17 +118,23 @@ namespace StonehearthEditor
          if (selected != null)
          {
             string fullPath = selected.FullPath;
-            string[] path = fullPath.Split('\\');
-            if (path.Length <= 1)
-            {
-               return null;
-            }
-            Module module = mModules[path[0]];
-            ModuleFile file = module.GetAliasFile(path[1]);
-            if (file != null)
-            {
-               return file.GetFileData(path);
-            }
+            return GetSelectedFileData(fullPath);
+         }
+         return null;
+      }
+
+      public FileData GetSelectedFileData(string selected)
+      {
+         string[] path = selected.Split('\\');
+         if (path.Length <= 1)
+         {
+            return null;
+         }
+         Module module = mModules[path[0]];
+         ModuleFile file = module.GetAliasFile(path[1]);
+         if (file != null)
+         {
+            return file.GetFileData(path);
          }
          return null;
       }
