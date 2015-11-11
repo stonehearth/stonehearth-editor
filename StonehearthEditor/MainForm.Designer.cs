@@ -107,7 +107,9 @@
          // 
          // treeView
          // 
+         this.treeView.ContextMenuStrip = this.aliasContextMenu;
          this.treeView.Dock = System.Windows.Forms.DockStyle.Fill;
+         this.treeView.HideSelection = false;
          this.treeView.ImageIndex = 0;
          this.treeView.ImageList = this.manifestImageList;
          this.treeView.Location = new System.Drawing.Point(0, 26);
@@ -115,6 +117,7 @@
          this.treeView.SelectedImageIndex = 0;
          this.treeView.Size = new System.Drawing.Size(369, 523);
          this.treeView.TabIndex = 1;
+         this.treeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView_AfterSelect);
          this.treeView.MouseClick += new System.Windows.Forms.MouseEventHandler(this.manifestTreeView_OnMouseClick);
          // 
          // manifestImageList
@@ -137,7 +140,8 @@
          this.aliasContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.aliasContextDuplicate});
          this.aliasContextMenu.Name = "aliasContextMenu";
-         this.aliasContextMenu.Size = new System.Drawing.Size(106, 26);
+         this.aliasContextMenu.Size = new System.Drawing.Size(153, 48);
+         this.aliasContextMenu.Opening += new System.ComponentModel.CancelEventHandler(this.aliasContextMenu_Opening);
          // 
          // aliasContextDuplicate
          // 

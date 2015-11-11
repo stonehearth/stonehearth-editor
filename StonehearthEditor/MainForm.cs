@@ -109,12 +109,6 @@ namespace StonehearthEditor
       {
          // Select the clicked node
          treeView.SelectedNode = treeView.GetNodeAt(e.X, e.Y);
-         FileData file = ModuleDataManager.GetInstance().GetSelectedFileData(treeView.SelectedNode);
-         if (file != null && e.Button == System.Windows.Forms.MouseButtons.Right)
-         {
-            aliasContextMenu.Show(treeView, e.Location);
-         }
-         SetSelectedFileData(file);
       }
 
       private void SetSelectedFileData(FileData file)
@@ -613,6 +607,23 @@ namespace StonehearthEditor
             return true;
          }
       }
+
+      private void treeView_AfterSelect(object sender, TreeViewEventArgs e)
+      {
+         FileData file = ModuleDataManager.GetInstance().GetSelectedFileData(treeView.SelectedNode);
+         SetSelectedFileData(file);
+         treeView.Focus();
+      }
+
+      private void aliasContextMenu_Opening(object sender, CancelEventArgs e)
+      {
+         FileData file = ModuleDataManager.GetInstance().GetSelectedFileData(treeView.SelectedNode);
+         if (file == null)
+         {
+            e.Cancel = true;
+         }
+      }
+
       private class PreviewCloneAliasCallback : PreviewCloneDialog.IDialogCallback
       {
          private FileData mFileData;
