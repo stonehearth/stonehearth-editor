@@ -137,8 +137,12 @@ namespace StonehearthEditor
 
       private void SetSelectedFileData(FileData file)
       {
-         if (file != null && file != mSelectedFileData)
+         if (file != null)
          {
+            if (file == mSelectedFileData)
+            {
+               return;
+            }
             filePreviewTabs.TabPages.Clear();
             openFileButtonPanel.Controls.Clear();
             selectedFilePathLabel.Text = file.Path;
@@ -152,6 +156,10 @@ namespace StonehearthEditor
                {
                   TabPage newTabPage = new TabPage();
                   newTabPage.Text = openedFile.FileName;
+                  if (openedFile.IsModified)
+                  {
+                     newTabPage.Text = newTabPage.Text + "*";
+                  }
                   FilePreview filePreview = new FilePreview(openedFile);
                   filePreview.Dock = DockStyle.Fill;
                   newTabPage.Controls.Add(filePreview);

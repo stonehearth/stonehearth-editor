@@ -20,8 +20,6 @@ namespace StonehearthEditor
       private string mRootFile;
       private FileData mFileData = null;
       private FileType mType = FileType.UNKNOWN;
-      public bool IsModified = false;
-
       public ModuleFile(Module module, string alias, string filePath)
       {
          mModule = module;
@@ -52,31 +50,6 @@ namespace StonehearthEditor
          mFileData.Load();
       }
 
-      public void SetFlatFileData(string newFileData)
-      {
-         mFileData.TrySetFlatFileData(newFileData);
-         IsModified = true;
-      }
-
-      public void TrySaveFile()
-      {
-         if (IsModified)
-         {
-            try
-            {
-               using (StreamWriter wr = new StreamWriter(ResolvedPath, false, new UTF8Encoding(false)))
-               {
-                  string jsonAsString = mFileData.FlatFileData;
-                  wr.Write(jsonAsString);
-               }
-               IsModified = false;
-            }
-            catch (Exception e)
-            {
-               Console.WriteLine("Could not write to file " + ResolvedPath + " because of exception: " + e.Message);
-            }
-         }
-      }
       public FileData GetFileData(string[] path)
       {
          if (path.Length == 2)
