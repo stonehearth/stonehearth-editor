@@ -73,6 +73,7 @@
          this.saveAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
          this.reloadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
          this.changeModDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+         this.iconView = new System.Windows.Forms.PictureBox();
          this.aliasContextMenu.SuspendLayout();
          this.tabControl.SuspendLayout();
          this.manifestTab.SuspendLayout();
@@ -96,6 +97,7 @@
          this.nodeInfoPanel.SuspendLayout();
          this.toolStrip1.SuspendLayout();
          this.mainFormMenu.SuspendLayout();
+         ((System.ComponentModel.ISupportInitialize)(this.iconView)).BeginInit();
          this.SuspendLayout();
          // 
          // treeView
@@ -236,6 +238,7 @@
          // splitContainer3.Panel2
          // 
          this.splitContainer3.Panel2.Controls.Add(this.dependenciesListView);
+         this.splitContainer3.Panel2.Controls.Add(this.iconView);
          this.splitContainer3.Size = new System.Drawing.Size(736, 536);
          this.splitContainer3.SplitterDistance = 500;
          this.splitContainer3.TabIndex = 3;
@@ -260,9 +263,9 @@
          // dependenciesListView
          // 
          this.dependenciesListView.Dock = System.Windows.Forms.DockStyle.Fill;
-         this.dependenciesListView.Location = new System.Drawing.Point(0, 0);
+         this.dependenciesListView.Location = new System.Drawing.Point(0, 232);
          this.dependenciesListView.Name = "dependenciesListView";
-         this.dependenciesListView.Size = new System.Drawing.Size(232, 536);
+         this.dependenciesListView.Size = new System.Drawing.Size(232, 304);
          this.dependenciesListView.TabIndex = 2;
          this.dependenciesListView.UseCompatibleStateImageBehavior = false;
          this.dependenciesListView.View = System.Windows.Forms.View.List;
@@ -568,6 +571,16 @@
          this.changeModDirectoryToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
          this.changeModDirectoryToolStripMenuItem.Text = "Change Mod Directory";
          // 
+         // iconView
+         // 
+         this.iconView.Dock = System.Windows.Forms.DockStyle.Top;
+         this.iconView.Location = new System.Drawing.Point(0, 0);
+         this.iconView.Name = "iconView";
+         this.iconView.Size = new System.Drawing.Size(232, 232);
+         this.iconView.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+         this.iconView.TabIndex = 3;
+         this.iconView.TabStop = false;
+         // 
          // StonehearthEditor
          // 
          this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
@@ -592,6 +605,7 @@
          this.searchPanel.PerformLayout();
          this.splitContainer3.Panel1.ResumeLayout(false);
          this.splitContainer3.Panel2.ResumeLayout(false);
+         this.splitContainer3.Panel2.PerformLayout();
          ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).EndInit();
          this.splitContainer3.ResumeLayout(false);
          this.encounterTab.ResumeLayout(false);
@@ -610,6 +624,7 @@
          this.toolStrip1.PerformLayout();
          this.mainFormMenu.ResumeLayout(false);
          this.mainFormMenu.PerformLayout();
+         ((System.ComponentModel.ISupportInitialize)(this.iconView)).EndInit();
          this.ResumeLayout(false);
          this.PerformLayout();
 
@@ -659,6 +674,7 @@
       private System.Windows.Forms.ToolStripMenuItem reloadToolStripMenuItem;
       private System.Windows.Forms.ToolStripMenuItem changeModDirectoryToolStripMenuItem;
       private System.Windows.Forms.FlowLayoutPanel openFileButtonPanel;
+      private System.Windows.Forms.PictureBox iconView;
    }
 }
 

@@ -145,6 +145,7 @@ namespace StonehearthEditor
             }
             filePreviewTabs.TabPages.Clear();
             openFileButtonPanel.Controls.Clear();
+            iconView.ImageLocation = "";
             selectedFilePathLabel.Text = file.Path;
             file.FillDependencyListItems(dependenciesListView);
             mSelectedFileData = file;
@@ -188,6 +189,9 @@ namespace StonehearthEditor
                         openFileButton.Padding = new Padding(22, 2, 2, 2);
                         openFileButton.AutoSize = true;
                         openFileButtonPanel.Controls.Add(openFileButton);
+                     } else if (extension ==".png")
+                     {
+                        iconView.ImageLocation = linkedFilePath;
                      }
                   }
                }
