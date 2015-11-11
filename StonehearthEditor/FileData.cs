@@ -128,15 +128,34 @@ namespace StonehearthEditor
          }
          return null;
       }
-      public virtual bool Clone(string newPath, string oldName, string newFileName, HashSet<string> alreadyCloned)
+
+      /// <summary>
+      /// 
+      /// </summary>
+      /// <param name="newPath"></param>
+      /// <param name="oldName"></param>
+      /// <param name="newFileName"></param>
+      /// <param name="alreadyCloned"></param>
+      /// <param name="execute">whether to actual execute the clone. otherwise, this is just a preview</param>
+      /// <returns></returns>
+      public virtual bool Clone(string newPath, string oldName, string newFileName, HashSet<string> alreadyCloned, bool execute)
       {
+         if (alreadyCloned.Contains(newPath))
+         {
+            // circular logics?
+            return true;
+         }
          //Ensure directory exists
          string directory = System.IO.Path.GetDirectoryName(newPath);
-         System.IO.Directory.CreateDirectory(directory);
+         alreadyCloned.Add(newPath);
+         if (execute)
+         {
+            System.IO.Directory.CreateDirectory(directory);
+         }
          // Figure out what dependency files need to exist
          foreach(string dependency in GetDependencySet())
          {
-            if (!alreadyCloned.Contains(dependency) && dependency.Contains(oldName))
+            if (dependency.Contains(oldName))
             {
                // We want to clone this dependency
                if (dependency.Contains(":"))
@@ -145,33 +164,43 @@ namespace StonehearthEditor
                   ModuleFile linkedAlias = ModuleDataManager.GetInstance().GetModuleFile(dependency);
                   if (linkedAlias != null)
                   {
-                     alreadyCloned.Add(dependency);
                      string aliasNewName = linkedAlias.ShortName.Replace(oldName, newFileName);
-                     linkedAlias.Clone(aliasNewName, alreadyCloned);
+                     if (!alreadyCloned.Contains(aliasNewName))
+                     {
+                        alreadyCloned.Add(aliasNewName);
+                        linkedAlias.Clone(aliasNewName, alreadyCloned, execute);
+                     }
                   }
                } else
                {
                   // This dependency is a flat file.
                   string linkedPath = ModuleDataManager.GetInstance().ModsDirectoryPath + dependency;
                   string newDependencyPath = ModuleDataManager.GetInstance().ModsDirectoryPath + dependency.Replace(oldName, newFileName);
-                  FileData linkedFile = GetLinkedFileData(linkedPath);
-                  alreadyCloned.Add(newDependencyPath);
-                  if (linkedFile != null)
+                  if (!alreadyCloned.Contains(newDependencyPath))
                   {
-                     linkedFile.Clone(newDependencyPath, oldName, newFileName, alreadyCloned);
-                  } else
-                  {
-                     string newDependencyDirectory = System.IO.Path.GetDirectoryName(newDependencyPath);
-                     System.IO.Directory.CreateDirectory(newDependencyDirectory);
-                     System.IO.File.Copy(linkedPath, newDependencyPath);
-                     string extension = System.IO.Path.GetExtension(newDependencyPath);
-                     if (extension == ".qb")
+                     alreadyCloned.Add(newDependencyPath);
+                     FileData linkedFile = GetLinkedFileData(linkedPath);
+                     if (linkedFile != null)
                      {
-                        string qmo = linkedPath.Replace(".qb", ".qmo");
-                        if (System.IO.File.Exists(qmo))
+                        linkedFile.Clone(newDependencyPath, oldName, newFileName, alreadyCloned, execute);
+                     }
+                     else
+                     {
+                        if (execute)
                         {
-                           string newQmo = newDependencyPath.Replace(".qb", ".qmo");
-                           System.IO.File.Copy(qmo, newQmo);
+                           string newDependencyDirectory = System.IO.Path.GetDirectoryName(newDependencyPath);
+                           System.IO.Directory.CreateDirectory(newDependencyDirectory);
+                           System.IO.File.Copy(linkedPath, newDependencyPath);
+                           string extension = System.IO.Path.GetExtension(newDependencyPath);
+                           if (extension == ".qb")
+                           {
+                              string qmo = linkedPath.Replace(".qb", ".qmo");
+                              if (System.IO.File.Exists(qmo))
+                              {
+                                 string newQmo = newDependencyPath.Replace(".qb", ".qmo");
+                                 System.IO.File.Copy(qmo, newQmo);
+                              }
+                           }
                         }
                      }
                   }
@@ -179,10 +208,13 @@ namespace StonehearthEditor
             }
          }
 
-         string newFlatFile = FlatFileData.Replace(oldName, newFileName);
-         using (StreamWriter wr = new StreamWriter(newPath, false, new UTF8Encoding(false)))
+         if (execute)
          {
-            wr.Write(newFlatFile);
+            string newFlatFile = FlatFileData.Replace(oldName, newFileName);
+            using (StreamWriter wr = new StreamWriter(newPath, false, new UTF8Encoding(false)))
+            {
+               wr.Write(newFlatFile);
+            }
          }
          return true;
       }

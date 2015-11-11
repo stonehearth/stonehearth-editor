@@ -88,35 +88,19 @@ namespace StonehearthEditor
 
       private void aliasContextMenuDuplicate_Click(object sender, EventArgs e)
       {
-         ToolStripMenuItem menuItem = sender as ToolStripMenuItem;
-         if (menuItem == null)
-         {
-            return;
-         }
          TreeNode selectedNode = treeView.SelectedNode;
-         if (selectedNode == null || selectedNode.Parent == null)
+         FileData selectedFileData = ModuleDataManager.GetInstance().GetSelectedFileData(treeView.SelectedNode);
+         if (selectedFileData == null)
          {
             return;
          }
-         string module = selectedNode.Parent.Text;
-         string alias = selectedNode.Text;
-         Module mod = ModuleDataManager.GetInstance().GetMod(module);
-         if (mod == null)
+         if (!(selectedFileData is IModuleFileData))
          {
-            return;
-         }
-         ModuleFile aliasFile = mod.GetAliasFile(alias);
-         if (aliasFile == null)
-         {
-            return;
-         }
-         if (aliasFile.FileType != FileType.JSON)
-         {
-            return; // best not dupe non-json files
+            return; // Don't know how to clone something not module file data
          }
 
-         CloneAliasCallback callback = new CloneAliasCallback(this, aliasFile);
-         InputDialog dialog = new InputDialog("Clone " + module + ":" + alias, "Type name of duplicated alias", aliasFile.ShortName, "Clone!");
+         CloneAliasCallback callback = new CloneAliasCallback(this, selectedFileData);
+         InputDialog dialog = new InputDialog("Clone " + selectedFileData.FileName, "Type name of duplicated", selectedFileData.FileName, "Clone!");
          dialog.SetCallback(callback);
          dialog.ShowDialog();
       }
@@ -591,12 +575,12 @@ namespace StonehearthEditor
       }
       private class CloneAliasCallback : InputDialog.IDialogCallback
       {
-         private ModuleFile mModuleFile;
+         private FileData mFileData;
          private StonehearthEditor mViewer;
-         public CloneAliasCallback(StonehearthEditor viewer, ModuleFile moduleFile)
+         public CloneAliasCallback(StonehearthEditor viewer, FileData file)
          {
             mViewer = viewer;
-            mModuleFile = moduleFile;
+            mFileData = file;
          }
          public void onCancelled()
          {
@@ -612,12 +596,37 @@ namespace StonehearthEditor
                MessageBox.Show("You must enter a name longer than 1 character for the clone!");
                return false;
             }
-            if (potentialNewNodeName.Equals(mModuleFile.ShortName))
+            if (potentialNewNodeName.Equals(mFileData.FileName))
             {
                MessageBox.Show("You must enter a new unique name for the clone!");
                return false;
             }
-            ModuleDataManager.GetInstance().CloneAlias(mModuleFile, potentialNewNodeName);
+            HashSet<string> dependencies = ModuleDataManager.GetInstance().PreviewCloneDependencies(mFileData, potentialNewNodeName);
+            PreviewCloneAliasCallback callback = new PreviewCloneAliasCallback(mViewer, mFileData, potentialNewNodeName);
+            PreviewCloneDialog dialog = new PreviewCloneDialog("Creating " + potentialNewNodeName, dependencies, callback);
+            dialog.ShowDialog();
+            return true;
+         }
+      }
+      private class PreviewCloneAliasCallback : PreviewCloneDialog.IDialogCallback
+      {
+         private FileData mFileData;
+         private StonehearthEditor mViewer;
+         private string mNewName;
+         public PreviewCloneAliasCallback(StonehearthEditor viewer, FileData fileData, string newName)
+         {
+            mViewer = viewer;
+            mFileData = fileData;
+            mNewName = newName;
+         }
+         public void onCancelled()
+         {
+            // Do nothing. user cancelled
+         }
+
+         public bool OnAccept(HashSet<string> unwantedItems)
+         {
+            ModuleDataManager.GetInstance().ExecuteClone(mFileData, mNewName, unwantedItems);
             return true;
          }
       }

@@ -49,8 +49,10 @@ namespace StonehearthEditor
          {
             return;
          }
-         mFileData = new JsonFileData(ResolvedPath);
-         mFileData.Load();
+         JsonFileData fileData = new JsonFileData(ResolvedPath);
+         mFileData = fileData;
+         fileData.SetModuleFile(this);
+         fileData.Load();
       }
 
       public FileData GetFileData(string[] path)
@@ -135,20 +137,26 @@ namespace StonehearthEditor
          get { return mRootFile; }
       }
 
-      public bool Clone(string newFileName, HashSet<string> alreadyCloned)
+      public bool Clone(string newFileName, HashSet<string> alreadyCloned, bool execute)
       {
          string newAlias = mAlias.Replace(mShortName, newFileName);
          string newPath = ResolvedPath.Replace(mShortName, newFileName);
-         if (!FileData.Clone(newPath, mShortName, newFileName, alreadyCloned))
+         if (!FileData.Clone(newPath, mShortName, newFileName, alreadyCloned, execute))
          {
             return false;
          }
-         string fileLocation = "file(" + newPath.Replace(mModule.Path + "/", "") + ")";
-         ModuleFile file = new ModuleFile(Module, newAlias, fileLocation);
-         file.TryLoad();
-         if (file.FileData != null)
+         if (execute)
          {
-            mModule.WriteToManifestJson(newAlias, fileLocation);
+            string fileLocation = "file(" + newPath.Replace(mModule.Path + "/", "") + ")";
+            ModuleFile file = new ModuleFile(Module, newAlias, fileLocation);
+            file.TryLoad();
+            if (file.FileData != null)
+            {
+               mModule.WriteToManifestJson(newAlias, fileLocation);
+               return true;
+            }
+         } else
+         {
             return true;
          }
          return false;
@@ -156,6 +164,10 @@ namespace StonehearthEditor
 
       public string ShortName {
          get { return mShortName; }
+      }
+      public string FullName
+      {
+         get { return mModule.Name + ':' + mAlias; }
       }
    }
 }

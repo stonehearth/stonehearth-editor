@@ -47,7 +47,6 @@ namespace StonehearthEditor
                Close();
             }
          }
-         
       }
 
       private void InputDialog_FormClosed(object sender, FormClosedEventArgs e)

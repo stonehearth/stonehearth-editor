@@ -20,8 +20,15 @@ namespace StonehearthEditor
       JOB = 9,
    };
 
-   public class JsonFileData : FileData
+   public interface IModuleFileData
    {
+      void SetModuleFile(ModuleFile moduleFile);
+      ModuleFile GetModuleFile();
+   }
+
+   public class JsonFileData : FileData, IModuleFileData
+   {
+      private ModuleFile mOwner;
       private JSONTYPE mJsonType = JSONTYPE.NONE;
       private JObject mJson;
       private string mPath;
@@ -166,6 +173,16 @@ namespace StonehearthEditor
                node.Nodes.Add(recipes);
             }
          }
+      }
+
+      public void SetModuleFile(ModuleFile moduleFile)
+      {
+         mOwner = moduleFile;
+      }
+
+      public ModuleFile GetModuleFile()
+      {
+         return mOwner;
       }
 
       public JSONTYPE JsonType

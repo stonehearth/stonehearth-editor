@@ -123,6 +123,20 @@ namespace StonehearthEditor
          return null;
       }
 
+      public bool IsModuleFileSelected(TreeNode selected)
+      {
+         if (selected == null)
+         {
+            return false;
+         }
+         string[] path = selected.FullPath.Split('\\');
+         if (path.Length != 2)
+         {
+            return false;
+         }
+         return true;
+      }
+
       public FileData GetSelectedFileData(string selected)
       {
          string[] path = selected.Split('\\');
@@ -189,10 +203,40 @@ namespace StonehearthEditor
       }
 
       // Call to clone an alias. top level. nested clone calls should call the module directly.
-      public bool CloneAlias(ModuleFile module, string newName)
+      public bool ExecuteClone(ModuleFile module, string newName, HashSet<string> unwantedItems)
+      {
+         return module.Clone(newName, unwantedItems, true);
+      }
+
+      public bool ExecuteClone(FileData file, string newName, HashSet<string> unwantedItems)
+      {
+         ModuleFile owningFile = (file as IModuleFileData).GetModuleFile();
+         if (owningFile != null)
+         {
+            return ExecuteClone(owningFile, newName, unwantedItems);
+         }
+         string newPath = file.Path.Replace(file.FileName, newName);
+         return file.Clone(newPath, file.FileName, newName, unwantedItems, true);
+      }
+
+      public HashSet<string> PreviewCloneDependencies(ModuleFile module, string newName)
       {
          HashSet<string> alreadyCloned = new HashSet<string>();
-         return module.Clone(newName, alreadyCloned);
+         module.Clone(newName, alreadyCloned, false);
+         return alreadyCloned;
+      }
+      public HashSet<string> PreviewCloneDependencies(FileData file, string newName)
+      {
+         ModuleFile owningFile = (file as IModuleFileData).GetModuleFile();
+         if (owningFile != null)
+         {
+            return PreviewCloneDependencies(owningFile, newName);
+         }
+         HashSet<string> alreadyCloned = new HashSet<string>();
+         string newPath = file.Path.Replace(file.FileName, newName);
+
+         file.Clone(newPath, file.FileName, newName, alreadyCloned, false);
+         return alreadyCloned;
       }
    }
 }
