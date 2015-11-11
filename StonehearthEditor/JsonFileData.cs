@@ -28,6 +28,7 @@ namespace StonehearthEditor
       private List<ModuleFile> mLinkedAliases = new List<ModuleFile>();
       private List<string> mLinkedFilePaths = new List<string>();
       private List<FileData> mOpenedJsonFiles = new List<FileData>();
+      private List<FileData> mRelatedJsonFiles = new List<FileData>();
 
       public JsonFileData(string path)
       {
@@ -58,7 +59,7 @@ namespace StonehearthEditor
       private void ParseJsonSpecificData()
       {
          string directory = System.IO.Path.GetDirectoryName(Path);
-         switch(mJsonType)
+         switch (mJsonType)
          {
             case JSONTYPE.ENTITY:
                JToken entityFormsComponent = mJson.SelectToken("components.stonehearth:entity_forms");
@@ -99,7 +100,7 @@ namespace StonehearthEditor
                   {
                      JsonFileData recipe = new JsonFileData(recipePath);
                      recipe.Load();
-                     recipes.mOpenedJsonFiles.Add(recipe);
+                     recipes.mRelatedJsonFiles.Add(recipe);
                   }
                   mOpenedJsonFiles.Add(recipes);
                }
@@ -147,7 +148,7 @@ namespace StonehearthEditor
 
       public override void UpdateTreeNode(TreeNode node)
       {
-         node.SelectedImageIndex = (int) JsonType;
+         node.SelectedImageIndex = (int)JsonType;
          node.ImageIndex = (int)JsonType;
          if (JsonType == JSONTYPE.JOB)
          {
@@ -187,10 +188,11 @@ namespace StonehearthEditor
       }
       public override List<FileData> OpenedFiles
       {
-         get
-         {
-            return mOpenedJsonFiles;
-         }
+         get { return mOpenedJsonFiles; }
+      }
+      public override List<FileData> RelatedFiles
+      {
+         get { return mRelatedJsonFiles; }
       }
    }
 }

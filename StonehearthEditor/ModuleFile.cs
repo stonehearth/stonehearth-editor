@@ -102,6 +102,17 @@ namespace StonehearthEditor
                break;
             }
          }
+         if (found == null)
+         {
+            foreach (FileData openedFile in start.RelatedFiles)
+            {
+               if (openedFile.FileName.Equals(subfileName))
+               {
+                  found = openedFile;
+                  break;
+               }
+            }
+         }
          
          return FindFileData(found, path, startIndex + 1);
       }

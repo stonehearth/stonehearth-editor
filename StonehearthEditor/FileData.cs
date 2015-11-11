@@ -15,6 +15,7 @@ namespace StonehearthEditor
       public abstract List<string> LinkedFilePaths { get; }
 
       public abstract List<FileData> OpenedFiles { get; }
+      public abstract List<FileData> RelatedFiles { get; }
 
       public abstract string Path { get; }
 
