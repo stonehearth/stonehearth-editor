@@ -5,6 +5,7 @@ using System.IO;
 using Microsoft.Msagl.Drawing;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Windows.Forms;
 
 namespace StonehearthEditor
 {
@@ -82,14 +83,18 @@ namespace StonehearthEditor
 
       public void Load(Dictionary<string, GameMasterNode> allNodes)
       {
-         if (System.IO.File.Exists(mPath))
+         try
          {
             using (StreamReader sr = new StreamReader(mPath, Encoding.UTF8))
             {
                string fileString = sr.ReadToEnd();
+
                mJson = JObject.Parse(fileString);
                OnFileChanged(allNodes);
             }
+         } catch(Exception e)
+         {
+            MessageBox.Show("Unable to load " + mPath + ". Error: " + e.Message);
          }
       }
 
@@ -173,8 +178,9 @@ namespace StonehearthEditor
                mJson = newJson;
                IsModified = true;
             }
-         } catch(Exception)
+         } catch(Exception e)
          {
+            MessageBox.Show("Unable to modify json. Error: " + e.Message);
             return false;
          }
          return true;
@@ -200,15 +206,22 @@ namespace StonehearthEditor
       }
       public GameMasterNode Clone(string newFileName)
       {
-         string newPath = mDirectory + '/' + newFileName + ".json";
-         GameMasterNode newNode = new GameMasterNode(mModule, newPath);
-         newNode.IsModified = true;
-         NodeData newNodeData = NodeData.Clone(newNode);
-         newNodeData.NodeFile = newNode;
-         newNode.mNodeData = newNodeData;
-         newNode.mNodeType = NodeType;
-         newNode.mJson = JObject.Parse(mJson.ToString());
-         return newNode;
+         try {
+            string newPath = mDirectory + '/' + newFileName + ".json";
+            GameMasterNode newNode = new GameMasterNode(mModule, newPath);
+            newNode.IsModified = true;
+            NodeData newNodeData = NodeData.Clone(newNode);
+            newNodeData.NodeFile = newNode;
+            newNode.mNodeData = newNodeData;
+            newNode.mNodeType = NodeType;
+
+            newNode.mJson = JObject.Parse(mJson.ToString());
+            return newNode;
+         } catch(Exception e)
+         {
+            MessageBox.Show("Unable to clone Game Master Node to " + newFileName + ". Error: " + e.Message);
+         }
+         return null;
       }
    }
 

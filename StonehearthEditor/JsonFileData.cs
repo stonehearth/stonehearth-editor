@@ -44,24 +44,29 @@ namespace StonehearthEditor
 
       protected override void LoadInternal()
       {
-         mOpenedJsonFiles.Add(this);
-         string jsonString = FlatFileData;
-         mJson = JObject.Parse(jsonString);
-         JToken typeObject = mJson["type"];
-         if (typeObject != null)
-         {
-            string typeString = typeObject.ToString().Trim().ToUpper();
-            foreach (JSONTYPE jsonType in Enum.GetValues(typeof(JSONTYPE)))
+         try {
+            mOpenedJsonFiles.Add(this);
+            string jsonString = FlatFileData;
+            mJson = JObject.Parse(jsonString);
+            JToken typeObject = mJson["type"];
+            if (typeObject != null)
             {
-               if (typeString.Equals(jsonType.ToString()))
+               string typeString = typeObject.ToString().Trim().ToUpper();
+               foreach (JSONTYPE jsonType in Enum.GetValues(typeof(JSONTYPE)))
                {
-                  mJsonType = jsonType;
+                  if (typeString.Equals(jsonType.ToString()))
+                  {
+                     mJsonType = jsonType;
+                  }
                }
             }
+            ParseLinkedAliases(jsonString);
+            ParseLinkedFiles(jsonString);
+            ParseJsonSpecificData();
+         } catch(Exception e)
+         {
+            MessageBox.Show("Failed to load json file " + mPath + ". Error: " + e.Message);
          }
-         ParseLinkedAliases(jsonString);
-         ParseLinkedFiles(jsonString);
-         ParseJsonSpecificData();
       }
       private void ParseJsonSpecificData()
       {

@@ -4,6 +4,7 @@ using System.Text;
 using System.IO;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
+using System.Windows.Forms;
 
 namespace StonehearthEditor
 {
@@ -46,34 +47,44 @@ namespace StonehearthEditor
 
          if (System.IO.File.Exists(stonehearthModManifest))
          {
-            using (StreamReader sr = new StreamReader(stonehearthModManifest, Encoding.UTF8))
-            {
-               string fileString = sr.ReadToEnd();
-               mManifestJson = JObject.Parse(fileString);
-               
-               JToken aliases = mManifestJson["aliases"];
-               if (aliases != null)
+            try {
+               using (StreamReader sr = new StreamReader(stonehearthModManifest, Encoding.UTF8))
                {
-                  foreach (JToken item in aliases.Children())
-                  {
-                     JProperty alias = item as JProperty;
-                     string name = alias.Name.Trim();
-                     string value = alias.Value.ToString().Trim();
+                  string fileString = sr.ReadToEnd();
+                  mManifestJson = JObject.Parse(fileString);
 
-                     ModuleFile moduleFile = new ModuleFile(this, name, value);
-                     mAliases.Add(name, moduleFile);
+                  JToken aliases = mManifestJson["aliases"];
+                  if (aliases != null)
+                  {
+                     foreach (JToken item in aliases.Children())
+                     {
+                        JProperty alias = item as JProperty;
+                        string name = alias.Name.Trim();
+                        string value = alias.Value.ToString().Trim();
+
+                        ModuleFile moduleFile = new ModuleFile(this, name, value);
+                        mAliases.Add(name, moduleFile);
+                     }
                   }
                }
+            } catch (Exception e)
+            {
+               MessageBox.Show("Failure while reading manifest file " + stonehearthModManifest + ". Error: " + e.Message);
             }
          }
 
          string englishLocalizationFilePath = Path + "/locales/en.json";
          if (System.IO.File.Exists(englishLocalizationFilePath))
          {
-            using (StreamReader sr = new StreamReader(englishLocalizationFilePath, Encoding.UTF8))
+            try {
+               using (StreamReader sr = new StreamReader(englishLocalizationFilePath, Encoding.UTF8))
+               {
+                  string fileString = sr.ReadToEnd();
+                  mEnglishLocalizationJson = JObject.Parse(fileString);
+               }
+            } catch(Exception e)
             {
-               string fileString = sr.ReadToEnd();
-               mEnglishLocalizationJson = JObject.Parse(fileString);
+               MessageBox.Show("Exception while reading localization json " + englishLocalizationFilePath + ". Error: " + e.Message);
             }
          }
       }
