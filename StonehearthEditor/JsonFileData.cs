@@ -1,6 +1,8 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
@@ -112,6 +114,7 @@ namespace StonehearthEditor
                   {
                      JsonFileData recipe = new JsonFileData(recipePath);
                      recipe.Load();
+                     recipe.mRelatedJsonFiles.Add(recipes);
                      recipes.mRelatedJsonFiles.Add(recipe);
                   }
                   mOpenedJsonFiles.Add(recipes);
@@ -128,6 +131,28 @@ namespace StonehearthEditor
 
                break;
          }
+      }
+      public string GetJsonFileString()
+      {
+         try
+         {
+            StringWriter stringWriter = new StringWriter();
+            using (JsonTextWriter jsonTextWriter = new JsonTextWriter(stringWriter))
+            {
+               jsonTextWriter.Formatting = Newtonsoft.Json.Formatting.Indented;
+               jsonTextWriter.Indentation = 3;
+               jsonTextWriter.IndentChar = ' ';
+
+               JsonSerializer jsonSeralizer = new JsonSerializer();
+               jsonSeralizer.Serialize(jsonTextWriter, mJson);
+            }
+            return stringWriter.ToString();
+         }
+         catch (Exception e)
+         {
+            Console.WriteLine("Could not convert " + mPath + " to string because of exception " + e.Message);
+         }
+         return "INVALID JSON";
       }
 
       private void ParseLinkedFiles(string jsonString)
@@ -183,16 +208,43 @@ namespace StonehearthEditor
       public override bool Clone(string newPath, string oldName, string newFileName, HashSet<string> alreadyCloned, bool execute)
       {
          string oldNameToUse = oldName;
-         if (JsonType == JSONTYPE.RECIPE)
-         {
-            oldNameToUse = oldName.Replace("_recipe", "");
-         }
-
          string newNameToUse = newFileName;
          if (JsonType == JSONTYPE.RECIPE)
          {
+            oldNameToUse = oldName.Replace("_recipe", "");
             newNameToUse = newFileName.Replace("_recipe", "");
+            if (execute)
+            {
+               JsonFileData recipesList = mRelatedJsonFiles[mRelatedJsonFiles.Count - 1] as JsonFileData;
+               JObject json = recipesList.mJson;
+               JToken foundParent = null;
+               foreach (JToken token in json["craftable_recipes"].Children())
+               {
+                  if (foundParent != null)
+                  {
+                     break;
+                  } 
+                  foreach (JToken recipe in token.First["recipes"].Children())
+                  {
+                     if (recipe.Last.ToString().Contains(FileName))
+                     {
+                        foundParent = token.First["recipes"];
+                        break;
+                     }
+                  }
+               }
+               if (foundParent != null)
+               {
+                  string recipeFileName = System.IO.Path.GetFileName(newPath);
+                  (foundParent as JObject).Add(newNameToUse, JObject.Parse("{\"recipe\": \"file(" + recipeFileName + ")\"}"));
+                  recipesList.TrySetFlatFileData(recipesList.GetJsonFileString());
+                  recipesList.TrySaveFile();
+               }
+            }
          }
+
+         
+
 
          return base.Clone(newPath, oldNameToUse, newNameToUse, alreadyCloned, execute);
       }
