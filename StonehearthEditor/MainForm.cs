@@ -122,7 +122,7 @@ namespace StonehearthEditor
             filePreviewTabs.TabPages.Clear();
             openFileButtonPanel.Controls.Clear();
             iconView.ImageLocation = "";
-            selectedFilePathLabel.Text = file.Path;
+            selectedFilePathTextBox.Text = file.Path;
             file.FillDependencyListItems(dependenciesListView);
             mSelectedFileData = file;
             JsonFileData fileData = mSelectedFileData as JsonFileData;
@@ -185,7 +185,7 @@ namespace StonehearthEditor
          {
             mSelectedFileData = null;
             filePreviewTabs.TabPages.Clear();
-            selectedFilePathLabel.Text = "";
+            selectedFilePathTextBox.Text = "";
             dependenciesListView.Clear();
             openFileButtonPanel.Controls.Clear();
          }

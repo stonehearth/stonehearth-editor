@@ -34,7 +34,6 @@
          this.aliasContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
          this.aliasContextDuplicate = new System.Windows.Forms.ToolStripMenuItem();
          this.manifestImageList = new System.Windows.Forms.ImageList(this.components);
-         this.selectedFilePathLabel = new System.Windows.Forms.Label();
          this.tabControl = new System.Windows.Forms.TabControl();
          this.manifestTab = new System.Windows.Forms.TabPage();
          this.splitContainer2 = new System.Windows.Forms.SplitContainer();
@@ -77,6 +76,7 @@
          this.saveAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
          this.reloadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
          this.changeModDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+         this.selectedFilePathTextBox = new System.Windows.Forms.TextBox();
          this.aliasContextMenu.SuspendLayout();
          this.tabControl.SuspendLayout();
          this.manifestTab.SuspendLayout();
@@ -150,15 +150,6 @@
          this.manifestImageList.Images.SetKeyName(8, "encounter.png");
          this.manifestImageList.Images.SetKeyName(9, "job.png");
          // 
-         // selectedFilePathLabel
-         // 
-         this.selectedFilePathLabel.AutoSize = true;
-         this.selectedFilePathLabel.Dock = System.Windows.Forms.DockStyle.Top;
-         this.selectedFilePathLabel.Location = new System.Drawing.Point(0, 0);
-         this.selectedFilePathLabel.Name = "selectedFilePathLabel";
-         this.selectedFilePathLabel.Size = new System.Drawing.Size(0, 13);
-         this.selectedFilePathLabel.TabIndex = 0;
-         // 
          // tabControl
          // 
          this.tabControl.Controls.Add(this.manifestTab);
@@ -196,7 +187,7 @@
          // splitContainer2.Panel2
          // 
          this.splitContainer2.Panel2.Controls.Add(this.splitContainer3);
-         this.splitContainer2.Panel2.Controls.Add(this.selectedFilePathLabel);
+         this.splitContainer2.Panel2.Controls.Add(this.selectedFilePathTextBox);
          this.splitContainer2.Size = new System.Drawing.Size(1109, 549);
          this.splitContainer2.SplitterDistance = 369;
          this.splitContainer2.TabIndex = 2;
@@ -237,7 +228,7 @@
          // splitContainer3
          // 
          this.splitContainer3.Dock = System.Windows.Forms.DockStyle.Fill;
-         this.splitContainer3.Location = new System.Drawing.Point(0, 13);
+         this.splitContainer3.Location = new System.Drawing.Point(0, 20);
          this.splitContainer3.Name = "splitContainer3";
          // 
          // splitContainer3.Panel1
@@ -249,7 +240,7 @@
          // 
          this.splitContainer3.Panel2.Controls.Add(this.panel3);
          this.splitContainer3.Panel2.Controls.Add(this.panel2);
-         this.splitContainer3.Size = new System.Drawing.Size(736, 536);
+         this.splitContainer3.Size = new System.Drawing.Size(736, 529);
          this.splitContainer3.SplitterDistance = 500;
          this.splitContainer3.TabIndex = 3;
          // 
@@ -259,7 +250,7 @@
          this.filePreviewTabs.Location = new System.Drawing.Point(0, 33);
          this.filePreviewTabs.Name = "filePreviewTabs";
          this.filePreviewTabs.SelectedIndex = 0;
-         this.filePreviewTabs.Size = new System.Drawing.Size(500, 503);
+         this.filePreviewTabs.Size = new System.Drawing.Size(500, 496);
          this.filePreviewTabs.TabIndex = 2;
          // 
          // openFileButtonPanel
@@ -278,7 +269,7 @@
          this.panel3.Dock = System.Windows.Forms.DockStyle.Fill;
          this.panel3.Location = new System.Drawing.Point(0, 232);
          this.panel3.Name = "panel3";
-         this.panel3.Size = new System.Drawing.Size(232, 304);
+         this.panel3.Size = new System.Drawing.Size(232, 297);
          this.panel3.TabIndex = 5;
          // 
          // dependenciesListView
@@ -287,7 +278,7 @@
          this.dependenciesListView.Location = new System.Drawing.Point(0, 13);
          this.dependenciesListView.MultiSelect = false;
          this.dependenciesListView.Name = "dependenciesListView";
-         this.dependenciesListView.Size = new System.Drawing.Size(232, 291);
+         this.dependenciesListView.Size = new System.Drawing.Size(232, 284);
          this.dependenciesListView.TabIndex = 2;
          this.dependenciesListView.UseCompatibleStateImageBehavior = false;
          this.dependenciesListView.View = System.Windows.Forms.View.List;
@@ -623,6 +614,15 @@
          this.changeModDirectoryToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
          this.changeModDirectoryToolStripMenuItem.Text = "Change Mod Directory";
          // 
+         // selectedFilePathTextBox
+         // 
+         this.selectedFilePathTextBox.Dock = System.Windows.Forms.DockStyle.Top;
+         this.selectedFilePathTextBox.Location = new System.Drawing.Point(0, 0);
+         this.selectedFilePathTextBox.Name = "selectedFilePathTextBox";
+         this.selectedFilePathTextBox.ReadOnly = true;
+         this.selectedFilePathTextBox.Size = new System.Drawing.Size(736, 20);
+         this.selectedFilePathTextBox.TabIndex = 4;
+         // 
          // StonehearthEditor
          // 
          this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
@@ -678,7 +678,6 @@
       private System.Windows.Forms.TreeView treeView;
       private System.Windows.Forms.ContextMenuStrip aliasContextMenu;
       private System.Windows.Forms.ToolStripMenuItem aliasContextDuplicate;
-      private System.Windows.Forms.Label selectedFilePathLabel;
       private System.Windows.Forms.ImageList manifestImageList;
       private System.Windows.Forms.TabControl tabControl;
       private System.Windows.Forms.TabPage manifestTab;
@@ -722,6 +721,7 @@
       private System.Windows.Forms.Panel panel2;
       private System.Windows.Forms.Panel panel3;
       private System.Windows.Forms.Label dependenciesLabel;
+      private System.Windows.Forms.TextBox selectedFilePathTextBox;
    }
 }
 
