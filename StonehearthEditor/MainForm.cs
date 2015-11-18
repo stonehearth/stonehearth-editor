@@ -624,6 +624,12 @@ namespace StonehearthEditor
          }
       }
 
+      private void searchButton_Click(object sender, EventArgs e)
+      {
+         string searchTerm = searchBox.Text;
+         ModuleDataManager.GetInstance().FilterAliasTree(treeView, searchTerm);
+      }
+
       private class PreviewCloneAliasCallback : PreviewCloneDialog.IDialogCallback
       {
          private FileData mFileData;

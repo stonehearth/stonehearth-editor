@@ -31,9 +31,9 @@
          this.components = new System.ComponentModel.Container();
          System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(StonehearthEditor));
          this.treeView = new System.Windows.Forms.TreeView();
-         this.manifestImageList = new System.Windows.Forms.ImageList(this.components);
          this.aliasContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
          this.aliasContextDuplicate = new System.Windows.Forms.ToolStripMenuItem();
+         this.manifestImageList = new System.Windows.Forms.ImageList(this.components);
          this.selectedFilePathLabel = new System.Windows.Forms.Label();
          this.tabControl = new System.Windows.Forms.TabControl();
          this.manifestTab = new System.Windows.Forms.TabPage();
@@ -120,6 +120,21 @@
          this.treeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView_AfterSelect);
          this.treeView.MouseClick += new System.Windows.Forms.MouseEventHandler(this.manifestTreeView_OnMouseClick);
          // 
+         // aliasContextMenu
+         // 
+         this.aliasContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.aliasContextDuplicate});
+         this.aliasContextMenu.Name = "aliasContextMenu";
+         this.aliasContextMenu.Size = new System.Drawing.Size(106, 26);
+         this.aliasContextMenu.Opening += new System.ComponentModel.CancelEventHandler(this.aliasContextMenu_Opening);
+         // 
+         // aliasContextDuplicate
+         // 
+         this.aliasContextDuplicate.Name = "aliasContextDuplicate";
+         this.aliasContextDuplicate.Size = new System.Drawing.Size(105, 22);
+         this.aliasContextDuplicate.Text = "Clone";
+         this.aliasContextDuplicate.Click += new System.EventHandler(this.aliasContextMenuDuplicate_Click);
+         // 
          // manifestImageList
          // 
          this.manifestImageList.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("manifestImageList.ImageStream")));
@@ -134,21 +149,6 @@
          this.manifestImageList.Images.SetKeyName(7, "animation.png");
          this.manifestImageList.Images.SetKeyName(8, "encounter.png");
          this.manifestImageList.Images.SetKeyName(9, "job.png");
-         // 
-         // aliasContextMenu
-         // 
-         this.aliasContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.aliasContextDuplicate});
-         this.aliasContextMenu.Name = "aliasContextMenu";
-         this.aliasContextMenu.Size = new System.Drawing.Size(153, 48);
-         this.aliasContextMenu.Opening += new System.ComponentModel.CancelEventHandler(this.aliasContextMenu_Opening);
-         // 
-         // aliasContextDuplicate
-         // 
-         this.aliasContextDuplicate.Name = "aliasContextDuplicate";
-         this.aliasContextDuplicate.Size = new System.Drawing.Size(105, 22);
-         this.aliasContextDuplicate.Text = "Clone";
-         this.aliasContextDuplicate.Click += new System.EventHandler(this.aliasContextMenuDuplicate_Click);
          // 
          // selectedFilePathLabel
          // 
@@ -232,6 +232,7 @@
          this.searchButton.Size = new System.Drawing.Size(23, 26);
          this.searchButton.TabIndex = 4;
          this.searchButton.UseVisualStyleBackColor = true;
+         this.searchButton.Click += new System.EventHandler(this.searchButton_Click);
          // 
          // splitContainer3
          // 
