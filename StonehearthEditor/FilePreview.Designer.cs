@@ -38,6 +38,7 @@
          this.saveFile = new System.Windows.Forms.ToolStripButton();
          this.openFolder = new System.Windows.Forms.ToolStripButton();
          this.openFile = new System.Windows.Forms.ToolStripButton();
+         this.localizeFile = new System.Windows.Forms.ToolStripButton();
          this.filePreviewContextMenu.SuspendLayout();
          this.toolStrip.SuspendLayout();
          this.SuspendLayout();
@@ -74,7 +75,8 @@
          this.toolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.openFile,
             this.openFolder,
-            this.saveFile});
+            this.saveFile,
+            this.localizeFile});
          this.toolStrip.Location = new System.Drawing.Point(0, 0);
          this.toolStrip.Name = "toolStrip";
          this.toolStrip.Size = new System.Drawing.Size(150, 25);
@@ -111,6 +113,16 @@
          this.openFile.Text = "Open File in Text Editor";
          this.openFile.Click += new System.EventHandler(this.openFile_Click);
          // 
+         // localizeFile
+         // 
+         this.localizeFile.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+         this.localizeFile.Image = ((System.Drawing.Image)(resources.GetObject("localizeFile.Image")));
+         this.localizeFile.ImageTransparentColor = System.Drawing.Color.Magenta;
+         this.localizeFile.Name = "localizeFile";
+         this.localizeFile.Size = new System.Drawing.Size(23, 22);
+         this.localizeFile.Text = "Localize This File";
+         this.localizeFile.Click += new System.EventHandler(this.localizeFile_Click);
+         // 
          // FilePreview
          // 
          this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -137,5 +149,6 @@
       private System.Windows.Forms.ToolStripButton saveFile;
       private System.Windows.Forms.ToolStripButton openFolder;
       private System.Windows.Forms.ToolStripButton openFile;
+      private System.Windows.Forms.ToolStripButton localizeFile;
    }
 }

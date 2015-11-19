@@ -152,4 +152,12 @@
         YII=
 </value>
   </data>
+  <data name="localizeFile.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABUSURBVDhPY6AYfPv27T8lGGyAk5MTWRjFgA/vP5KE6WMA
+        PoOxGgCiYRgfH6cB2BRho2FsrC4ghoaxsRoAw/j4OA0gBQ9CA8jBcAMowdA8SS5gYAAAvePAQYxHIK0A
+        AAAASUVORK5CYII=
+</value>
+  </data>
 </root>

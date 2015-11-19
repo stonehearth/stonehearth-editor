@@ -176,7 +176,7 @@ namespace StonehearthEditor
       public string ShortName {
          get { return mShortName; }
       }
-      public string FullName
+      public string FullAlias
       {
          get { return mModule.Name + ':' + mAlias; }
       }
