@@ -59,6 +59,11 @@ namespace StonehearthEditor
       }
       private void saveToolStripMenuItem_Click(object sender, EventArgs e)
       {
+         Save();
+      }
+
+      private void Save()
+      {
          mFileData.TrySetFlatFileData(textBox.Text);
          mFileData.TrySaveFile();
          TabPage parentControl = Parent as TabPage;
@@ -68,6 +73,7 @@ namespace StonehearthEditor
             parentControl.Text = mFileData.FileName;
          }
       }
+
       private void textBox_KeyDown(object sender, KeyEventArgs e)
       {
          TabPage parentControl = Parent as TabPage;
@@ -78,6 +84,21 @@ namespace StonehearthEditor
                parentControl.Text = mFileData.FileName + "*";
             }
          }
+      }
+
+      private void openFile_Click(object sender, EventArgs e)
+      {
+         System.Diagnostics.Process.Start(mFileData.Path);
+      }
+
+      private void openFolder_Click(object sender, EventArgs e)
+      {
+         System.Diagnostics.Process.Start(System.IO.Path.GetDirectoryName(mFileData.Path));
+      }
+
+      private void saveFile_Click(object sender, EventArgs e)
+      {
+         Save();
       }
    }
 }

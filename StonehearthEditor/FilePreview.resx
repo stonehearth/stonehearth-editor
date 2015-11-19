@@ -123,4 +123,33 @@
   <metadata name="filePreviewContextMenu.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>130, 17</value>
   </metadata>
+  <metadata name="toolStrip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>314, 17</value>
+  </metadata>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="openFile.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABbSURBVDhPY6Aa+Pbt2388+P2XL18MoEqxA5BCJycnrLit
+        rY2wIfgMAGGChiAb8OH9RxRMlCHEGIBsCFQbAuAzAIZh8iC1UG0IMGoAlQ0ghGlnACkYqo1SwMAAAAkA
+        3T7MjhyvAAAAAElFTkSuQmCC
+</value>
+  </data>
+  <data name="openFolder.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAADASURBVDhPYyAEvnz5YvDt27f3QPwfG4Yqww5gmtva2v47
+        OTlhYBQDkE1FxiDNzc0t/z+8/4iCsRqAbgMII2uGieE1AKaYEKaeASAChsk2AMQhFmMz4Hx+fj6GQlz4
+        6JGjqAZ8/fq1Yfny5RgKceG+vn5UA0CJ5cqVKxgKceHkpGRUA6Ax8D4yMhJDMS586+ZtMA03AOiN+biS
+        Kza8ft16MA034Pv37wn79u3DUEgIww14//69AIhDDgYbQD5gYAAAZX9QculWUG8AAAAASUVORK5CYII=
+</value>
+  </data>
+  <data name="saveFile.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABLSURBVDhPYwCC/xRihv/fvn0jGWMY4OTkBMcf3n+EY2Qx
+        EN3W1oZuCGkGgDDMELINAGGiDUDGyGpoawAxeNSAQWkAORhuAPmY4T8A8LU2KZxldVEAAAAASUVORK5C
+        YII=
+</value>
+  </data>
 </root>
