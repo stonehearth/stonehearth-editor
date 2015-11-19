@@ -241,7 +241,7 @@ namespace StonehearthEditor
                   if (foundParent != null)
                   {
                      break;
-                  } 
+                  }
                   foreach (JToken recipe in token.First["recipes"].Children())
                   {
                      if (recipe.Last.ToString().Contains(FileName))
@@ -260,10 +260,6 @@ namespace StonehearthEditor
                }
             }
          }
-
-         
-
-
          return base.Clone(newPath, oldNameToUse, newNameToUse, alreadyCloned, execute);
       }
 

@@ -21,6 +21,7 @@ namespace StonehearthEditor
       private string mShortName;
       private FileData mFileData = null;
       private FileType mType = FileType.UNKNOWN;
+      private bool mIsFineVersion = false;
       public ModuleFile(Module module, string alias, string filePath)
       {
          mModule = module;
@@ -35,8 +36,14 @@ namespace StonehearthEditor
             int secondToLastColon = oneBefore.LastIndexOf(':');
             oneBefore = secondToLastColon > -1 ? oneBefore.Substring(secondToLastColon + 1) : oneBefore;
             mShortName = oneBefore;
+            mIsFineVersion = true;
          }
          DetermineFileType();
+      }
+
+      public bool IsFineVersion
+      {
+         get { return mIsFineVersion; }
       }
 
       private void DetermineFileType()
@@ -151,8 +158,13 @@ namespace StonehearthEditor
       public bool Clone(string oldName, string newFileName, HashSet<string> alreadyCloned, bool execute)
       {
          string newAlias = mAlias.Replace(oldName, newFileName);
-         string newPath = ResolvedPath.Replace(oldName, newFileName);
-         if (!FileData.Clone(newPath, oldName, newFileName, alreadyCloned, execute))
+         string newFileNameInPath = newFileName;
+         if (newFileName.IndexOf(':') >= 0)
+         {
+            newFileNameInPath = newFileName.Replace(':', '_');
+         }
+         string newPath = ResolvedPath.Replace(oldName, newFileNameInPath);
+         if (!FileData.Clone(newPath, oldName, newFileNameInPath, alreadyCloned, execute))
          {
             return false;
          }

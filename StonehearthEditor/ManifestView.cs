@@ -132,41 +132,6 @@ namespace StonehearthEditor
             openFileButtonPanel.Controls.Clear();
          }
       }
-      private class CloneAliasCallback : InputDialog.IDialogCallback
-      {
-         private FileData mFileData;
-         private ManifestView mViewer;
-         public CloneAliasCallback(ManifestView viewer, FileData file)
-         {
-            mViewer = viewer;
-            mFileData = file;
-         }
-         public void onCancelled()
-         {
-            // Do nothing. user cancelled
-         }
-
-         public bool OnAccept(string inputMessage)
-         {
-            // Do the cloning
-            string potentialNewNodeName = inputMessage.Trim();
-            if (potentialNewNodeName.Length <= 1)
-            {
-               MessageBox.Show("You must enter a name longer than 1 character for the clone!");
-               return false;
-            }
-            if (potentialNewNodeName.Equals(mFileData.GetNameForCloning()))
-            {
-               MessageBox.Show("You must enter a new unique name for the clone!");
-               return false;
-            }
-            HashSet<string> dependencies = ModuleDataManager.GetInstance().PreviewCloneDependencies(mFileData, potentialNewNodeName);
-            PreviewCloneAliasCallback callback = new PreviewCloneAliasCallback(mViewer, mFileData, potentialNewNodeName);
-            PreviewCloneDialog dialog = new PreviewCloneDialog("Creating " + potentialNewNodeName, dependencies, callback);
-            dialog.ShowDialog();
-            return true;
-         }
-      }
  
       private void searchBox_TextChanged(object sender, EventArgs e)
       {
@@ -252,6 +217,72 @@ namespace StonehearthEditor
          }
       }
 
+      private void treeView_MouseClick(object sender, MouseEventArgs e)
+      {
+         // Always select the clicked node
+         treeView.SelectedNode = treeView.GetNodeAt(e.X, e.Y);
+      }
+
+      private void makeFineVersionToolStripMenuItem_Click(object sender, EventArgs e)
+      {
+         TreeNode selectedNode = treeView.SelectedNode;
+         FileData selectedFileData = ModuleDataManager.GetInstance().GetSelectedFileData(treeView.SelectedNode);
+         if (selectedFileData == null)
+         {
+            return;
+         }
+         JsonFileData jsonFileData = selectedFileData as JsonFileData;
+         if (jsonFileData == null)
+         {
+            return; // Don't know how to clone something not jsonFileData
+         }
+         ModuleFile moduleFile = jsonFileData.GetModuleFile();
+         if (moduleFile == null || moduleFile.IsFineVersion || jsonFileData.JsonType != JSONTYPE.ENTITY)
+         {
+            return; // can only make fine version of a module file
+         }
+         string newName = moduleFile.ShortName + ":fine";
+         HashSet<string> dependencies = ModuleDataManager.GetInstance().PreviewCloneDependencies(selectedFileData, newName);
+         PreviewCloneAliasCallback callback = new PreviewCloneAliasCallback(this, selectedFileData, newName);
+         PreviewCloneDialog dialog = new PreviewCloneDialog("Creating " + newName, dependencies, callback);
+         dialog.ShowDialog();
+      }
+      private class CloneAliasCallback : InputDialog.IDialogCallback
+      {
+         private FileData mFileData;
+         private ManifestView mViewer;
+         public CloneAliasCallback(ManifestView viewer, FileData file)
+         {
+            mViewer = viewer;
+            mFileData = file;
+         }
+         public void onCancelled()
+         {
+            // Do nothing. user cancelled
+         }
+
+         public bool OnAccept(string inputMessage)
+         {
+            // Do the cloning
+            string potentialNewNodeName = inputMessage.Trim();
+            if (potentialNewNodeName.Length <= 1)
+            {
+               MessageBox.Show("You must enter a name longer than 1 character for the clone!");
+               return false;
+            }
+            if (potentialNewNodeName.Equals(mFileData.GetNameForCloning()))
+            {
+               MessageBox.Show("You must enter a new unique name for the clone!");
+               return false;
+            }
+            HashSet<string> dependencies = ModuleDataManager.GetInstance().PreviewCloneDependencies(mFileData, potentialNewNodeName);
+            PreviewCloneAliasCallback callback = new PreviewCloneAliasCallback(mViewer, mFileData, potentialNewNodeName);
+            PreviewCloneDialog dialog = new PreviewCloneDialog("Creating " + potentialNewNodeName, dependencies, callback);
+            dialog.ShowDialog();
+            return true;
+         }
+      }
+
       private class PreviewCloneAliasCallback : PreviewCloneDialog.IDialogCallback
       {
          private FileData mFileData;
@@ -276,17 +307,6 @@ namespace StonehearthEditor
             }
             return true;
          }
-      }
-
-      private void treeView_MouseClick(object sender, MouseEventArgs e)
-      {
-         // Always select the clicked node
-         treeView.SelectedNode = treeView.GetNodeAt(e.X, e.Y);
-      }
-
-      private void makeFineVersionToolStripMenuItem_Click(object sender, EventArgs e)
-      {
-
       }
    }
 }

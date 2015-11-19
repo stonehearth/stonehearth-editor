@@ -180,14 +180,15 @@ namespace StonehearthEditor
                {
                   // This dependency is a flat file.
                   string linkedPath = ModuleDataManager.GetInstance().ModsDirectoryPath + dependency;
-                  string newDependencyPath = ModuleDataManager.GetInstance().ModsDirectoryPath + dependency.Replace(oldName, newFileName);
+                  string newDependencyPathName = newFileName;
+                  string newDependencyPath = ModuleDataManager.GetInstance().ModsDirectoryPath + dependency.Replace(oldName, newDependencyPathName);
                   if (!alreadyCloned.Contains(newDependencyPath))
                   {
                      alreadyCloned.Add(newDependencyPath);
                      FileData linkedFile = GetLinkedFileData(linkedPath);
                      if (linkedFile != null)
                      {
-                        linkedFile.Clone(newDependencyPath, oldName, newFileName, alreadyCloned, execute);
+                        linkedFile.Clone(newDependencyPath, oldName, newDependencyPathName, alreadyCloned, execute);
                      }
                      else
                      {
