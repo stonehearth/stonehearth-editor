@@ -182,10 +182,12 @@ namespace StonehearthEditor
          }
       }
 
-      public override void UpdateTreeNode(TreeNode node)
+      // Returns true if should show parent node
+      public override bool UpdateTreeNode(TreeNode node, string filter)
       {
          node.SelectedImageIndex = (int)JsonType;
          node.ImageIndex = (int)JsonType;
+         bool hasChildMatchingFilter = false;
          if (JsonType == JSONTYPE.JOB)
          {
             if (mOpenedJsonFiles.Count > 1)
@@ -195,14 +197,30 @@ namespace StonehearthEditor
                foreach (string recipePath in recipeJsonData.LinkedFilePaths)
                {
                   string recipeName = System.IO.Path.GetFileNameWithoutExtension(recipePath);
-                  TreeNode recipeNode = new TreeNode(recipeName);
-                  recipeNode.ImageIndex = (int)JSONTYPE.RECIPE;
-                  recipeNode.SelectedImageIndex = (int)JSONTYPE.RECIPE;
-                  recipes.Nodes.Add(recipeNode);
+                  if (string.IsNullOrEmpty(filter) || recipeName.Contains(filter))
+                  {
+                     TreeNode recipeNode = new TreeNode(recipeName);
+                     recipeNode.ImageIndex = (int)JSONTYPE.RECIPE;
+                     recipeNode.SelectedImageIndex = (int)JSONTYPE.RECIPE;
+                     recipes.Nodes.Add(recipeNode);
+                     hasChildMatchingFilter = true;
+                  }
+               }
+               if (!string.IsNullOrEmpty(filter) && recipes.Nodes.Count <= 0)
+               {
+                  return false;
                }
                node.Nodes.Add(recipes);
             }
          }
+
+         ModuleFile owner = GetModuleFile();
+         if (!hasChildMatchingFilter && !string.IsNullOrEmpty(filter) && owner != null && !owner.Name.Contains(filter))
+         {
+            return false;
+         }
+         
+         return true;
       }
 
       public override bool Clone(string newPath, string oldName, string newFileName, HashSet<string> alreadyCloned, bool execute)

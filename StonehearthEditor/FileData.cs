@@ -28,7 +28,7 @@ namespace StonehearthEditor
       {
          get { return mIsModified; }
       }
-      public abstract void UpdateTreeNode(TreeNode node);
+      public abstract bool UpdateTreeNode(TreeNode node, string filter);
       public void TrySetFlatFileData(string newData)
       {
          if (TryChangeFlatFileData(newData))

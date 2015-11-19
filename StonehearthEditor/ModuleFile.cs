@@ -102,14 +102,18 @@ namespace StonehearthEditor
          return FindFileData(found, path, startIndex + 1);
       }
 
-      public TreeNode GetTreeNode()
+      public TreeNode GetTreeNode(string filter)
       {
          TreeNode treeNode = new TreeNode(Name);
          if (mFileData != null)
          {
-            mFileData.UpdateTreeNode(treeNode);
+            bool matchesFilter = mFileData.UpdateTreeNode(treeNode, filter);
+            if (matchesFilter)
+            {
+               return treeNode;
+            }
          }
-         return treeNode;
+         return null;
       }
 
       public string Name
