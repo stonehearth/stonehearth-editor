@@ -163,6 +163,13 @@ namespace StonehearthEditor
          {
             string linkedFile = JsonHelper.GetFileFromFileJson(match.Value, directory);
             linkedFile = JsonHelper.NormalizeSystemPath(linkedFile);
+
+            if (!System.IO.File.Exists(linkedFile) && ! System.IO.Directory.Exists(linkedFile))
+            {
+               MessageBox.Show("File " + Path + " links to non-existent file " + linkedFile);
+               continue;
+            }
+               
             mLinkedFilePaths.Add(linkedFile);
          }
       }

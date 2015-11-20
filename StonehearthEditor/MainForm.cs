@@ -22,7 +22,7 @@ namespace StonehearthEditor
 
       public MainForm(string path)
       {
-         kModsDirectoryPath = path;
+         kModsDirectoryPath = JsonHelper.NormalizeSystemPath(path);
          InitializeComponent();
       }
 

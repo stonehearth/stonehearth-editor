@@ -111,25 +111,55 @@ namespace StonehearthEditor
 
       public static string GetFileFromFileJson(string fileJson, string parentPath)
       {
+         parentPath = JsonHelper.NormalizeSystemPath(parentPath);
          string fullPath = String.Empty;
+         bool startedWithFile = false;
          if (fileJson.StartsWith("file("))
          {
             string temp = fileJson.Substring(5);
             fullPath = temp.Substring(0, temp.Length - 1);
+            startedWithFile = true;
          }
          else
          {
             fullPath = fileJson;
          }
 
-         if (fileJson.IndexOf('.') < 0)
+         if (fullPath.IndexOf("../") >= 0)
+         {
+            // If there's a relative directory
+            int index = fullPath.IndexOf("../");
+            char[] delimeter = "/".ToCharArray();
+            string[] splitParentPath = parentPath.Split(delimeter);
+            int parentPathCount = splitParentPath.Length + 1;
+            while (index >= 0)
+            {
+               parentPathCount--;
+               fullPath = fullPath.Substring(index + 3);
+               index = fullPath.IndexOf("../");
+            }
+            splitParentPath = parentPath.Split(delimeter, parentPathCount);
+            splitParentPath[splitParentPath.Length - 1] = "";
+            parentPath = string.Join("/", splitParentPath);
+         } else if (fileJson.IndexOf('.') < 0)
          {
             string folderName = fullPath.Substring(fullPath.LastIndexOf('/') + 1);
             fullPath = fullPath + "/" + folderName + ".json";
          }
          if (fullPath.StartsWith("/"))
          {
-            fullPath = ModuleDataManager.GetInstance().ModsDirectoryPath + fullPath;
+            if (startedWithFile)
+            {
+               string mod = parentPath.Replace(MainForm.kModsDirectoryPath + '/', "");
+               int firstSlash = mod.IndexOf('/');
+               if (firstSlash >= 0)
+               {
+                  mod = mod.Substring(0, firstSlash);
+               }
+               fullPath = ModuleDataManager.GetInstance().ModsDirectoryPath + '/' + mod + fullPath;
+            } else {
+               fullPath = ModuleDataManager.GetInstance().ModsDirectoryPath + fullPath;
+            }
          }
          else
          {
