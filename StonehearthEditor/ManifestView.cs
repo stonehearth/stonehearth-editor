@@ -308,5 +308,24 @@ namespace StonehearthEditor
             return true;
          }
       }
+
+      private void dependenciesListView_SelectedIndexChanged(object sender, EventArgs e)
+      {
+         if (dependenciesListView.SelectedItems.Count <= 0)
+         {
+            return;
+         }
+         ListViewItem item = dependenciesListView.SelectedItems[0];
+         string selectedItem = item.Text;
+         if (selectedItem.Contains(".png"))
+         {
+            // set the image
+            string linkedFilePath = MainForm.kModsDirectoryPath + selectedItem;
+            if (System.IO.File.Exists(linkedFilePath))
+            {
+               iconView.ImageLocation = linkedFilePath;
+            }
+         }
+      }
    }
 }

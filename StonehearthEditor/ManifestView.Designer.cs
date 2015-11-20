@@ -188,6 +188,7 @@
          this.dependenciesListView.TabIndex = 2;
          this.dependenciesListView.UseCompatibleStateImageBehavior = false;
          this.dependenciesListView.View = System.Windows.Forms.View.List;
+         this.dependenciesListView.SelectedIndexChanged += new System.EventHandler(this.dependenciesListView_SelectedIndexChanged);
          this.dependenciesListView.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.dependenciesListView_MouseDoubleClick);
          // 
          // dependenciesLabel
