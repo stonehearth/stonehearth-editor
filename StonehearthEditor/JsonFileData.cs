@@ -285,9 +285,14 @@ namespace StonehearthEditor
       public override string GetNameForCloning()
       {
          string fileName = FileName;
-         if (JsonType == JSONTYPE.RECIPE)
+         switch(JsonType)
          {
-            fileName = fileName.Replace("_recipe", "");
+            case JSONTYPE.RECIPE:
+               fileName = fileName.Replace("_recipe", "");
+               break;
+            case JSONTYPE.JOB:
+               fileName = fileName.Replace("_description", "");
+               break;
          }
          return fileName;
       }

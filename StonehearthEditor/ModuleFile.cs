@@ -158,6 +158,11 @@ namespace StonehearthEditor
       public bool Clone(string oldName, string newFileName, HashSet<string> alreadyCloned, bool execute)
       {
          string newAlias = mAlias.Replace(oldName, newFileName);
+         if (mModule.GetAliasFile(newAlias) != null)
+         {
+            MessageBox.Show("The alias " + newAlias + " already exists in manifest.json");
+            return false;
+         }
          string newFileNameInPath = newFileName;
          if (newFileName.IndexOf(':') >= 0)
          {
