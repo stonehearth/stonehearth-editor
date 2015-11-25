@@ -327,5 +327,23 @@ namespace StonehearthEditor
             }
          }
       }
+
+      private void splitContainer2_SplitterMoved(object sender, SplitterEventArgs e)
+      {
+         Properties.Settings.Default.ManifestViewTreeSplitterDistance = splitContainer2.SplitterDistance;
+         Properties.Settings.Default.Save();
+
+      }
+
+      private void ManifestView_Leave(object sender, EventArgs e)
+      {
+         Properties.Settings.Default.ManifestViewTreeSplitterDistance = splitContainer2.SplitterDistance;
+         Properties.Settings.Default.Save();
+      }
+
+      private void ManifestView_Load(object sender, EventArgs e)
+      {
+         splitContainer2.SplitterDistance = Properties.Settings.Default.ManifestViewTreeSplitterDistance;
+      }
    }
 }
