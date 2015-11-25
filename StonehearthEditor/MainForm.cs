@@ -40,6 +40,17 @@ namespace StonehearthEditor
          LoadModFiles();
          int initialTab = (int) Properties.Settings.Default["InitialTab"];
          tabControl.SelectedIndex = initialTab;
+
+         bool isFullScreen = (bool)Properties.Settings.Default["MainFormIsFullScreen"];
+         int width = (int)Properties.Settings.Default["MainFormWidth"];
+         int height = (int)Properties.Settings.Default["MainFormHeight"];
+         Width = width;
+         Height = height;
+
+         if (isFullScreen)
+         {
+            WindowState = FormWindowState.Maximized;
+         }
       }
 
       private void LoadModFiles()
@@ -69,6 +80,18 @@ namespace StonehearthEditor
       public void Reload()
       {
          manifestView.Reload();
+      }
+
+      private void MainForm_Resize(object sender, EventArgs e)
+      {
+         bool isFullScreen = (WindowState == FormWindowState.Maximized);
+         if (!isFullScreen)
+         {
+            Properties.Settings.Default["MainFormWidth"] = Width;
+            Properties.Settings.Default["MainFormHeight"] = Height;
+         }
+         Properties.Settings.Default["MainFormIsFullScreen"] = isFullScreen;
+         Properties.Settings.Default.Save();
       }
    }
 }
