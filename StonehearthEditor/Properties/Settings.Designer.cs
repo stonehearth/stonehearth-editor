@@ -49,37 +49,25 @@ namespace StonehearthEditor.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("1024")]
-        public int MainFormWidth {
+        [global::System.Configuration.DefaultSettingValueAttribute("0, 0")]
+        public global::System.Drawing.Point MainFormLocation {
             get {
-                return ((int)(this["MainFormWidth"]));
+                return ((global::System.Drawing.Point)(this["MainFormLocation"]));
             }
             set {
-                this["MainFormWidth"] = value;
+                this["MainFormLocation"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("768")]
-        public int MainFormHeight {
+        [global::System.Configuration.DefaultSettingValueAttribute("1024, 768")]
+        public global::System.Drawing.Size MainFormSize {
             get {
-                return ((int)(this["MainFormHeight"]));
+                return ((global::System.Drawing.Size)(this["MainFormSize"]));
             }
             set {
-                this["MainFormHeight"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool MainFormIsFullScreen {
-            get {
-                return ((bool)(this["MainFormIsFullScreen"]));
-            }
-            set {
-                this["MainFormIsFullScreen"] = value;
+                this["MainFormSize"] = value;
             }
         }
     }

@@ -30,7 +30,9 @@
       {
          this.tabControl = new System.Windows.Forms.TabControl();
          this.manifestTab = new System.Windows.Forms.TabPage();
+         this.manifestView = new StonehearthEditor.ManifestView();
          this.encounterTab = new System.Windows.Forms.TabPage();
+         this.encounterDesignerView = new StonehearthEditor.EncounterDesignerView();
          this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
          this.modsFolderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
          this.mainFormMenu = new System.Windows.Forms.MenuStrip();
@@ -38,8 +40,6 @@
          this.saveAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
          this.reloadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
          this.changeModDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-         this.manifestView = new StonehearthEditor.ManifestView();
-         this.encounterDesignerView = new StonehearthEditor.EncounterDesignerView();
          this.tabControl.SuspendLayout();
          this.manifestTab.SuspendLayout();
          this.encounterTab.SuspendLayout();
@@ -69,6 +69,14 @@
          this.manifestTab.Text = "Manifest";
          this.manifestTab.UseVisualStyleBackColor = true;
          // 
+         // manifestView
+         // 
+         this.manifestView.Dock = System.Windows.Forms.DockStyle.Fill;
+         this.manifestView.Location = new System.Drawing.Point(3, 3);
+         this.manifestView.Name = "manifestView";
+         this.manifestView.Size = new System.Drawing.Size(1109, 549);
+         this.manifestView.TabIndex = 0;
+         // 
          // encounterTab
          // 
          this.encounterTab.Controls.Add(this.encounterDesignerView);
@@ -79,6 +87,14 @@
          this.encounterTab.TabIndex = 1;
          this.encounterTab.Text = "Encounter Designer";
          this.encounterTab.UseVisualStyleBackColor = true;
+         // 
+         // encounterDesignerView
+         // 
+         this.encounterDesignerView.Dock = System.Windows.Forms.DockStyle.Fill;
+         this.encounterDesignerView.Location = new System.Drawing.Point(3, 3);
+         this.encounterDesignerView.Name = "encounterDesignerView";
+         this.encounterDesignerView.Size = new System.Drawing.Size(1109, 549);
+         this.encounterDesignerView.TabIndex = 0;
          // 
          // saveToolStripMenuItem
          // 
@@ -133,32 +149,19 @@
          this.changeModDirectoryToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
          this.changeModDirectoryToolStripMenuItem.Text = "Change Mod Directory";
          // 
-         // manifestView
-         // 
-         this.manifestView.Dock = System.Windows.Forms.DockStyle.Fill;
-         this.manifestView.Location = new System.Drawing.Point(3, 3);
-         this.manifestView.Name = "manifestView";
-         this.manifestView.Size = new System.Drawing.Size(1109, 549);
-         this.manifestView.TabIndex = 0;
-         // 
-         // encounterDesignerView
-         // 
-         this.encounterDesignerView.Dock = System.Windows.Forms.DockStyle.Fill;
-         this.encounterDesignerView.Location = new System.Drawing.Point(3, 3);
-         this.encounterDesignerView.Name = "encounterDesignerView";
-         this.encounterDesignerView.Size = new System.Drawing.Size(1109, 549);
-         this.encounterDesignerView.TabIndex = 0;
-         // 
          // MainForm
          // 
          this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
          this.ClientSize = new System.Drawing.Size(1123, 605);
          this.Controls.Add(this.tabControl);
          this.Controls.Add(this.mainFormMenu);
+         this.DataBindings.Add(new System.Windows.Forms.Binding("Location", global::StonehearthEditor.Properties.Settings.Default, "MainFormLocation", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
          this.KeyPreview = true;
+         this.Location = global::StonehearthEditor.Properties.Settings.Default.MainFormLocation;
          this.MainMenuStrip = this.mainFormMenu;
          this.Name = "MainForm";
          this.Text = "Stonehearth Editor";
+         this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
          this.Load += new System.EventHandler(this.Form1_Load);
          this.Resize += new System.EventHandler(this.MainForm_Resize);
          this.tabControl.ResumeLayout(false);

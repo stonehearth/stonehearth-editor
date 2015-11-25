@@ -1,5 +1,6 @@
 ﻿using Microsoft.Msagl.Drawing;
 using Microsoft.Msagl.GraphViewerGdi;
+using StonehearthEditor.Properties;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -41,15 +42,9 @@ namespace StonehearthEditor
          int initialTab = (int) Properties.Settings.Default["InitialTab"];
          tabControl.SelectedIndex = initialTab;
 
-         bool isFullScreen = (bool)Properties.Settings.Default["MainFormIsFullScreen"];
-         int width = (int)Properties.Settings.Default["MainFormWidth"];
-         int height = (int)Properties.Settings.Default["MainFormHeight"];
-         Width = width;
-         Height = height;
-
-         if (isFullScreen)
+         if (Properties.Settings.Default.MainFormSize != null)
          {
-            WindowState = FormWindowState.Maximized;
+            this.Size = Properties.Settings.Default.MainFormSize;
          }
       }
 
@@ -84,13 +79,19 @@ namespace StonehearthEditor
 
       private void MainForm_Resize(object sender, EventArgs e)
       {
-         bool isFullScreen = (WindowState == FormWindowState.Maximized);
-         if (!isFullScreen)
+      }
+
+      private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+      {
+         // Copy window size to app settings
+         if (this.WindowState == FormWindowState.Normal)
          {
-            Properties.Settings.Default["MainFormWidth"] = Width;
-            Properties.Settings.Default["MainFormHeight"] = Height;
+            Settings.Default.MainFormSize = this.Size;
          }
-         Properties.Settings.Default["MainFormIsFullScreen"] = isFullScreen;
+         else
+         {
+            Settings.Default.MainFormSize = this.RestoreBounds.Size;
+         }
          Properties.Settings.Default.Save();
       }
    }
