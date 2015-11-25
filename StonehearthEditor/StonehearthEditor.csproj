@@ -75,6 +75,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EncounterDesignerView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="EncounterDesignerView.Designer.cs">
+      <DependentUpon>EncounterDesignerView.cs</DependentUpon>
+    </Compile>
     <Compile Include="FileData.cs" />
     <Compile Include="GameMasterNode.cs" />
     <Compile Include="InputDialog.cs">
@@ -116,6 +122,9 @@
     <Compile Include="FilePreview.Designer.cs">
       <DependentUpon>FilePreview.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="EncounterDesignerView.resx">
+      <DependentUpon>EncounterDesignerView.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FilePreview.resx">
       <DependentUpon>FilePreview.cs</DependentUpon>
     </EmbeddedResource>
