@@ -102,7 +102,9 @@
          // 
          // splitContainer1
          // 
+         this.splitContainer1.DataBindings.Add(new System.Windows.Forms.Binding("SplitterDistance", global::StonehearthEditor.Properties.Settings.Default, "EncounterDesignerViewTreeSplitterDistance", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
          this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+         this.splitContainer1.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
          this.splitContainer1.Location = new System.Drawing.Point(250, 25);
          this.splitContainer1.Name = "splitContainer1";
          this.splitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal;
@@ -116,7 +118,7 @@
          this.splitContainer1.Panel2.Controls.Add(this.panel1);
          this.splitContainer1.Panel2.Controls.Add(this.nodeInfoPanel);
          this.splitContainer1.Size = new System.Drawing.Size(875, 473);
-         this.splitContainer1.SplitterDistance = 321;
+         this.splitContainer1.SplitterDistance = global::StonehearthEditor.Properties.Settings.Default.EncounterDesignerViewTreeSplitterDistance;
          this.splitContainer1.TabIndex = 4;
          // 
          // encounterTabRightSide

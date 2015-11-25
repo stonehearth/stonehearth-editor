@@ -181,7 +181,9 @@
          // 
          // splitContainer3
          // 
+         this.splitContainer3.DataBindings.Add(new System.Windows.Forms.Binding("SplitterDistance", global::StonehearthEditor.Properties.Settings.Default, "ManifestViewFileDependenciesSplitter", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
          this.splitContainer3.Dock = System.Windows.Forms.DockStyle.Fill;
+         this.splitContainer3.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
          this.splitContainer3.Location = new System.Drawing.Point(0, 20);
          this.splitContainer3.Name = "splitContainer3";
          // 
@@ -195,7 +197,7 @@
          this.splitContainer3.Panel2.Controls.Add(this.panel3);
          this.splitContainer3.Panel2.Controls.Add(this.panel2);
          this.splitContainer3.Size = new System.Drawing.Size(477, 452);
-         this.splitContainer3.SplitterDistance = 318;
+         this.splitContainer3.SplitterDistance = global::StonehearthEditor.Properties.Settings.Default.ManifestViewFileDependenciesSplitter;
          this.splitContainer3.TabIndex = 3;
          // 
          // filePreviewTabs

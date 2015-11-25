@@ -82,5 +82,29 @@ namespace StonehearthEditor.Properties {
                 this["ManifestViewTreeSplitterDistance"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("321")]
+        public int EncounterDesignerViewTreeSplitterDistance {
+            get {
+                return ((int)(this["EncounterDesignerViewTreeSplitterDistance"]));
+            }
+            set {
+                this["EncounterDesignerViewTreeSplitterDistance"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("318")]
+        public int ManifestViewFileDependenciesSplitter {
+            get {
+                return ((int)(this["ManifestViewFileDependenciesSplitter"]));
+            }
+            set {
+                this["ManifestViewFileDependenciesSplitter"] = value;
+            }
+        }
     }
 }
