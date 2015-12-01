@@ -63,32 +63,32 @@ namespace StonehearthEditor
       public void FillDependencyListItems(ListView listView)
       {
          listView.Items.Clear();
-         foreach(string dependency in GetDependencySet())
+         foreach(string dependency in GetDependencies().Keys)
          {
             listView.Items.Add(dependency);
          }
       }
 
-      protected HashSet<string> GetDependencySet()
+      protected Dictionary<string, FileData> GetDependencies()
       {
-         HashSet<string> dependenciesSet = new HashSet<string>();
+         Dictionary<string, FileData> dependencies = new Dictionary<string, FileData>();
          foreach (ModuleFile dependency in LinkedAliases)
          {
             string alias = dependency.Module.Name + ":" + dependency.Name;
-            if (!dependenciesSet.Contains(alias))
+            if (!dependencies.ContainsKey(alias))
             {
-               dependenciesSet.Add(alias);
+               dependencies.Add(alias, dependency.FileData);
             }
          }
-         foreach (string filePath in LinkedFileData.Keys)
+         foreach (KeyValuePair<string, FileData> file in LinkedFileData)
          {
-            string filePathWithoutBase = filePath.Replace(ModuleDataManager.GetInstance().ModsDirectoryPath, "");
-            if (!dependenciesSet.Contains(filePathWithoutBase))
+            string filePathWithoutBase = file.Key.Replace(ModuleDataManager.GetInstance().ModsDirectoryPath, "");
+            if (!dependencies.ContainsKey(filePathWithoutBase))
             {
-               dependenciesSet.Add(filePathWithoutBase);
+               dependencies.Add(filePathWithoutBase, file.Value);
             }
          }
-         return dependenciesSet;
+         return dependencies;
       }
 
       public virtual void Load()
@@ -164,61 +164,34 @@ namespace StonehearthEditor
             System.IO.Directory.CreateDirectory(directory);
          }
          // Figure out what dependency files need to exist
-         foreach(string dependency in GetDependencySet())
+         foreach(KeyValuePair<string, FileData> dependencyKV in GetDependencies())
          {
-            if (ShouldCloneDependency(dependency, oldName))
+            string dependencyName = dependencyKV.Key;
+            FileData dependencyFile = dependencyKV.Value;
+            if (ShouldCloneDependency(dependencyName, oldName))
             {
                // We want to clone this dependency
-               if (dependency.Contains(":"))
+               IModuleFileData modFileData = dependencyFile as IModuleFileData;
+               if (modFileData != null && modFileData.GetModuleFile() != null)
                {
-                  // this dependency is an alias. Clone the alias.
-                  ModuleFile linkedAlias = ModuleDataManager.GetInstance().GetModuleFile(dependency);
-                  if (linkedAlias != null)
+                  // This dependency is an alias. Clone the alias.
+                  ModuleFile linkedAlias = modFileData.GetModuleFile();
+                  string aliasNewName = dependencyName.Replace(oldName, newFileName);
+                  if (!alreadyCloned.Contains(aliasNewName))
                   {
-                     string aliasNewName = dependency.Replace(oldName, newFileName);
-                     if (!alreadyCloned.Contains(aliasNewName))
-                     {
-                        alreadyCloned.Add(aliasNewName);
-                        linkedAlias.Clone(oldName, newFileName, alreadyCloned, execute);
-                     }
+                     alreadyCloned.Add(aliasNewName);
+                     linkedAlias.Clone(oldName, newFileName, alreadyCloned, execute);
                   }
                } else
                {
-                  // This dependency is a flat file.
-                  string linkedPath = ModuleDataManager.GetInstance().ModsDirectoryPath + dependency;
+                  // This dependency is just a FileData, clone the fileData.
+                  string linkedPath = ModuleDataManager.GetInstance().ModsDirectoryPath + dependencyName;
                   string newDependencyPathName = newFileName;
-                  string newDependencyPath = ModuleDataManager.GetInstance().ModsDirectoryPath + dependency.Replace(oldName, newDependencyPathName);
+                  string newDependencyPath = ModuleDataManager.GetInstance().ModsDirectoryPath + dependencyName.Replace(oldName, newDependencyPathName);
                   if (!alreadyCloned.Contains(newDependencyPath))
                   {
                      alreadyCloned.Add(newDependencyPath);
-                     FileData linkedFile = GetLinkedFileData(linkedPath);
-                     if (linkedFile != null)
-                     {
-                        linkedFile.Clone(newDependencyPath, oldName, newDependencyPathName, alreadyCloned, execute);
-                     }
-                     else
-                     {
-                        string extension = System.IO.Path.GetExtension(newDependencyPath);
-                        string qmo = linkedPath.Replace(".qb", ".qmo");
-                        string newQmo = newDependencyPath.Replace(".qb", ".qmo");
-                        if (System.IO.File.Exists(qmo))
-                        {
-                           alreadyCloned.Add(newQmo);
-                        }
-                        if (execute)
-                        {
-                           string newDependencyDirectory = System.IO.Path.GetDirectoryName(newDependencyPath);
-                           System.IO.Directory.CreateDirectory(newDependencyDirectory);
-                           System.IO.File.Copy(linkedPath, newDependencyPath);
-                           if (extension == ".qb")
-                           {
-                              if (System.IO.File.Exists(qmo))
-                              {
-                                 System.IO.File.Copy(qmo, newQmo);
-                              }
-                           }
-                        }
-                     }
+                     dependencyFile.Clone(newDependencyPath, oldName, newDependencyPathName, alreadyCloned, execute);
                   }
                }
             }

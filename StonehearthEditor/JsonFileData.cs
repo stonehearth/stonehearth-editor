@@ -173,7 +173,10 @@ namespace StonehearthEditor
                   continue;
                }
                FileData linkedFileData = GetFileDataFactory(linkedFile);
-               mLinkedFileData.Add(linkedFile, linkedFileData);
+               if (linkedFileData != null)
+               {
+                  mLinkedFileData.Add(linkedFile, linkedFileData);
+               }
             }
          }
       }
@@ -373,6 +376,14 @@ namespace StonehearthEditor
                (entityFormsComponent as JObject).Add("iconic_form", "file(" + originalFileName + "_iconic.json" + ")");
                TrySetFlatFileData(GetJsonFileString());
                TrySaveFile();
+               // Get a linked qb file
+               foreach(FileData data in LinkedFileData.Values)
+               {
+                  if (data is QubicleFileData)
+                  {
+                     
+                  }
+               }
                MessageBox.Show("Adding file " + iconicFilePath);
             }
          }

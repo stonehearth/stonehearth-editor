@@ -48,5 +48,23 @@ namespace StonehearthEditor
       {
          mRelatedFiles.Add(file);
       }
+
+      public override bool Clone(string newPath, string oldName, string newFileName, HashSet<string> alreadyCloned, bool execute)
+      {
+         if (execute)
+         {
+            string newDirectory = System.IO.Path.GetDirectoryName(newPath);
+            System.IO.Directory.CreateDirectory(newDirectory);
+            System.IO.File.Copy(Path, newPath);
+         }
+         string qmoPath = mDirectory + FileName + ".qmo";
+         if (mIsQb && mLinkedFileData.ContainsKey(qmoPath))
+         {
+            alreadyCloned.Add(qmoPath);
+            string newQmoPath = newPath.Replace(".qb", ".qmo");
+            mLinkedFileData[qmoPath].Clone(newQmoPath, oldName, newFileName, alreadyCloned, execute);
+         }
+         return true;
+      }
    }
 }

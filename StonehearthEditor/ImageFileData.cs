@@ -34,5 +34,16 @@ namespace StonehearthEditor
       {
          mRelatedFiles.Add(file);
       }
+      public override bool Clone(string newPath, string oldName, string newFileName, HashSet<string> alreadyCloned, bool execute)
+      {
+         // Just pure file copy
+         if (execute)
+         {
+            string newDirectory = System.IO.Path.GetDirectoryName(newPath);
+            System.IO.Directory.CreateDirectory(newDirectory);
+            System.IO.File.Copy(Path, newPath);
+         }
+         return true;
+      }
    }
 }
