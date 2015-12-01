@@ -7,19 +7,14 @@ using System.Windows.Forms;
 
 namespace StonehearthEditor
 {
-   class QubicleFileData : FileData
+   class ImageFileData : FileData
    {
       private string mDirectory;
-      private bool mIsQb = true;
 
-      public QubicleFileData(string path)
+      public ImageFileData(string path)
       {
          mPath = path;
          mDirectory = JsonHelper.NormalizeSystemPath(System.IO.Path.GetDirectoryName(Path));
-         if (System.IO.Path.GetExtension(path).Equals(".qmo"))
-         {
-            mIsQb = false;
-         }
       }
 
       public override bool UpdateTreeNode(TreeNode node, string filter)
@@ -29,20 +24,11 @@ namespace StonehearthEditor
       public override void Load()
       {
          // do not actually load the binary
-         LoadInternal();
+         return;
       }
       protected override void LoadInternal()
       {
-         if (mIsQb)
-         {
-            // see if the qmo exists
-            string qmoPath = mDirectory + FileName + ".qmo";
-            if (System.IO.File.Exists(qmoPath))
-            {
-               QubicleFileData qmoFile = new QubicleFileData(qmoPath);
-               mLinkedFileData.Add(qmoPath, qmoFile);
-            }
-         }
+         return; // Do nothing
       }
       public void AddLinkingJsonFile(JsonFileData file)
       {

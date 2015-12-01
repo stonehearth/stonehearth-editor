@@ -108,11 +108,8 @@ namespace StonehearthEditor
                   recipeListLocation = JsonHelper.GetFileFromFileJson(recipeListLocation, directory);
                   JsonFileData recipes = new JsonFileData(recipeListLocation);
                   recipes.Load();
-                  foreach (string recipePath in recipes.LinkedFilePaths)
+                  foreach (FileData recipe in recipes.LinkedFileData.Values)
                   {
-                     JsonFileData recipe = new JsonFileData(recipePath);
-                     recipe.Load();
-                     recipe.mRelatedFiles.Add(recipes);
                      recipes.mRelatedFiles.Add(recipe);
                   }
                   mOpenedFiles.Add(recipes);
@@ -124,7 +121,8 @@ namespace StonehearthEditor
                {
                   string portraitImageLocation = portrait.ToString();
                   portraitImageLocation = JsonHelper.GetFileFromFileJson(portraitImageLocation, directory);
-                  mLinkedFilePaths.Add(portraitImageLocation);
+                  ImageFileData image = new ImageFileData(portraitImageLocation);
+                  mLinkedFileData.Add(portraitImageLocation, image);
                }
 
                break;
@@ -159,26 +157,49 @@ namespace StonehearthEditor
          Regex matcher = new Regex("file\\([\\S]+\\)");
          foreach (Match match in matcher.Matches(jsonString))
          {
-            string linkedFile = JsonHelper.GetFileFromFileJson(match.Value, directory);
-            linkedFile = JsonHelper.NormalizeSystemPath(linkedFile);
+            string matchValue = match.Value;
+            if (matchValue != "file(animations)" && matchValue != "file(effects)") // Sigh, special case these because they're more like folders instead of files
+            {
+               string linkedFile = JsonHelper.GetFileFromFileJson(match.Value, directory);
+               linkedFile = JsonHelper.NormalizeSystemPath(linkedFile);
 
-            if (!System.IO.File.Exists(linkedFile) && ! System.IO.Directory.Exists(linkedFile))
-            {
-               MessageBox.Show("File " + Path + " links to non-existent file " + linkedFile);
-               continue;
-            }
-            if (System.IO.Path.GetExtension(linkedFile).Equals("qb"))
-            {
-               QubicleFileData qubicleFile = new QubicleFileData(linkedFile);
-               qubicleFile.AddLinkingJsonFile(this);
-               qubicleFile.Load();
-               mRelatedFiles.Add(qubicleFile);
-            }
-            else
-            {
-               mLinkedFilePaths.Add(linkedFile);
+               if (!System.IO.File.Exists(linkedFile) && !System.IO.Directory.Exists(linkedFile))
+               {
+                  MessageBox.Show("File " + Path + " links to non-existent file " + linkedFile);
+                  continue;
+               }
+               if (mLinkedFileData.ContainsKey(linkedFile))
+               {
+                  continue;
+               }
+               FileData linkedFileData = GetFileDataFactory(linkedFile);
+               mLinkedFileData.Add(linkedFile, linkedFileData);
             }
          }
+      }
+
+      private FileData GetFileDataFactory(string path)
+      {
+         string extension = System.IO.Path.GetExtension(path);
+         switch(extension)
+         {
+            case ".qb":
+               QubicleFileData qubicleFile = new QubicleFileData(path);
+               qubicleFile.AddLinkingJsonFile(this);
+               qubicleFile.RelatedFiles.Add(this);
+               return qubicleFile;
+            case ".png":
+               ImageFileData imageFile = new ImageFileData(path);
+               imageFile.AddLinkingJsonFile(this);
+               imageFile.RelatedFiles.Add(this);
+               return imageFile;
+            case ".json":
+               JsonFileData jsonFileData = new JsonFileData(path);
+               jsonFileData.Load();
+               jsonFileData.RelatedFiles.Add(this);
+               return jsonFileData;
+         }
+         return null;
       }
 
       private void ParseLinkedAliases(string jsonString)
@@ -208,7 +229,7 @@ namespace StonehearthEditor
             {
                FileData recipeJsonData = mOpenedFiles[1];
                TreeNode recipes = new TreeNode(recipeJsonData.FileName);
-               foreach (string recipePath in recipeJsonData.LinkedFilePaths)
+               foreach (string recipePath in recipeJsonData.LinkedFileData.Keys)
                {
                   string recipeName = System.IO.Path.GetFileNameWithoutExtension(recipePath);
                   if (string.IsNullOrEmpty(filter) || recipeName.Contains(filter))

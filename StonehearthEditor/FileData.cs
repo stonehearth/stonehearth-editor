@@ -15,15 +15,12 @@ namespace StonehearthEditor
 
       protected string mPath;
       protected List<ModuleFile> mLinkedAliases = new List<ModuleFile>();
-      protected List<FileData> mLinkedFileData = new List<FileData>();
-      protected List<string> mLinkedFilePaths = new List<string>();
+      protected Dictionary<string, FileData> mLinkedFileData = new Dictionary<string, FileData>();
       protected List<FileData> mOpenedFiles = new List<FileData>();
       protected List<FileData> mRelatedFiles = new List<FileData>();
 
       public List<ModuleFile> LinkedAliases { get { return mLinkedAliases; } }
-      public List<FileData> LinkedFileData { get { return mLinkedFileData; } }
-      public List<string> LinkedFilePaths { get { return mLinkedFilePaths; } }
-
+      public Dictionary<string, FileData> LinkedFileData { get { return mLinkedFileData; } }
       public List<FileData> OpenedFiles { get { return mOpenedFiles; } }
       public List<FileData> RelatedFiles { get { return mRelatedFiles; } }
 
@@ -83,7 +80,7 @@ namespace StonehearthEditor
                dependenciesSet.Add(alias);
             }
          }
-         foreach (string filePath in LinkedFilePaths)
+         foreach (string filePath in LinkedFileData.Keys)
          {
             string filePathWithoutBase = filePath.Replace(ModuleDataManager.GetInstance().ModsDirectoryPath, "");
             if (!dependenciesSet.Contains(filePathWithoutBase))

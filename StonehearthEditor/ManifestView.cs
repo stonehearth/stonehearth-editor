@@ -84,7 +84,7 @@ namespace StonehearthEditor
                   newTabPage.Controls.Add(filePreview);
                   filePreviewTabs.TabPages.Add(newTabPage);
 
-                  foreach (string linkedFilePath in openedFile.LinkedFilePaths)
+                  foreach (string linkedFilePath in openedFile.LinkedFileData.Keys)
                   {
                      if (addedOpenFiles.Contains(linkedFilePath))
                      {
@@ -332,7 +332,6 @@ namespace StonehearthEditor
       {
          Properties.Settings.Default.ManifestViewTreeSplitterDistance = splitContainer2.SplitterDistance;
          Properties.Settings.Default.Save();
-
       }
 
       private void ManifestView_Leave(object sender, EventArgs e)
