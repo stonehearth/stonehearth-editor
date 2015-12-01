@@ -224,6 +224,7 @@ namespace StonehearthEditor
       // Returns true if should show parent node
       public override bool UpdateTreeNode(TreeNode node, string filter)
       {
+         mTreeNode = node;
          node.SelectedImageIndex = (int)JsonType;
          node.ImageIndex = (int)JsonType;
          bool hasChildMatchingFilter = false;
@@ -233,14 +234,15 @@ namespace StonehearthEditor
             {
                FileData recipeJsonData = mOpenedFiles[1];
                TreeNode recipes = new TreeNode(recipeJsonData.FileName);
-               foreach (string recipePath in recipeJsonData.LinkedFileData.Keys)
+               recipeJsonData.UpdateTreeNode(recipes, filter);
+               foreach (KeyValuePair<string, FileData> recipe in recipeJsonData.LinkedFileData)
                {
+                  string recipePath = recipe.Key;
                   string recipeName = System.IO.Path.GetFileNameWithoutExtension(recipePath);
                   if (string.IsNullOrEmpty(filter) || recipeName.Contains(filter))
                   {
                      TreeNode recipeNode = new TreeNode(recipeName);
-                     recipeNode.ImageIndex = (int)JSONTYPE.RECIPE;
-                     recipeNode.SelectedImageIndex = (int)JSONTYPE.RECIPE;
+                     recipe.Value.UpdateTreeNode(recipeNode, filter);
                      recipes.Nodes.Add(recipeNode);
                      hasChildMatchingFilter = true;
                   }

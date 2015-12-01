@@ -10,6 +10,7 @@ namespace StonehearthEditor
 {
    public abstract class FileData
    {
+      protected TreeNode mTreeNode;
       private string mFlatFileData;
       protected bool mIsModified = false;
 
@@ -23,6 +24,10 @@ namespace StonehearthEditor
       public Dictionary<string, FileData> LinkedFileData { get { return mLinkedFileData; } }
       public List<FileData> OpenedFiles { get { return mOpenedFiles; } }
       public List<FileData> RelatedFiles { get { return mRelatedFiles; } }
+
+      public TreeNode TreeNode {
+         get { return mTreeNode; }
+      }
 
       public string Path { get { return mPath; } }
 

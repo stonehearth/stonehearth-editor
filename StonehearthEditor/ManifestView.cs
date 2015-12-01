@@ -144,14 +144,16 @@ namespace StonehearthEditor
          new ModuleDataManager(MainForm.kModsDirectoryPath);
          ModuleDataManager.GetInstance().Load();
          ModuleDataManager.GetInstance().FilterAliasTree(treeView, null);
+         searchButton.PerformClick();
 
          if (Properties.Settings.Default.LastSelectedManifestPath != null)
          {
             FileData file = ModuleDataManager.GetInstance().GetSelectedFileData(Properties.Settings.Default.LastSelectedManifestPath);
-            SetSelectedFileData(file);
+            if (file != null && file.TreeNode != null)
+            {
+               treeView.SelectedNode = file.TreeNode;
+            } 
          }
-
-         searchButton.PerformClick();
       }
       private void dependenciesListView_MouseDoubleClick(object sender, MouseEventArgs e)
       {
