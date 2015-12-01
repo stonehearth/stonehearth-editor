@@ -135,8 +135,7 @@ namespace StonehearthEditor
  
       private void searchBox_TextChanged(object sender, EventArgs e)
       {
-         string searchTerm = searchBox.Text;
-         ModuleDataManager.GetInstance().FilterAliasTree(treeView, searchTerm);
+         searchButton.PerformClick();
       }
 
       public void Reload()
@@ -146,6 +145,7 @@ namespace StonehearthEditor
          new ModuleDataManager(MainForm.kModsDirectoryPath);
          ModuleDataManager.GetInstance().Load();
          ModuleDataManager.GetInstance().FilterAliasTree(treeView, null);
+         searchButton.PerformClick();
       }
       private void dependenciesListView_MouseDoubleClick(object sender, MouseEventArgs e)
       {
@@ -361,6 +361,15 @@ namespace StonehearthEditor
          if (jsonFileData.AddIconicVersion())
          {
             Reload();
+         }
+      }
+
+      private void searchBox_KeyPress(object sender, KeyPressEventArgs e)
+      {
+         if (e.KeyChar == (char)Keys.Enter)
+         {
+            e.Handled = true;
+            searchButton.PerformClick();
          }
       }
    }

@@ -167,6 +167,7 @@
          this.searchBox.TabIndex = 3;
          this.searchBox.WordWrap = false;
          this.searchBox.TextChanged += new System.EventHandler(this.searchBox_TextChanged);
+         this.searchBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.searchBox_KeyPress);
          // 
          // searchButton
          // 
