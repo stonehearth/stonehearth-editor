@@ -359,7 +359,10 @@ namespace StonehearthEditor
          {
             return; // Don't know how to clone something not jsonFileData
          }
-         jsonFileData.AddIconicVersion();
+         if (jsonFileData.AddIconicVersion())
+         {
+            Reload();
+         }
       }
    }
 }

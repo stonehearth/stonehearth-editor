@@ -34,12 +34,7 @@ namespace StonehearthEditor
       private ModuleFile mOwner;
       private JSONTYPE mJsonType = JSONTYPE.NONE;
       private JObject mJson;
-      private string mPath;
       private string mDirectory;
-      private List<ModuleFile> mLinkedAliases = new List<ModuleFile>();
-      private List<string> mLinkedFilePaths = new List<string>();
-      private List<FileData> mOpenedJsonFiles = new List<FileData>();
-      private List<FileData> mRelatedJsonFiles = new List<FileData>();
 
       public JsonFileData(string path)
       {
@@ -50,7 +45,7 @@ namespace StonehearthEditor
       protected override void LoadInternal()
       {
          try {
-            mOpenedJsonFiles.Add(this);
+            mOpenedFiles.Add(this);
             string jsonString = FlatFileData;
             mJson = JObject.Parse(jsonString);
             JToken typeObject = mJson["type"];
@@ -90,7 +85,7 @@ namespace StonehearthEditor
                      ghostFilePath = JsonHelper.NormalizeSystemPath(ghostFilePath);
                      JsonFileData ghost = new JsonFileData(ghostFilePath);
                      ghost.Load();
-                     mOpenedJsonFiles.Add(ghost);
+                     mOpenedFiles.Add(ghost);
                   }
                   JToken iconicForm = entityFormsComponent["iconic_form"];
                   if (iconicForm != null)
@@ -99,7 +94,7 @@ namespace StonehearthEditor
                      iconicFilePath = JsonHelper.NormalizeSystemPath(iconicFilePath);
                      JsonFileData iconic = new JsonFileData(iconicFilePath);
                      iconic.Load();
-                     mOpenedJsonFiles.Add(iconic);
+                     mOpenedFiles.Add(iconic);
                   }
                }
                break;
@@ -117,10 +112,10 @@ namespace StonehearthEditor
                   {
                      JsonFileData recipe = new JsonFileData(recipePath);
                      recipe.Load();
-                     recipe.mRelatedJsonFiles.Add(recipes);
-                     recipes.mRelatedJsonFiles.Add(recipe);
+                     recipe.mRelatedFiles.Add(recipes);
+                     recipes.mRelatedFiles.Add(recipe);
                   }
-                  mOpenedJsonFiles.Add(recipes);
+                  mOpenedFiles.Add(recipes);
                }
                break;
             case JSONTYPE.RECIPE:
@@ -172,8 +167,17 @@ namespace StonehearthEditor
                MessageBox.Show("File " + Path + " links to non-existent file " + linkedFile);
                continue;
             }
-               
-            mLinkedFilePaths.Add(linkedFile);
+            if (System.IO.Path.GetExtension(linkedFile).Equals("qb"))
+            {
+               QubicleFileData qubicleFile = new QubicleFileData(linkedFile);
+               qubicleFile.AddLinkingJsonFile(this);
+               qubicleFile.Load();
+               mRelatedFiles.Add(qubicleFile);
+            }
+            else
+            {
+               mLinkedFilePaths.Add(linkedFile);
+            }
          }
       }
 
@@ -200,9 +204,9 @@ namespace StonehearthEditor
          bool hasChildMatchingFilter = false;
          if (JsonType == JSONTYPE.JOB)
          {
-            if (mOpenedJsonFiles.Count > 1)
+            if (mOpenedFiles.Count > 1)
             {
-               FileData recipeJsonData = mOpenedJsonFiles[1];
+               FileData recipeJsonData = mOpenedFiles[1];
                TreeNode recipes = new TreeNode(recipeJsonData.FileName);
                foreach (string recipePath in recipeJsonData.LinkedFilePaths)
                {
@@ -243,7 +247,7 @@ namespace StonehearthEditor
             newNameToUse = newFileName.Replace("_recipe", "");
             if (execute)
             {
-               JsonFileData recipesList = mRelatedJsonFiles[mRelatedJsonFiles.Count - 1] as JsonFileData;
+               JsonFileData recipesList = mRelatedFiles[mRelatedFiles.Count - 1] as JsonFileData;
                JObject json = recipesList.mJson;
                JToken foundParent = null;
                foreach (JToken token in json["craftable_recipes"].Children())
@@ -322,22 +326,33 @@ namespace StonehearthEditor
          }
          string originalFileName = FileName;
          string iconicFilePath = Directory + "/" + originalFileName + "_iconic.json";
-         MessageBox.Show("Adding file " + iconicFilePath);
+         
          try
          {
             string iconicJson = System.Text.Encoding.UTF8.GetString(StonehearthEditor.Properties.Resources.defaultIconic);
             if (iconicJson != null)
             {
-               //JsonFileData iconicFileData = 
                iconicJson = iconicJson.Replace("default", originalFileName);
                using (StreamWriter wr = new StreamWriter(iconicFilePath, false, new UTF8Encoding(false)))
                {
                   wr.Write(iconicJson);
                }
-               JsonFileData iconic = new JsonFileData(iconicFilePath);
-               iconic.Load();
 
-               //mOpenedJsonFiles.Add(iconic);
+               JToken entityFormsComponent = mJson.SelectToken("components.stonehearth:entity_forms");
+               if (entityFormsComponent == null)
+               {
+                  if (mJson["components"] == null)
+                  {
+                     mJson["components"] = new JObject();
+                  }
+                  JObject entityForms = new JObject();
+                  mJson["components"]["stonehearth:entity_forms"] = entityForms;
+                  entityFormsComponent = entityForms;
+               }
+               (entityFormsComponent as JObject).Add("iconic_form", "file(" + originalFileName + "_iconic.json" + ")");
+               TrySetFlatFileData(GetJsonFileString());
+               TrySaveFile();
+               MessageBox.Show("Adding file " + iconicFilePath);
             }
          }
          catch (Exception ee)
@@ -362,31 +377,9 @@ namespace StonehearthEditor
       {
          get { return mJsonType; }
       }
-      public override List<ModuleFile> LinkedAliases
-      {
-         get { return mLinkedAliases; }
-      }
-      public override List<string> LinkedFilePaths
-      {
-         get { return mLinkedFilePaths; }
-      }
-
-      public override string Path
-      {
-         get { return mPath; }
-      }
       public string Directory
       {
          get { return mDirectory; }
-      }
-      
-      public override List<FileData> OpenedFiles
-      {
-         get { return mOpenedJsonFiles; }
-      }
-      public override List<FileData> RelatedFiles
-      {
-         get { return mRelatedJsonFiles; }
       }
    }
 }

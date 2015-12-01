@@ -12,13 +12,22 @@ namespace StonehearthEditor
    {
       private string mFlatFileData;
       protected bool mIsModified = false;
-      public abstract List<ModuleFile> LinkedAliases { get; }
-      public abstract List<string> LinkedFilePaths { get; }
 
-      public abstract List<FileData> OpenedFiles { get; }
-      public abstract List<FileData> RelatedFiles { get; }
+      protected string mPath;
+      protected List<ModuleFile> mLinkedAliases = new List<ModuleFile>();
+      protected List<FileData> mLinkedFileData = new List<FileData>();
+      protected List<string> mLinkedFilePaths = new List<string>();
+      protected List<FileData> mOpenedFiles = new List<FileData>();
+      protected List<FileData> mRelatedFiles = new List<FileData>();
 
-      public abstract string Path { get; }
+      public List<ModuleFile> LinkedAliases { get { return mLinkedAliases; } }
+      public List<FileData> LinkedFileData { get { return mLinkedFileData; } }
+      public List<string> LinkedFilePaths { get { return mLinkedFilePaths; } }
+
+      public List<FileData> OpenedFiles { get { return mOpenedFiles; } }
+      public List<FileData> RelatedFiles { get { return mRelatedFiles; } }
+
+      public string Path { get { return mPath; } }
 
       public string FileName
       {
@@ -85,7 +94,7 @@ namespace StonehearthEditor
          return dependenciesSet;
       }
 
-      public void Load()
+      public virtual void Load()
       {
          if (System.IO.File.Exists(Path))
          {

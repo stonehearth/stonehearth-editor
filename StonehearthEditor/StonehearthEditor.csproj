@@ -124,6 +124,7 @@
     <Compile Include="FilePreview.Designer.cs">
       <DependentUpon>FilePreview.cs</DependentUpon>
     </Compile>
+    <Compile Include="QubicleFileData.cs" />
     <EmbeddedResource Include="EncounterDesignerView.resx">
       <DependentUpon>EncounterDesignerView.cs</DependentUpon>
     </EmbeddedResource>
