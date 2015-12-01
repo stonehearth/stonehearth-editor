@@ -73,7 +73,7 @@
             this.makeFineVersionToolStripMenuItem,
             this.copyFullAliasToolStripMenuItem});
          this.aliasContextMenu.Name = "aliasContextMenu";
-         this.aliasContextMenu.Size = new System.Drawing.Size(195, 114);
+         this.aliasContextMenu.Size = new System.Drawing.Size(195, 92);
          // 
          // aliasContextDuplicate
          // 
@@ -114,7 +114,6 @@
          // 
          // splitContainer2
          // 
-         this.splitContainer2.DataBindings.Add(new System.Windows.Forms.Binding("SplitterDistance", global::StonehearthEditor.Properties.Settings.Default, "ManifestViewTreeSplitterDistance", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
          this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
          this.splitContainer2.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
          this.splitContainer2.Location = new System.Drawing.Point(0, 0);
@@ -130,8 +129,9 @@
          this.splitContainer2.Panel2.Controls.Add(this.splitContainer3);
          this.splitContainer2.Panel2.Controls.Add(this.selectedFilePathTextBox);
          this.splitContainer2.Size = new System.Drawing.Size(681, 472);
-         this.splitContainer2.SplitterDistance = global::StonehearthEditor.Properties.Settings.Default.ManifestViewTreeSplitterDistance;
+         this.splitContainer2.SplitterDistance = 200;
          this.splitContainer2.TabIndex = 3;
+         this.splitContainer2.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.splitContainer2_SplitterMoved);
          // 
          // treeView
          // 
@@ -295,6 +295,7 @@
          this.Controls.Add(this.splitContainer2);
          this.Name = "ManifestView";
          this.Size = new System.Drawing.Size(681, 472);
+         this.Load += new System.EventHandler(this.ManifestView_Load);
          this.aliasContextMenu.ResumeLayout(false);
          this.splitContainer2.Panel1.ResumeLayout(false);
          this.splitContainer2.Panel2.ResumeLayout(false);
