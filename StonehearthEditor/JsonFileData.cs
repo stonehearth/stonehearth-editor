@@ -343,7 +343,9 @@ namespace StonehearthEditor
          catch (Exception ee)
          {
             MessageBox.Show("Unable to add iconic file because " + ee.Message);
+            return false;
          }
+         return true;
       }
 
       public void SetModuleFile(ModuleFile moduleFile)
