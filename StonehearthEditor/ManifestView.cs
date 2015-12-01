@@ -345,5 +345,21 @@ namespace StonehearthEditor
       {
          splitContainer2.SplitterDistance = Properties.Settings.Default.ManifestViewTreeSplitterDistance;
       }
+
+      private void addIconicVersionToolStripMenuItem_Click(object sender, EventArgs e)
+      {
+         TreeNode selectedNode = treeView.SelectedNode;
+         FileData selectedFileData = ModuleDataManager.GetInstance().GetSelectedFileData(treeView.SelectedNode);
+         if (selectedFileData == null)
+         {
+            return;
+         }
+         JsonFileData jsonFileData = selectedFileData as JsonFileData;
+         if (jsonFileData == null)
+         {
+            return; // Don't know how to clone something not jsonFileData
+         }
+         jsonFileData.
+      }
    }
 }

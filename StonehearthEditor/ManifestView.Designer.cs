@@ -49,6 +49,7 @@
          this.panel2 = new System.Windows.Forms.Panel();
          this.iconView = new System.Windows.Forms.PictureBox();
          this.selectedFilePathTextBox = new System.Windows.Forms.TextBox();
+         this.addIconicVersionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
          this.aliasContextMenu.SuspendLayout();
          ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
          this.splitContainer2.Panel1.SuspendLayout();
@@ -68,10 +69,11 @@
          // 
          this.aliasContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.aliasContextDuplicate,
+            this.addIconicVersionToolStripMenuItem,
             this.makeFineVersionToolStripMenuItem,
             this.copyFullAliasToolStripMenuItem});
          this.aliasContextMenu.Name = "aliasContextMenu";
-         this.aliasContextMenu.Size = new System.Drawing.Size(195, 70);
+         this.aliasContextMenu.Size = new System.Drawing.Size(195, 114);
          // 
          // aliasContextDuplicate
          // 
@@ -279,6 +281,13 @@
          this.selectedFilePathTextBox.Size = new System.Drawing.Size(477, 20);
          this.selectedFilePathTextBox.TabIndex = 4;
          // 
+         // addIconicVersionToolStripMenuItem
+         // 
+         this.addIconicVersionToolStripMenuItem.Name = "addIconicVersionToolStripMenuItem";
+         this.addIconicVersionToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
+         this.addIconicVersionToolStripMenuItem.Text = "Add Iconic Version";
+         this.addIconicVersionToolStripMenuItem.Click += new System.EventHandler(this.addIconicVersionToolStripMenuItem_Click);
+         // 
          // ManifestView
          // 
          this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -327,5 +336,6 @@
       private System.Windows.Forms.ToolStripMenuItem makeFineVersionToolStripMenuItem;
       private System.Windows.Forms.ToolStripMenuItem copyFullAliasToolStripMenuItem;
       private System.Windows.Forms.ImageList manifestImageList;
+      private System.Windows.Forms.ToolStripMenuItem addIconicVersionToolStripMenuItem;
    }
 }

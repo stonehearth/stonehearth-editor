@@ -3,6 +3,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
@@ -34,6 +35,7 @@ namespace StonehearthEditor
       private JSONTYPE mJsonType = JSONTYPE.NONE;
       private JObject mJson;
       private string mPath;
+      private string mDirectory;
       private List<ModuleFile> mLinkedAliases = new List<ModuleFile>();
       private List<string> mLinkedFilePaths = new List<string>();
       private List<FileData> mOpenedJsonFiles = new List<FileData>();
@@ -42,6 +44,7 @@ namespace StonehearthEditor
       public JsonFileData(string path)
       {
          mPath = path;
+         mDirectory = JsonHelper.NormalizeSystemPath(System.IO.Path.GetDirectoryName(Path));
       }
 
       protected override void LoadInternal()
@@ -72,7 +75,7 @@ namespace StonehearthEditor
       }
       private void ParseJsonSpecificData()
       {
-         string directory = System.IO.Path.GetDirectoryName(Path);
+         string directory = Directory;
          switch (mJsonType)
          {
             case JSONTYPE.ENTITY:
@@ -157,7 +160,7 @@ namespace StonehearthEditor
 
       private void ParseLinkedFiles(string jsonString)
       {
-         string directory = System.IO.Path.GetDirectoryName(Path);
+         string directory = Directory;
          Regex matcher = new Regex("file\\([\\S]+\\)");
          foreach (Match match in matcher.Matches(jsonString))
          {
@@ -304,6 +307,45 @@ namespace StonehearthEditor
          return fileName;
       }
 
+      public bool AddIconicVersion()
+      {
+         if (JsonType != JSONTYPE.ENTITY)
+         {
+            return false;
+         }
+         foreach (FileData openedJsonFile in OpenedFiles)
+         {
+            if (openedJsonFile.Path.EndsWith("_iconic.json"))
+            {
+               return false; // already have an iconic
+            }
+         }
+         string originalFileName = FileName;
+         string iconicFilePath = Directory + "/" + originalFileName + "_iconic.json";
+         MessageBox.Show("Adding file " + iconicFilePath);
+         try
+         {
+            string iconicJson = System.Text.Encoding.UTF8.GetString(StonehearthEditor.Properties.Resources.defaultIconic);
+            if (iconicJson != null)
+            {
+               //JsonFileData iconicFileData = 
+               iconicJson = iconicJson.Replace("default", originalFileName);
+               using (StreamWriter wr = new StreamWriter(iconicFilePath, false, new UTF8Encoding(false)))
+               {
+                  wr.Write(iconicJson);
+               }
+               JsonFileData iconic = new JsonFileData(iconicFilePath);
+               iconic.Load();
+
+               //mOpenedJsonFiles.Add(iconic);
+            }
+         }
+         catch (Exception ee)
+         {
+            MessageBox.Show("Unable to add iconic file because " + ee.Message);
+         }
+      }
+
       public void SetModuleFile(ModuleFile moduleFile)
       {
          mOwner = moduleFile;
@@ -331,6 +373,11 @@ namespace StonehearthEditor
       {
          get { return mPath; }
       }
+      public string Directory
+      {
+         get { return mDirectory; }
+      }
+      
       public override List<FileData> OpenedFiles
       {
          get { return mOpenedJsonFiles; }
