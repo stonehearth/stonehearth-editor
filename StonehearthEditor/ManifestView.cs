@@ -84,20 +84,20 @@ namespace StonehearthEditor
                   newTabPage.Controls.Add(filePreview);
                   filePreviewTabs.TabPages.Add(newTabPage);
 
-                  foreach (string linkedFilePath in openedFile.LinkedFileData.Keys)
+                  foreach (KeyValuePair<string, FileData> linkedFile in openedFile.LinkedFileData)
                   {
-                     if (addedOpenFiles.Contains(linkedFilePath))
+                     if (addedOpenFiles.Contains(linkedFile.Key))
                      {
                         continue;
                      }
-                     addedOpenFiles.Add(linkedFilePath);
-                     string extension = Path.GetExtension(linkedFilePath);
-                     if (extension == ".qb")
+                     addedOpenFiles.Add(linkedFile.Key);
+                     
+                     if (linkedFile.Value is QubicleFileData)
                      {
-                        string fileName = Path.GetFileNameWithoutExtension(linkedFilePath);
-                        string qmoPath = JsonHelper.NormalizeSystemPath(Path.GetDirectoryName(linkedFilePath)) + "/" + fileName + ".qmo";
+                        QubicleFileData qbFileData = linkedFile.Value as QubicleFileData;
+                        string fileName = qbFileData.FileName;
                         Button openFileButton = new Button();
-                        openFileButton.Name = System.IO.File.Exists(qmoPath) ? qmoPath : linkedFilePath;
+                        openFileButton.Name = qbFileData.GetOpenFilePath();
                         openFileButton.BackgroundImage = global::StonehearthEditor.Properties.Resources.qmofileicon_small;
                         openFileButton.BackgroundImageLayout = ImageLayout.None;
                         openFileButton.Text = Path.GetFileName(openFileButton.Name);
@@ -108,13 +108,13 @@ namespace StonehearthEditor
                         openFileButton.AutoSize = true;
                         openFileButtonPanel.Controls.Add(openFileButton);
                      }
-                     else if (extension == ".png")
+                     else if (linkedFile.Value is ImageFileData)
                      {
                         if (!hasImage)
                         {
-                           if (System.IO.File.Exists(linkedFilePath))
+                           if (System.IO.File.Exists(linkedFile.Value.Path))
                            {
-                              iconView.ImageLocation = linkedFilePath;
+                              iconView.ImageLocation = linkedFile.Value.Path;
                               hasImage = true;
                            }
                         }

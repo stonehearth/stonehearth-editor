@@ -190,6 +190,7 @@ namespace StonehearthEditor
                QubicleFileData qubicleFile = new QubicleFileData(path);
                qubicleFile.AddLinkingJsonFile(this);
                qubicleFile.RelatedFiles.Add(this);
+               qubicleFile.Load();
                return qubicleFile;
             case ".png":
                ImageFileData imageFile = new ImageFileData(path);

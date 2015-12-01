@@ -11,6 +11,7 @@ namespace StonehearthEditor
    {
       private string mDirectory;
       private bool mIsQb = true;
+      private bool mHasQmo = false;
 
       public QubicleFileData(string path)
       {
@@ -36,9 +37,10 @@ namespace StonehearthEditor
          if (mIsQb)
          {
             // see if the qmo exists
-            string qmoPath = mDirectory + FileName + ".qmo";
+            string qmoPath = GetQmoPath();
             if (System.IO.File.Exists(qmoPath))
             {
+               mHasQmo = true;
                QubicleFileData qmoFile = new QubicleFileData(qmoPath);
                mLinkedFileData.Add(qmoPath, qmoFile);
             }
@@ -57,7 +59,7 @@ namespace StonehearthEditor
             System.IO.Directory.CreateDirectory(newDirectory);
             System.IO.File.Copy(Path, newPath);
          }
-         string qmoPath = mDirectory + FileName + ".qmo";
+         string qmoPath = GetQmoPath();
          if (mIsQb && mLinkedFileData.ContainsKey(qmoPath))
          {
             alreadyCloned.Add(qmoPath);
@@ -65,6 +67,20 @@ namespace StonehearthEditor
             mLinkedFileData[qmoPath].Clone(newQmoPath, oldName, newFileName, alreadyCloned, execute);
          }
          return true;
+      }
+
+      private string GetQmoPath()
+      {
+         return mDirectory + "/" + FileName + ".qmo";
+      }
+
+      public string GetOpenFilePath()
+      {
+         if (mHasQmo)
+         {
+            return GetQmoPath();
+      }
+         return mPath;
       }
    }
 }
