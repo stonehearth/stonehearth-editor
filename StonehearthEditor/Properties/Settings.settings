@@ -23,5 +23,8 @@
     <Setting Name="ManifestViewFileDependenciesSplitter" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">318</Value>
     </Setting>
+    <Setting Name="LastSelectedManifestPath" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
   </Settings>
 </SettingsFile>

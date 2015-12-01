@@ -141,10 +141,16 @@ namespace StonehearthEditor
       public void Reload()
       {
          // Reload the manifest tab.
-         SetSelectedFileData(null);
          new ModuleDataManager(MainForm.kModsDirectoryPath);
          ModuleDataManager.GetInstance().Load();
          ModuleDataManager.GetInstance().FilterAliasTree(treeView, null);
+
+         if (Properties.Settings.Default.LastSelectedManifestPath != null)
+         {
+            FileData file = ModuleDataManager.GetInstance().GetSelectedFileData(Properties.Settings.Default.LastSelectedManifestPath);
+            SetSelectedFileData(file);
+         }
+
          searchButton.PerformClick();
       }
       private void dependenciesListView_MouseDoubleClick(object sender, MouseEventArgs e)
@@ -183,6 +189,11 @@ namespace StonehearthEditor
       {
          FileData file = ModuleDataManager.GetInstance().GetSelectedFileData(treeView.SelectedNode);
          SetSelectedFileData(file);
+         if (treeView.SelectedNode != null)
+         {
+            Properties.Settings.Default.LastSelectedManifestPath = treeView.SelectedNode.FullPath;
+            Properties.Settings.Default.Save();
+         }
          treeView.Focus();
       }
 

@@ -106,5 +106,17 @@ namespace StonehearthEditor.Properties {
                 this["ManifestViewFileDependenciesSplitter"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string LastSelectedManifestPath {
+            get {
+                return ((string)(this["LastSelectedManifestPath"]));
+            }
+            set {
+                this["LastSelectedManifestPath"] = value;
+            }
+        }
     }
 }
