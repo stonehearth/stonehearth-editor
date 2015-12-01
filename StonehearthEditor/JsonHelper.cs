@@ -109,6 +109,28 @@ namespace StonehearthEditor
          return returned;
       }
 
+      // This function from http://stackoverflow.com/questions/275689/how-to-get-relative-path-from-absolute-path
+      public static String MakeRelativePath(String fromPath, String toPath)
+      {
+         if (String.IsNullOrEmpty(fromPath)) throw new ArgumentNullException("fromPath");
+         if (String.IsNullOrEmpty(toPath)) throw new ArgumentNullException("toPath");
+
+         Uri fromUri = new Uri(fromPath);
+         Uri toUri = new Uri(toPath);
+
+         if (fromUri.Scheme != toUri.Scheme) { return toPath; } // path can't be made relative.
+
+         Uri relativeUri = fromUri.MakeRelativeUri(toUri);
+         String relativePath = Uri.UnescapeDataString(relativeUri.ToString());
+
+         if (toUri.Scheme.ToUpperInvariant() == "FILE")
+         {
+            relativePath = relativePath.Replace(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+         }
+
+         return relativePath;
+      }
+
       public static string GetFileFromFileJson(string fileJson, string parentPath)
       {
          parentPath = JsonHelper.NormalizeSystemPath(parentPath);
@@ -141,6 +163,7 @@ namespace StonehearthEditor
             splitParentPath = parentPath.Split(delimeter, parentPathCount);
             splitParentPath[splitParentPath.Length - 1] = "";
             parentPath = string.Join("/", splitParentPath);
+            parentPath = parentPath.Substring(0, parentPath.Length - 1);
          } else if (fileJson.IndexOf('.') < 0)
          {
             string folderName = fullPath.Substring(fullPath.LastIndexOf('/') + 1);

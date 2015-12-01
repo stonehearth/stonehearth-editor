@@ -41,7 +41,10 @@ namespace StonehearthEditor
          {
             string newDirectory = System.IO.Path.GetDirectoryName(newPath);
             System.IO.Directory.CreateDirectory(newDirectory);
-            System.IO.File.Copy(Path, newPath);
+            if (!System.IO.File.Exists(newPath))
+            {
+               System.IO.File.Copy(Path, newPath);
+            }
          }
          return true;
       }

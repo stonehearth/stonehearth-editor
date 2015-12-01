@@ -357,7 +357,22 @@ namespace StonehearthEditor
             string iconicJson = System.Text.Encoding.UTF8.GetString(StonehearthEditor.Properties.Resources.defaultIconic);
             if (iconicJson != null)
             {
-               iconicJson = iconicJson.Replace("default", originalFileName);
+               // Get a linked qb file
+               string newQbFile = null;
+               foreach (FileData data in LinkedFileData.Values)
+               {
+                  if (data is QubicleFileData)
+                  {
+                     newQbFile = data.Path.Replace(".qb", "_iconic.qb");
+                     data.Clone(newQbFile, data.FileName, data.FileName + "_iconic", new HashSet<string>(), true);
+                  }
+               }
+
+               if (newQbFile != null)
+               {
+                  string relativePath = JsonHelper.MakeRelativePath(iconicFilePath, newQbFile);
+                  iconicJson = iconicJson.Replace("default_iconic.qb", relativePath);
+               }
                using (StreamWriter wr = new StreamWriter(iconicFilePath, false, new UTF8Encoding(false)))
                {
                   wr.Write(iconicJson);
@@ -377,14 +392,6 @@ namespace StonehearthEditor
                (entityFormsComponent as JObject).Add("iconic_form", "file(" + originalFileName + "_iconic.json" + ")");
                TrySetFlatFileData(GetJsonFileString());
                TrySaveFile();
-               // Get a linked qb file
-               foreach(FileData data in LinkedFileData.Values)
-               {
-                  if (data is QubicleFileData)
-                  {
-                     
-                  }
-               }
                MessageBox.Show("Adding file " + iconicFilePath);
             }
          }
