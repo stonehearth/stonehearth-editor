@@ -64,7 +64,11 @@ namespace StonehearthEditor
 
       private void Save()
       {
-         mFileData.TrySetFlatFileData(textBox.Text);
+         if (!mFileData.TrySetFlatFileData(textBox.Text))
+         {
+            MessageBox.Show("Unable to save " + mFileData.FileName + ". Invalid Json");
+            return;
+         }
          mFileData.TrySaveFile();
          TabPage parentControl = Parent as TabPage;
          if (parentControl != null)

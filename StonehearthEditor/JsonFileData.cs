@@ -206,6 +206,18 @@ namespace StonehearthEditor
             mLinkedAliases.Add(linkedAlias);
          }
       }
+      protected override bool TryChangeFlatFileData(string newData)
+      {
+         try
+         {
+            JObject json = JObject.Parse(newData);
+         }
+         catch(Exception)
+         {
+            return false;
+         }
+         return true;
+      }
 
       // Returns true if should show parent node
       public override bool UpdateTreeNode(TreeNode node, string filter)
