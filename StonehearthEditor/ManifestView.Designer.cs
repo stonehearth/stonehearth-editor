@@ -33,6 +33,7 @@
          this.aliasContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
          this.aliasContextDuplicate = new System.Windows.Forms.ToolStripMenuItem();
          this.addIconicVersionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+         this.addGhostToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
          this.makeFineVersionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
          this.copyFullAliasToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
          this.manifestImageList = new System.Windows.Forms.ImageList(this.components);
@@ -45,12 +46,11 @@
          this.filePreviewTabs = new System.Windows.Forms.TabControl();
          this.openFileButtonPanel = new System.Windows.Forms.FlowLayoutPanel();
          this.panel3 = new System.Windows.Forms.Panel();
-         this.dependenciesListView = new System.Windows.Forms.ListView();
          this.dependenciesLabel = new System.Windows.Forms.Label();
          this.panel2 = new System.Windows.Forms.Panel();
          this.iconView = new System.Windows.Forms.PictureBox();
          this.selectedFilePathTextBox = new System.Windows.Forms.TextBox();
-         this.addGhostToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+         this.dependenciesListBox = new System.Windows.Forms.ListBox();
          this.aliasContextMenu.SuspendLayout();
          ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
          this.splitContainer2.Panel1.SuspendLayout();
@@ -75,7 +75,7 @@
             this.makeFineVersionToolStripMenuItem,
             this.copyFullAliasToolStripMenuItem});
          this.aliasContextMenu.Name = "aliasContextMenu";
-         this.aliasContextMenu.Size = new System.Drawing.Size(195, 136);
+         this.aliasContextMenu.Size = new System.Drawing.Size(195, 114);
          this.aliasContextMenu.Opening += new System.ComponentModel.CancelEventHandler(this.aliasContextMenu_Opening);
          // 
          // aliasContextDuplicate
@@ -91,6 +91,13 @@
          this.addIconicVersionToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
          this.addIconicVersionToolStripMenuItem.Text = "Add Iconic";
          this.addIconicVersionToolStripMenuItem.Click += new System.EventHandler(this.addIconicVersionToolStripMenuItem_Click);
+         // 
+         // addGhostToolStripMenuItem
+         // 
+         this.addGhostToolStripMenuItem.Name = "addGhostToolStripMenuItem";
+         this.addGhostToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
+         this.addGhostToolStripMenuItem.Text = "Add Ghost";
+         this.addGhostToolStripMenuItem.Click += new System.EventHandler(this.addGhostToolStripMenuItem_Click);
          // 
          // makeFineVersionToolStripMenuItem
          // 
@@ -233,26 +240,13 @@
          // panel3
          // 
          this.panel3.BackColor = System.Drawing.Color.Transparent;
-         this.panel3.Controls.Add(this.dependenciesListView);
+         this.panel3.Controls.Add(this.dependenciesListBox);
          this.panel3.Controls.Add(this.dependenciesLabel);
          this.panel3.Dock = System.Windows.Forms.DockStyle.Fill;
          this.panel3.Location = new System.Drawing.Point(0, 232);
          this.panel3.Name = "panel3";
          this.panel3.Size = new System.Drawing.Size(155, 220);
          this.panel3.TabIndex = 5;
-         // 
-         // dependenciesListView
-         // 
-         this.dependenciesListView.Dock = System.Windows.Forms.DockStyle.Fill;
-         this.dependenciesListView.Location = new System.Drawing.Point(0, 13);
-         this.dependenciesListView.MultiSelect = false;
-         this.dependenciesListView.Name = "dependenciesListView";
-         this.dependenciesListView.Size = new System.Drawing.Size(155, 207);
-         this.dependenciesListView.TabIndex = 2;
-         this.dependenciesListView.UseCompatibleStateImageBehavior = false;
-         this.dependenciesListView.View = System.Windows.Forms.View.List;
-         this.dependenciesListView.SelectedIndexChanged += new System.EventHandler(this.dependenciesListView_SelectedIndexChanged);
-         this.dependenciesListView.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.dependenciesListView_MouseDoubleClick);
          // 
          // dependenciesLabel
          // 
@@ -292,12 +286,19 @@
          this.selectedFilePathTextBox.Size = new System.Drawing.Size(477, 20);
          this.selectedFilePathTextBox.TabIndex = 4;
          // 
-         // addGhostToolStripMenuItem
+         // dependenciesListBox
          // 
-         this.addGhostToolStripMenuItem.Name = "addGhostToolStripMenuItem";
-         this.addGhostToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
-         this.addGhostToolStripMenuItem.Text = "Add Ghost";
-         this.addGhostToolStripMenuItem.Click += new System.EventHandler(this.addGhostToolStripMenuItem_Click);
+         this.dependenciesListBox.Dock = System.Windows.Forms.DockStyle.Fill;
+         this.dependenciesListBox.FormattingEnabled = true;
+         this.dependenciesListBox.HorizontalScrollbar = true;
+         this.dependenciesListBox.Location = new System.Drawing.Point(0, 13);
+         this.dependenciesListBox.MaximumSize = new System.Drawing.Size(500, 100);
+         this.dependenciesListBox.MinimumSize = new System.Drawing.Size(100, 100);
+         this.dependenciesListBox.Name = "dependenciesListBox";
+         this.dependenciesListBox.Size = new System.Drawing.Size(155, 100);
+         this.dependenciesListBox.TabIndex = 4;
+         this.dependenciesListBox.SelectedValueChanged += new System.EventHandler(this.dependenciesListView_SelectedIndexChanged);
+         this.dependenciesListBox.DoubleClick += new System.EventHandler(this.dependenciesListBox_DoubleClick);
          // 
          // ManifestView
          // 
@@ -338,7 +339,6 @@
       private System.Windows.Forms.TabControl filePreviewTabs;
       private System.Windows.Forms.FlowLayoutPanel openFileButtonPanel;
       private System.Windows.Forms.Panel panel3;
-      private System.Windows.Forms.ListView dependenciesListView;
       private System.Windows.Forms.Label dependenciesLabel;
       private System.Windows.Forms.Panel panel2;
       private System.Windows.Forms.PictureBox iconView;
@@ -350,5 +350,6 @@
       private System.Windows.Forms.ImageList manifestImageList;
       private System.Windows.Forms.ToolStripMenuItem addIconicVersionToolStripMenuItem;
       private System.Windows.Forms.ToolStripMenuItem addGhostToolStripMenuItem;
+      private System.Windows.Forms.ListBox dependenciesListBox;
    }
 }

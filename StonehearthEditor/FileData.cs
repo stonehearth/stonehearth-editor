@@ -67,12 +67,13 @@ namespace StonehearthEditor
             }
          }
       }
-      public void FillDependencyListItems(ListView listView)
+      public void FillDependencyListItems(ListBox listView)
       {
          listView.Items.Clear();
          foreach(string dependency in GetDependencies().Keys)
          {
             listView.Items.Add(dependency);
+
          }
       }
 

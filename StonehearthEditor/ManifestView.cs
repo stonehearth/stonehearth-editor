@@ -65,7 +65,7 @@ namespace StonehearthEditor
             openFileButtonPanel.Controls.Clear();
             iconView.ImageLocation = "";
             selectedFilePathTextBox.Text = file.Path;
-            file.FillDependencyListItems(dependenciesListView);
+            file.FillDependencyListItems(dependenciesListBox);
             mSelectedFileData = file;
             JsonFileData fileData = mSelectedFileData as JsonFileData;
             if (fileData != null)
@@ -129,7 +129,7 @@ namespace StonehearthEditor
             mSelectedFileData = null;
             filePreviewTabs.TabPages.Clear();
             selectedFilePathTextBox.Text = "";
-            dependenciesListView.Clear();
+            dependenciesListBox.Items.Clear();
             openFileButtonPanel.Controls.Clear();
          }
       }
@@ -154,37 +154,6 @@ namespace StonehearthEditor
             {
                treeView.SelectedNode = file.TreeNode;
             } 
-         }
-      }
-      private void dependenciesListView_MouseDoubleClick(object sender, MouseEventArgs e)
-      {
-         if (mSelectedFileData == null)
-         {
-            return;
-         }
-         ListViewItem item = dependenciesListView.GetItemAt(e.X, e.Y);
-         string selectedItem = item.Text;
-         if (selectedItem.Contains(":"))
-         {
-            // item is a alias item. we should navigate there.
-            ModuleFile file = ModuleDataManager.GetInstance().GetModuleFile(selectedItem);
-            if (file != null)
-            {
-               SetSelectedFileData(file.FileData);
-            }
-         }
-         else
-         {
-            string fileName = System.IO.Path.GetFileNameWithoutExtension(selectedItem);
-            foreach (TabPage tabPage in filePreviewTabs.TabPages)
-            {
-               string tabName = tabPage.Text.Replace("*", "").Trim();
-               if (tabName.Equals(fileName))
-               {
-                  filePreviewTabs.SelectedTab = tabPage;
-                  break;
-               }
-            }
          }
       }
 
@@ -339,12 +308,11 @@ namespace StonehearthEditor
 
       private void dependenciesListView_SelectedIndexChanged(object sender, EventArgs e)
       {
-         if (dependenciesListView.SelectedItems.Count <= 0)
+         if (dependenciesListBox.SelectedItem == null)
          {
             return;
          }
-         ListViewItem item = dependenciesListView.SelectedItems[0];
-         string selectedItem = item.Text;
+         string selectedItem = (string) dependenciesListBox.SelectedItem;
          if (selectedItem.Contains(".png"))
          {
             // set the image
@@ -546,6 +514,37 @@ namespace StonehearthEditor
             return;
          }
          Reload();
+      }
+
+      private void dependenciesListBox_DoubleClick(object sender, EventArgs e)
+      {
+         if (mSelectedFileData == null)
+         {
+            return;
+         }
+         string selectedItem = (string)dependenciesListBox.SelectedItem;
+         if (selectedItem.Contains(":"))
+         {
+            // item is a alias item. we should navigate there.
+            ModuleFile file = ModuleDataManager.GetInstance().GetModuleFile(selectedItem);
+            if (file != null)
+            {
+               SetSelectedFileData(file.FileData);
+            }
+         }
+         else
+         {
+            string fileName = System.IO.Path.GetFileNameWithoutExtension(selectedItem);
+            foreach (TabPage tabPage in filePreviewTabs.TabPages)
+            {
+               string tabName = tabPage.Text.Replace("*", "").Trim();
+               if (tabName.Equals(fileName))
+               {
+                  filePreviewTabs.SelectedTab = tabPage;
+                  break;
+               }
+            }
+         }
       }
    }
 }
