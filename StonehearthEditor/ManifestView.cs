@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
+using Newtonsoft.Json.Linq;
 
 namespace StonehearthEditor
 {
@@ -206,6 +207,8 @@ namespace StonehearthEditor
          {
             e.Cancel = true;
          }
+         addIconicVersionToolStripMenuItem.Visible = CanAddIconicVersion(file);
+         makeFineVersionToolStripMenuItem.Visible = CanAddFineVersion(file);
       }
 
       private void searchButton_Click(object sender, EventArgs e)
@@ -235,25 +238,36 @@ namespace StonehearthEditor
          // Always select the clicked node
          treeView.SelectedNode = treeView.GetNodeAt(e.X, e.Y);
       }
+      private bool CanAddFineVersion(FileData file)
+      {
+         JsonFileData jsonFileData = file as JsonFileData;
+         if (jsonFileData == null)
+         {
+            return false; // Don't know how to clone something not jsonFileData
+         }
+         ModuleFile moduleFile = jsonFileData.GetModuleFile();
+         if (moduleFile == null || moduleFile.IsFineVersion || jsonFileData.JsonType != JSONTYPE.ENTITY)
+         {
+            return false; // can only make fine version of a module file
+         }
+         string fineFullAlias = moduleFile.FullAlias + ":fine";
+         if (ModuleDataManager.GetInstance().GetModuleFile(fineFullAlias) != null)
+         {
+            return false; // fine already exists
+         }
+         return true;
+      }
 
       private void makeFineVersionToolStripMenuItem_Click(object sender, EventArgs e)
       {
          TreeNode selectedNode = treeView.SelectedNode;
          FileData selectedFileData = ModuleDataManager.GetInstance().GetSelectedFileData(treeView.SelectedNode);
-         if (selectedFileData == null)
+         if (!CanAddFineVersion(selectedFileData))
          {
             return;
          }
          JsonFileData jsonFileData = selectedFileData as JsonFileData;
-         if (jsonFileData == null)
-         {
-            return; // Don't know how to clone something not jsonFileData
-         }
          ModuleFile moduleFile = jsonFileData.GetModuleFile();
-         if (moduleFile == null || moduleFile.IsFineVersion || jsonFileData.JsonType != JSONTYPE.ENTITY)
-         {
-            return; // can only make fine version of a module file
-         }
          string newName = moduleFile.ShortName + ":fine";
          HashSet<string> dependencies = ModuleDataManager.GetInstance().PreviewCloneDependencies(selectedFileData, newName);
          PreviewCloneAliasCallback callback = new PreviewCloneAliasCallback(this, selectedFileData, newName);
@@ -352,23 +366,90 @@ namespace StonehearthEditor
          splitContainer2.SplitterDistance = Properties.Settings.Default.ManifestViewTreeSplitterDistance;
       }
 
+      private bool CanAddIconicVersion(FileData file)
+      {
+         JsonFileData jsonFileData = file as JsonFileData;
+         if (jsonFileData == null)
+         {
+            return false; // Don't know how to clone something not jsonFileData
+         }
+
+         if (jsonFileData.JsonType != JSONTYPE.ENTITY)
+         {
+            return false;
+         }
+         foreach (FileData openedJsonFile in jsonFileData.OpenedFiles)
+         {
+            if (openedJsonFile.Path.EndsWith("_iconic.json"))
+            {
+               return false; // already have an iconic
+            }
+         }
+         return true;
+      }
+
       private void addIconicVersionToolStripMenuItem_Click(object sender, EventArgs e)
       {
          TreeNode selectedNode = treeView.SelectedNode;
          FileData selectedFileData = ModuleDataManager.GetInstance().GetSelectedFileData(treeView.SelectedNode);
-         if (selectedFileData == null)
+         if (!CanAddIconicVersion(selectedFileData))
          {
             return;
          }
          JsonFileData jsonFileData = selectedFileData as JsonFileData;
-         if (jsonFileData == null)
+         string originalFileName = jsonFileData.FileName;
+         string iconicFilePath = jsonFileData.Directory + "/" + originalFileName + "_iconic.json";
+
+         try
          {
-            return; // Don't know how to clone something not jsonFileData
+            string iconicJson = System.Text.Encoding.UTF8.GetString(StonehearthEditor.Properties.Resources.defaultIconic);
+            if (iconicJson != null)
+            {
+               // Get a linked qb file
+               string newQbFile = null;
+               foreach (FileData data in jsonFileData.LinkedFileData.Values)
+               {
+                  if (data is QubicleFileData)
+                  {
+                     newQbFile = data.Path.Replace(".qb", "_iconic.qb");
+                     data.Clone(newQbFile, data.FileName, data.FileName + "_iconic", new HashSet<string>(), true);
+                  }
+               }
+
+               if (newQbFile != null)
+               {
+                  string relativePath = JsonHelper.MakeRelativePath(iconicFilePath, newQbFile);
+                  iconicJson = iconicJson.Replace("default_iconic.qb", relativePath);
+               }
+               using (StreamWriter wr = new StreamWriter(iconicFilePath, false, new UTF8Encoding(false)))
+               {
+                  wr.Write(iconicJson);
+               }
+
+               JObject json = jsonFileData.Json;
+               JToken entityFormsComponent = json.SelectToken("components.stonehearth:entity_forms");
+               if (entityFormsComponent == null)
+               {
+                  if (json["components"] == null)
+                  {
+                     json["components"] = new JObject();
+                  }
+                  JObject entityForms = new JObject();
+                  json["components"]["stonehearth:entity_forms"] = entityForms;
+                  entityFormsComponent = entityForms;
+               }
+               (entityFormsComponent as JObject).Add("iconic_form", "file(" + originalFileName + "_iconic.json" + ")");
+               jsonFileData.TrySetFlatFileData(jsonFileData.GetJsonFileString());
+               jsonFileData.TrySaveFile();
+               MessageBox.Show("Adding file " + iconicFilePath);
+            }
          }
-         if (jsonFileData.AddIconicVersion())
+         catch (Exception ee)
          {
-            Reload();
+            MessageBox.Show("Unable to add iconic file because " + ee.Message);
+            return;
          }
+         Reload();
       }
 
       private void searchBox_KeyPress(object sender, KeyPressEventArgs e)

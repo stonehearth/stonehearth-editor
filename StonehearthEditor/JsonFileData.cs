@@ -338,73 +338,6 @@ namespace StonehearthEditor
          return fileName;
       }
 
-      public bool AddIconicVersion()
-      {
-         if (JsonType != JSONTYPE.ENTITY)
-         {
-            return false;
-         }
-         foreach (FileData openedJsonFile in OpenedFiles)
-         {
-            if (openedJsonFile.Path.EndsWith("_iconic.json"))
-            {
-               return false; // already have an iconic
-            }
-         }
-         string originalFileName = FileName;
-         string iconicFilePath = Directory + "/" + originalFileName + "_iconic.json";
-         
-         try
-         {
-            string iconicJson = System.Text.Encoding.UTF8.GetString(StonehearthEditor.Properties.Resources.defaultIconic);
-            if (iconicJson != null)
-            {
-               // Get a linked qb file
-               string newQbFile = null;
-               foreach (FileData data in LinkedFileData.Values)
-               {
-                  if (data is QubicleFileData)
-                  {
-                     newQbFile = data.Path.Replace(".qb", "_iconic.qb");
-                     data.Clone(newQbFile, data.FileName, data.FileName + "_iconic", new HashSet<string>(), true);
-                  }
-               }
-
-               if (newQbFile != null)
-               {
-                  string relativePath = JsonHelper.MakeRelativePath(iconicFilePath, newQbFile);
-                  iconicJson = iconicJson.Replace("default_iconic.qb", relativePath);
-               }
-               using (StreamWriter wr = new StreamWriter(iconicFilePath, false, new UTF8Encoding(false)))
-               {
-                  wr.Write(iconicJson);
-               }
-
-               JToken entityFormsComponent = mJson.SelectToken("components.stonehearth:entity_forms");
-               if (entityFormsComponent == null)
-               {
-                  if (mJson["components"] == null)
-                  {
-                     mJson["components"] = new JObject();
-                  }
-                  JObject entityForms = new JObject();
-                  mJson["components"]["stonehearth:entity_forms"] = entityForms;
-                  entityFormsComponent = entityForms;
-               }
-               (entityFormsComponent as JObject).Add("iconic_form", "file(" + originalFileName + "_iconic.json" + ")");
-               TrySetFlatFileData(GetJsonFileString());
-               TrySaveFile();
-               MessageBox.Show("Adding file " + iconicFilePath);
-            }
-         }
-         catch (Exception ee)
-         {
-            MessageBox.Show("Unable to add iconic file because " + ee.Message);
-            return false;
-         }
-         return true;
-      }
-
       public void SetModuleFile(ModuleFile moduleFile)
       {
          mOwner = moduleFile;
@@ -422,6 +355,10 @@ namespace StonehearthEditor
       public string Directory
       {
          get { return mDirectory; }
+      }
+      public JObject Json
+      {
+         get { return mJson; }
       }
    }
 }
