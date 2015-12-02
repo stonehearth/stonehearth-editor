@@ -19,12 +19,14 @@ namespace StonehearthEditor
       protected Dictionary<string, FileData> mLinkedFileData = new Dictionary<string, FileData>();
       protected List<FileData> mOpenedFiles = new List<FileData>();
       protected List<FileData> mRelatedFiles = new List<FileData>();
+      protected Dictionary<string, FileData> mReferencedByFileData = new Dictionary<string, FileData>();
 
       public List<ModuleFile> LinkedAliases { get { return mLinkedAliases; } }
       public Dictionary<string, FileData> LinkedFileData { get { return mLinkedFileData; } }
       public List<FileData> OpenedFiles { get { return mOpenedFiles; } }
       public List<FileData> RelatedFiles { get { return mRelatedFiles; } }
 
+      public Dictionary<string, FileData> ReferencedByFileData { get { return mReferencedByFileData; } }
       public TreeNode TreeNode {
          get { return mTreeNode; }
       }
@@ -73,7 +75,15 @@ namespace StonehearthEditor
          foreach(string dependency in GetDependencies().Keys)
          {
             listView.Items.Add(dependency);
+         }
+      }
 
+      public void FillReferencesListItems(ListBox listView)
+      {
+         listView.Items.Clear();
+         foreach (string reference in ReferencedByFileData.Keys)
+         {
+            listView.Items.Add(reference);
          }
       }
 

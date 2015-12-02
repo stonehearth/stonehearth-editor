@@ -66,6 +66,7 @@ namespace StonehearthEditor
             iconView.ImageLocation = "";
             selectedFilePathTextBox.Text = file.Path;
             file.FillDependencyListItems(dependenciesListBox);
+            file.FillReferencesListItems(referencesListBox);
             mSelectedFileData = file;
             JsonFileData fileData = mSelectedFileData as JsonFileData;
             if (fileData != null)
@@ -308,11 +309,12 @@ namespace StonehearthEditor
 
       private void dependenciesListView_SelectedIndexChanged(object sender, EventArgs e)
       {
-         if (dependenciesListBox.SelectedItem == null)
+         ListBox listBox = sender as ListBox;
+         if (listBox.SelectedItem == null)
          {
             return;
          }
-         string selectedItem = (string) dependenciesListBox.SelectedItem;
+         string selectedItem = (string)listBox.SelectedItem;
          if (selectedItem.Contains(".png"))
          {
             // set the image
@@ -522,7 +524,8 @@ namespace StonehearthEditor
          {
             return;
          }
-         string selectedItem = (string)dependenciesListBox.SelectedItem;
+         ListBox listBox = sender as ListBox;
+         string selectedItem = (string)listBox.SelectedItem;
          if (selectedItem.Contains(":"))
          {
             // item is a alias item. we should navigate there.
@@ -535,13 +538,27 @@ namespace StonehearthEditor
          else
          {
             string fileName = System.IO.Path.GetFileNameWithoutExtension(selectedItem);
+            bool foundFile = false;
             foreach (TabPage tabPage in filePreviewTabs.TabPages)
             {
                string tabName = tabPage.Text.Replace("*", "").Trim();
                if (tabName.Equals(fileName))
                {
                   filePreviewTabs.SelectedTab = tabPage;
+                  foundFile = true;
                   break;
+               }
+            }
+            if (!foundFile)
+            {
+               FileData data;
+               if (mSelectedFileData.ReferencedByFileData.TryGetValue(selectedItem, out data))
+               {
+                  SetSelectedFileData(data);
+                  if (data.TreeNode != null)
+                  {
+                     treeView.SelectedNode = data.TreeNode;
+                  }
                }
             }
          }

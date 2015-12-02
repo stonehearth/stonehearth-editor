@@ -45,12 +45,15 @@
          this.splitContainer3 = new System.Windows.Forms.SplitContainer();
          this.filePreviewTabs = new System.Windows.Forms.TabControl();
          this.openFileButtonPanel = new System.Windows.Forms.FlowLayoutPanel();
-         this.panel3 = new System.Windows.Forms.Panel();
+         this.dependenciesPanel = new System.Windows.Forms.Panel();
          this.dependenciesLabel = new System.Windows.Forms.Label();
          this.panel2 = new System.Windows.Forms.Panel();
          this.iconView = new System.Windows.Forms.PictureBox();
          this.selectedFilePathTextBox = new System.Windows.Forms.TextBox();
          this.dependenciesListBox = new System.Windows.Forms.ListBox();
+         this.referencesPanel = new System.Windows.Forms.Panel();
+         this.referencesListBox = new System.Windows.Forms.ListBox();
+         this.referencesListLabel = new System.Windows.Forms.Label();
          this.aliasContextMenu.SuspendLayout();
          ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
          this.splitContainer2.Panel1.SuspendLayout();
@@ -61,9 +64,10 @@
          this.splitContainer3.Panel1.SuspendLayout();
          this.splitContainer3.Panel2.SuspendLayout();
          this.splitContainer3.SuspendLayout();
-         this.panel3.SuspendLayout();
+         this.dependenciesPanel.SuspendLayout();
          this.panel2.SuspendLayout();
          ((System.ComponentModel.ISupportInitialize)(this.iconView)).BeginInit();
+         this.referencesPanel.SuspendLayout();
          this.SuspendLayout();
          // 
          // aliasContextMenu
@@ -145,7 +149,7 @@
          // 
          this.splitContainer2.Panel2.Controls.Add(this.splitContainer3);
          this.splitContainer2.Panel2.Controls.Add(this.selectedFilePathTextBox);
-         this.splitContainer2.Size = new System.Drawing.Size(681, 472);
+         this.splitContainer2.Size = new System.Drawing.Size(762, 569);
          this.splitContainer2.SplitterDistance = 200;
          this.splitContainer2.TabIndex = 3;
          this.splitContainer2.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.splitContainer2_SplitterMoved);
@@ -160,7 +164,7 @@
          this.treeView.Location = new System.Drawing.Point(0, 26);
          this.treeView.Name = "treeView";
          this.treeView.SelectedImageIndex = 0;
-         this.treeView.Size = new System.Drawing.Size(200, 446);
+         this.treeView.Size = new System.Drawing.Size(200, 543);
          this.treeView.TabIndex = 1;
          this.treeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView_AfterSelect);
          this.treeView.MouseClick += new System.Windows.Forms.MouseEventHandler(this.treeView_MouseClick);
@@ -214,9 +218,10 @@
          // 
          // splitContainer3.Panel2
          // 
-         this.splitContainer3.Panel2.Controls.Add(this.panel3);
+         this.splitContainer3.Panel2.Controls.Add(this.referencesPanel);
+         this.splitContainer3.Panel2.Controls.Add(this.dependenciesPanel);
          this.splitContainer3.Panel2.Controls.Add(this.panel2);
-         this.splitContainer3.Size = new System.Drawing.Size(477, 452);
+         this.splitContainer3.Size = new System.Drawing.Size(558, 549);
          this.splitContainer3.SplitterDistance = global::StonehearthEditor.Properties.Settings.Default.ManifestViewFileDependenciesSplitter;
          this.splitContainer3.TabIndex = 3;
          // 
@@ -226,7 +231,7 @@
          this.filePreviewTabs.Location = new System.Drawing.Point(0, 33);
          this.filePreviewTabs.Name = "filePreviewTabs";
          this.filePreviewTabs.SelectedIndex = 0;
-         this.filePreviewTabs.Size = new System.Drawing.Size(318, 419);
+         this.filePreviewTabs.Size = new System.Drawing.Size(318, 516);
          this.filePreviewTabs.TabIndex = 2;
          // 
          // openFileButtonPanel
@@ -237,16 +242,16 @@
          this.openFileButtonPanel.Size = new System.Drawing.Size(318, 33);
          this.openFileButtonPanel.TabIndex = 0;
          // 
-         // panel3
+         // dependenciesPanel
          // 
-         this.panel3.BackColor = System.Drawing.Color.Transparent;
-         this.panel3.Controls.Add(this.dependenciesListBox);
-         this.panel3.Controls.Add(this.dependenciesLabel);
-         this.panel3.Dock = System.Windows.Forms.DockStyle.Fill;
-         this.panel3.Location = new System.Drawing.Point(0, 232);
-         this.panel3.Name = "panel3";
-         this.panel3.Size = new System.Drawing.Size(155, 220);
-         this.panel3.TabIndex = 5;
+         this.dependenciesPanel.BackColor = System.Drawing.Color.Transparent;
+         this.dependenciesPanel.Controls.Add(this.dependenciesListBox);
+         this.dependenciesPanel.Controls.Add(this.dependenciesLabel);
+         this.dependenciesPanel.Dock = System.Windows.Forms.DockStyle.Top;
+         this.dependenciesPanel.Location = new System.Drawing.Point(0, 232);
+         this.dependenciesPanel.Name = "dependenciesPanel";
+         this.dependenciesPanel.Size = new System.Drawing.Size(236, 123);
+         this.dependenciesPanel.TabIndex = 5;
          // 
          // dependenciesLabel
          // 
@@ -265,7 +270,7 @@
          this.panel2.Dock = System.Windows.Forms.DockStyle.Top;
          this.panel2.Location = new System.Drawing.Point(0, 0);
          this.panel2.Name = "panel2";
-         this.panel2.Size = new System.Drawing.Size(155, 232);
+         this.panel2.Size = new System.Drawing.Size(236, 232);
          this.panel2.TabIndex = 4;
          // 
          // iconView
@@ -283,7 +288,7 @@
          this.selectedFilePathTextBox.Location = new System.Drawing.Point(0, 0);
          this.selectedFilePathTextBox.Name = "selectedFilePathTextBox";
          this.selectedFilePathTextBox.ReadOnly = true;
-         this.selectedFilePathTextBox.Size = new System.Drawing.Size(477, 20);
+         this.selectedFilePathTextBox.Size = new System.Drawing.Size(558, 20);
          this.selectedFilePathTextBox.TabIndex = 4;
          // 
          // dependenciesListBox
@@ -293,12 +298,48 @@
          this.dependenciesListBox.HorizontalScrollbar = true;
          this.dependenciesListBox.Location = new System.Drawing.Point(0, 13);
          this.dependenciesListBox.MaximumSize = new System.Drawing.Size(500, 100);
-         this.dependenciesListBox.MinimumSize = new System.Drawing.Size(100, 100);
+         this.dependenciesListBox.MinimumSize = new System.Drawing.Size(200, 100);
          this.dependenciesListBox.Name = "dependenciesListBox";
-         this.dependenciesListBox.Size = new System.Drawing.Size(155, 100);
+         this.dependenciesListBox.Size = new System.Drawing.Size(236, 100);
          this.dependenciesListBox.TabIndex = 4;
          this.dependenciesListBox.SelectedValueChanged += new System.EventHandler(this.dependenciesListView_SelectedIndexChanged);
          this.dependenciesListBox.DoubleClick += new System.EventHandler(this.dependenciesListBox_DoubleClick);
+         // 
+         // referencesPanel
+         // 
+         this.referencesPanel.BackColor = System.Drawing.Color.Transparent;
+         this.referencesPanel.Controls.Add(this.referencesListBox);
+         this.referencesPanel.Controls.Add(this.referencesListLabel);
+         this.referencesPanel.Dock = System.Windows.Forms.DockStyle.Top;
+         this.referencesPanel.Location = new System.Drawing.Point(0, 355);
+         this.referencesPanel.Name = "referencesPanel";
+         this.referencesPanel.Size = new System.Drawing.Size(236, 130);
+         this.referencesPanel.TabIndex = 6;
+         // 
+         // referencesListBox
+         // 
+         this.referencesListBox.Dock = System.Windows.Forms.DockStyle.Fill;
+         this.referencesListBox.FormattingEnabled = true;
+         this.referencesListBox.HorizontalScrollbar = true;
+         this.referencesListBox.Location = new System.Drawing.Point(0, 13);
+         this.referencesListBox.MaximumSize = new System.Drawing.Size(500, 100);
+         this.referencesListBox.MinimumSize = new System.Drawing.Size(200, 100);
+         this.referencesListBox.Name = "referencesListBox";
+         this.referencesListBox.Size = new System.Drawing.Size(236, 100);
+         this.referencesListBox.TabIndex = 4;
+         this.referencesListBox.SelectedIndexChanged += new System.EventHandler(this.dependenciesListView_SelectedIndexChanged);
+         this.referencesListBox.DoubleClick += new System.EventHandler(this.dependenciesListBox_DoubleClick);
+         // 
+         // referencesListLabel
+         // 
+         this.referencesListLabel.AutoSize = true;
+         this.referencesListLabel.Dock = System.Windows.Forms.DockStyle.Top;
+         this.referencesListLabel.Location = new System.Drawing.Point(0, 0);
+         this.referencesListLabel.Margin = new System.Windows.Forms.Padding(3, 10, 3, 3);
+         this.referencesListLabel.Name = "referencesListLabel";
+         this.referencesListLabel.Size = new System.Drawing.Size(81, 13);
+         this.referencesListLabel.TabIndex = 3;
+         this.referencesListLabel.Text = "Referenced By:";
          // 
          // ManifestView
          // 
@@ -306,7 +347,7 @@
          this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
          this.Controls.Add(this.splitContainer2);
          this.Name = "ManifestView";
-         this.Size = new System.Drawing.Size(681, 472);
+         this.Size = new System.Drawing.Size(762, 569);
          this.Load += new System.EventHandler(this.ManifestView_Load);
          this.aliasContextMenu.ResumeLayout(false);
          this.splitContainer2.Panel1.ResumeLayout(false);
@@ -320,10 +361,12 @@
          this.splitContainer3.Panel2.ResumeLayout(false);
          ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).EndInit();
          this.splitContainer3.ResumeLayout(false);
-         this.panel3.ResumeLayout(false);
-         this.panel3.PerformLayout();
+         this.dependenciesPanel.ResumeLayout(false);
+         this.dependenciesPanel.PerformLayout();
          this.panel2.ResumeLayout(false);
          ((System.ComponentModel.ISupportInitialize)(this.iconView)).EndInit();
+         this.referencesPanel.ResumeLayout(false);
+         this.referencesPanel.PerformLayout();
          this.ResumeLayout(false);
 
       }
@@ -338,7 +381,7 @@
       private System.Windows.Forms.SplitContainer splitContainer3;
       private System.Windows.Forms.TabControl filePreviewTabs;
       private System.Windows.Forms.FlowLayoutPanel openFileButtonPanel;
-      private System.Windows.Forms.Panel panel3;
+      private System.Windows.Forms.Panel dependenciesPanel;
       private System.Windows.Forms.Label dependenciesLabel;
       private System.Windows.Forms.Panel panel2;
       private System.Windows.Forms.PictureBox iconView;
@@ -351,5 +394,8 @@
       private System.Windows.Forms.ToolStripMenuItem addIconicVersionToolStripMenuItem;
       private System.Windows.Forms.ToolStripMenuItem addGhostToolStripMenuItem;
       private System.Windows.Forms.ListBox dependenciesListBox;
+      private System.Windows.Forms.Panel referencesPanel;
+      private System.Windows.Forms.ListBox referencesListBox;
+      private System.Windows.Forms.Label referencesListLabel;
    }
 }

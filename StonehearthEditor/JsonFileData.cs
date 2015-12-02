@@ -113,6 +113,7 @@ namespace StonehearthEditor
                      recipes.mRelatedFiles.Add(recipe);
                   }
                   mOpenedFiles.Add(recipes);
+                  recipes.ReferencedByFileData[GetAliasOrFlatName()] = this;
                }
                break;
             case JSONTYPE.RECIPE:
@@ -162,6 +163,7 @@ namespace StonehearthEditor
                if (linkedFileData != null)
                {
                   mLinkedFileData.Add(linkedFile, linkedFileData);
+                  linkedFileData.ReferencedByFileData[GetAliasOrFlatName()] = this;
                }
             }
          }
@@ -192,6 +194,13 @@ namespace StonehearthEditor
          return null;
       }
 
+      private string GetAliasOrFlatName()
+      {
+         ModuleFile moduleFile = GetModuleFile();
+         string flatPath = mPath.Replace(ModuleDataManager.GetInstance().ModsDirectoryPath, "");
+         return (moduleFile != null) ? moduleFile.FullAlias : flatPath;
+      }
+
       private void ParseLinkedAliases(string jsonString)
       {
          Regex matcher = new Regex("\"([A-z|_|-]+\\:[\\S]*)\"");
@@ -204,6 +213,7 @@ namespace StonehearthEditor
                continue;
             }
             mLinkedAliases.Add(linkedAlias);
+            linkedAlias.AddReference(GetAliasOrFlatName(), this);
          }
       }
       protected override bool TryChangeFlatFileData(string newData)

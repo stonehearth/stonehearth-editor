@@ -22,6 +22,8 @@ namespace StonehearthEditor
       private FileData mFileData = null;
       private FileType mType = FileType.UNKNOWN;
       private bool mIsFineVersion = false;
+      // Needed because at the timer we load aliases, the referenced alias might not be loaded
+      protected Dictionary<string, FileData> mReferencesCache = new Dictionary<string, FileData>();
       public ModuleFile(Module module, string alias, string filePath)
       {
          mModule = module;
@@ -51,7 +53,8 @@ namespace StonehearthEditor
          if (mRootFile.EndsWith(".lua"))
          {
             mType = FileType.LUA;
-         } else if (mRootFile.EndsWith(".json"))
+         }
+         else if (mRootFile.EndsWith(".json"))
          {
             mType = FileType.JSON;
          }
@@ -67,6 +70,10 @@ namespace StonehearthEditor
          mFileData = fileData;
          fileData.SetModuleFile(this);
          fileData.Load();
+         foreach (KeyValuePair<string, FileData> data in mReferencesCache)
+         {
+            fileData.ReferencedByFileData[data.Key] = data.Value;
+         }
       }
 
       public FileData GetFileData(string[] path)
@@ -77,7 +84,7 @@ namespace StonehearthEditor
          }
          return FindFileData(FileData, path, 2);
       }
-      
+
       private FileData FindFileData(FileData start, string[] path, int startIndex)
       {
          if (startIndex >= path.Length || start == null)
@@ -105,7 +112,7 @@ namespace StonehearthEditor
                }
             }
          }
-         
+
          return FindFileData(found, path, startIndex + 1);
       }
 
@@ -183,19 +190,33 @@ namespace StonehearthEditor
                mModule.WriteToManifestJson(newAlias, fileLocation);
                return true;
             }
-         } else
+         }
+         else
          {
             return true;
          }
          return false;
       }
 
-      public string ShortName {
+      public string ShortName
+      {
          get { return mShortName; }
       }
       public string FullAlias
       {
          get { return mModule.Name + ':' + mAlias; }
+      }
+
+      public void AddReference(string name, FileData fileData)
+      {
+         if (FileData != null)
+         {
+            FileData.ReferencedByFileData[name] = fileData;
+         }
+         else
+         {
+            mReferencesCache[name] = fileData;
+         }
       }
    }
 }
