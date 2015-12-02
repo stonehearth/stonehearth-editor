@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -268,6 +269,30 @@ namespace StonehearthEditor
             i--;
          // Return length of text before whitespace
          return i + 1;
+      }
+
+      public static string GetFormattedJsonString(JObject json)
+      {
+         try
+         {
+            StringWriter stringWriter = new StringWriter();
+            using (JsonTextWriter jsonTextWriter = new JsonTextWriter(stringWriter))
+            {
+               jsonTextWriter.Formatting = Newtonsoft.Json.Formatting.Indented;
+               jsonTextWriter.Indentation = 3;
+               jsonTextWriter.IndentChar = ' ';
+
+               JsonSerializer jsonSeralizer = new JsonSerializer();
+               jsonSeralizer.NullValueHandling = NullValueHandling.Ignore;
+               jsonSeralizer.Serialize(jsonTextWriter, json);
+            }
+            return stringWriter.ToString();
+         }
+         catch (Exception e)
+         {
+            Console.WriteLine("Could not convert json to string because of exception " + e.Message);
+         }
+         return null;
       }
    }
 }

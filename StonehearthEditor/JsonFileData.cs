@@ -130,25 +130,11 @@ namespace StonehearthEditor
       }
       public string GetJsonFileString()
       {
-         try
-         {
-            StringWriter stringWriter = new StringWriter();
-            using (JsonTextWriter jsonTextWriter = new JsonTextWriter(stringWriter))
-            {
-               jsonTextWriter.Formatting = Newtonsoft.Json.Formatting.Indented;
-               jsonTextWriter.Indentation = 3;
-               jsonTextWriter.IndentChar = ' ';
-
-               JsonSerializer jsonSeralizer = new JsonSerializer();
-               jsonSeralizer.Serialize(jsonTextWriter, mJson);
-            }
-            return stringWriter.ToString();
+         string jsonString = JsonHelper.GetFormattedJsonString(mJson);
+         if (jsonString == null) {
+            Console.WriteLine("Could not convert " + mPath + " to json string");
          }
-         catch (Exception e)
-         {
-            Console.WriteLine("Could not convert " + mPath + " to string because of exception " + e.Message);
-         }
-         return "INVALID JSON";
+         return jsonString != null ? jsonString : "INVALID JSON";
       }
 
       private void ParseLinkedFiles(string jsonString)

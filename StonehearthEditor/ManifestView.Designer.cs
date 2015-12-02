@@ -41,7 +41,6 @@
          this.searchPanel = new System.Windows.Forms.Panel();
          this.searchBox = new System.Windows.Forms.TextBox();
          this.searchButton = new System.Windows.Forms.Button();
-         this.selectedFilePathTextBox = new System.Windows.Forms.TextBox();
          this.splitContainer3 = new System.Windows.Forms.SplitContainer();
          this.filePreviewTabs = new System.Windows.Forms.TabControl();
          this.openFileButtonPanel = new System.Windows.Forms.FlowLayoutPanel();
@@ -50,6 +49,8 @@
          this.dependenciesLabel = new System.Windows.Forms.Label();
          this.panel2 = new System.Windows.Forms.Panel();
          this.iconView = new System.Windows.Forms.PictureBox();
+         this.selectedFilePathTextBox = new System.Windows.Forms.TextBox();
+         this.addGhostToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
          this.aliasContextMenu.SuspendLayout();
          ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
          this.splitContainer2.Panel1.SuspendLayout();
@@ -70,10 +71,11 @@
          this.aliasContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.aliasContextDuplicate,
             this.addIconicVersionToolStripMenuItem,
+            this.addGhostToolStripMenuItem,
             this.makeFineVersionToolStripMenuItem,
             this.copyFullAliasToolStripMenuItem});
          this.aliasContextMenu.Name = "aliasContextMenu";
-         this.aliasContextMenu.Size = new System.Drawing.Size(195, 114);
+         this.aliasContextMenu.Size = new System.Drawing.Size(195, 136);
          this.aliasContextMenu.Opening += new System.ComponentModel.CancelEventHandler(this.aliasContextMenu_Opening);
          // 
          // aliasContextDuplicate
@@ -87,7 +89,7 @@
          // 
          this.addIconicVersionToolStripMenuItem.Name = "addIconicVersionToolStripMenuItem";
          this.addIconicVersionToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
-         this.addIconicVersionToolStripMenuItem.Text = "Add Iconic Version";
+         this.addIconicVersionToolStripMenuItem.Text = "Add Iconic";
          this.addIconicVersionToolStripMenuItem.Click += new System.EventHandler(this.addIconicVersionToolStripMenuItem_Click);
          // 
          // makeFineVersionToolStripMenuItem
@@ -190,15 +192,6 @@
          this.searchButton.UseVisualStyleBackColor = true;
          this.searchButton.Click += new System.EventHandler(this.searchButton_Click);
          // 
-         // selectedFilePathTextBox
-         // 
-         this.selectedFilePathTextBox.Dock = System.Windows.Forms.DockStyle.Top;
-         this.selectedFilePathTextBox.Location = new System.Drawing.Point(0, 0);
-         this.selectedFilePathTextBox.Name = "selectedFilePathTextBox";
-         this.selectedFilePathTextBox.ReadOnly = true;
-         this.selectedFilePathTextBox.Size = new System.Drawing.Size(477, 20);
-         this.selectedFilePathTextBox.TabIndex = 4;
-         // 
          // splitContainer3
          // 
          this.splitContainer3.DataBindings.Add(new System.Windows.Forms.Binding("SplitterDistance", global::StonehearthEditor.Properties.Settings.Default, "ManifestViewFileDependenciesSplitter", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
@@ -290,6 +283,22 @@
          this.iconView.TabIndex = 3;
          this.iconView.TabStop = false;
          // 
+         // selectedFilePathTextBox
+         // 
+         this.selectedFilePathTextBox.Dock = System.Windows.Forms.DockStyle.Top;
+         this.selectedFilePathTextBox.Location = new System.Drawing.Point(0, 0);
+         this.selectedFilePathTextBox.Name = "selectedFilePathTextBox";
+         this.selectedFilePathTextBox.ReadOnly = true;
+         this.selectedFilePathTextBox.Size = new System.Drawing.Size(477, 20);
+         this.selectedFilePathTextBox.TabIndex = 4;
+         // 
+         // addGhostToolStripMenuItem
+         // 
+         this.addGhostToolStripMenuItem.Name = "addGhostToolStripMenuItem";
+         this.addGhostToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
+         this.addGhostToolStripMenuItem.Text = "Add Ghost";
+         this.addGhostToolStripMenuItem.Click += new System.EventHandler(this.addGhostToolStripMenuItem_Click);
+         // 
          // ManifestView
          // 
          this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -340,5 +349,6 @@
       private System.Windows.Forms.ToolStripMenuItem copyFullAliasToolStripMenuItem;
       private System.Windows.Forms.ImageList manifestImageList;
       private System.Windows.Forms.ToolStripMenuItem addIconicVersionToolStripMenuItem;
+      private System.Windows.Forms.ToolStripMenuItem addGhostToolStripMenuItem;
    }
 }

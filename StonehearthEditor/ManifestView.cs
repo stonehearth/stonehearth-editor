@@ -207,7 +207,8 @@ namespace StonehearthEditor
          {
             e.Cancel = true;
          }
-         addIconicVersionToolStripMenuItem.Visible = CanAddIconicVersion(file);
+         addIconicVersionToolStripMenuItem.Visible = CanAddEntityForm(file, "iconic");
+         addGhostToolStripMenuItem.Visible = !CanAddEntityForm(file, "iconic") && CanAddEntityForm(file, "ghost");
          makeFineVersionToolStripMenuItem.Visible = CanAddFineVersion(file);
       }
 
@@ -366,7 +367,7 @@ namespace StonehearthEditor
          splitContainer2.SplitterDistance = Properties.Settings.Default.ManifestViewTreeSplitterDistance;
       }
 
-      private bool CanAddIconicVersion(FileData file)
+      private bool CanAddEntityForm(FileData file, string formName)
       {
          JsonFileData jsonFileData = file as JsonFileData;
          if (jsonFileData == null)
@@ -380,7 +381,7 @@ namespace StonehearthEditor
          }
          foreach (FileData openedJsonFile in jsonFileData.OpenedFiles)
          {
-            if (openedJsonFile.Path.EndsWith("_iconic.json"))
+            if (openedJsonFile.Path.EndsWith("_" + formName + ".json"))
             {
                return false; // already have an iconic
             }
@@ -392,7 +393,7 @@ namespace StonehearthEditor
       {
          TreeNode selectedNode = treeView.SelectedNode;
          FileData selectedFileData = ModuleDataManager.GetInstance().GetSelectedFileData(treeView.SelectedNode);
-         if (!CanAddIconicVersion(selectedFileData))
+         if (!CanAddEntityForm(selectedFileData, "iconic"))
          {
             return;
          }
@@ -459,6 +460,92 @@ namespace StonehearthEditor
             e.Handled = true;
             searchButton.PerformClick();
          }
+      }
+
+      private void TryMoveJToken(string name, JObject from, JObject to)
+      {
+         if (from[name] != null)
+         {
+            to[name] = from[name];
+            from.Property(name).Remove();
+         }
+      }
+
+      private void addGhostToolStripMenuItem_Click(object sender, EventArgs e)
+      {
+         TreeNode selectedNode = treeView.SelectedNode;
+         FileData selectedFileData = ModuleDataManager.GetInstance().GetSelectedFileData(treeView.SelectedNode);
+         if (!CanAddEntityForm(selectedFileData, "ghost"))
+         {
+            return;
+         }
+         JsonFileData jsonFileData = selectedFileData as JsonFileData;
+         string originalFileName = jsonFileData.FileName;
+         string ghostFilePath = jsonFileData.Directory + "/" + originalFileName + "_ghost.json";
+
+         try
+         {
+            JObject ghostJson = new JObject();
+            ghostJson.Add("type", "entity");
+
+            // Get a linked qb file
+            string qbFilePath = null;
+            foreach (FileData data in jsonFileData.LinkedFileData.Values)
+            {
+               if (data is QubicleFileData)
+               {
+                  qbFilePath = data.Path;
+               }
+            }
+            JObject ghostComponents = new JObject();
+            ghostJson["components"] = ghostComponents;
+
+            JObject json = jsonFileData.Json;
+            JObject existingComponents = json["components"] as JObject;
+            if (existingComponents != null)
+            {
+               TryMoveJToken("unit_info", existingComponents, ghostComponents);
+               TryMoveJToken("render_info", existingComponents, ghostComponents);
+               TryMoveJToken("model_variants", existingComponents, ghostComponents);
+               TryMoveJToken("mob", existingComponents, ghostComponents);
+            }
+
+            string ghostJsonString = JsonHelper.GetFormattedJsonString(ghostJson);
+            using (StreamWriter wr = new StreamWriter(ghostFilePath, false, new UTF8Encoding(false)))
+            {
+               wr.Write(ghostJsonString);
+            }
+
+            JToken entityFormsComponent = json.SelectToken("components.stonehearth:entity_forms");
+            if (entityFormsComponent == null)
+            {
+               if (json["components"] == null)
+               {
+                  json["components"] = new JObject();
+               }
+               JObject entityForms = new JObject();
+               json["components"]["stonehearth:entity_forms"] = entityForms;
+               entityFormsComponent = entityForms;
+            }
+            JToken mixins = json["mixins"];
+            if (mixins == null)
+            {
+               json.First.AddAfterSelf(new JProperty("mixins", "file(" + originalFileName + "_ghost.json" + ")"));
+            } else
+            {
+               (mixins as JArray).Add("file(" + originalFileName + "_ghost.json" + ")");
+            }
+            (entityFormsComponent as JObject).Add("ghost_form", "file(" + originalFileName + "_ghost.json" + ")");
+            jsonFileData.TrySetFlatFileData(jsonFileData.GetJsonFileString());
+            jsonFileData.TrySaveFile();
+            MessageBox.Show("Adding file " + ghostFilePath);
+         }
+         catch (Exception ee)
+         {
+            MessageBox.Show("Unable to add iconic file because " + ee.Message);
+            return;
+         }
+         Reload();
       }
    }
 }
