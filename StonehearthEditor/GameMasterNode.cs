@@ -593,16 +593,6 @@ namespace StonehearthEditor
                   mOutEdgeStrings.Add(generatorInfo["spawn_edge"]);
                }
                break;
-            case "random_out_edge":
-               Dictionary<string, string> randomOutEdges = JsonHelper.GetJsonStringDictionary(NodeFile.Json["random_out_edge_info"], "out_edges");
-               foreach(string outEdge in randomOutEdges.Keys)
-               {
-                  if (!outEdge.Equals("none"))
-                  {
-                     mOutEdgeStrings.Add(outEdge);
-                  }
-               }
-               break;
             case "collection_quest":
                Dictionary<string, string> collectionEdges = JsonHelper.GetJsonStringDictionary(NodeFile.Json["collection_quest_info"], "out_edges");
                foreach (KeyValuePair<string, string> collectionEdge in collectionEdges)
