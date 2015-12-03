@@ -187,7 +187,8 @@ namespace StonehearthEditor
             file.TryLoad();
             if (file.FileData != null)
             {
-               mModule.WriteToManifestJson(newAlias, fileLocation);
+               mModule.AddToManifest(newAlias, fileLocation);
+               mModule.WriteManifestToFile();
                return true;
             }
          }

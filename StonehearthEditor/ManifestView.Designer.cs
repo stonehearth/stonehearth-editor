@@ -45,15 +45,15 @@
          this.splitContainer3 = new System.Windows.Forms.SplitContainer();
          this.filePreviewTabs = new System.Windows.Forms.TabControl();
          this.openFileButtonPanel = new System.Windows.Forms.FlowLayoutPanel();
+         this.referencesPanel = new System.Windows.Forms.Panel();
+         this.referencesListBox = new System.Windows.Forms.ListBox();
+         this.referencesListLabel = new System.Windows.Forms.Label();
          this.dependenciesPanel = new System.Windows.Forms.Panel();
+         this.dependenciesListBox = new System.Windows.Forms.ListBox();
          this.dependenciesLabel = new System.Windows.Forms.Label();
          this.panel2 = new System.Windows.Forms.Panel();
          this.iconView = new System.Windows.Forms.PictureBox();
          this.selectedFilePathTextBox = new System.Windows.Forms.TextBox();
-         this.dependenciesListBox = new System.Windows.Forms.ListBox();
-         this.referencesPanel = new System.Windows.Forms.Panel();
-         this.referencesListBox = new System.Windows.Forms.ListBox();
-         this.referencesListLabel = new System.Windows.Forms.Label();
          this.aliasContextMenu.SuspendLayout();
          ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
          this.splitContainer2.Panel1.SuspendLayout();
@@ -64,10 +64,10 @@
          this.splitContainer3.Panel1.SuspendLayout();
          this.splitContainer3.Panel2.SuspendLayout();
          this.splitContainer3.SuspendLayout();
+         this.referencesPanel.SuspendLayout();
          this.dependenciesPanel.SuspendLayout();
          this.panel2.SuspendLayout();
          ((System.ComponentModel.ISupportInitialize)(this.iconView)).BeginInit();
-         this.referencesPanel.SuspendLayout();
          this.SuspendLayout();
          // 
          // aliasContextMenu
@@ -161,11 +161,14 @@
          this.treeView.HideSelection = false;
          this.treeView.ImageIndex = 0;
          this.treeView.ImageList = this.manifestImageList;
+         this.treeView.LabelEdit = true;
          this.treeView.Location = new System.Drawing.Point(0, 26);
          this.treeView.Name = "treeView";
          this.treeView.SelectedImageIndex = 0;
          this.treeView.Size = new System.Drawing.Size(200, 543);
          this.treeView.TabIndex = 1;
+         this.treeView.BeforeLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.treeView_BeforeLabelEdit);
+         this.treeView.AfterLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.treeView_AfterLabelEdit);
          this.treeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView_AfterSelect);
          this.treeView.MouseClick += new System.Windows.Forms.MouseEventHandler(this.treeView_MouseClick);
          // 
@@ -242,6 +245,42 @@
          this.openFileButtonPanel.Size = new System.Drawing.Size(318, 33);
          this.openFileButtonPanel.TabIndex = 0;
          // 
+         // referencesPanel
+         // 
+         this.referencesPanel.BackColor = System.Drawing.Color.Transparent;
+         this.referencesPanel.Controls.Add(this.referencesListBox);
+         this.referencesPanel.Controls.Add(this.referencesListLabel);
+         this.referencesPanel.Dock = System.Windows.Forms.DockStyle.Top;
+         this.referencesPanel.Location = new System.Drawing.Point(0, 355);
+         this.referencesPanel.Name = "referencesPanel";
+         this.referencesPanel.Size = new System.Drawing.Size(236, 130);
+         this.referencesPanel.TabIndex = 6;
+         // 
+         // referencesListBox
+         // 
+         this.referencesListBox.Dock = System.Windows.Forms.DockStyle.Fill;
+         this.referencesListBox.FormattingEnabled = true;
+         this.referencesListBox.HorizontalScrollbar = true;
+         this.referencesListBox.Location = new System.Drawing.Point(0, 13);
+         this.referencesListBox.MaximumSize = new System.Drawing.Size(500, 100);
+         this.referencesListBox.MinimumSize = new System.Drawing.Size(200, 100);
+         this.referencesListBox.Name = "referencesListBox";
+         this.referencesListBox.Size = new System.Drawing.Size(236, 100);
+         this.referencesListBox.TabIndex = 4;
+         this.referencesListBox.SelectedIndexChanged += new System.EventHandler(this.dependenciesListView_SelectedIndexChanged);
+         this.referencesListBox.DoubleClick += new System.EventHandler(this.dependenciesListBox_DoubleClick);
+         // 
+         // referencesListLabel
+         // 
+         this.referencesListLabel.AutoSize = true;
+         this.referencesListLabel.Dock = System.Windows.Forms.DockStyle.Top;
+         this.referencesListLabel.Location = new System.Drawing.Point(0, 0);
+         this.referencesListLabel.Margin = new System.Windows.Forms.Padding(3, 10, 3, 3);
+         this.referencesListLabel.Name = "referencesListLabel";
+         this.referencesListLabel.Size = new System.Drawing.Size(81, 13);
+         this.referencesListLabel.TabIndex = 3;
+         this.referencesListLabel.Text = "Referenced By:";
+         // 
          // dependenciesPanel
          // 
          this.dependenciesPanel.BackColor = System.Drawing.Color.Transparent;
@@ -252,6 +291,20 @@
          this.dependenciesPanel.Name = "dependenciesPanel";
          this.dependenciesPanel.Size = new System.Drawing.Size(236, 123);
          this.dependenciesPanel.TabIndex = 5;
+         // 
+         // dependenciesListBox
+         // 
+         this.dependenciesListBox.Dock = System.Windows.Forms.DockStyle.Fill;
+         this.dependenciesListBox.FormattingEnabled = true;
+         this.dependenciesListBox.HorizontalScrollbar = true;
+         this.dependenciesListBox.Location = new System.Drawing.Point(0, 13);
+         this.dependenciesListBox.MaximumSize = new System.Drawing.Size(500, 100);
+         this.dependenciesListBox.MinimumSize = new System.Drawing.Size(200, 100);
+         this.dependenciesListBox.Name = "dependenciesListBox";
+         this.dependenciesListBox.Size = new System.Drawing.Size(236, 100);
+         this.dependenciesListBox.TabIndex = 4;
+         this.dependenciesListBox.SelectedValueChanged += new System.EventHandler(this.dependenciesListView_SelectedIndexChanged);
+         this.dependenciesListBox.DoubleClick += new System.EventHandler(this.dependenciesListBox_DoubleClick);
          // 
          // dependenciesLabel
          // 
@@ -291,56 +344,6 @@
          this.selectedFilePathTextBox.Size = new System.Drawing.Size(558, 20);
          this.selectedFilePathTextBox.TabIndex = 4;
          // 
-         // dependenciesListBox
-         // 
-         this.dependenciesListBox.Dock = System.Windows.Forms.DockStyle.Fill;
-         this.dependenciesListBox.FormattingEnabled = true;
-         this.dependenciesListBox.HorizontalScrollbar = true;
-         this.dependenciesListBox.Location = new System.Drawing.Point(0, 13);
-         this.dependenciesListBox.MaximumSize = new System.Drawing.Size(500, 100);
-         this.dependenciesListBox.MinimumSize = new System.Drawing.Size(200, 100);
-         this.dependenciesListBox.Name = "dependenciesListBox";
-         this.dependenciesListBox.Size = new System.Drawing.Size(236, 100);
-         this.dependenciesListBox.TabIndex = 4;
-         this.dependenciesListBox.SelectedValueChanged += new System.EventHandler(this.dependenciesListView_SelectedIndexChanged);
-         this.dependenciesListBox.DoubleClick += new System.EventHandler(this.dependenciesListBox_DoubleClick);
-         // 
-         // referencesPanel
-         // 
-         this.referencesPanel.BackColor = System.Drawing.Color.Transparent;
-         this.referencesPanel.Controls.Add(this.referencesListBox);
-         this.referencesPanel.Controls.Add(this.referencesListLabel);
-         this.referencesPanel.Dock = System.Windows.Forms.DockStyle.Top;
-         this.referencesPanel.Location = new System.Drawing.Point(0, 355);
-         this.referencesPanel.Name = "referencesPanel";
-         this.referencesPanel.Size = new System.Drawing.Size(236, 130);
-         this.referencesPanel.TabIndex = 6;
-         // 
-         // referencesListBox
-         // 
-         this.referencesListBox.Dock = System.Windows.Forms.DockStyle.Fill;
-         this.referencesListBox.FormattingEnabled = true;
-         this.referencesListBox.HorizontalScrollbar = true;
-         this.referencesListBox.Location = new System.Drawing.Point(0, 13);
-         this.referencesListBox.MaximumSize = new System.Drawing.Size(500, 100);
-         this.referencesListBox.MinimumSize = new System.Drawing.Size(200, 100);
-         this.referencesListBox.Name = "referencesListBox";
-         this.referencesListBox.Size = new System.Drawing.Size(236, 100);
-         this.referencesListBox.TabIndex = 4;
-         this.referencesListBox.SelectedIndexChanged += new System.EventHandler(this.dependenciesListView_SelectedIndexChanged);
-         this.referencesListBox.DoubleClick += new System.EventHandler(this.dependenciesListBox_DoubleClick);
-         // 
-         // referencesListLabel
-         // 
-         this.referencesListLabel.AutoSize = true;
-         this.referencesListLabel.Dock = System.Windows.Forms.DockStyle.Top;
-         this.referencesListLabel.Location = new System.Drawing.Point(0, 0);
-         this.referencesListLabel.Margin = new System.Windows.Forms.Padding(3, 10, 3, 3);
-         this.referencesListLabel.Name = "referencesListLabel";
-         this.referencesListLabel.Size = new System.Drawing.Size(81, 13);
-         this.referencesListLabel.TabIndex = 3;
-         this.referencesListLabel.Text = "Referenced By:";
-         // 
          // ManifestView
          // 
          this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -361,12 +364,12 @@
          this.splitContainer3.Panel2.ResumeLayout(false);
          ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).EndInit();
          this.splitContainer3.ResumeLayout(false);
+         this.referencesPanel.ResumeLayout(false);
+         this.referencesPanel.PerformLayout();
          this.dependenciesPanel.ResumeLayout(false);
          this.dependenciesPanel.PerformLayout();
          this.panel2.ResumeLayout(false);
          ((System.ComponentModel.ISupportInitialize)(this.iconView)).EndInit();
-         this.referencesPanel.ResumeLayout(false);
-         this.referencesPanel.PerformLayout();
          this.ResumeLayout(false);
 
       }

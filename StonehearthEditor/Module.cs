@@ -118,7 +118,8 @@ namespace StonehearthEditor
             jObj.Add(prop);
          }
       }
-      public void WriteToManifestJson(string alias, string path)
+
+      public void AddToManifest(string alias, string path)
       {
          JToken aliases = mManifestJson["aliases"];
          if (aliases == null)
@@ -129,6 +130,16 @@ namespace StonehearthEditor
          JObject aliasesObject = aliases as JObject;
          aliasesObject.Add(alias, path);
          Sort(aliasesObject);
+      }
+
+      public void RemoveFromManifest(string alias)
+      {
+         JObject aliases = mManifestJson["aliases"] as JObject;
+         aliases.Property(alias).Remove();
+      }
+
+      public void WriteManifestToFile()
+      {
          string manifestPath = Path + "/manifest.json";
          using (StreamWriter wr = new StreamWriter(manifestPath, false, new UTF8Encoding(false)))
          {

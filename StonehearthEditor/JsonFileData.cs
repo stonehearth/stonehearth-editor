@@ -233,6 +233,7 @@ namespace StonehearthEditor
       public override bool UpdateTreeNode(TreeNode node, string filter)
       {
          mTreeNode = node;
+         node.Tag = this;
          node.SelectedImageIndex = (int)JsonType;
          node.ImageIndex = (int)JsonType;
          bool hasChildMatchingFilter = false;

@@ -563,5 +563,49 @@ namespace StonehearthEditor
             }
          }
       }
+
+      private void treeView_BeforeLabelEdit(object sender, NodeLabelEditEventArgs e)
+      {
+         TreeNode node = e.Node;
+         if (node.Tag != null)
+         {
+            JsonFileData jsonFileData = node.Tag as JsonFileData;
+            if (jsonFileData != null && jsonFileData.GetModuleFile() != null)
+            {
+               return; // okay to edit aliases
+            }
+         }
+         e.CancelEdit = true;
+      }
+
+      private void treeView_AfterLabelEdit(object sender, NodeLabelEditEventArgs e)
+      {
+         if (e.Label != null && e.Label.Length > 0)
+         {
+            JsonFileData jsonFileData = e.Node.Tag as JsonFileData;
+            ModuleFile moduleFile = jsonFileData.GetModuleFile();
+            string oldAlias = moduleFile.FullAlias;
+            Module mod = moduleFile.Module;
+            string newAlias = mod.Name + ":" + e.Label;
+
+            // Update the references to use the new alias.
+            foreach (FileData reference in jsonFileData.ReferencedByFileData.Values)
+            {
+               if (reference.FlatFileData != null) {
+                  string updatedFlatFile = reference.FlatFileData.Replace(oldAlias, newAlias);
+                  reference.TrySetFlatFileData(updatedFlatFile);
+                  reference.TrySaveFile();
+               }
+            }
+            
+            mod.AddToManifest(e.Label, moduleFile.OriginalPath);
+            mod.RemoveFromManifest(moduleFile.Name);
+            mod.WriteManifestToFile();
+            Reload();
+         } else
+         {
+            e.CancelEdit = true;
+         }
+      }
    }
 }
