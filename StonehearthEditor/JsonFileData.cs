@@ -11,16 +11,17 @@ namespace StonehearthEditor
 {
    public enum JSONTYPE
    {
-      NONE = 0,
-      ENTITY = 1,
-      BUFF = 2,
-      AI_PACK = 3,
-      EFFECT = 4,
-      RECIPE = 5,
-      COMMAND = 6,
-      ANIMATION = 7,
-      ENCOUNTER = 8,
-      JOB = 9,
+      ERROR = 0,
+      NONE = 1,
+      ENTITY = 2,
+      BUFF = 3,
+      AI_PACK = 4,
+      EFFECT = 5,
+      RECIPE = 6,
+      COMMAND = 7,
+      ANIMATION = 8,
+      ENCOUNTER = 9,
+      JOB = 10,
    };
 
    public interface IModuleFileData
@@ -65,7 +66,7 @@ namespace StonehearthEditor
             ParseJsonSpecificData();
          } catch(Exception e)
          {
-            MessageBox.Show("Failed to load json file " + mPath + ". Error: " + e.Message);
+            mErrors = mErrors + "Failed to load json file " + mPath + ". Error: " + e.Message + "\n";
          }
       }
       private void ParseJsonSpecificData()
@@ -152,7 +153,7 @@ namespace StonehearthEditor
 
                if (!System.IO.File.Exists(linkedFile) && !System.IO.Directory.Exists(linkedFile))
                {
-                  MessageBox.Show("File " + Path + " links to non-existent file " + linkedFile);
+                  mErrors = mErrors + "Links to non-existent file " + linkedFile + "\n";
                   continue;
                }
                if (mLinkedFileData.ContainsKey(linkedFile))
@@ -229,13 +230,43 @@ namespace StonehearthEditor
          return true;
       }
 
+      public override bool HasErrors
+      {
+         get
+         {
+            if (base.HasErrors)
+            {
+               return true;
+            }
+
+            foreach(FileData file in mOpenedFiles)
+            {
+               if (file.Errors != null)
+               {
+                  return true;
+               }
+            }
+
+            return false;
+         }
+      }
+
       // Returns true if should show parent node
       public override bool UpdateTreeNode(TreeNode node, string filter)
       {
          mTreeNode = node;
          node.Tag = this;
-         node.SelectedImageIndex = (int)JsonType;
-         node.ImageIndex = (int)JsonType;
+         if (HasErrors)
+         {
+            node.SelectedImageIndex = 0;
+            node.ImageIndex = 0;
+            node.ToolTipText = mErrors;
+         } else
+         {
+            node.SelectedImageIndex = (int)JsonType;
+            node.ImageIndex = (int)JsonType;
+         }
+         
          bool hasChildMatchingFilter = false;
          if (JsonType == JSONTYPE.JOB)
          {
@@ -267,7 +298,10 @@ namespace StonehearthEditor
          ModuleFile owner = GetModuleFile();
          if (!hasChildMatchingFilter && !string.IsNullOrEmpty(filter) && owner != null && !owner.Name.Contains(filter))
          {
-            return false;
+            if (!filter.Contains("error") || !HasErrors)
+            {
+               return false;
+            }
          }
          
          return true;
@@ -368,6 +402,10 @@ namespace StonehearthEditor
       public JObject Json
       {
          get { return mJson; }
+      }
+      public string Errors
+      {
+         get { return mErrors; }
       }
    }
 }

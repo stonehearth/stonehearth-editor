@@ -122,16 +122,17 @@
          // 
          this.manifestImageList.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("manifestImageList.ImageStream")));
          this.manifestImageList.TransparentColor = System.Drawing.Color.Transparent;
-         this.manifestImageList.Images.SetKeyName(0, "none.png");
-         this.manifestImageList.Images.SetKeyName(1, "entity.png");
-         this.manifestImageList.Images.SetKeyName(2, "buff.png");
-         this.manifestImageList.Images.SetKeyName(3, "ai_pack.png");
-         this.manifestImageList.Images.SetKeyName(4, "effect.png");
-         this.manifestImageList.Images.SetKeyName(5, "recipe.png");
-         this.manifestImageList.Images.SetKeyName(6, "command.png");
-         this.manifestImageList.Images.SetKeyName(7, "animation.png");
-         this.manifestImageList.Images.SetKeyName(8, "encounter.png");
-         this.manifestImageList.Images.SetKeyName(9, "job.png");
+         this.manifestImageList.Images.SetKeyName(0, "error.png");
+         this.manifestImageList.Images.SetKeyName(1, "none.png");
+         this.manifestImageList.Images.SetKeyName(2, "entity.png");
+         this.manifestImageList.Images.SetKeyName(3, "buff.png");
+         this.manifestImageList.Images.SetKeyName(4, "ai_pack.png");
+         this.manifestImageList.Images.SetKeyName(5, "effect.png");
+         this.manifestImageList.Images.SetKeyName(6, "recipe.png");
+         this.manifestImageList.Images.SetKeyName(7, "command.png");
+         this.manifestImageList.Images.SetKeyName(8, "animation.png");
+         this.manifestImageList.Images.SetKeyName(9, "encounter.png");
+         this.manifestImageList.Images.SetKeyName(10, "job.png");
          // 
          // splitContainer2
          // 
@@ -164,7 +165,8 @@
          this.treeView.LabelEdit = true;
          this.treeView.Location = new System.Drawing.Point(0, 26);
          this.treeView.Name = "treeView";
-         this.treeView.SelectedImageIndex = 0;
+         this.treeView.SelectedImageIndex = 1;
+         this.treeView.ShowNodeToolTips = true;
          this.treeView.Size = new System.Drawing.Size(200, 543);
          this.treeView.TabIndex = 1;
          this.treeView.BeforeLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.treeView_BeforeLabelEdit);
@@ -231,9 +233,11 @@
          // filePreviewTabs
          // 
          this.filePreviewTabs.Dock = System.Windows.Forms.DockStyle.Fill;
+         this.filePreviewTabs.ImageList = this.manifestImageList;
          this.filePreviewTabs.Location = new System.Drawing.Point(0, 33);
          this.filePreviewTabs.Name = "filePreviewTabs";
          this.filePreviewTabs.SelectedIndex = 0;
+         this.filePreviewTabs.ShowToolTips = true;
          this.filePreviewTabs.Size = new System.Drawing.Size(318, 516);
          this.filePreviewTabs.TabIndex = 2;
          // 

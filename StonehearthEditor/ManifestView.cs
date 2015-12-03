@@ -81,6 +81,11 @@ namespace StonehearthEditor
                   {
                      newTabPage.Text = newTabPage.Text + "*";
                   }
+                  if (openedFile.HasErrors)
+                  {
+                     newTabPage.ImageIndex = 0;
+                     newTabPage.ToolTipText = openedFile.Errors;
+                  }
                   FilePreview filePreview = new FilePreview(openedFile);
                   filePreview.Dock = DockStyle.Fill;
                   newTabPage.Controls.Add(filePreview);
