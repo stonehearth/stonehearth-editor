@@ -6,6 +6,7 @@ using Microsoft.Msagl.Drawing;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Windows.Forms;
+using System.Linq;
 
 namespace StonehearthEditor
 {
@@ -534,6 +535,44 @@ namespace StonehearthEditor
          get { return mEncounterType; }
       }
 
+      private void AddOutEdgesRecursive(JToken outEdgeSpec, List<string> list)
+      {
+         if (!(outEdgeSpec is JValue))
+         {
+            string specType = outEdgeSpec["type"].ToString();
+            switch (specType)
+            {
+               case "trigger_one":
+               case "trigger_many":
+                  JToken outEdges = outEdgeSpec["out_edges"];
+                  IList<JToken> results = outEdges.ToList();
+                  foreach (JToken child in results)
+                  {
+                     AddOutEdgesRecursive(child, list);
+                  }
+                  break;
+               case "weighted_edge":
+                  JToken outEdge = outEdgeSpec["out_edge"];
+                  AddOutEdgesRecursive(outEdge, list);
+                  break;
+            }
+         }
+         else
+         {
+            list.Add(outEdgeSpec.ToString());
+         }
+      }
+
+      private List<string> ParseOutEdges(JToken outEdgeSpec)
+      {
+         List<string> returned = new List<string>();
+         if (outEdgeSpec != null)
+         {
+            AddOutEdgesRecursive(outEdgeSpec, returned);
+         }
+         return returned;
+      }
+
       public override void LoadData(Dictionary<string, GameMasterNode> allNodes)
       {
          mOutEdgeStrings = new List<string>();
@@ -544,7 +583,7 @@ namespace StonehearthEditor
          {
             mIsStartNode = true;
          }
-         mOutEdgeStrings = JsonHelper.GetJsonStringArray(NodeFile.Json, "out_edge");
+         mOutEdgeStrings = ParseOutEdges(NodeFile.Json["out_edge"]);
          switch(mEncounterType)
          {
             case "generator":
