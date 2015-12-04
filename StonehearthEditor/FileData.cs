@@ -53,9 +53,10 @@ namespace StonehearthEditor
       public abstract bool UpdateTreeNode(TreeNode node, string filter);
       public bool TrySetFlatFileData(string newData)
       {
-         if (TryChangeFlatFileData(newData))
+         string newFlatFileData;
+         if (TryChangeFlatFileData(newData, out newFlatFileData))
          {
-            mFlatFileData = newData;
+            mFlatFileData = newFlatFileData;
             mIsModified = true;
             return true;
          }
@@ -129,6 +130,9 @@ namespace StonehearthEditor
                sr.DiscardBufferedData();
                LoadInternal();
             }
+         } else
+         {
+            mErrors = mErrors + "File " + Path + " does not exist.\n";
          }
       }
       public string FlatFileData
@@ -139,8 +143,9 @@ namespace StonehearthEditor
       // custom load call
       protected virtual void LoadInternal() { }
 
-      protected virtual bool TryChangeFlatFileData(string newData)
+      protected virtual bool TryChangeFlatFileData(string newData, out string newFlatFileData)
       {
+         newFlatFileData = newData;
          return true;
       }
       protected FileData GetLinkedFileData(string path)

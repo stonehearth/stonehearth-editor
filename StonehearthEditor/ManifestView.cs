@@ -383,12 +383,18 @@ namespace StonehearthEditor
             {
                // Get a linked qb file
                string newQbFile = null;
+               JToken defaultModelVariant = jsonFileData.Json.SelectToken("components.model_variants.default");
+               string defaultModelVariantNames = defaultModelVariant != null ?  defaultModelVariant.ToString() : "";
                foreach (FileData data in jsonFileData.LinkedFileData.Values)
                {
                   if (data is QubicleFileData)
                   {
-                     newQbFile = data.Path.Replace(".qb", "_iconic.qb");
-                     data.Clone(newQbFile, data.FileName, data.FileName + "_iconic", new HashSet<string>(), true);
+                     string fileName = data.FileName + ".qb";
+                     if (defaultModelVariantNames.Contains(fileName))
+                     {
+                        newQbFile = data.Path.Replace(".qb", "_iconic.qb");
+                        data.Clone(newQbFile, data.FileName, data.FileName + "_iconic", new HashSet<string>(), true);
+                     }
                   }
                }
 
@@ -397,9 +403,19 @@ namespace StonehearthEditor
                   string relativePath = JsonHelper.MakeRelativePath(iconicFilePath, newQbFile);
                   iconicJson = iconicJson.Replace("default_iconic.qb", relativePath);
                }
-               using (StreamWriter wr = new StreamWriter(iconicFilePath, false, new UTF8Encoding(false)))
+
+               try {
+                  JObject parsedIconicJson = JObject.Parse(iconicJson);
+                  iconicJson = JsonHelper.GetFormattedJsonString(parsedIconicJson); // put it in the parser and back again to make sure we get valid json.
+
+                  using (StreamWriter wr = new StreamWriter(iconicFilePath, false, new UTF8Encoding(false)))
+                  {
+                     wr.Write(iconicJson);
+                  }
+               } catch(Exception e2)
                {
-                  wr.Write(iconicJson);
+                  MessageBox.Show("Unable to write new iconic file because " + e2.Message);
+                  return;
                }
 
                JObject json = jsonFileData.Json;
@@ -481,8 +497,19 @@ namespace StonehearthEditor
             {
                TryMoveJToken("unit_info", existingComponents, ghostComponents);
                TryMoveJToken("render_info", existingComponents, ghostComponents);
-               TryMoveJToken("model_variants", existingComponents, ghostComponents);
                TryMoveJToken("mob", existingComponents, ghostComponents);
+
+               // Only move the default model variant to the ghost:
+               JObject defaultModelVariant = existingComponents["model_variants"] as JObject;
+               if (defaultModelVariant != null && defaultModelVariant.Count == 1)
+               {
+                  TryMoveJToken("model_variants", existingComponents, ghostComponents);
+               } else
+               {
+                  JObject modelVariants = new JObject();
+                  ghostComponents["model_variants"] = modelVariants;
+                  TryMoveJToken("default", defaultModelVariant, modelVariants);
+               }
             }
 
             string ghostJsonString = JsonHelper.GetFormattedJsonString(ghostJson);

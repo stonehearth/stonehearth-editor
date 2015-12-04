@@ -217,14 +217,16 @@ namespace StonehearthEditor
             linkedAlias.AddReference(GetAliasOrFlatName(), this);
          }
       }
-      protected override bool TryChangeFlatFileData(string newData)
+      protected override bool TryChangeFlatFileData(string newData, out string newFlatFileData)
       {
          try
          {
             JObject json = JObject.Parse(newData);
+            newFlatFileData = JsonHelper.GetFormattedJsonString(json);
          }
          catch(Exception)
          {
+            newFlatFileData = null;
             return false;
          }
          return true;
@@ -403,7 +405,7 @@ namespace StonehearthEditor
       {
          get { return mJson; }
       }
-      public string Errors
+      public override string Errors
       {
          get { return mErrors; }
       }
