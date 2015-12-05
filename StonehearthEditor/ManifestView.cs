@@ -185,6 +185,7 @@ namespace StonehearthEditor
          addIconicVersionToolStripMenuItem.Visible = CanAddEntityForm(file, "iconic");
          addGhostToolStripMenuItem.Visible = !CanAddEntityForm(file, "iconic") && CanAddEntityForm(file, "ghost");
          makeFineVersionToolStripMenuItem.Visible = CanAddFineVersion(file);
+         removeFromManifestToolStripMenuItem.Visible = (GetModuleFile(file) != null);
       }
 
       private void searchButton_Click(object sender, EventArgs e)
@@ -232,6 +233,16 @@ namespace StonehearthEditor
             return false; // fine already exists
          }
          return true;
+      }
+
+      private ModuleFile GetModuleFile(FileData file)
+      {
+         IModuleFileData moduleFileData = file as IModuleFileData;
+         if (moduleFileData == null)
+         {
+            return null; //only module file data can have modulefiles
+         }
+         return moduleFileData.GetModuleFile();
       }
 
       private void makeFineVersionToolStripMenuItem_Click(object sender, EventArgs e)
@@ -637,6 +648,19 @@ namespace StonehearthEditor
          } else
          {
             e.CancelEdit = true;
+         }
+      }
+
+      private void removeFromManifestToolStripMenuItem_Click(object sender, EventArgs e)
+      {
+         TreeNode selectedNode = treeView.SelectedNode;
+         FileData selectedFileData = ModuleDataManager.GetInstance().GetSelectedFileData(treeView.SelectedNode);
+         ModuleFile moduleFile = GetModuleFile(selectedFileData);
+         if (moduleFile != null)
+         {
+            moduleFile.Module.RemoveFromManifest(moduleFile.Name);
+            moduleFile.Module.WriteManifestToFile();
+            Reload();
          }
       }
    }

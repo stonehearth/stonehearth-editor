@@ -54,6 +54,7 @@
          this.panel2 = new System.Windows.Forms.Panel();
          this.iconView = new System.Windows.Forms.PictureBox();
          this.selectedFilePathTextBox = new System.Windows.Forms.TextBox();
+         this.removeFromManifestToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
          this.aliasContextMenu.SuspendLayout();
          ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
          this.splitContainer2.Panel1.SuspendLayout();
@@ -77,36 +78,37 @@
             this.addIconicVersionToolStripMenuItem,
             this.addGhostToolStripMenuItem,
             this.makeFineVersionToolStripMenuItem,
-            this.copyFullAliasToolStripMenuItem});
+            this.copyFullAliasToolStripMenuItem,
+            this.removeFromManifestToolStripMenuItem});
          this.aliasContextMenu.Name = "aliasContextMenu";
-         this.aliasContextMenu.Size = new System.Drawing.Size(195, 114);
+         this.aliasContextMenu.Size = new System.Drawing.Size(198, 158);
          this.aliasContextMenu.Opening += new System.ComponentModel.CancelEventHandler(this.aliasContextMenu_Opening);
          // 
          // aliasContextDuplicate
          // 
          this.aliasContextDuplicate.Name = "aliasContextDuplicate";
-         this.aliasContextDuplicate.Size = new System.Drawing.Size(194, 22);
+         this.aliasContextDuplicate.Size = new System.Drawing.Size(197, 22);
          this.aliasContextDuplicate.Text = "Clone";
          this.aliasContextDuplicate.Click += new System.EventHandler(this.aliasContextMenuDuplicate_Click);
          // 
          // addIconicVersionToolStripMenuItem
          // 
          this.addIconicVersionToolStripMenuItem.Name = "addIconicVersionToolStripMenuItem";
-         this.addIconicVersionToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
+         this.addIconicVersionToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
          this.addIconicVersionToolStripMenuItem.Text = "Add Iconic";
          this.addIconicVersionToolStripMenuItem.Click += new System.EventHandler(this.addIconicVersionToolStripMenuItem_Click);
          // 
          // addGhostToolStripMenuItem
          // 
          this.addGhostToolStripMenuItem.Name = "addGhostToolStripMenuItem";
-         this.addGhostToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
+         this.addGhostToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
          this.addGhostToolStripMenuItem.Text = "Add Ghost";
          this.addGhostToolStripMenuItem.Click += new System.EventHandler(this.addGhostToolStripMenuItem_Click);
          // 
          // makeFineVersionToolStripMenuItem
          // 
          this.makeFineVersionToolStripMenuItem.Name = "makeFineVersionToolStripMenuItem";
-         this.makeFineVersionToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
+         this.makeFineVersionToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
          this.makeFineVersionToolStripMenuItem.Text = "Make Fine Version";
          this.makeFineVersionToolStripMenuItem.Click += new System.EventHandler(this.makeFineVersionToolStripMenuItem_Click);
          // 
@@ -114,7 +116,7 @@
          // 
          this.copyFullAliasToolStripMenuItem.Name = "copyFullAliasToolStripMenuItem";
          this.copyFullAliasToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
-         this.copyFullAliasToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
+         this.copyFullAliasToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
          this.copyFullAliasToolStripMenuItem.Text = "Copy Full Alias";
          this.copyFullAliasToolStripMenuItem.Click += new System.EventHandler(this.copyFullAliasToolStripMenuItem_Click);
          // 
@@ -348,6 +350,13 @@
          this.selectedFilePathTextBox.Size = new System.Drawing.Size(558, 20);
          this.selectedFilePathTextBox.TabIndex = 4;
          // 
+         // removeFromManifestToolStripMenuItem
+         // 
+         this.removeFromManifestToolStripMenuItem.Name = "removeFromManifestToolStripMenuItem";
+         this.removeFromManifestToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
+         this.removeFromManifestToolStripMenuItem.Text = "Remove From Manifest";
+         this.removeFromManifestToolStripMenuItem.Click += new System.EventHandler(this.removeFromManifestToolStripMenuItem_Click);
+         // 
          // ManifestView
          // 
          this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -404,5 +413,6 @@
       private System.Windows.Forms.Panel referencesPanel;
       private System.Windows.Forms.ListBox referencesListBox;
       private System.Windows.Forms.Label referencesListLabel;
+      private System.Windows.Forms.ToolStripMenuItem removeFromManifestToolStripMenuItem;
    }
 }
