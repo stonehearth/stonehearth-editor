@@ -294,5 +294,55 @@ namespace StonehearthEditor
          }
          return null;
       }
+
+      public static bool FixupLootTable(JObject json, string selector)
+      {
+         bool modified = false;
+         foreach (JToken lootDrops in json.SelectTokens(selector))
+         {
+            // Try to convert
+            if (lootDrops != null && lootDrops["entries"] == null)
+            {
+               // this loot drops is using the old system
+               JProperty parent = lootDrops.Parent as JProperty;
+               JObject newLootDrops = new JObject();
+               JObject entries = new JObject();
+               JObject always = new JObject();
+               JObject items = new JObject();
+               if (lootDrops["num_rolls"] != null)
+               {
+                  always.Add("num_rolls", lootDrops["num_rolls"]);
+               }
+               foreach (JToken itemToken in lootDrops["items"].Children())
+               {
+                  JObject item = itemToken as JObject;
+                  string uri = item["uri"] != null ? item["uri"].ToString() : "";
+                  if (string.IsNullOrWhiteSpace(item["uri"].ToString()))
+                  {
+                     items.Add("none", item);
+                  }
+                  else
+                  {
+                     int lastColon = uri.LastIndexOf(':');
+                     string shortUri = lastColon > -1 ? uri.Substring(lastColon + 1) : uri;
+                     string uriTest = shortUri;
+                     int index = 1;
+                     while (items[uriTest] != null)
+                     {
+                        index++;
+                        uriTest = shortUri + index;
+                     }
+                     items.Add(uriTest, item);
+                  }
+               }
+               always.Add("items", items);
+               entries.Add("default", always);
+               newLootDrops.Add("entries", entries);
+               parent.Value = newLootDrops;
+               modified = true;
+            }
+         }
+         return modified;
+      }
    }
 }

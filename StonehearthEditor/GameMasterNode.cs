@@ -272,6 +272,12 @@ namespace StonehearthEditor
          node.Attr.FillColor = GameMasterNode.kPurple;
          node.Label.FontSize = 6;
       }
+
+      protected void FixupLoot(string selector)
+      {
+         NodeFile.IsModified = JsonHelper.FixupLootTable(NodeFile.Json, selector);
+         NodeFile.SaveIfNecessary();
+      }
    }
 
    public class CampaignNodeData : NodeData
@@ -590,54 +596,13 @@ namespace StonehearthEditor
             case "city_raid":
                selector = "city_raid_info.missions.*.members.*.loot_drops";
                break;
+            case "donation_dialog":
+               selector = "donation_dialog_info.loot_table";
+               break;
          }
          if (selector != null)
          {
-            foreach (JToken lootDrops in NodeFile.Json.SelectTokens(selector))
-            {
-               // Try to convert
-               if (lootDrops != null && lootDrops["entries"] == null)
-               {
-                  // this loot drops is using the old system
-                  JProperty parent = lootDrops.Parent as JProperty;
-                  JObject newLootDrops = new JObject();
-                  JObject entries = new JObject();
-                  JObject always = new JObject();
-                  JObject items = new JObject();
-                  if (lootDrops["num_rolls"] != null)
-                  {
-                     always.Add("num_rolls", lootDrops["num_rolls"]);
-                  }
-                  foreach (JToken itemToken in lootDrops["items"].Children())
-                  {
-                     JObject item = itemToken as JObject;
-                     string uri = item["uri"] != null ? item["uri"].ToString() : "";
-                     if (string.IsNullOrWhiteSpace(item["uri"].ToString()))
-                     {
-                        items.Add("none", item);
-                     }
-                     else
-                     {
-                        int lastColon = uri.LastIndexOf(':');
-                        string shortUri = lastColon > -1 ? uri.Substring(lastColon + 1) : uri;
-                        string uriTest = shortUri;
-                        int index = 0;
-                        while (items[uriTest] != null)
-                        {
-                           index++;
-                           uriTest = shortUri + index;
-                        }
-                        items.Add(uriTest, item);
-                     }
-                  }
-                  always.Add("items", items);
-                  entries.Add("default", always);
-                  newLootDrops.Add("entries", entries);
-                  parent.Value = newLootDrops;
-                  NodeFile.IsModified = true;
-               }
-            }
-            NodeFile.SaveIfNecessary();
+            FixupLoot(selector);
          }
       }
 
@@ -906,6 +871,11 @@ namespace StonehearthEditor
 
       public override void LoadData(Dictionary<string, GameMasterNode> allNodes)
       {
+      }
+
+      public override void PostLoadFixup()
+      {
+         FixupLoot("script_info.loot_chests.*.loot_drops");
       }
    }
 }
