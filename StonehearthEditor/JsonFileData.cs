@@ -98,15 +98,6 @@ namespace StonehearthEditor
                      mOpenedFiles.Add(iconic);
                   }
                }
-
-               JToken harvestLootTable = mJson.SelectToken("entity_data.stonehearth:harvest_beast_loot_table");
-               if (harvestLootTable != null)
-               {
-                  if (harvestLootTable["entries"] == null)
-                  {
-                     mErrors = mErrors + "using old loot table conventions.\n";
-                  }
-               }
                break;
             case JSONTYPE.JOB:
                // Parse crafter stuff
