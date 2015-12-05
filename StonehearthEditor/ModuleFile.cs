@@ -219,5 +219,18 @@ namespace StonehearthEditor
             mReferencesCache[name] = fileData;
          }
       }
+
+      public void PostLoadFixup()
+      {
+         if (Name == "mining:base_loot_table")
+         {
+            JsonFileData jsonFileData = FileData as JsonFileData;
+            if (JsonHelper.FixupLootTable(jsonFileData.Json, "mineable_blocks.*"))
+            {
+               jsonFileData.TrySetFlatFileData(jsonFileData.GetJsonFileString());
+               jsonFileData.TrySaveFile();
+            }
+         }
+      }
    }
 }

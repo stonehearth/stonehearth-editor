@@ -43,6 +43,11 @@ namespace StonehearthEditor
          {
             module.LoadFiles();
          }
+
+         foreach (Module module in mModules.Values)
+         {
+            module.PostLoadFixup();
+         }
       }
 
       public void FilterAliasTree(TreeView treeView, string searchTerm)

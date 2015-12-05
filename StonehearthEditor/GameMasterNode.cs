@@ -599,6 +599,12 @@ namespace StonehearthEditor
             case "donation_dialog":
                selector = "donation_dialog_info.loot_table";
                break;
+            case "donation":
+               selector = "donation_info.loot_table";
+               break;
+            case "create_mission":
+               selector = "create_mission_info.mission.members.*.loot_drops";
+               break;
          }
          if (selector != null)
          {
@@ -875,7 +881,13 @@ namespace StonehearthEditor
 
       public override void PostLoadFixup()
       {
-         FixupLoot("script_info.loot_chests.*.loot_drops");
+         if (NodeFile.Json["script_info"] != null)
+         {
+            FixupLoot("script_info.loot_chests.*.loot_drops");
+         } else
+         {
+            FixupLoot("*.*.loot_drops");
+         }
       }
    }
 }

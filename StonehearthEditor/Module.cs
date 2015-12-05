@@ -154,5 +154,13 @@ namespace StonehearthEditor
             }
          }
       }
+
+      public void PostLoadFixup()
+      {
+         foreach (ModuleFile moduleFile in mAliases.Values)
+         {
+            moduleFile.PostLoadFixup();
+         }
+      }
    }
 }
