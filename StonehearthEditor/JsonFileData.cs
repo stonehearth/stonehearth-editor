@@ -268,7 +268,14 @@ namespace StonehearthEditor
             node.SelectedImageIndex = (int)JsonType;
             node.ImageIndex = (int)JsonType;
          }
-         
+
+         bool filterMatchesSelf = true;
+         ModuleFile owner = GetModuleFile();
+         if (!string.IsNullOrEmpty(filter) && owner != null && !owner.Name.Contains(filter))
+         {
+            filterMatchesSelf = false;
+         }
+
          bool hasChildMatchingFilter = false;
          if (JsonType == JSONTYPE.JOB)
          {
@@ -281,7 +288,7 @@ namespace StonehearthEditor
                {
                   string recipePath = recipe.Key;
                   string recipeName = System.IO.Path.GetFileNameWithoutExtension(recipePath);
-                  if (string.IsNullOrEmpty(filter) || recipeName.Contains(filter))
+                  if (string.IsNullOrEmpty(filter) || recipeName.Contains(filter) || filterMatchesSelf)
                   {
                      TreeNode recipeNode = new TreeNode(recipeName);
                      recipe.Value.UpdateTreeNode(recipeNode, filter);
@@ -289,16 +296,11 @@ namespace StonehearthEditor
                      hasChildMatchingFilter = true;
                   }
                }
-               if (!string.IsNullOrEmpty(filter) && recipes.Nodes.Count <= 0)
-               {
-                  return false;
-               }
                node.Nodes.Add(recipes);
             }
          }
 
-         ModuleFile owner = GetModuleFile();
-         if (!hasChildMatchingFilter && !string.IsNullOrEmpty(filter) && owner != null && !owner.Name.Contains(filter))
+         if (!hasChildMatchingFilter && !filterMatchesSelf)
          {
             if (!filter.Contains("error") || !HasErrors)
             {
