@@ -177,15 +177,25 @@ namespace StonehearthEditor
 
       private void aliasContextMenu_Opening(object sender, CancelEventArgs e)
       {
+         TreeNode node = treeView.SelectedNode;
          FileData file = ModuleDataManager.GetInstance().GetSelectedFileData(treeView.SelectedNode);
-         if (file == null)
+         if (file != null)
          {
+            addIconicVersionToolStripMenuItem.Visible = CanAddEntityForm(file, "iconic");
+            addGhostToolStripMenuItem.Visible = !CanAddEntityForm(file, "iconic") && CanAddEntityForm(file, "ghost");
+            makeFineVersionToolStripMenuItem.Visible = CanAddFineVersion(file);
+            removeFromManifestToolStripMenuItem.Visible = (GetModuleFile(file) != null);
+            addNewAliasToolStripMenuItem.Visible = false;
             e.Cancel = true;
+         } else
+         {
+            foreach(ToolStripItem item in aliasContextMenu.Items)
+            {
+               item.Visible = false;
+            }
+            addNewAliasToolStripMenuItem.Visible = true;
          }
-         addIconicVersionToolStripMenuItem.Visible = CanAddEntityForm(file, "iconic");
-         addGhostToolStripMenuItem.Visible = !CanAddEntityForm(file, "iconic") && CanAddEntityForm(file, "ghost");
-         makeFineVersionToolStripMenuItem.Visible = CanAddFineVersion(file);
-         removeFromManifestToolStripMenuItem.Visible = (GetModuleFile(file) != null);
+
       }
 
       private void searchButton_Click(object sender, EventArgs e)
@@ -661,6 +671,105 @@ namespace StonehearthEditor
             moduleFile.Module.RemoveFromManifest(moduleFile.Name);
             moduleFile.Module.WriteManifestToFile();
             Reload();
+         }
+      }
+
+      private void addNewAliasToolStripMenuItem_Click(object sender, EventArgs e)
+      {
+         TreeNode selectedNode = treeView.SelectedNode;
+         Module selectedMod = ModuleDataManager.GetInstance().GetMod(selectedNode.Text);
+         if (selectedMod != null) {
+            selectJsonFileDialog.InitialDirectory = System.IO.Path.GetFullPath(selectedMod.Path);
+            selectJsonFileDialog.Tag = selectedMod;
+            selectJsonFileDialog.ShowDialog(this);
+         }
+      }
+
+      private void selectJsonFileDialog_FileOk(object sender, CancelEventArgs e)
+      {
+         string filePath = selectJsonFileDialog.FileName;
+         if (filePath == null)
+         {
+            return;
+         }
+         filePath = JsonHelper.NormalizeSystemPath(filePath);
+         Module selectedMod = selectJsonFileDialog.Tag as Module;
+         if (!filePath.Contains(selectedMod.Path))
+         {
+            MessageBox.Show("The file must be under the directory " + selectedMod.Path);
+            return;
+         }
+         
+         string shortPath = filePath.Replace(selectedMod.Path + "/", "");
+         string[] pathSplit = shortPath.Split('/');
+         string samplePath = string.Empty;
+         for(int i=1; i < (pathSplit.Length - 1); ++i)
+         {
+            if (string.IsNullOrEmpty(samplePath))
+            {
+               samplePath = pathSplit[i];
+            }
+            else
+            {
+               samplePath = samplePath + ":" + pathSplit[i];
+            }
+         }
+
+         if (pathSplit.Length > 2)
+         {
+            // Make the file path not contain the .json part if it doesn't have to
+            string fileName = pathSplit[pathSplit.Length - 1];
+            string extension = System.IO.Path.GetExtension(fileName);
+            if (extension == ".json")
+            {
+               string folder = pathSplit[pathSplit.Length - 2];
+               if (folder.Equals(System.IO.Path.GetFileNameWithoutExtension(fileName)))
+               {
+                  shortPath = shortPath.Replace("/" + fileName, "");
+               }
+            }
+         }
+
+         NewAliasCallback callback = new NewAliasCallback(this, selectedMod, shortPath);
+         InputDialog dialog = new InputDialog("Add New Alias", "Type the name of the alias for " + filePath, samplePath, "Add!");
+         dialog.SetCallback(callback);
+         dialog.ShowDialog();
+      }
+ 
+      private class NewAliasCallback : InputDialog.IDialogCallback
+      {
+         private ManifestView mOwner;
+         private Module mModule;
+         private string mFilePath;
+         public NewAliasCallback(ManifestView owner, Module module, string filePath)
+         {
+            mOwner = owner;
+            mModule = module;
+            mFilePath = filePath;
+         }
+         public void onCancelled()
+         {
+            // Do nothing. user cancelled
+         }
+
+         public bool OnAccept(string inputMessage)
+         {
+            // Do the cloning
+            string newAliasName = inputMessage.Trim();
+            if (newAliasName.Length <= 1)
+            {
+               MessageBox.Show("You must enter a name longer than 1 character for the new alias!");
+               return false;
+            }
+            if (mModule.GetAliasFile(newAliasName) != null)
+            {
+               MessageBox.Show("An alias already exists with that name!");
+               return false;
+            }
+            mModule.AddToManifest(newAliasName, "file(" + mFilePath + ")");
+            mModule.WriteManifestToFile();
+            mOwner.Reload();
+            return true;
          }
       }
    }

@@ -36,6 +36,7 @@
          this.addGhostToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
          this.makeFineVersionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
          this.copyFullAliasToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+         this.removeFromManifestToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
          this.manifestImageList = new System.Windows.Forms.ImageList(this.components);
          this.splitContainer2 = new System.Windows.Forms.SplitContainer();
          this.treeView = new System.Windows.Forms.TreeView();
@@ -54,7 +55,8 @@
          this.panel2 = new System.Windows.Forms.Panel();
          this.iconView = new System.Windows.Forms.PictureBox();
          this.selectedFilePathTextBox = new System.Windows.Forms.TextBox();
-         this.removeFromManifestToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+         this.addNewAliasToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+         this.selectJsonFileDialog = new System.Windows.Forms.OpenFileDialog();
          this.aliasContextMenu.SuspendLayout();
          ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
          this.splitContainer2.Panel1.SuspendLayout();
@@ -79,7 +81,8 @@
             this.addGhostToolStripMenuItem,
             this.makeFineVersionToolStripMenuItem,
             this.copyFullAliasToolStripMenuItem,
-            this.removeFromManifestToolStripMenuItem});
+            this.removeFromManifestToolStripMenuItem,
+            this.addNewAliasToolStripMenuItem});
          this.aliasContextMenu.Name = "aliasContextMenu";
          this.aliasContextMenu.Size = new System.Drawing.Size(198, 158);
          this.aliasContextMenu.Opening += new System.ComponentModel.CancelEventHandler(this.aliasContextMenu_Opening);
@@ -119,6 +122,13 @@
          this.copyFullAliasToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
          this.copyFullAliasToolStripMenuItem.Text = "Copy Full Alias";
          this.copyFullAliasToolStripMenuItem.Click += new System.EventHandler(this.copyFullAliasToolStripMenuItem_Click);
+         // 
+         // removeFromManifestToolStripMenuItem
+         // 
+         this.removeFromManifestToolStripMenuItem.Name = "removeFromManifestToolStripMenuItem";
+         this.removeFromManifestToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
+         this.removeFromManifestToolStripMenuItem.Text = "Remove From Manifest";
+         this.removeFromManifestToolStripMenuItem.Click += new System.EventHandler(this.removeFromManifestToolStripMenuItem_Click);
          // 
          // manifestImageList
          // 
@@ -350,12 +360,19 @@
          this.selectedFilePathTextBox.Size = new System.Drawing.Size(558, 20);
          this.selectedFilePathTextBox.TabIndex = 4;
          // 
-         // removeFromManifestToolStripMenuItem
+         // addNewAliasToolStripMenuItem
          // 
-         this.removeFromManifestToolStripMenuItem.Name = "removeFromManifestToolStripMenuItem";
-         this.removeFromManifestToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
-         this.removeFromManifestToolStripMenuItem.Text = "Remove From Manifest";
-         this.removeFromManifestToolStripMenuItem.Click += new System.EventHandler(this.removeFromManifestToolStripMenuItem_Click);
+         this.addNewAliasToolStripMenuItem.Name = "addNewAliasToolStripMenuItem";
+         this.addNewAliasToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
+         this.addNewAliasToolStripMenuItem.Text = "Add New Alias";
+         this.addNewAliasToolStripMenuItem.Click += new System.EventHandler(this.addNewAliasToolStripMenuItem_Click);
+         // 
+         // selectJsonFileDialog
+         // 
+         this.selectJsonFileDialog.DefaultExt = "json";
+         this.selectJsonFileDialog.Filter = "JSON Files|*.json";
+         this.selectJsonFileDialog.RestoreDirectory = true;
+         this.selectJsonFileDialog.FileOk += new System.ComponentModel.CancelEventHandler(this.selectJsonFileDialog_FileOk);
          // 
          // ManifestView
          // 
@@ -414,5 +431,7 @@
       private System.Windows.Forms.ListBox referencesListBox;
       private System.Windows.Forms.Label referencesListLabel;
       private System.Windows.Forms.ToolStripMenuItem removeFromManifestToolStripMenuItem;
+      private System.Windows.Forms.ToolStripMenuItem addNewAliasToolStripMenuItem;
+      private System.Windows.Forms.OpenFileDialog selectJsonFileDialog;
    }
 }
