@@ -88,6 +88,10 @@ namespace StonehearthEditor
                parentControl.Text = mFileData.FileName + "*";
             }
          }
+         if (e.KeyCode == Keys.Tab)
+         {
+            e.Handled = true;
+         }
       }
 
       private void openFile_Click(object sender, EventArgs e)
@@ -121,6 +125,20 @@ namespace StonehearthEditor
                Console.Write(result);
             }
          }*/
+      }
+      
+      protected override bool ProcessDialogKey(Keys keyData)
+      {
+         if (keyData == Keys.Tab)
+         {
+            return false;
+         }
+         return base.ProcessDialogKey(keyData);
+      }
+
+      protected override bool ProcessTabKey(bool forward)
+      {
+         return false;
       }
    }
 }
