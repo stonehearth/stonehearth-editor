@@ -37,6 +37,7 @@
          this.makeFineVersionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
          this.copyFullAliasToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
          this.removeFromManifestToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+         this.addNewAliasToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
          this.manifestImageList = new System.Windows.Forms.ImageList(this.components);
          this.splitContainer2 = new System.Windows.Forms.SplitContainer();
          this.treeView = new System.Windows.Forms.TreeView();
@@ -55,7 +56,6 @@
          this.panel2 = new System.Windows.Forms.Panel();
          this.iconView = new System.Windows.Forms.PictureBox();
          this.selectedFilePathTextBox = new System.Windows.Forms.TextBox();
-         this.addNewAliasToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
          this.selectJsonFileDialog = new System.Windows.Forms.OpenFileDialog();
          this.aliasContextMenu.SuspendLayout();
          ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
@@ -129,6 +129,13 @@
          this.removeFromManifestToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
          this.removeFromManifestToolStripMenuItem.Text = "Remove From Manifest";
          this.removeFromManifestToolStripMenuItem.Click += new System.EventHandler(this.removeFromManifestToolStripMenuItem_Click);
+         // 
+         // addNewAliasToolStripMenuItem
+         // 
+         this.addNewAliasToolStripMenuItem.Name = "addNewAliasToolStripMenuItem";
+         this.addNewAliasToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
+         this.addNewAliasToolStripMenuItem.Text = "Add New Alias";
+         this.addNewAliasToolStripMenuItem.Click += new System.EventHandler(this.addNewAliasToolStripMenuItem_Click);
          // 
          // manifestImageList
          // 
@@ -241,6 +248,7 @@
          this.splitContainer3.Size = new System.Drawing.Size(558, 549);
          this.splitContainer3.SplitterDistance = global::StonehearthEditor.Properties.Settings.Default.ManifestViewFileDependenciesSplitter;
          this.splitContainer3.TabIndex = 3;
+         this.splitContainer3.TabStop = false;
          // 
          // filePreviewTabs
          // 
@@ -283,6 +291,7 @@
          this.referencesListBox.Name = "referencesListBox";
          this.referencesListBox.Size = new System.Drawing.Size(236, 100);
          this.referencesListBox.TabIndex = 4;
+         this.referencesListBox.TabStop = false;
          this.referencesListBox.SelectedIndexChanged += new System.EventHandler(this.dependenciesListView_SelectedIndexChanged);
          this.referencesListBox.DoubleClick += new System.EventHandler(this.dependenciesListBox_DoubleClick);
          // 
@@ -319,6 +328,7 @@
          this.dependenciesListBox.Name = "dependenciesListBox";
          this.dependenciesListBox.Size = new System.Drawing.Size(236, 100);
          this.dependenciesListBox.TabIndex = 4;
+         this.dependenciesListBox.TabStop = false;
          this.dependenciesListBox.SelectedValueChanged += new System.EventHandler(this.dependenciesListView_SelectedIndexChanged);
          this.dependenciesListBox.DoubleClick += new System.EventHandler(this.dependenciesListBox_DoubleClick);
          // 
@@ -359,13 +369,6 @@
          this.selectedFilePathTextBox.ReadOnly = true;
          this.selectedFilePathTextBox.Size = new System.Drawing.Size(558, 20);
          this.selectedFilePathTextBox.TabIndex = 4;
-         // 
-         // addNewAliasToolStripMenuItem
-         // 
-         this.addNewAliasToolStripMenuItem.Name = "addNewAliasToolStripMenuItem";
-         this.addNewAliasToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
-         this.addNewAliasToolStripMenuItem.Text = "Add New Alias";
-         this.addNewAliasToolStripMenuItem.Click += new System.EventHandler(this.addNewAliasToolStripMenuItem_Click);
          // 
          // selectJsonFileDialog
          // 

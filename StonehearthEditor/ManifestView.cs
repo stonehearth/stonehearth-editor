@@ -185,8 +185,9 @@ namespace StonehearthEditor
             addGhostToolStripMenuItem.Visible = !CanAddEntityForm(file, "iconic") && CanAddEntityForm(file, "ghost");
             makeFineVersionToolStripMenuItem.Visible = CanAddFineVersion(file);
             removeFromManifestToolStripMenuItem.Visible = (GetModuleFile(file) != null);
+            aliasContextDuplicate.Visible = true;
+            copyFullAliasToolStripMenuItem.Visible = true;
             addNewAliasToolStripMenuItem.Visible = false;
-            e.Cancel = true;
          } else
          {
             foreach(ToolStripItem item in aliasContextMenu.Items)
@@ -579,6 +580,10 @@ namespace StonehearthEditor
          }
          ListBox listBox = sender as ListBox;
          string selectedItem = (string)listBox.SelectedItem;
+         if (selectedItem == null)
+         {
+            return;
+         }
          if (selectedItem.Contains(":"))
          {
             // item is a alias item. we should navigate there.
