@@ -373,7 +373,7 @@
          // selectJsonFileDialog
          // 
          this.selectJsonFileDialog.DefaultExt = "json";
-         this.selectJsonFileDialog.Filter = "JSON Files|*.json";
+         this.selectJsonFileDialog.Filter = "JSON Files|*.json|lua Files|*.lua";
          this.selectJsonFileDialog.RestoreDirectory = true;
          this.selectJsonFileDialog.FileOk += new System.ComponentModel.CancelEventHandler(this.selectJsonFileDialog_FileOk);
          // 

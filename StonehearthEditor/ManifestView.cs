@@ -15,6 +15,7 @@ namespace StonehearthEditor
    public partial class ManifestView : UserControl
    {
       private FileData mSelectedFileData = null;
+      private Dictionary<string, string> mLastModuleLocations = new Dictionary<string, string>();
       public ManifestView()
       {
          InitializeComponent();
@@ -682,9 +683,18 @@ namespace StonehearthEditor
       private void addNewAliasToolStripMenuItem_Click(object sender, EventArgs e)
       {
          TreeNode selectedNode = treeView.SelectedNode;
-         Module selectedMod = ModuleDataManager.GetInstance().GetMod(selectedNode.Text);
+         string moduleName = selectedNode.Text;
+         Module selectedMod = ModuleDataManager.GetInstance().GetMod(moduleName);
          if (selectedMod != null) {
-            selectJsonFileDialog.InitialDirectory = System.IO.Path.GetFullPath(selectedMod.Path);
+            string initialDirectory;
+            if (!mLastModuleLocations.TryGetValue(moduleName, out initialDirectory))
+            {
+               initialDirectory = System.IO.Path.GetFullPath(selectedMod.Path);
+            } else
+            {
+               initialDirectory = System.IO.Path.GetFullPath(initialDirectory);
+            }
+            selectJsonFileDialog.InitialDirectory = initialDirectory;
             selectJsonFileDialog.Tag = selectedMod;
             selectJsonFileDialog.ShowDialog(this);
          }
@@ -704,7 +714,7 @@ namespace StonehearthEditor
             MessageBox.Show("The file must be under the directory " + selectedMod.Path);
             return;
          }
-         
+         mLastModuleLocations[selectedMod.Name] = filePath;
          string shortPath = filePath.Replace(selectedMod.Path + "/", "");
          string[] pathSplit = shortPath.Split('/');
          string samplePath = string.Empty;
