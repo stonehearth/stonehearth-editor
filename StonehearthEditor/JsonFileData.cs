@@ -234,8 +234,9 @@ namespace StonehearthEditor
             JObject json = JObject.Parse(newData);
             newFlatFileData = JsonHelper.GetFormattedJsonString(json);
          }
-         catch(Exception)
+         catch(Exception e)
          {
+            MessageBox.Show("Unable to change flat file data. Invalid Json: " + e.Message);
             newFlatFileData = null;
             return false;
          }

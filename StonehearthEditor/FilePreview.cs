@@ -11,7 +11,7 @@ using System.Text.RegularExpressions;
 
 namespace StonehearthEditor
 {
-   public partial class FilePreview : UserControl
+   public partial class FilePreview : UserControl, AliasSelectionDialog.IDialogCallback
    {
       private FileData mFileData;
       private int mI18nTooltipLine = -1;
@@ -73,7 +73,10 @@ namespace StonehearthEditor
          TabPage parentControl = Parent as TabPage;
          if (parentControl != null)
          {
+            int caretPosition = textBox.SelectionStart;
             textBox.Text = mFileData.FlatFileData;
+            textBox.SelectionStart = caretPosition;
+            textBox.ScrollToCaret();
             parentControl.Text = mFileData.FileName;
          }
       }
@@ -139,6 +142,35 @@ namespace StonehearthEditor
       protected override bool ProcessTabKey(bool forward)
       {
          return false;
+      }
+
+      private void insertAliasToolStripMenuItem_Click(object sender, EventArgs e)
+      {
+         AliasSelectionDialog aliasDialog = new AliasSelectionDialog(this);
+         aliasDialog.ShowDialog();
+      }
+
+      public bool OnAccept(HashSet<string> aliases)
+      {
+         StringBuilder aliasInsert = new StringBuilder();
+         bool isFirst = true;
+         foreach(string alias in aliases)
+         {
+            if (!isFirst)
+            {
+               aliasInsert.AppendLine(",");
+            }
+            isFirst = false;
+            aliasInsert.Append('"' + alias + '"');
+         }
+         textBox.SelectionLength = 1;
+         textBox.SelectedText = aliasInsert.ToString();
+         return true;
+      }
+
+      public void onCancelled()
+      {
+         
       }
    }
 }

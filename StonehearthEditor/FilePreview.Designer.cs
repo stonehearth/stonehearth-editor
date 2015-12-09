@@ -35,9 +35,10 @@
          this.filePreviewContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
          this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
          this.toolStrip = new System.Windows.Forms.ToolStrip();
-         this.saveFile = new System.Windows.Forms.ToolStripButton();
-         this.openFolder = new System.Windows.Forms.ToolStripButton();
+         this.insertAliasToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
          this.openFile = new System.Windows.Forms.ToolStripButton();
+         this.openFolder = new System.Windows.Forms.ToolStripButton();
+         this.saveFile = new System.Windows.Forms.ToolStripButton();
          this.localizeFile = new System.Windows.Forms.ToolStripButton();
          this.filePreviewContextMenu.SuspendLayout();
          this.toolStrip.SuspendLayout();
@@ -45,6 +46,7 @@
          // 
          // textBox
          // 
+         this.textBox.ContextMenuStrip = this.filePreviewContextMenu;
          this.textBox.Dock = System.Windows.Forms.DockStyle.Fill;
          this.textBox.Location = new System.Drawing.Point(0, 25);
          this.textBox.Name = "textBox";
@@ -58,15 +60,16 @@
          // filePreviewContextMenu
          // 
          this.filePreviewContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.saveToolStripMenuItem});
+            this.saveToolStripMenuItem,
+            this.insertAliasToolStripMenuItem});
          this.filePreviewContextMenu.Name = "filePreviewContextMenu";
-         this.filePreviewContextMenu.Size = new System.Drawing.Size(139, 26);
+         this.filePreviewContextMenu.Size = new System.Drawing.Size(197, 48);
          // 
          // saveToolStripMenuItem
          // 
          this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
          this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-         this.saveToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
+         this.saveToolStripMenuItem.Size = new System.Drawing.Size(196, 22);
          this.saveToolStripMenuItem.Text = "Save";
          this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
          // 
@@ -83,15 +86,23 @@
          this.toolStrip.TabIndex = 2;
          this.toolStrip.Text = "toolStrip1";
          // 
-         // saveFile
+         // insertAliasToolStripMenuItem
          // 
-         this.saveFile.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-         this.saveFile.Image = ((System.Drawing.Image)(resources.GetObject("saveFile.Image")));
-         this.saveFile.ImageTransparentColor = System.Drawing.Color.Magenta;
-         this.saveFile.Name = "saveFile";
-         this.saveFile.Size = new System.Drawing.Size(23, 22);
-         this.saveFile.Text = "Save File";
-         this.saveFile.Click += new System.EventHandler(this.saveFile_Click);
+         this.insertAliasToolStripMenuItem.Name = "insertAliasToolStripMenuItem";
+         this.insertAliasToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Space)));
+         this.insertAliasToolStripMenuItem.Size = new System.Drawing.Size(196, 22);
+         this.insertAliasToolStripMenuItem.Text = "Insert Alias";
+         this.insertAliasToolStripMenuItem.Click += new System.EventHandler(this.insertAliasToolStripMenuItem_Click);
+         // 
+         // openFile
+         // 
+         this.openFile.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+         this.openFile.Image = ((System.Drawing.Image)(resources.GetObject("openFile.Image")));
+         this.openFile.ImageTransparentColor = System.Drawing.Color.Magenta;
+         this.openFile.Name = "openFile";
+         this.openFile.Size = new System.Drawing.Size(23, 22);
+         this.openFile.Text = "Open File in Text Editor";
+         this.openFile.Click += new System.EventHandler(this.openFile_Click);
          // 
          // openFolder
          // 
@@ -103,15 +114,15 @@
          this.openFolder.Text = "Open Containing Folder";
          this.openFolder.Click += new System.EventHandler(this.openFolder_Click);
          // 
-         // openFile
+         // saveFile
          // 
-         this.openFile.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-         this.openFile.Image = ((System.Drawing.Image)(resources.GetObject("openFile.Image")));
-         this.openFile.ImageTransparentColor = System.Drawing.Color.Magenta;
-         this.openFile.Name = "openFile";
-         this.openFile.Size = new System.Drawing.Size(23, 22);
-         this.openFile.Text = "Open File in Text Editor";
-         this.openFile.Click += new System.EventHandler(this.openFile_Click);
+         this.saveFile.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+         this.saveFile.Image = ((System.Drawing.Image)(resources.GetObject("saveFile.Image")));
+         this.saveFile.ImageTransparentColor = System.Drawing.Color.Magenta;
+         this.saveFile.Name = "saveFile";
+         this.saveFile.Size = new System.Drawing.Size(23, 22);
+         this.saveFile.Text = "Save File";
+         this.saveFile.Click += new System.EventHandler(this.saveFile_Click);
          // 
          // localizeFile
          // 
@@ -150,5 +161,6 @@
       private System.Windows.Forms.ToolStripButton openFolder;
       private System.Windows.Forms.ToolStripButton openFile;
       private System.Windows.Forms.ToolStripButton localizeFile;
+      private System.Windows.Forms.ToolStripMenuItem insertAliasToolStripMenuItem;
    }
 }

@@ -77,6 +77,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AliasSelectionDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AliasSelectionDialog.Designer.cs">
+      <DependentUpon>AliasSelectionDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="EncounterDesignerView.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -126,6 +132,9 @@
       <DependentUpon>FilePreview.cs</DependentUpon>
     </Compile>
     <Compile Include="QubicleFileData.cs" />
+    <EmbeddedResource Include="AliasSelectionDialog.resx">
+      <DependentUpon>AliasSelectionDialog.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="EncounterDesignerView.resx">
       <DependentUpon>EncounterDesignerView.cs</DependentUpon>
     </EmbeddedResource>
