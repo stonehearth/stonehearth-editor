@@ -15,7 +15,7 @@ namespace StonehearthEditor
       protected bool mIsModified = false;
 
       protected string mPath;
-      protected string mErrors = null;
+      private string mErrors = null;
       protected List<ModuleFile> mLinkedAliases = new List<ModuleFile>();
       protected Dictionary<string, FileData> mLinkedFileData = new Dictionary<string, FileData>();
       protected List<FileData> mOpenedFiles = new List<FileData>();
@@ -50,6 +50,12 @@ namespace StonehearthEditor
       {
          get { return mErrors != null; }
       }
+
+      public virtual void AddError(string error)
+      {
+         mErrors = mErrors + error + "\n";
+      }
+
       public abstract bool UpdateTreeNode(TreeNode node, string filter);
       public bool TrySetFlatFileData(string newData)
       {

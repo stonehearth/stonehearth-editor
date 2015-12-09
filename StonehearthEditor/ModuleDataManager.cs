@@ -16,6 +16,7 @@ namespace StonehearthEditor
       }
       private string mModsDirectoryPath;
       private Dictionary<String, Module> mModules = new Dictionary<String, Module>();
+      private bool mHasErrors = false;
       public ModuleDataManager(string modsDirectoryPath)
       {
          mModsDirectoryPath = JsonHelper.NormalizeSystemPath(modsDirectoryPath);
@@ -25,6 +26,19 @@ namespace StonehearthEditor
       public string ModsDirectoryPath
       {
          get { return mModsDirectoryPath; }
+      }
+
+      public bool HasErrors
+      {
+         get
+         {
+            return mHasErrors;
+         }
+
+         set
+         {
+            mHasErrors = value;
+         }
       }
 
       public void Load()

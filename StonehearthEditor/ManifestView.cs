@@ -26,6 +26,15 @@ namespace StonehearthEditor
          new ModuleDataManager(MainForm.kModsDirectoryPath);
          ModuleDataManager.GetInstance().Load();
          ModuleDataManager.GetInstance().FilterAliasTree(treeView, null);
+         if (ModuleDataManager.GetInstance().HasErrors)
+         {
+            toolStripStatusLabel1.Text = "Errors were encountered while loading manifests";
+            toolStripStatusLabel1.ForeColor = Color.Red;
+         } else
+         {
+            toolStripStatusLabel1.Text = "Successfully loaded manifests";
+            toolStripStatusLabel1.ForeColor = Color.Black;
+         }
       }
 
       private void aliasContextMenuDuplicate_Click(object sender, EventArgs e)
@@ -149,9 +158,7 @@ namespace StonehearthEditor
       public void Reload()
       {
          // Reload the manifest tab.
-         new ModuleDataManager(MainForm.kModsDirectoryPath);
-         ModuleDataManager.GetInstance().Load();
-         ModuleDataManager.GetInstance().FilterAliasTree(treeView, null);
+         Initialize();
          searchButton.PerformClick();
 
          if (Properties.Settings.Default.LastSelectedManifestPath != null)
@@ -785,6 +792,24 @@ namespace StonehearthEditor
             mModule.WriteManifestToFile();
             mOwner.Reload();
             return true;
+         }
+      }
+
+      private void toolStripStatusLabel1_DoubleClick(object sender, EventArgs e)
+      {
+         if (ModuleDataManager.GetInstance().HasErrors)
+         {
+            ModuleDataManager.GetInstance().FilterAliasTree(treeView, "error");
+            searchButton.PerformClick();
+         }
+      }
+
+      private void statusStrip_DoubleClick(object sender, EventArgs e)
+      {
+         if (ModuleDataManager.GetInstance().HasErrors)
+         {
+            searchBox.Text = "error";
+            searchButton.PerformClick();
          }
       }
    }

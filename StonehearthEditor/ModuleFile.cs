@@ -235,7 +235,7 @@ namespace StonehearthEditor
          } else
          {
             JsonFileData jsonFileData = FileData as JsonFileData;
-            if (jsonFileData != null)
+            if (jsonFileData != null && jsonFileData.Json != null)
             {
                JToken harvestLootTable = jsonFileData.Json.SelectToken("entity_data.stonehearth:harvest_beast_loot_table");
                if (harvestLootTable != null)

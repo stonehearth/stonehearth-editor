@@ -66,7 +66,7 @@ namespace StonehearthEditor
             ParseJsonSpecificData();
          } catch(Exception e)
          {
-            mErrors = mErrors + "Failed to load json file " + mPath + ". Error: " + e.Message + "\n";
+            AddError("Failed to load json file " + mPath + ". Error: " + e.Message);
          }
       }
       private void ParseJsonSpecificData()
@@ -153,7 +153,7 @@ namespace StonehearthEditor
 
                if (!System.IO.File.Exists(linkedFile) && !System.IO.Directory.Exists(linkedFile))
                {
-                  mErrors = mErrors + "Links to non-existent file " + linkedFile + "\n";
+                  AddError("Links to non-existent file " + linkedFile);
                   continue;
                }
                if (mLinkedFileData.ContainsKey(linkedFile))
@@ -168,6 +168,16 @@ namespace StonehearthEditor
                }
             }
          }
+      }
+      public override void AddError(string error)
+      {
+         base.AddError(error);
+         switch(mJsonType)
+         {
+            case JSONTYPE.ENCOUNTER:
+               return;
+         }
+         ModuleDataManager.GetInstance().HasErrors = true;
       }
 
       private FileData GetFileDataFactory(string path)
@@ -262,7 +272,7 @@ namespace StonehearthEditor
          {
             node.SelectedImageIndex = 0;
             node.ImageIndex = 0;
-            node.ToolTipText = mErrors;
+            node.ToolTipText = Errors;
          } else
          {
             node.SelectedImageIndex = (int)JsonType;
@@ -406,10 +416,6 @@ namespace StonehearthEditor
       public JObject Json
       {
          get { return mJson; }
-      }
-      public override string Errors
-      {
-         get { return mErrors; }
       }
    }
 }

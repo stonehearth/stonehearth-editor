@@ -57,6 +57,8 @@
          this.iconView = new System.Windows.Forms.PictureBox();
          this.selectedFilePathTextBox = new System.Windows.Forms.TextBox();
          this.selectJsonFileDialog = new System.Windows.Forms.OpenFileDialog();
+         this.statusStrip = new System.Windows.Forms.StatusStrip();
+         this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
          this.aliasContextMenu.SuspendLayout();
          ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
          this.splitContainer2.Panel1.SuspendLayout();
@@ -71,6 +73,7 @@
          this.dependenciesPanel.SuspendLayout();
          this.panel2.SuspendLayout();
          ((System.ComponentModel.ISupportInitialize)(this.iconView)).BeginInit();
+         this.statusStrip.SuspendLayout();
          this.SuspendLayout();
          // 
          // aliasContextMenu
@@ -373,14 +376,33 @@
          // selectJsonFileDialog
          // 
          this.selectJsonFileDialog.DefaultExt = "json";
-         this.selectJsonFileDialog.Filter = "JSON Files|*.json|lua Files|*.lua";
+         this.selectJsonFileDialog.Filter = "JSON Files|*.json";
          this.selectJsonFileDialog.RestoreDirectory = true;
          this.selectJsonFileDialog.FileOk += new System.ComponentModel.CancelEventHandler(this.selectJsonFileDialog_FileOk);
+         // 
+         // statusStrip
+         // 
+         this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripStatusLabel1});
+         this.statusStrip.Location = new System.Drawing.Point(0, 547);
+         this.statusStrip.Name = "statusStrip";
+         this.statusStrip.Size = new System.Drawing.Size(762, 22);
+         this.statusStrip.TabIndex = 4;
+         this.statusStrip.Text = "statusStrip1";
+         this.statusStrip.DoubleClick += new System.EventHandler(this.statusStrip_DoubleClick);
+         // 
+         // toolStripStatusLabel1
+         // 
+         this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
+         this.toolStripStatusLabel1.Size = new System.Drawing.Size(118, 17);
+         this.toolStripStatusLabel1.Text = "toolStripStatusLabel1";
+         this.toolStripStatusLabel1.DoubleClick += new System.EventHandler(this.toolStripStatusLabel1_DoubleClick);
          // 
          // ManifestView
          // 
          this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
          this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+         this.Controls.Add(this.statusStrip);
          this.Controls.Add(this.splitContainer2);
          this.Name = "ManifestView";
          this.Size = new System.Drawing.Size(762, 569);
@@ -403,7 +425,10 @@
          this.dependenciesPanel.PerformLayout();
          this.panel2.ResumeLayout(false);
          ((System.ComponentModel.ISupportInitialize)(this.iconView)).EndInit();
+         this.statusStrip.ResumeLayout(false);
+         this.statusStrip.PerformLayout();
          this.ResumeLayout(false);
+         this.PerformLayout();
 
       }
 
@@ -436,5 +461,7 @@
       private System.Windows.Forms.ToolStripMenuItem removeFromManifestToolStripMenuItem;
       private System.Windows.Forms.ToolStripMenuItem addNewAliasToolStripMenuItem;
       private System.Windows.Forms.OpenFileDialog selectJsonFileDialog;
+      private System.Windows.Forms.StatusStrip statusStrip;
+      private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
    }
 }
