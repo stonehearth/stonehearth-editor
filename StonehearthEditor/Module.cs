@@ -155,6 +155,22 @@ namespace StonehearthEditor
          }
       }
 
+      public void WriteEnglishLocalizationToFile()
+      {
+         string englishLocalizationFilePath = Path + "/locales/en.json";
+         using (StreamWriter wr = new StreamWriter(englishLocalizationFilePath, false, new UTF8Encoding(false)))
+         {
+            using (JsonTextWriter jsonTextWriter = new JsonTextWriter(wr))
+            {
+               jsonTextWriter.Formatting = Newtonsoft.Json.Formatting.Indented;
+               jsonTextWriter.Indentation = 3;
+               jsonTextWriter.IndentChar = ' ';
+
+               JsonSerializer jsonSeralizer = new JsonSerializer();
+               jsonSeralizer.Serialize(jsonTextWriter, mEnglishLocalizationJson);
+            }
+         }
+      }
       public void PostLoadFixup()
       {
          foreach (ModuleFile moduleFile in mAliases.Values)

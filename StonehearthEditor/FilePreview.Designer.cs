@@ -31,15 +31,16 @@
          this.components = new System.ComponentModel.Container();
          System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FilePreview));
          this.textBox = new System.Windows.Forms.RichTextBox();
-         this.i18nTooltip = new System.Windows.Forms.ToolTip(this.components);
          this.filePreviewContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
          this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-         this.toolStrip = new System.Windows.Forms.ToolStrip();
          this.insertAliasToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+         this.i18nTooltip = new System.Windows.Forms.ToolTip(this.components);
+         this.toolStrip = new System.Windows.Forms.ToolStrip();
          this.openFile = new System.Windows.Forms.ToolStripButton();
          this.openFolder = new System.Windows.Forms.ToolStripButton();
          this.saveFile = new System.Windows.Forms.ToolStripButton();
          this.localizeFile = new System.Windows.Forms.ToolStripButton();
+         this.editLocStringToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
          this.filePreviewContextMenu.SuspendLayout();
          this.toolStrip.SuspendLayout();
          this.SuspendLayout();
@@ -61,9 +62,11 @@
          // 
          this.filePreviewContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.saveToolStripMenuItem,
-            this.insertAliasToolStripMenuItem});
+            this.insertAliasToolStripMenuItem,
+            this.editLocStringToolStripMenuItem});
          this.filePreviewContextMenu.Name = "filePreviewContextMenu";
-         this.filePreviewContextMenu.Size = new System.Drawing.Size(197, 48);
+         this.filePreviewContextMenu.Size = new System.Drawing.Size(197, 92);
+         this.filePreviewContextMenu.Opening += new System.ComponentModel.CancelEventHandler(this.filePreviewContextMenu_Opening);
          // 
          // saveToolStripMenuItem
          // 
@@ -72,6 +75,14 @@
          this.saveToolStripMenuItem.Size = new System.Drawing.Size(196, 22);
          this.saveToolStripMenuItem.Text = "Save";
          this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
+         // 
+         // insertAliasToolStripMenuItem
+         // 
+         this.insertAliasToolStripMenuItem.Name = "insertAliasToolStripMenuItem";
+         this.insertAliasToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Space)));
+         this.insertAliasToolStripMenuItem.Size = new System.Drawing.Size(196, 22);
+         this.insertAliasToolStripMenuItem.Text = "Insert Alias";
+         this.insertAliasToolStripMenuItem.Click += new System.EventHandler(this.insertAliasToolStripMenuItem_Click);
          // 
          // toolStrip
          // 
@@ -85,14 +96,6 @@
          this.toolStrip.Size = new System.Drawing.Size(150, 25);
          this.toolStrip.TabIndex = 2;
          this.toolStrip.Text = "toolStrip1";
-         // 
-         // insertAliasToolStripMenuItem
-         // 
-         this.insertAliasToolStripMenuItem.Name = "insertAliasToolStripMenuItem";
-         this.insertAliasToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Space)));
-         this.insertAliasToolStripMenuItem.Size = new System.Drawing.Size(196, 22);
-         this.insertAliasToolStripMenuItem.Text = "Insert Alias";
-         this.insertAliasToolStripMenuItem.Click += new System.EventHandler(this.insertAliasToolStripMenuItem_Click);
          // 
          // openFile
          // 
@@ -134,6 +137,14 @@
          this.localizeFile.Text = "Localize This File";
          this.localizeFile.Click += new System.EventHandler(this.localizeFile_Click);
          // 
+         // editLocStringToolStripMenuItem
+         // 
+         this.editLocStringToolStripMenuItem.Name = "editLocStringToolStripMenuItem";
+         this.editLocStringToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.L)));
+         this.editLocStringToolStripMenuItem.Size = new System.Drawing.Size(196, 22);
+         this.editLocStringToolStripMenuItem.Text = "Edit Loc String";
+         this.editLocStringToolStripMenuItem.Click += new System.EventHandler(this.editLocStringToolStripMenuItem_Click);
+         // 
          // FilePreview
          // 
          this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -162,5 +173,6 @@
       private System.Windows.Forms.ToolStripButton openFile;
       private System.Windows.Forms.ToolStripButton localizeFile;
       private System.Windows.Forms.ToolStripMenuItem insertAliasToolStripMenuItem;
+      private System.Windows.Forms.ToolStripMenuItem editLocStringToolStripMenuItem;
    }
 }
