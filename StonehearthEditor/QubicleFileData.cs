@@ -65,9 +65,12 @@ namespace StonehearthEditor
          string qmoPath = GetQmoPath();
          if (mIsQb && mLinkedFileData.ContainsKey(qmoPath))
          {
-            alreadyCloned.Add(qmoPath);
             string newQmoPath = newPath.Replace(".qb", ".qmo");
-            mLinkedFileData[qmoPath].Clone(newQmoPath, oldName, newFileName, alreadyCloned, execute);
+            if (!alreadyCloned.Contains(newQmoPath))
+            {
+               alreadyCloned.Add(newQmoPath);
+               mLinkedFileData[qmoPath].Clone(newQmoPath, oldName, newFileName, alreadyCloned, execute);
+            }
          }
          return true;
       }

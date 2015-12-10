@@ -180,7 +180,6 @@ namespace StonehearthEditor
 
          public void onCancelled()
          {
-
          }
       }
 
@@ -211,18 +210,38 @@ namespace StonehearthEditor
             JValue token = mod.EnglishLocalizationJson.SelectToken(key) as JValue;
             if (token == null)
             {
-               MessageBox.Show("No Such localization token " + mLocKey);
-               return true;
+               // No such localization key. Try to add it.
+               string[] tokenSplit = key.Split('.');
+               JObject parent = mod.EnglishLocalizationJson;
+               for(int i=0; i< tokenSplit.Length - 1; ++i)
+               {
+                  if (parent == null)
+                  {
+                     break;
+                  }
+                  if (parent[tokenSplit[i]] == null)
+                  {
+                     parent[tokenSplit[i]] = new JObject();
+                  }
+                  parent = parent[tokenSplit[i]] as JObject;
+               }
+               if (parent == null)
+               {
+                  MessageBox.Show("Could not insert localization token " + mLocKey);
+                  return true;
+               }
+               parent.Add(tokenSplit[tokenSplit.Length - 1], inputMessage);
+            } else
+            {
+               token.Value = inputMessage;
             }
-
-            token.Value = inputMessage;
+            
             mod.WriteEnglishLocalizationToFile();
             return true;
          }
 
          public void onCancelled()
          {
-            throw new NotImplementedException();
          }
       }
 
