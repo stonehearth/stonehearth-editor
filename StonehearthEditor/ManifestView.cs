@@ -733,7 +733,7 @@ namespace StonehearthEditor
             }
             else
             {
-               samplePath = samplePath + ":" + pathSplit[i];
+               samplePath = samplePath + ':' + pathSplit[i];
             }
          }
 
@@ -749,6 +749,15 @@ namespace StonehearthEditor
                {
                   shortPath = shortPath.Replace("/" + fileName, "");
                }
+            } else if (extension == ".lua")
+            {
+               string nameWithoutExtension = System.IO.Path.GetFileNameWithoutExtension(fileName);
+               if (nameWithoutExtension.EndsWith("_action"))
+               {
+                  nameWithoutExtension = nameWithoutExtension.Substring(0, nameWithoutExtension.Length - 7);
+                  samplePath = samplePath + ':' + nameWithoutExtension;
+               }
+
             }
          }
 
