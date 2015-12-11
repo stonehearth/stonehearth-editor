@@ -196,6 +196,12 @@
   <ItemGroup>
     <None Include="images\qmofileicon_small.png" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="images\psdfileicon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\pngFileIcon.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

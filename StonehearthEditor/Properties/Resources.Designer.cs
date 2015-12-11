@@ -73,6 +73,26 @@ namespace StonehearthEditor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap pngFileIcon {
+            get {
+                object obj = ResourceManager.GetObject("pngFileIcon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap psdfileicon {
+            get {
+                object obj = ResourceManager.GetObject("psdfileicon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap qmofileicon {
             get {
                 object obj = ResourceManager.GetObject("qmofileicon", resourceCulture);

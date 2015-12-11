@@ -135,6 +135,18 @@ namespace StonehearthEditor
                               hasImage = true;
                            }
                         }
+
+                        Button openFileButton = new Button();
+                        openFileButton.Name = linkedFile.Value.Path;
+                        openFileButton.BackgroundImage = global::StonehearthEditor.Properties.Resources.pngFileIcon;
+                        openFileButton.BackgroundImageLayout = ImageLayout.None;
+                        openFileButton.Text = Path.GetFileName(openFileButton.Name);
+                        openFileButton.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+                        openFileButton.UseVisualStyleBackColor = true;
+                        openFileButton.Click += new System.EventHandler(openFileButton_Click);
+                        openFileButton.Padding = new Padding(22, 2, 2, 2);
+                        openFileButton.AutoSize = true;
+                        openFileButtonPanel.Controls.Add(openFileButton);
                      }
                   }
                }
