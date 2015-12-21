@@ -78,78 +78,12 @@ namespace StonehearthEditor
             file.FillDependencyListItems(dependenciesListBox);
             file.FillReferencesListItems(referencesListBox);
             mSelectedFileData = file;
-            JsonFileData fileData = mSelectedFileData as JsonFileData;
-            if (fileData != null)
+            if (mSelectedFileData is JsonFileData)
             {
-               List<string> addedOpenFiles = new List<string>();
-               bool hasImage = false;
-               foreach (FileData openedFile in fileData.OpenedFiles)
-               {
-                  TabPage newTabPage = new TabPage();
-                  newTabPage.Text = openedFile.FileName;
-                  if (openedFile.IsModified)
-                  {
-                     newTabPage.Text = newTabPage.Text + "*";
-                  }
-                  if (openedFile.HasErrors)
-                  {
-                     newTabPage.ImageIndex = 0;
-                     newTabPage.ToolTipText = openedFile.Errors;
-                  }
-                  FilePreview filePreview = new FilePreview(openedFile);
-                  filePreview.Dock = DockStyle.Fill;
-                  newTabPage.Controls.Add(filePreview);
-                  filePreviewTabs.TabPages.Add(newTabPage);
-
-                  foreach (KeyValuePair<string, FileData> linkedFile in openedFile.LinkedFileData)
-                  {
-                     if (addedOpenFiles.Contains(linkedFile.Key))
-                     {
-                        continue;
-                     }
-                     addedOpenFiles.Add(linkedFile.Key);
-                     
-                     if (linkedFile.Value is QubicleFileData)
-                     {
-                        QubicleFileData qbFileData = linkedFile.Value as QubicleFileData;
-                        string fileName = qbFileData.FileName;
-                        Button openFileButton = new Button();
-                        openFileButton.Name = qbFileData.GetOpenFilePath();
-                        openFileButton.BackgroundImage = global::StonehearthEditor.Properties.Resources.qmofileicon_small;
-                        openFileButton.BackgroundImageLayout = ImageLayout.None;
-                        openFileButton.Text = Path.GetFileName(openFileButton.Name);
-                        openFileButton.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-                        openFileButton.UseVisualStyleBackColor = true;
-                        openFileButton.Click += new System.EventHandler(openFileButton_Click);
-                        openFileButton.Padding = new Padding(22, 2, 2, 2);
-                        openFileButton.AutoSize = true;
-                        openFileButtonPanel.Controls.Add(openFileButton);
-                     }
-                     else if (linkedFile.Value is ImageFileData)
-                     {
-                        if (!hasImage)
-                        {
-                           if (System.IO.File.Exists(linkedFile.Value.Path))
-                           {
-                              iconView.ImageLocation = linkedFile.Value.Path;
-                              hasImage = true;
-                           }
-                        }
-
-                        Button openFileButton = new Button();
-                        openFileButton.Name = linkedFile.Value.Path;
-                        openFileButton.BackgroundImage = global::StonehearthEditor.Properties.Resources.pngFileIcon;
-                        openFileButton.BackgroundImageLayout = ImageLayout.None;
-                        openFileButton.Text = Path.GetFileName(openFileButton.Name);
-                        openFileButton.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-                        openFileButton.UseVisualStyleBackColor = true;
-                        openFileButton.Click += new System.EventHandler(openFileButton_Click);
-                        openFileButton.Padding = new Padding(22, 2, 2, 2);
-                        openFileButton.AutoSize = true;
-                        openFileButtonPanel.Controls.Add(openFileButton);
-                     }
-                  }
-               }
+               OnJsonFileDataSelected();
+            } else if (mSelectedFileData is LuaFileData)
+            {
+               OnLuaFileDataSelected();
             }
          }
          else
@@ -161,7 +95,92 @@ namespace StonehearthEditor
             openFileButtonPanel.Controls.Clear();
          }
       }
- 
+
+      private void OnLuaFileDataSelected()
+      {
+         FileData openedFile = mSelectedFileData;
+         TabPage newTabPage = new TabPage();
+         newTabPage.Text = openedFile.FileName;
+         FilePreview filePreview = new FilePreview(openedFile);
+         filePreview.Dock = DockStyle.Fill;
+         newTabPage.Controls.Add(filePreview);
+         filePreviewTabs.TabPages.Add(newTabPage);
+      }
+
+      private void OnJsonFileDataSelected()
+      {
+         JsonFileData fileData = mSelectedFileData as JsonFileData;
+         List<string> addedOpenFiles = new List<string>();
+         bool hasImage = false;
+         foreach (FileData openedFile in fileData.OpenedFiles)
+         {
+            TabPage newTabPage = new TabPage();
+            newTabPage.Text = openedFile.FileName;
+            if (openedFile.IsModified)
+            {
+               newTabPage.Text = newTabPage.Text + "*";
+            }
+            if (openedFile.HasErrors)
+            {
+               newTabPage.ImageIndex = 0;
+               newTabPage.ToolTipText = openedFile.Errors;
+            }
+            FilePreview filePreview = new FilePreview(openedFile);
+            filePreview.Dock = DockStyle.Fill;
+            newTabPage.Controls.Add(filePreview);
+            filePreviewTabs.TabPages.Add(newTabPage);
+
+            foreach (KeyValuePair<string, FileData> linkedFile in openedFile.LinkedFileData)
+            {
+               if (addedOpenFiles.Contains(linkedFile.Key))
+               {
+                  continue;
+               }
+               addedOpenFiles.Add(linkedFile.Key);
+
+               if (linkedFile.Value is QubicleFileData)
+               {
+                  QubicleFileData qbFileData = linkedFile.Value as QubicleFileData;
+                  string fileName = qbFileData.FileName;
+                  Button openFileButton = new Button();
+                  openFileButton.Name = qbFileData.GetOpenFilePath();
+                  openFileButton.BackgroundImage = global::StonehearthEditor.Properties.Resources.qmofileicon_small;
+                  openFileButton.BackgroundImageLayout = ImageLayout.None;
+                  openFileButton.Text = Path.GetFileName(openFileButton.Name);
+                  openFileButton.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+                  openFileButton.UseVisualStyleBackColor = true;
+                  openFileButton.Click += new System.EventHandler(openFileButton_Click);
+                  openFileButton.Padding = new Padding(22, 2, 2, 2);
+                  openFileButton.AutoSize = true;
+                  openFileButtonPanel.Controls.Add(openFileButton);
+               }
+               else if (linkedFile.Value is ImageFileData)
+               {
+                  if (!hasImage)
+                  {
+                     if (System.IO.File.Exists(linkedFile.Value.Path))
+                     {
+                        iconView.ImageLocation = linkedFile.Value.Path;
+                        hasImage = true;
+                     }
+                  }
+
+                  Button openFileButton = new Button();
+                  openFileButton.Name = linkedFile.Value.Path;
+                  openFileButton.BackgroundImage = global::StonehearthEditor.Properties.Resources.pngFileIcon;
+                  openFileButton.BackgroundImageLayout = ImageLayout.None;
+                  openFileButton.Text = Path.GetFileName(openFileButton.Name);
+                  openFileButton.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+                  openFileButton.UseVisualStyleBackColor = true;
+                  openFileButton.Click += new System.EventHandler(openFileButton_Click);
+                  openFileButton.Padding = new Padding(22, 2, 2, 2);
+                  openFileButton.AutoSize = true;
+                  openFileButtonPanel.Controls.Add(openFileButton);
+               }
+            }
+         }
+      }
+
       private void searchBox_TextChanged(object sender, EventArgs e)
       {
          searchButton.PerformClick();

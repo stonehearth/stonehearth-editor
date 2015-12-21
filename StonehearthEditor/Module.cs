@@ -13,23 +13,24 @@ namespace StonehearthEditor
       private string mPath;
       private string mName;
       private JObject mManifestJson;
-      private Dictionary<String, ModuleFile> mAliases = new Dictionary<String, ModuleFile>();
-      private Dictionary<String, ModuleFile> mComponents = new Dictionary<String, ModuleFile>();
-      private Dictionary<String, ModuleFile> mControllers = new Dictionary<String, ModuleFile>();
+      private Dictionary<string, Dictionary<string, ModuleFile>> mModuleFiles = new Dictionary<string, Dictionary<string, ModuleFile>>();
+
       private JObject mEnglishLocalizationJson;
       public Module(string modPath)
       {
          mPath = modPath;
          mName = modPath.Substring(modPath.LastIndexOf('/') + 1);
       }
-      public ICollection<String> GetAliasNames()
-      {
-         return mAliases.Keys;
-      }
+
       public ICollection<ModuleFile> GetAliases()
       {
-         return mAliases.Values;
+         if (!mModuleFiles.ContainsKey("aliases"))
+         {
+            return new List<ModuleFile>();
+         }
+         return mModuleFiles["aliases"].Values;
       }
+
       public String Name
       {
          get { return mName; }
@@ -56,9 +57,9 @@ namespace StonehearthEditor
                   string fileString = sr.ReadToEnd();
                   mManifestJson = JObject.Parse(fileString);
 
-                  AddManifestFiles("aliases", mAliases);
-                  AddManifestFiles("components", mComponents);
-                  AddManifestFiles("controllers", mControllers);
+                  AddModuleFiles("aliases");
+                  AddModuleFiles("components");
+                  AddModuleFiles("controllers");
                }
             }
             catch (Exception e)
@@ -85,11 +86,13 @@ namespace StonehearthEditor
          }
       }
 
-      private void AddManifestFiles(string fileType, Dictionary<string, ModuleFile> dictionary)
+      private void AddModuleFiles(string fileType)
       {
          JToken fileTypes = mManifestJson[fileType];
          if (fileTypes != null)
          {
+            Dictionary<string, ModuleFile> dictionary = new Dictionary<string, ModuleFile>();
+            mModuleFiles[fileType] = dictionary;
             foreach (JToken item in fileTypes.Children())
             {
                JProperty alias = item as JProperty;
@@ -104,40 +107,25 @@ namespace StonehearthEditor
 
       public void LoadFiles()
       {
-         foreach (ModuleFile moduleFile in mAliases.Values)
+         foreach (Dictionary<string, ModuleFile> dict in mModuleFiles.Values)
          {
-            moduleFile.TryLoad();
-         }
-
-         foreach (ModuleFile moduleFile in mControllers.Values)
-         {
-            moduleFile.TryLoad();
-         }
-
-         foreach (ModuleFile moduleFile in mComponents.Values)
-         {
-            moduleFile.TryLoad();
+            foreach (ModuleFile moduleFile in dict.Values)
+            {
+               moduleFile.TryLoad();
+            }
          }
       }
       public ModuleFile GetAliasFile(string alias)
       {
-         ModuleFile returned = null;
-         mAliases.TryGetValue(alias, out returned);
-         return returned;
+         return GetModuleFile("aliases", alias);
       }
       public ModuleFile GetModuleFile(string fileType, string alias)
       {
          ModuleFile returned = null;
-         switch (fileType)
+         if (mModuleFiles.ContainsKey(fileType))
          {
-            case "aliases":
-               mAliases.TryGetValue(alias, out returned);
-               break;
-            case "components":
-               mComponents.TryGetValue(alias, out returned);
-               break;
+            mModuleFiles[fileType].TryGetValue(alias, out returned);
          }
-         
          return returned;
       }
 
@@ -214,7 +202,7 @@ namespace StonehearthEditor
       }
       public void PostLoadFixup()
       {
-         foreach (ModuleFile moduleFile in mAliases.Values)
+         foreach (ModuleFile moduleFile in GetAliases())
          {
             moduleFile.PostLoadFixup();
          }
@@ -228,41 +216,24 @@ namespace StonehearthEditor
          root.ExpandAll();
          bool hasItems = false;
 
-         ICollection<ModuleFile> aliases = GetAliases();
-         TreeNode aliasesRoot = new TreeNode("aliases");
-         aliasesRoot.SelectedImageIndex = 100;
-         aliasesRoot.ImageIndex = 100;
-         foreach (ModuleFile alias in aliases)
+         foreach (KeyValuePair<string, Dictionary<string, ModuleFile>> pair in mModuleFiles)
          {
-            TreeNode newNode = alias.GetTreeNode(searchTerm);
-            if (newNode != null)
+            TreeNode subRoot = new TreeNode(pair.Key);
+            subRoot.SelectedImageIndex = 100;
+            subRoot.ImageIndex = 100;
+            foreach (ModuleFile alias in pair.Value.Values)
             {
-               aliasesRoot.Nodes.Add(newNode);
+               TreeNode newNode = alias.GetTreeNode(searchTerm);
+               if (newNode != null)
+               {
+                  subRoot.Nodes.Add(newNode);
+               }
             }
-         }
-
-         if (aliasesRoot.Nodes.Count > 0)
-         {
-            hasItems = true;
-            root.Nodes.Add(aliasesRoot);
-         }
-
-         TreeNode componentsRoot = new TreeNode("components");
-         componentsRoot.SelectedImageIndex = 100;
-         componentsRoot.ImageIndex = 100;
-         foreach (ModuleFile alias in mComponents.Values)
-         {
-            TreeNode newNode = alias.GetTreeNode(searchTerm);
-            if (newNode != null)
+            if (subRoot.Nodes.Count > 0)
             {
-               componentsRoot.Nodes.Add(newNode);
+               hasItems = true;
+               root.Nodes.Add(subRoot);
             }
-         }
-
-         if (componentsRoot.Nodes.Count > 0)
-         {
-            hasItems = true;
-            root.Nodes.Add(componentsRoot);
          }
 
          return hasItems ? root: null;

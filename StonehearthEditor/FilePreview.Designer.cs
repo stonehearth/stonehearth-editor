@@ -34,13 +34,13 @@
          this.filePreviewContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
          this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
          this.insertAliasToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+         this.editLocStringToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
          this.i18nTooltip = new System.Windows.Forms.ToolTip(this.components);
          this.toolStrip = new System.Windows.Forms.ToolStrip();
          this.openFile = new System.Windows.Forms.ToolStripButton();
          this.openFolder = new System.Windows.Forms.ToolStripButton();
          this.saveFile = new System.Windows.Forms.ToolStripButton();
          this.localizeFile = new System.Windows.Forms.ToolStripButton();
-         this.editLocStringToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
          this.filePreviewContextMenu.SuspendLayout();
          this.toolStrip.SuspendLayout();
          this.SuspendLayout();
@@ -49,6 +49,7 @@
          // 
          this.textBox.ContextMenuStrip = this.filePreviewContextMenu;
          this.textBox.Dock = System.Windows.Forms.DockStyle.Fill;
+         this.textBox.Font = new System.Drawing.Font("Courier New", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
          this.textBox.Location = new System.Drawing.Point(0, 25);
          this.textBox.Name = "textBox";
          this.textBox.Size = new System.Drawing.Size(150, 125);
@@ -65,7 +66,7 @@
             this.insertAliasToolStripMenuItem,
             this.editLocStringToolStripMenuItem});
          this.filePreviewContextMenu.Name = "filePreviewContextMenu";
-         this.filePreviewContextMenu.Size = new System.Drawing.Size(197, 92);
+         this.filePreviewContextMenu.Size = new System.Drawing.Size(197, 70);
          this.filePreviewContextMenu.Opening += new System.ComponentModel.CancelEventHandler(this.filePreviewContextMenu_Opening);
          // 
          // saveToolStripMenuItem
@@ -83,6 +84,14 @@
          this.insertAliasToolStripMenuItem.Size = new System.Drawing.Size(196, 22);
          this.insertAliasToolStripMenuItem.Text = "Insert Alias";
          this.insertAliasToolStripMenuItem.Click += new System.EventHandler(this.insertAliasToolStripMenuItem_Click);
+         // 
+         // editLocStringToolStripMenuItem
+         // 
+         this.editLocStringToolStripMenuItem.Name = "editLocStringToolStripMenuItem";
+         this.editLocStringToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.L)));
+         this.editLocStringToolStripMenuItem.Size = new System.Drawing.Size(196, 22);
+         this.editLocStringToolStripMenuItem.Text = "Edit Loc String";
+         this.editLocStringToolStripMenuItem.Click += new System.EventHandler(this.editLocStringToolStripMenuItem_Click);
          // 
          // toolStrip
          // 
@@ -136,14 +145,6 @@
          this.localizeFile.Size = new System.Drawing.Size(23, 22);
          this.localizeFile.Text = "Localize This File";
          this.localizeFile.Click += new System.EventHandler(this.localizeFile_Click);
-         // 
-         // editLocStringToolStripMenuItem
-         // 
-         this.editLocStringToolStripMenuItem.Name = "editLocStringToolStripMenuItem";
-         this.editLocStringToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.L)));
-         this.editLocStringToolStripMenuItem.Size = new System.Drawing.Size(196, 22);
-         this.editLocStringToolStripMenuItem.Text = "Edit Loc String";
-         this.editLocStringToolStripMenuItem.Click += new System.EventHandler(this.editLocStringToolStripMenuItem_Click);
          // 
          // FilePreview
          // 
