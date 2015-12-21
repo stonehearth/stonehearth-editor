@@ -63,27 +63,35 @@ namespace StonehearthEditor
 
       public void TryLoad()
       {
-         if (mType != FileType.JSON) // only load Json
+         IModuleFileData fileData = null;
+         if (mType == FileType.JSON) // only load Json
          {
-            return;
+            fileData = new JsonFileData(ResolvedPath);
+
+         } else if (mType == FileType.LUA)
+         {
+            fileData = new LuaFileData(ResolvedPath);
          }
-         JsonFileData fileData = new JsonFileData(ResolvedPath);
-         mFileData = fileData;
-         fileData.SetModuleFile(this);
-         fileData.Load();
-         foreach (KeyValuePair<string, FileData> data in mReferencesCache)
+
+         if (fileData != null)
          {
-            fileData.ReferencedByFileData[data.Key] = data.Value;
+            fileData.SetModuleFile(this);
+            mFileData = fileData as FileData;
+            mFileData.Load();
+            foreach (KeyValuePair<string, FileData> data in mReferencesCache)
+            {
+               mFileData.ReferencedByFileData[data.Key] = data.Value;
+            }
          }
       }
 
       public FileData GetFileData(string[] path)
       {
-         if (path.Length == 2)
+         if (path.Length == 3)
          {
             return this.FileData;
          }
-         return FindFileData(FileData, path, 2);
+         return FindFileData(FileData, path, 3);
       }
 
       private FileData FindFileData(FileData start, string[] path, int startIndex)

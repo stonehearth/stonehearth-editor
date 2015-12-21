@@ -91,6 +91,7 @@
     </Compile>
     <Compile Include="FileData.cs" />
     <Compile Include="GameMasterNode.cs" />
+    <Compile Include="LuaFileData.cs" />
     <Compile Include="ImageFileData.cs" />
     <Compile Include="InputDialog.cs">
       <SubType>Form</SubType>

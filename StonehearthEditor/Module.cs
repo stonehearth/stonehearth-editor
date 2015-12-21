@@ -14,6 +14,8 @@ namespace StonehearthEditor
       private string mName;
       private JObject mManifestJson;
       private Dictionary<String, ModuleFile> mAliases = new Dictionary<String, ModuleFile>();
+      private Dictionary<String, ModuleFile> mComponents = new Dictionary<String, ModuleFile>();
+      private Dictionary<String, ModuleFile> mControllers = new Dictionary<String, ModuleFile>();
       private JObject mEnglishLocalizationJson;
       public Module(string modPath)
       {
@@ -47,27 +49,19 @@ namespace StonehearthEditor
 
          if (System.IO.File.Exists(stonehearthModManifest))
          {
-            try {
+            try
+            {
                using (StreamReader sr = new StreamReader(stonehearthModManifest, Encoding.UTF8))
                {
                   string fileString = sr.ReadToEnd();
                   mManifestJson = JObject.Parse(fileString);
 
-                  JToken aliases = mManifestJson["aliases"];
-                  if (aliases != null)
-                  {
-                     foreach (JToken item in aliases.Children())
-                     {
-                        JProperty alias = item as JProperty;
-                        string name = alias.Name.Trim();
-                        string value = alias.Value.ToString().Trim();
-
-                        ModuleFile moduleFile = new ModuleFile(this, name, value);
-                        mAliases.Add(name, moduleFile);
-                     }
-                  }
+                  AddManifestFiles("aliases", mAliases);
+                  AddManifestFiles("components", mComponents);
+                  AddManifestFiles("controllers", mControllers);
                }
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                MessageBox.Show("Failure while reading manifest file " + stonehearthModManifest + ". Error: " + e.Message);
             }
@@ -76,21 +70,52 @@ namespace StonehearthEditor
          string englishLocalizationFilePath = Path + "/locales/en.json";
          if (System.IO.File.Exists(englishLocalizationFilePath))
          {
-            try {
+            try
+            {
                using (StreamReader sr = new StreamReader(englishLocalizationFilePath, Encoding.UTF8))
                {
                   string fileString = sr.ReadToEnd();
                   mEnglishLocalizationJson = JObject.Parse(fileString);
                }
-            } catch(Exception e)
+            }
+            catch (Exception e)
             {
                MessageBox.Show("Exception while reading localization json " + englishLocalizationFilePath + ". Error: " + e.Message);
             }
          }
       }
+
+      private void AddManifestFiles(string fileType, Dictionary<string, ModuleFile> dictionary)
+      {
+         JToken fileTypes = mManifestJson[fileType];
+         if (fileTypes != null)
+         {
+            foreach (JToken item in fileTypes.Children())
+            {
+               JProperty alias = item as JProperty;
+               string name = alias.Name.Trim();
+               string value = alias.Value.ToString().Trim();
+
+               ModuleFile moduleFile = new ModuleFile(this, name, value);
+               dictionary.Add(name, moduleFile);
+            }
+         }
+      }
+
       public void LoadFiles()
       {
-         foreach (ModuleFile moduleFile in mAliases.Values) { 
+         foreach (ModuleFile moduleFile in mAliases.Values)
+         {
+            moduleFile.TryLoad();
+         }
+
+         foreach (ModuleFile moduleFile in mControllers.Values)
+         {
+            moduleFile.TryLoad();
+         }
+
+         foreach (ModuleFile moduleFile in mComponents.Values)
+         {
             moduleFile.TryLoad();
          }
       }
@@ -100,6 +125,22 @@ namespace StonehearthEditor
          mAliases.TryGetValue(alias, out returned);
          return returned;
       }
+      public ModuleFile GetModuleFile(string fileType, string alias)
+      {
+         ModuleFile returned = null;
+         switch (fileType)
+         {
+            case "aliases":
+               mAliases.TryGetValue(alias, out returned);
+               break;
+            case "components":
+               mComponents.TryGetValue(alias, out returned);
+               break;
+         }
+         
+         return returned;
+      }
+
       private void Sort(JObject jObj)
       {
          List<JProperty> properties = new List<JProperty>(jObj.Properties());
@@ -177,6 +218,54 @@ namespace StonehearthEditor
          {
             moduleFile.PostLoadFixup();
          }
+      }
+
+      public TreeNode FilterAliasTree(string searchTerm)
+      {
+         TreeNode root = new TreeNode(Name);
+         root.ImageIndex = 100;
+         root.SelectedImageIndex = 100;
+         root.ExpandAll();
+         bool hasItems = false;
+
+         ICollection<ModuleFile> aliases = GetAliases();
+         TreeNode aliasesRoot = new TreeNode("aliases");
+         aliasesRoot.SelectedImageIndex = 100;
+         aliasesRoot.ImageIndex = 100;
+         foreach (ModuleFile alias in aliases)
+         {
+            TreeNode newNode = alias.GetTreeNode(searchTerm);
+            if (newNode != null)
+            {
+               aliasesRoot.Nodes.Add(newNode);
+            }
+         }
+
+         if (aliasesRoot.Nodes.Count > 0)
+         {
+            hasItems = true;
+            root.Nodes.Add(aliasesRoot);
+         }
+
+         TreeNode componentsRoot = new TreeNode("components");
+         componentsRoot.SelectedImageIndex = 100;
+         componentsRoot.ImageIndex = 100;
+         foreach (ModuleFile alias in mComponents.Values)
+         {
+            TreeNode newNode = alias.GetTreeNode(searchTerm);
+            if (newNode != null)
+            {
+               componentsRoot.Nodes.Add(newNode);
+            }
+         }
+
+         if (componentsRoot.Nodes.Count > 0)
+         {
+            hasItems = true;
+            root.Nodes.Add(componentsRoot);
+         }
+
+         return hasItems ? root: null;
       }
    }
 }

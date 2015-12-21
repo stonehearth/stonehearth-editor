@@ -24,12 +24,6 @@ namespace StonehearthEditor
       JOB = 10,
    };
 
-   public interface IModuleFileData
-   {
-      void SetModuleFile(ModuleFile moduleFile);
-      ModuleFile GetModuleFile();
-   }
-
    public class JsonFileData : FileData, IModuleFileData
    {
       private ModuleFile mOwner;

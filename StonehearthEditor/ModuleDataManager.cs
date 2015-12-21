@@ -74,23 +74,10 @@ namespace StonehearthEditor
          List<TreeNode> filteredNodes = new List<TreeNode>();
          foreach (Module module in mModules.Values)
          {
-            ICollection<ModuleFile> aliases = module.GetAliases();
-            List<TreeNode> nodes = new List<TreeNode>();
-            foreach (ModuleFile alias in aliases)
+            TreeNode node = module.FilterAliasTree(searchTerm);
+            if (node != null)
             {
-               TreeNode newNode = alias.GetTreeNode(searchTerm);
-               if (newNode != null)
-               {
-                  nodes.Add(newNode);
-               }
-            }
-            if (nodes.Count > 0)
-            {
-               TreeNode treeNode = new TreeNode(module.Name, nodes.ToArray());
-               treeNode.ImageIndex = 100;
-               treeNode.SelectedImageIndex = 100;
-               filteredNodes.Add(treeNode);
-               treeNode.ExpandAll();
+               filteredNodes.Add(node);
             }
          }
          treeView.Nodes.AddRange(filteredNodes.ToArray());
@@ -126,12 +113,12 @@ namespace StonehearthEditor
       public FileData GetSelectedFileData(string selected)
       {
          string[] path = selected.Split('\\');
-         if (path.Length <= 1)
+         if (path.Length <= 2)
          {
             return null;
          }
          Module module = mModules[path[0]];
-         ModuleFile file = module.GetAliasFile(path[1]);
+         ModuleFile file = module.GetModuleFile(path[1], path[2]);
          if (file != null)
          {
             return file.GetFileData(path);

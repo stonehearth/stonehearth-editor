@@ -8,6 +8,11 @@ using System.Windows.Forms;
 
 namespace StonehearthEditor
 {
+   public interface IModuleFileData
+   {
+      void SetModuleFile(ModuleFile moduleFile);
+      ModuleFile GetModuleFile();
+   }
    public abstract class FileData
    {
       protected TreeNode mTreeNode;
