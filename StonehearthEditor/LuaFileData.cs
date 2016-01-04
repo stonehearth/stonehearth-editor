@@ -20,6 +20,8 @@ namespace StonehearthEditor
 
       public override bool UpdateTreeNode(TreeNode node, string filter)
       {
+         mTreeNode = node;
+         node.Tag = this;
          bool filterMatchesSelf = true;
          ModuleFile owner = GetModuleFile();
          if (!string.IsNullOrEmpty(filter) && owner != null && !owner.Name.Contains(filter))
