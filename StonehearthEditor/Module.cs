@@ -219,6 +219,10 @@ namespace StonehearthEditor
          foreach (KeyValuePair<string, Dictionary<string, ModuleFile>> pair in mModuleFiles)
          {
             TreeNode subRoot = new TreeNode(pair.Key);
+            if (pair.Key == "aliases")
+            {
+               subRoot.ExpandAll();
+            }
             subRoot.SelectedImageIndex = 100;
             subRoot.ImageIndex = 100;
             foreach (ModuleFile alias in pair.Value.Values)

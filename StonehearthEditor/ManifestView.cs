@@ -217,6 +217,7 @@ namespace StonehearthEditor
       private void aliasContextMenu_Opening(object sender, CancelEventArgs e)
       {
          TreeNode node = treeView.SelectedNode;
+         aliasContextMenu.Visible = true;
          FileData file = ModuleDataManager.GetInstance().GetSelectedFileData(treeView.SelectedNode);
          if (file != null)
          {
@@ -235,7 +236,6 @@ namespace StonehearthEditor
             }
             addNewAliasToolStripMenuItem.Visible = true;
          }
-
       }
 
       private void searchButton_Click(object sender, EventArgs e)
@@ -721,7 +721,12 @@ namespace StonehearthEditor
       private void addNewAliasToolStripMenuItem_Click(object sender, EventArgs e)
       {
          TreeNode selectedNode = treeView.SelectedNode;
+         if (selectedNode.Parent != null)
+         {
+            selectedNode = selectedNode.Parent;
+         }
          string moduleName = selectedNode.Text;
+         
          Module selectedMod = ModuleDataManager.GetInstance().GetMod(moduleName);
          if (selectedMod != null) {
             string initialDirectory;
