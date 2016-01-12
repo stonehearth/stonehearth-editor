@@ -195,8 +195,8 @@ namespace StonehearthEditor
       public static string NormalizeSystemPath(string path)
       {
          string normalized = path.Replace(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
-         if (path.Length > 1 && path[1] == ':') {
-            path = Char.ToUpperInvariant(path[0]) + path.Substring(1);
+         if (normalized.Length > 1 && normalized[1] == ':') {
+            normalized = Char.ToUpperInvariant(normalized[0]) + normalized.Substring(1);
          }
          return normalized;
       }
