@@ -596,7 +596,14 @@ namespace StonehearthEditor
                json.First.AddAfterSelf(new JProperty("mixins", "file(" + originalFileName + "_ghost.json" + ")"));
             } else
             {
-               (mixins as JArray).Add("file(" + originalFileName + "_ghost.json" + ")");
+               JArray mixinsArray = (mixins as JArray);
+               if (mixinsArray == null)
+               {
+                  mixinsArray = new JArray();
+                  json["mixins"] = mixinsArray;
+                  mixinsArray.Add(mixins.ToString());
+               }
+               mixinsArray.Add("file(" + originalFileName + "_ghost.json" + ")");
             }
             (entityFormsComponent as JObject).Add("ghost_form", "file(" + originalFileName + "_ghost.json" + ")");
             jsonFileData.TrySetFlatFileData(jsonFileData.GetJsonFileString());
