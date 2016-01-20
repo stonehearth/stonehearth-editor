@@ -145,6 +145,8 @@ namespace StonehearthEditor
          {
             mErrors = mErrors + "File " + Path + " does not exist.\n";
          }
+
+         PostLoad();
       }
       public string FlatFileData
       {
@@ -153,6 +155,8 @@ namespace StonehearthEditor
 
       // custom load call
       protected virtual void LoadInternal() { }
+
+      protected virtual void PostLoad() { }
 
       protected virtual bool TryChangeFlatFileData(string newData, out string newFlatFileData)
       {

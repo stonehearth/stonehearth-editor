@@ -71,6 +71,24 @@ namespace StonehearthEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {
+        ///   &quot;value_in_gold&quot;: 1,
+        ///   &quot;rarity&quot;: &quot;common&quot;,
+        ///   &quot;shop_info&quot;: {
+        ///      &quot;buyable&quot;: false,
+        ///      &quot;sellable&quot;: true,
+        ///      &quot;shopkeeper_level&quot;: 1,
+        ///      &quot;shopkeeper_type&quot;: &quot;caravan&quot;
+        ///   }
+        ///}.
+        /// </summary>
+        internal static string defaultNetWorth {
+            get {
+                return ResourceManager.GetString("defaultNetWorth", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap pngFileIcon {

@@ -30,6 +30,7 @@ namespace StonehearthEditor
       private JSONTYPE mJsonType = JSONTYPE.NONE;
       private JObject mJson;
       private string mDirectory;
+      private bool mSaveJsonAfterParse = false;
 
       public JsonFileData(string path)
       {
@@ -63,6 +64,36 @@ namespace StonehearthEditor
             AddError("Failed to load json file " + mPath + ". Error: " + e.Message);
          }
       }
+
+      protected override void PostLoad()
+      {
+         if (mSaveJsonAfterParse)
+         {
+            TrySetFlatFileData(GetJsonFileString());
+            //TrySaveFile();
+            mSaveJsonAfterParse = false;
+         }
+      }
+
+      private void CheckForNoNetWorth()
+      {
+         // check for errors
+         JToken netWorthData = mJson.SelectToken("entity_data.stonehearth:net_worth");
+         if (netWorthData == null)
+         {
+            AddError("No net worth even though object is an item! Add an entity_data.stonehearth:net_worth!");
+            JObject netWorth = JObject.Parse(StonehearthEditor.Properties.Resources.defaultNetWorth);
+            JObject entityData = mJson["entity_data"] as JObject;
+            if (entityData == null)
+            {
+               entityData = new JObject();
+               mJson["entity_data"] = entityData;
+            }
+            entityData.Add("stonehearth:net_worth", netWorth);
+            mSaveJsonAfterParse = true;
+         }
+      }
+
       private void ParseJsonSpecificData()
       {
          string directory = Directory;
@@ -90,6 +121,14 @@ namespace StonehearthEditor
                      JsonFileData iconic = new JsonFileData(iconicFilePath);
                      iconic.Load();
                      mOpenedFiles.Add(iconic);
+                  }
+                  CheckForNoNetWorth();
+
+               } else
+               {
+                  if (GetModuleFile() != null && mJson.SelectToken("components.item") != null)
+                  {
+                     CheckForNoNetWorth();
                   }
                }
                break;
