@@ -118,6 +118,12 @@
     </Compile>
     <Compile Include="Module.cs" />
     <Compile Include="JsonHelper.cs" />
+    <Compile Include="NetWorthVisualizer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="NetWorthVisualizer.Designer.cs">
+      <DependentUpon>NetWorthVisualizer.cs</DependentUpon>
+    </Compile>
     <Compile Include="PreviewCloneDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -151,6 +157,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ManifestView.resx">
       <DependentUpon>ManifestView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="NetWorthVisualizer.resx">
+      <DependentUpon>NetWorthVisualizer.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="PreviewCloneDialog.resx">
       <DependentUpon>PreviewCloneDialog.cs</DependentUpon>

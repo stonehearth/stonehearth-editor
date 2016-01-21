@@ -40,6 +40,8 @@
          this.saveAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
          this.reloadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
          this.changeModDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+         this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+         this.netWorthVisualizerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
          this.tabControl.SuspendLayout();
          this.manifestTab.SuspendLayout();
          this.encounterTab.SuspendLayout();
@@ -109,7 +111,8 @@
          // mainFormMenu
          // 
          this.mainFormMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolStripMenuItem});
+            this.fileToolStripMenuItem,
+            this.viewToolStripMenuItem});
          this.mainFormMenu.Location = new System.Drawing.Point(0, 0);
          this.mainFormMenu.Name = "mainFormMenu";
          this.mainFormMenu.Size = new System.Drawing.Size(1123, 24);
@@ -149,6 +152,21 @@
          this.changeModDirectoryToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
          this.changeModDirectoryToolStripMenuItem.Text = "Change Mod Directory";
          // 
+         // viewToolStripMenuItem
+         // 
+         this.viewToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.netWorthVisualizerToolStripMenuItem});
+         this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
+         this.viewToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+         this.viewToolStripMenuItem.Text = "View";
+         // 
+         // netWorthVisualizerToolStripMenuItem
+         // 
+         this.netWorthVisualizerToolStripMenuItem.Name = "netWorthVisualizerToolStripMenuItem";
+         this.netWorthVisualizerToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
+         this.netWorthVisualizerToolStripMenuItem.Text = "Net Worth Visualizer";
+         this.netWorthVisualizerToolStripMenuItem.Click += new System.EventHandler(this.netWorthVisualizerToolStripMenuItem_Click);
+         // 
          // MainForm
          // 
          this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
@@ -187,6 +205,8 @@
       private System.Windows.Forms.TabPage manifestTab;
       private ManifestView manifestView;
       private EncounterDesignerView encounterDesignerView;
+      private System.Windows.Forms.ToolStripMenuItem viewToolStripMenuItem;
+      private System.Windows.Forms.ToolStripMenuItem netWorthVisualizerToolStripMenuItem;
    }
 }
 

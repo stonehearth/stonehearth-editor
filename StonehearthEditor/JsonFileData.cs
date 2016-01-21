@@ -31,6 +31,7 @@ namespace StonehearthEditor
       private JObject mJson;
       private string mDirectory;
       private bool mSaveJsonAfterParse = false;
+      private int mNetWorth = -1;
 
       public JsonFileData(string path)
       {
@@ -91,6 +92,14 @@ namespace StonehearthEditor
             }
             entityData.Add("stonehearth:net_worth", netWorth);
             mSaveJsonAfterParse = true;
+         } else
+         {
+            //mNetWorth
+            string netWorthString = netWorthData["value_in_gold"].ToString();
+            if (!string.IsNullOrEmpty(netWorthString))
+            {
+               mNetWorth = int.Parse(netWorthString);
+            }
          }
       }
 
@@ -123,7 +132,6 @@ namespace StonehearthEditor
                      mOpenedFiles.Add(iconic);
                   }
                   CheckForNoNetWorth();
-
                } else
                {
                   if (GetModuleFile() != null && mJson.SelectToken("components.item") != null)
@@ -450,6 +458,11 @@ namespace StonehearthEditor
       public JObject Json
       {
          get { return mJson; }
+      }
+
+      public int NetWorth
+      {
+         get { return mNetWorth; }
       }
    }
 }

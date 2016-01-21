@@ -20,6 +20,8 @@ namespace StonehearthEditor
    {
       public static string kModsDirectoryPath;
 
+      private NetWorthVisualizer mNetWorthVisualizer;
+
       public MainForm(string path)
       {
          kModsDirectoryPath = JsonHelper.NormalizeSystemPath(path);
@@ -93,6 +95,17 @@ namespace StonehearthEditor
             Settings.Default.MainFormSize = this.RestoreBounds.Size;
          }
          Properties.Settings.Default.Save();
+      }
+
+      private void netWorthVisualizerToolStripMenuItem_Click(object sender, EventArgs e)
+      {
+         if (mNetWorthVisualizer == null || mNetWorthVisualizer.IsDisposed)
+         {
+            mNetWorthVisualizer = new NetWorthVisualizer();
+         }
+         mNetWorthVisualizer.SetManifestView(manifestView);
+         //mNetWorthVisualizer.UpdateNetWorthData();
+         mNetWorthVisualizer.Show(this);
       }
    }
 }

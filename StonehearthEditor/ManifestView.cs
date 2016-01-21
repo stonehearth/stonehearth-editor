@@ -63,7 +63,7 @@ namespace StonehearthEditor
          System.Diagnostics.Process.Start(@button.Name);
       }
 
-      private void SetSelectedFileData(FileData file)
+      public void SetSelectedFileData(FileData file)
       {
          if (file != null)
          {
