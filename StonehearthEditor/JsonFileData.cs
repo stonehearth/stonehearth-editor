@@ -79,26 +79,30 @@ namespace StonehearthEditor
       private void CheckForNoNetWorth()
       {
          // check for errors
-         JToken netWorthData = mJson.SelectToken("entity_data.stonehearth:net_worth");
-         if (netWorthData == null)
+         if (!Directory.Contains("mixins"))
          {
-            AddError("No net worth even though object is an item! Add an entity_data.stonehearth:net_worth!");
-            JObject netWorth = JObject.Parse(StonehearthEditor.Properties.Resources.defaultNetWorth);
-            JObject entityData = mJson["entity_data"] as JObject;
-            if (entityData == null)
+            JToken netWorthData = mJson.SelectToken("entity_data.stonehearth:net_worth");
+            if (netWorthData == null)
             {
-               entityData = new JObject();
-               mJson["entity_data"] = entityData;
+               AddError("No net worth even though object is an item! Add an entity_data.stonehearth:net_worth!");
+               JObject netWorth = JObject.Parse(StonehearthEditor.Properties.Resources.defaultNetWorth);
+               JObject entityData = mJson["entity_data"] as JObject;
+               if (entityData == null)
+               {
+                  entityData = new JObject();
+                  mJson["entity_data"] = entityData;
+               }
+               entityData.Add("stonehearth:net_worth", netWorth);
+               mSaveJsonAfterParse = true;
             }
-            entityData.Add("stonehearth:net_worth", netWorth);
-            mSaveJsonAfterParse = true;
-         } else
-         {
-            //mNetWorth
-            string netWorthString = netWorthData["value_in_gold"].ToString();
-            if (!string.IsNullOrEmpty(netWorthString))
+            else
             {
-               mNetWorth = int.Parse(netWorthString);
+               //mNetWorth
+               string netWorthString = netWorthData["value_in_gold"].ToString();
+               if (!string.IsNullOrEmpty(netWorthString))
+               {
+                  mNetWorth = int.Parse(netWorthString);
+               }
             }
          }
       }

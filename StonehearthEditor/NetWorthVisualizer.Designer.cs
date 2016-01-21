@@ -29,14 +29,21 @@
       private void InitializeComponent()
       {
          this.components = new System.ComponentModel.Container();
+         System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(NetWorthVisualizer));
          this.xAxisPanel = new System.Windows.Forms.Panel();
          this.xAxisLabel = new System.Windows.Forms.Label();
          this.imageTooltip = new System.Windows.Forms.ToolTip(this.components);
          this.panel1 = new System.Windows.Forms.Panel();
          this.canvas = new System.Windows.Forms.PictureBox();
+         this.topBar = new System.Windows.Forms.Panel();
+         this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+         this.zoomInButton = new System.Windows.Forms.ToolStripButton();
+         this.zoomOutButton = new System.Windows.Forms.ToolStripButton();
          this.xAxisPanel.SuspendLayout();
          this.panel1.SuspendLayout();
          ((System.ComponentModel.ISupportInitialize)(this.canvas)).BeginInit();
+         this.topBar.SuspendLayout();
+         this.toolStrip1.SuspendLayout();
          this.SuspendLayout();
          // 
          // xAxisPanel
@@ -62,9 +69,9 @@
          this.panel1.AutoScroll = true;
          this.panel1.Controls.Add(this.canvas);
          this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
-         this.panel1.Location = new System.Drawing.Point(0, 0);
+         this.panel1.Location = new System.Drawing.Point(0, 50);
          this.panel1.Name = "panel1";
-         this.panel1.Size = new System.Drawing.Size(1297, 528);
+         this.panel1.Size = new System.Drawing.Size(1297, 478);
          this.panel1.TabIndex = 0;
          // 
          // canvas
@@ -75,7 +82,46 @@
          this.canvas.TabIndex = 0;
          this.canvas.TabStop = false;
          this.canvas.Paint += new System.Windows.Forms.PaintEventHandler(this.canvas_Paint);
-         this.canvas.DoubleClick += new System.EventHandler(this.canvas_DoubleClick);
+         this.canvas.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.canvas_MouseDoubleClick);
+         this.canvas.MouseMove += new System.Windows.Forms.MouseEventHandler(this.canvas_MouseMove);
+         // 
+         // topBar
+         // 
+         this.topBar.Controls.Add(this.toolStrip1);
+         this.topBar.Dock = System.Windows.Forms.DockStyle.Top;
+         this.topBar.Location = new System.Drawing.Point(0, 0);
+         this.topBar.Name = "topBar";
+         this.topBar.Size = new System.Drawing.Size(1297, 50);
+         this.topBar.TabIndex = 1;
+         // 
+         // toolStrip1
+         // 
+         this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.zoomInButton,
+            this.zoomOutButton});
+         this.toolStrip1.Location = new System.Drawing.Point(0, 0);
+         this.toolStrip1.Name = "toolStrip1";
+         this.toolStrip1.Size = new System.Drawing.Size(1297, 25);
+         this.toolStrip1.TabIndex = 0;
+         this.toolStrip1.Text = "toolStrip1";
+         // 
+         // zoomInButton
+         // 
+         this.zoomInButton.Image = ((System.Drawing.Image)(resources.GetObject("zoomInButton.Image")));
+         this.zoomInButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+         this.zoomInButton.Name = "zoomInButton";
+         this.zoomInButton.Size = new System.Drawing.Size(72, 22);
+         this.zoomInButton.Text = "Zoom In";
+         this.zoomInButton.Click += new System.EventHandler(this.zoomInButton_Click);
+         // 
+         // zoomOutButton
+         // 
+         this.zoomOutButton.Image = ((System.Drawing.Image)(resources.GetObject("zoomOutButton.Image")));
+         this.zoomOutButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+         this.zoomOutButton.Name = "zoomOutButton";
+         this.zoomOutButton.Size = new System.Drawing.Size(82, 22);
+         this.zoomOutButton.Text = "Zoom Out";
+         this.zoomOutButton.Click += new System.EventHandler(this.zoomOutButton_Click);
          // 
          // NetWorthVisualizer
          // 
@@ -83,6 +129,7 @@
          this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
          this.ClientSize = new System.Drawing.Size(1297, 562);
          this.Controls.Add(this.panel1);
+         this.Controls.Add(this.topBar);
          this.Controls.Add(this.xAxisPanel);
          this.Name = "NetWorthVisualizer";
          this.Text = "NetWorthVisualizer";
@@ -90,6 +137,10 @@
          this.xAxisPanel.PerformLayout();
          this.panel1.ResumeLayout(false);
          ((System.ComponentModel.ISupportInitialize)(this.canvas)).EndInit();
+         this.topBar.ResumeLayout(false);
+         this.topBar.PerformLayout();
+         this.toolStrip1.ResumeLayout(false);
+         this.toolStrip1.PerformLayout();
          this.ResumeLayout(false);
 
       }
@@ -100,5 +151,9 @@
       private System.Windows.Forms.ToolTip imageTooltip;
       private System.Windows.Forms.Panel panel1;
       private System.Windows.Forms.PictureBox canvas;
+      private System.Windows.Forms.Panel topBar;
+      private System.Windows.Forms.ToolStrip toolStrip1;
+      private System.Windows.Forms.ToolStripButton zoomInButton;
+      private System.Windows.Forms.ToolStripButton zoomOutButton;
    }
 }

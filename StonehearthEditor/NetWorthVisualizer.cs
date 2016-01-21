@@ -13,9 +13,14 @@ namespace StonehearthEditor
    public partial class NetWorthVisualizer : Form
    {
       private Dictionary<int, List<JsonFileData>> mNetWorthValues = new Dictionary<int, List<JsonFileData>>();
+      private Dictionary<string, Image> mThumbnailCache = new Dictionary<string, Image>();
       private int mMaxNetWorth = 0;
       private int mItemCount = 0;
       private ManifestView mManifestView;
+      private JsonFileData mHoveredFileData = null;
+      private float mZoom = 1.0f;
+      private static float kMinZoom = 0.1f;
+      private static float kMaxZoom = 1.0f;
 
       public NetWorthVisualizer()
       {
@@ -30,17 +35,19 @@ namespace StonehearthEditor
 
       private string FindImageForFile(JsonFileData data)
       {
-         foreach (KeyValuePair<string, FileData> linkedFile in data.LinkedFileData)
+         foreach (FileData openedFile in data.OpenedFiles)
          {
-            if ((linkedFile.Value is ImageFileData) && System.IO.File.Exists(linkedFile.Value.Path))
+            foreach (KeyValuePair<string, FileData> linkedFile in openedFile.LinkedFileData)
             {
-               return linkedFile.Value.Path;
+               if ((linkedFile.Value is ImageFileData) && System.IO.File.Exists(linkedFile.Value.Path))
+               {
+                  return linkedFile.Value.Path;
+               }
             }
          }
          return string.Empty;
       }
-
-      private static int kCellSize = 40;
+      
       public void UpdateNetWorthData()
       {
          mItemCount = 0;
@@ -96,23 +103,35 @@ namespace StonehearthEditor
          }
       }
 
+      private static int kBottomOffset = 10;
+      private static int kStringOffset = 15;
+      private static int kCellSize = 40;
+      private static int kMaxRows = 1000;
       private void canvas_Paint(object sender, PaintEventArgs e)
       {
          Graphics graphics = e.Graphics;
+         int cellSizeZoomed = (int)Math.Round(kCellSize * mZoom);
 
-         int maxCols = Math.Min(mMaxNetWorth, 50);
-         int maxRows = Math.Min(mItemCount, 50);
-         int canvasWidth = maxCols * (kCellSize + 1);
-         int canvasHeight = maxRows * (kCellSize + 1) + 10;
+         int maxCols = Math.Min(mMaxNetWorth, kMaxRows);
+         int maxRows = Math.Min(mItemCount, kMaxRows);
+         int canvasWidth = maxCols * (cellSizeZoomed + 1);
+         int canvasHeightLimit = maxRows * (cellSizeZoomed + 1);
+         int canvasHeight = maxRows * (cellSizeZoomed + 1) + kBottomOffset;
 
          canvas.Width = canvasWidth;
          canvas.Height = canvasHeight;
 
          for (int i = 0; i < maxCols; ++i)
          {
-            string colName = "" + (i + 1);
-            Point position = new Point(i * kCellSize, canvasHeight - 15);
-            graphics.DrawString(colName, SystemFonts.DefaultFont, Brushes.Black, position);
+            if (mZoom > 0.25f || (mZoom == 0.25f && ((i+1)%10) == 0))
+            {
+               string colName = "" + (i + 1);
+               Point position = new Point(i * cellSizeZoomed, canvasHeight - kStringOffset);
+               graphics.DrawString(colName, SystemFonts.DefaultFont, Brushes.Black, position);
+            } else
+            {
+
+            }
 
             List<JsonFileData> list;
             if (mNetWorthValues.TryGetValue(i + 1, out list))
@@ -128,28 +147,98 @@ namespace StonehearthEditor
                   }
                   else
                   {
-                     Image image = Image.FromFile(imageFile);
-                     Image resized = image.GetThumbnailImage(kCellSize, kCellSize, null, IntPtr.Zero);
-                     Rectangle location = new Rectangle(i * kCellSize, j * kCellSize, kCellSize, kCellSize);
-                     graphics.DrawImageUnscaledAndClipped(resized, location);
+                     Image thumbnail;
+                     if (!mThumbnailCache.TryGetValue(imageFile, out thumbnail))
+                     {
+                        Image image = Image.FromFile(imageFile);
+                        thumbnail = image.GetThumbnailImage(cellSizeZoomed, cellSizeZoomed, null, IntPtr.Zero);
+                        mThumbnailCache[imageFile] = thumbnail;
+                     }
+                     int ylocation = canvasHeight - (j + 1) * cellSizeZoomed - maxRows - kBottomOffset - 1;
+                     Rectangle location = new Rectangle(i * cellSizeZoomed, ylocation, cellSizeZoomed, cellSizeZoomed);
+                     graphics.DrawImage(thumbnail, location);
                   }
                }
             }
          }
 
-         for (int i = 0; i < canvasWidth; i += kCellSize)
+         for (int i = 0; i < canvasWidth; i += cellSizeZoomed)
          {
-            graphics.DrawLine(System.Drawing.Pens.Black, new Point(i, 0), new Point(i, canvasHeight));
+            graphics.DrawLine(System.Drawing.Pens.Black, new Point(i, 0), new Point(i, canvasHeightLimit));
          }
-         for (int j = 0; j < canvasHeight; j += kCellSize)
+         for (int j = 0; j < canvasHeightLimit; j += cellSizeZoomed)
          {
             graphics.DrawLine(System.Drawing.Pens.Black, new Point(0, j), new Point(canvasWidth, j));
          }
       }
 
-      private void canvas_DoubleClick(object sender, EventArgs e)
+      private void canvas_MouseDoubleClick(object sender, MouseEventArgs e)
       {
+         int maxRows = Math.Min(mItemCount, kMaxRows);
+         int cellSizeZoomed = (int)Math.Round(kCellSize * mZoom);
+         int x = e.X / cellSizeZoomed;
+         int y = (canvas.Height - e.Y - maxRows - kBottomOffset) / cellSizeZoomed;
+         List<JsonFileData> list;
+         if (mNetWorthValues.TryGetValue(x + 1, out list))
+         {
+            if (y < list.Count)
+            {
+               mManifestView.SetSelectedFileData(list[y]);
+            }
+         }
+      }
 
+      private void canvas_MouseMove(object sender, MouseEventArgs e)
+      {
+         Point pos = canvas.PointToClient(Cursor.Position);
+
+         int cellSizeZoomed = (int)Math.Round(kCellSize * mZoom);
+         int maxRows = Math.Min(mItemCount, kMaxRows);
+         int x = pos.X / cellSizeZoomed;
+         int y = (canvas.Height - pos.Y - maxRows - kBottomOffset) / cellSizeZoomed;
+         List<JsonFileData> list;
+         if (mNetWorthValues.TryGetValue(x + 1, out list))
+         {
+            if (y < list.Count && y >= 0)
+            {
+               if (list[y] != mHoveredFileData)
+               {
+                  pos.X = pos.X + 2;
+                  pos.Y = pos.Y + 2;
+                  mHoveredFileData = list[y];
+                  imageTooltip.Show(list[y].FileName, canvas, pos);
+               }
+               return;
+            }
+         }
+         mHoveredFileData = null;
+         imageTooltip.Hide(canvas);
+      }
+
+      private void zoomInButton_Click(object sender, EventArgs e)
+      {
+         float newZoom = mZoom + 0.25f;
+         if (mZoom == kMinZoom) {
+            newZoom = 0.25f;
+         }
+         
+         newZoom = Math.Min(newZoom, kMaxZoom);
+         if (newZoom != mZoom)
+         {
+            mZoom = newZoom;
+            canvas.Refresh();
+         }
+      }
+
+      private void zoomOutButton_Click(object sender, EventArgs e)
+      {
+         float newZoom = mZoom - 0.25f;
+         newZoom = Math.Max(newZoom, kMinZoom);
+         if (newZoom != mZoom)
+         {
+            mZoom = newZoom;
+            canvas.Refresh();
+         }
       }
    }
 }

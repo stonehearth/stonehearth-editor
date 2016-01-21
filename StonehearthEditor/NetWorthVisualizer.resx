@@ -120,6 +120,30 @@
   <metadata name="imageTooltip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>
   </metadata>
+  <metadata name="toolStrip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>141, 17</value>
+  </metadata>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="zoomInButton.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAADQSURBVDhPrZJBDsIgEEU5kmdgT2LiFbq168rKFafwTr0C
+        C3VbTYAt9hMGQWkqjT+ZNDP8/6AtjGSt3Tvnxrl8ViPm0bKs2XTWWnsppeecp0KPOdaj9VvYASYhRBGm
+        wjxC6ifBMWnnYTj52/XuH9MzPNFjjnX4YqQU3pV2ozA7XBKE1uCLkVI5gMJU6JsAW0+QvkF/7BMET/SY
+        d10XAMaYXYy9tfYXqJRSgExLkOo9wM55vwap3cQQ+hnyKZhg/jukCQDlkOYwiSCbwiQEyzBjL2aWpOdL
+        MLPtAAAAAElFTkSuQmCC
+</value>
+  </data>
+  <data name="zoomOutButton.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABEAAAARCAYAAAA7bUf6AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAADVSURBVDhPtZLBDYMwDEUzSkfoDNyROg+nrsAEPZR9uORe
+        NqCVIDmmeZWNIgiope2XLGLHebZDzN81juPJOddGC4m1xCVlWzHx3HVdqKoqFEUxGT5x9iU1LyqRWJZl
+        aK5NuPePyfCJC2i9I1qm4hyQgtgnT44sxey0ngOosU+eHFmKVhWid5HaW5CfdDIMw+2rO4k3frHWvv4A
+        1eYg/M2/MwfwpSJrNfzVd5ID4DMasyeWf7FrAOKSsi3v/SHS+7qu9wFUseWjgnYBVAraDVAxmiw/kDFP
+        bcS0ELOTV8QAAAAASUVORK5CYII=
+</value>
+  </data>
   <metadata name="$this.TrayHeight" type="System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>55</value>
   </metadata>
