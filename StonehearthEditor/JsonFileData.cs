@@ -32,7 +32,8 @@ namespace StonehearthEditor
       private string mDirectory;
       private bool mSaveJsonAfterParse = false;
       private int mNetWorth = -1;
-      public int RecommendedNetWorth = -1;
+      public int RecommendedMaxNetWorth = -1;
+      public int RecommendedMinNetWorth = -1;
 
       public JsonFileData(string path)
       {
@@ -80,10 +81,10 @@ namespace StonehearthEditor
       private void CheckForNoNetWorth()
       {
          // check for errors
-         if (!Directory.Contains("mixins"))
+         JToken netWorthData = mJson.SelectToken("entity_data.stonehearth:net_worth");
+         if (netWorthData == null)
          {
-            JToken netWorthData = mJson.SelectToken("entity_data.stonehearth:net_worth");
-            if (netWorthData == null)
+            if (!Directory.Contains("mixins"))
             {
                AddError("No net worth even though object is an item! Add an entity_data.stonehearth:net_worth!");
                JObject netWorth = JObject.Parse(StonehearthEditor.Properties.Resources.defaultNetWorth);
@@ -96,14 +97,14 @@ namespace StonehearthEditor
                entityData.Add("stonehearth:net_worth", netWorth);
                mSaveJsonAfterParse = true;
             }
-            else
+         }
+         else
+         {
+            //mNetWorth
+            string netWorthString = netWorthData["value_in_gold"].ToString();
+            if (!string.IsNullOrEmpty(netWorthString))
             {
-               //mNetWorth
-               string netWorthString = netWorthData["value_in_gold"].ToString();
-               if (!string.IsNullOrEmpty(netWorthString))
-               {
-                  mNetWorth = int.Parse(netWorthString);
-               }
+               mNetWorth = int.Parse(netWorthString);
             }
          }
       }

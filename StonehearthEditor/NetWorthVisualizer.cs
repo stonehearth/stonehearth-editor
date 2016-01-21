@@ -12,7 +12,7 @@ namespace StonehearthEditor
 {
    public partial class NetWorthVisualizer : Form
    {
-      private Dictionary<int, List<JsonFileData>> mNetWorthValues = new Dictionary<int, List<JsonFileData>>();
+      private Dictionary<int, List<JsonFileData>> mNetWorthValues;
       private Dictionary<string, Image> mThumbnailCache = new Dictionary<string, Image>();
       private int mMaxNetWorth = 0;
       private int mItemCount = 0;
@@ -24,8 +24,8 @@ namespace StonehearthEditor
 
       public NetWorthVisualizer()
       {
-         UpdateNetWorthData();
          InitializeComponent();
+         UpdateNetWorthData();
       }
 
       public void SetManifestView(ManifestView view)
@@ -51,6 +51,8 @@ namespace StonehearthEditor
       public void UpdateNetWorthData()
       {
          mItemCount = 0;
+         mMaxNetWorth = 0;
+         mNetWorthValues = new Dictionary<int, List<JsonFileData>>();
          foreach (Module mod in ModuleDataManager.GetInstance().GetAllModules())
          {
             foreach (ModuleFile file in mod.GetAliases())
@@ -89,7 +91,7 @@ namespace StonehearthEditor
                }
             }
          }
-         //canvas.Refresh();
+         canvas.Refresh();
       }
 
       private void openFileButton_Click(object sender, EventArgs e)
@@ -107,6 +109,8 @@ namespace StonehearthEditor
       private static int kStringOffset = 15;
       private static int kCellSize = 40;
       private static int kMaxRows = 1000;
+      private static float kMaxRecommendedMultiplier = 1.6f;
+      private static float kMinRecommendedMultiplier = 0.9f;
       private void canvas_Paint(object sender, PaintEventArgs e)
       {
          Graphics graphics = e.Graphics;
@@ -159,15 +163,15 @@ namespace StonehearthEditor
                      Rectangle location = new Rectangle(i * cellSizeZoomed, ylocation, cellSizeZoomed, cellSizeZoomed);
                      graphics.DrawImage(thumbnail, location);
 
-                     if (data.RecommendedNetWorth > 0)
+                     if (data.RecommendedMaxNetWorth > 0)
                      {
                         int cost = (i + 1);
                         bool shouldWarn = false;
-                        if (cost < data.RecommendedNetWorth)
+                        if (cost < data.RecommendedMinNetWorth * kMinRecommendedMultiplier)
                         {
                            shouldWarn = true;
                         }
-                        if (cost > (data.RecommendedNetWorth * 1.25))
+                        if (cost > (data.RecommendedMaxNetWorth * kMaxRecommendedMultiplier))
                         {
                            shouldWarn = true;
                         }
@@ -227,9 +231,10 @@ namespace StonehearthEditor
                   pos.Y = pos.Y + 2;
                   mHoveredFileData = list[y];
                   string tooltip = mHoveredFileData.FileName;
-                  if (mHoveredFileData.RecommendedNetWorth > 0)
+                  if (mHoveredFileData.RecommendedMinNetWorth >= 0)
                   {
-                     tooltip = tooltip + "\n Recommended Net Worth: " + mHoveredFileData.RecommendedNetWorth;
+                     tooltip = tooltip + "\n Recommended Net Worth: " + mHoveredFileData.RecommendedMinNetWorth + " - " + mHoveredFileData.RecommendedMaxNetWorth * kMaxRecommendedMultiplier;
+                     tooltip = tooltip + "\n Average: " + mHoveredFileData.RecommendedMaxNetWorth;
                   }
 
                   imageTooltip.Show(tooltip, canvas, pos);

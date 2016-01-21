@@ -292,7 +292,7 @@ namespace StonehearthEditor
          return 0;
       }
 
-      private static int kWorkUnitsWorth = 1;
+      private static int kWorkUnitsWorth = 2;
       private void RecommendNetWorth()
       {
          JsonFileData jsonFileData = FileData as JsonFileData;
@@ -358,6 +358,7 @@ namespace StonehearthEditor
                      totalCost = totalCost + costPer * count;
                   }
                }
+               jsonFileData.RecommendedMinNetWorth = totalCost;
 
                JToken workUnits = refJson.Json["work_units"];
                if (workUnits != null)
@@ -365,7 +366,7 @@ namespace StonehearthEditor
                   int units = int.Parse(workUnits.ToString());
                   totalCost = totalCost + units * kWorkUnitsWorth;
                }
-               jsonFileData.RecommendedNetWorth = totalCost;
+               jsonFileData.RecommendedMaxNetWorth = totalCost;
             }
          }
       }

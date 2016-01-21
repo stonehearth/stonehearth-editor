@@ -77,6 +77,10 @@ namespace StonehearthEditor
       public void Reload()
       {
          manifestView.Reload();
+         if (mNetWorthVisualizer != null && !mNetWorthVisualizer.IsDisposed)
+         {
+            mNetWorthVisualizer.UpdateNetWorthData();
+         }
       }
 
       private void MainForm_Resize(object sender, EventArgs e)
@@ -99,10 +103,12 @@ namespace StonehearthEditor
 
       private void netWorthVisualizerToolStripMenuItem_Click(object sender, EventArgs e)
       {
-         if (mNetWorthVisualizer == null || mNetWorthVisualizer.IsDisposed)
+         if (mNetWorthVisualizer != null && !mNetWorthVisualizer.IsDisposed)
          {
-            mNetWorthVisualizer = new NetWorthVisualizer();
+            mNetWorthVisualizer.UpdateNetWorthData();
+            return;
          }
+         mNetWorthVisualizer = new NetWorthVisualizer();
          mNetWorthVisualizer.SetManifestView(manifestView);
          //mNetWorthVisualizer.UpdateNetWorthData();
          mNetWorthVisualizer.Show(this);
