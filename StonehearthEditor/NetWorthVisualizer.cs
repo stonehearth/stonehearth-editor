@@ -154,9 +154,29 @@ namespace StonehearthEditor
                         thumbnail = image.GetThumbnailImage(cellSizeZoomed, cellSizeZoomed, null, IntPtr.Zero);
                         mThumbnailCache[imageFile] = thumbnail;
                      }
+
                      int ylocation = canvasHeight - (j + 1) * cellSizeZoomed - maxRows - kBottomOffset - 1;
                      Rectangle location = new Rectangle(i * cellSizeZoomed, ylocation, cellSizeZoomed, cellSizeZoomed);
                      graphics.DrawImage(thumbnail, location);
+
+                     if (data.RecommendedNetWorth > 0)
+                     {
+                        int cost = (i + 1);
+                        bool shouldWarn = false;
+                        if (cost < data.RecommendedNetWorth)
+                        {
+                           shouldWarn = true;
+                        }
+                        if (cost > (data.RecommendedNetWorth * 1.25))
+                        {
+                           shouldWarn = true;
+                        }
+                        if (shouldWarn)
+                        {
+                           Pen semiRed = new Pen(Color.FromArgb(100, Color.Red));
+                           graphics.FillRectangle(semiRed.Brush, location);
+                        }
+                     }
                   }
                }
             }
@@ -206,7 +226,13 @@ namespace StonehearthEditor
                   pos.X = pos.X + 2;
                   pos.Y = pos.Y + 2;
                   mHoveredFileData = list[y];
-                  imageTooltip.Show(list[y].FileName, canvas, pos);
+                  string tooltip = mHoveredFileData.FileName;
+                  if (mHoveredFileData.RecommendedNetWorth > 0)
+                  {
+                     tooltip = tooltip + "\n Recommended Net Worth: " + mHoveredFileData.RecommendedNetWorth;
+                  }
+
+                  imageTooltip.Show(tooltip, canvas, pos);
                }
                return;
             }

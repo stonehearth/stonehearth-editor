@@ -16,6 +16,7 @@ namespace StonehearthEditor
       }
       private string mModsDirectoryPath;
       private Dictionary<String, Module> mModules = new Dictionary<String, Module>();
+
       private bool mHasErrors = false;
       public ModuleDataManager(string modsDirectoryPath)
       {

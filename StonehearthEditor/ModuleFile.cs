@@ -15,6 +15,8 @@ namespace StonehearthEditor
    };
    public class ModuleFile
    {
+      private static Dictionary<string, int> kAverageMaterialCost = new Dictionary<string, int>();
+
       private Module mModule;
       private string mAlias;
       private string mOriginalFilePath;
@@ -231,6 +233,146 @@ namespace StonehearthEditor
 
       public void PostLoadFixup()
       {
+         FixupLootTables();
+         RecommendNetWorth();
+      }
+
+      public static int GetAverageMaterialCost(string material)
+      {
+         if (kAverageMaterialCost.ContainsKey(material))
+         {
+            return kAverageMaterialCost[material];
+         }
+         int sumCost = 0;
+         int numItems = 0;
+         foreach (Module mod in ModuleDataManager.GetInstance().GetAllModules())
+         {
+            foreach (ModuleFile file in mod.GetAliases())
+            {
+               JsonFileData data = file.FileData as JsonFileData;
+               if (data == null)
+               {
+                  continue;
+               }
+               int netWorth = data.NetWorth;
+               if (netWorth <= 0)
+               {
+                  continue;
+               }
+               JToken tags = data.Json.SelectToken("components.stonehearth:material.tags");
+               if (tags != null)
+               {
+                  string tagString = tags.ToString();
+                  string[] split = material.Split(' ');
+                  bool isMaterial = true;
+                  foreach(string tag in split)
+                  {
+                     if (!tagString.Contains(tag))
+                     {
+                        isMaterial = false;
+                        break;
+                     }
+                  }
+                  if (isMaterial)
+                  {
+                     numItems++;
+                     sumCost = sumCost + netWorth;
+                  }
+               }
+            }
+         }
+
+         if (numItems > 0)
+         {
+            int averageCost = sumCost / numItems;
+            kAverageMaterialCost[material] = averageCost;
+            return averageCost;
+         }
+
+         return 0;
+      }
+
+      private static int kWorkUnitsWorth = 1;
+      private void RecommendNetWorth()
+      {
+         JsonFileData jsonFileData = FileData as JsonFileData;
+         if (jsonFileData == null)
+         {
+            return;
+         }
+         foreach (FileData reference in jsonFileData.ReferencedByFileData.Values)
+         {
+            JsonFileData refJson = reference as JsonFileData;
+            if (refJson != null && refJson.JsonType == JSONTYPE.RECIPE)
+            {
+               JArray produces = refJson.Json["produces"] as JArray;
+               bool isProduct = false;
+               foreach (JToken product in produces)
+               {
+                  JToken item = product["item"];
+                  if (item != null && item.ToString().Equals(FullAlias))
+                  {
+                     isProduct = true;
+                     break;
+                  }
+                  JToken fine = product["fine"];
+                  if (fine != null && fine.ToString().Equals(FullAlias))
+                  {
+                     isProduct = true;
+                     break;
+                  }
+               }
+
+               if (!isProduct)
+               {
+                  continue;
+               }
+
+               int totalCost = 0;
+               // If we are created by a recipe, look at the ingredients for the recipe to calculate net worth of all ingredients ...
+               JArray ingredients = refJson.Json["ingredients"] as JArray;
+               if (ingredients != null)
+               {
+                  foreach(JToken ingredient in ingredients)
+                  {
+                     int costPer = 0;
+                     JToken material = ingredient["material"];
+                     if (material != null)
+                     {
+                        // try get cost of material
+                        string materialString = material.ToString();
+                        costPer = ModuleFile.GetAverageMaterialCost(materialString);
+                     }
+                     JToken uri = ingredient["uri"];
+                     if (uri != null)
+                     {
+                        // try get cost of material
+                        string uriString = uri.ToString();
+                        ModuleFile file = ModuleDataManager.GetInstance().GetModuleFile(uriString);
+                        if (file != null)
+                        {
+                           costPer = (file.FileData as JsonFileData).NetWorth;
+                        }
+                     }
+                     int count = int.Parse(ingredient["count"].ToString());
+                     totalCost = totalCost + costPer * count;
+                  }
+               }
+
+               JToken workUnits = refJson.Json["work_units"];
+               if (workUnits != null)
+               {
+                  int units = int.Parse(workUnits.ToString());
+                  totalCost = totalCost + units * kWorkUnitsWorth;
+               }
+               jsonFileData.RecommendedNetWorth = totalCost;
+            }
+         }
+      }
+
+      private void FixupLootTables()
+      {
+         // Fixup loot tables
          if (Name == "mining:base_loot_table")
          {
             JsonFileData jsonFileData = FileData as JsonFileData;
@@ -240,7 +382,8 @@ namespace StonehearthEditor
                jsonFileData.TrySetFlatFileData(jsonFileData.GetJsonFileString());
                jsonFileData.TrySaveFile();
             }
-         } else
+         }
+         else
          {
             JsonFileData jsonFileData = FileData as JsonFileData;
             if (jsonFileData != null && jsonFileData.Json != null)

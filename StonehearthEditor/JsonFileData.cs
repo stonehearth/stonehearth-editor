@@ -32,6 +32,7 @@ namespace StonehearthEditor
       private string mDirectory;
       private bool mSaveJsonAfterParse = false;
       private int mNetWorth = -1;
+      public int RecommendedNetWorth = -1;
 
       public JsonFileData(string path)
       {
