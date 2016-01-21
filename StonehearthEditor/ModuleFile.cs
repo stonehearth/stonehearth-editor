@@ -306,24 +306,22 @@ namespace StonehearthEditor
             if (refJson != null && refJson.JsonType == JSONTYPE.RECIPE)
             {
                JArray produces = refJson.Json["produces"] as JArray;
-               bool isProduct = false;
+               int productCount = 0;
                foreach (JToken product in produces)
                {
                   JToken item = product["item"];
                   if (item != null && item.ToString().Equals(FullAlias))
                   {
-                     isProduct = true;
-                     break;
+                     productCount++;
                   }
                   JToken fine = product["fine"];
                   if (fine != null && fine.ToString().Equals(FullAlias))
                   {
-                     isProduct = true;
-                     break;
+                     productCount++;
                   }
                }
 
-               if (!isProduct)
+               if (productCount <= 0)
                {
                   continue;
                }
@@ -358,7 +356,7 @@ namespace StonehearthEditor
                      totalCost = totalCost + costPer * count;
                   }
                }
-               jsonFileData.RecommendedMinNetWorth = totalCost;
+               jsonFileData.RecommendedMinNetWorth = totalCost / productCount;
 
                JToken workUnits = refJson.Json["work_units"];
                if (workUnits != null)
@@ -366,7 +364,7 @@ namespace StonehearthEditor
                   int units = int.Parse(workUnits.ToString());
                   totalCost = totalCost + units * kWorkUnitsWorth;
                }
-               jsonFileData.RecommendedMaxNetWorth = totalCost;
+               jsonFileData.RecommendedMaxNetWorth = totalCost / productCount;
             }
          }
       }
