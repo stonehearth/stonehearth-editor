@@ -172,7 +172,7 @@
          // 
          this.splitContainer2.Panel2.Controls.Add(this.splitContainer3);
          this.splitContainer2.Panel2.Controls.Add(this.selectedFilePathTextBox);
-         this.splitContainer2.Size = new System.Drawing.Size(762, 569);
+         this.splitContainer2.Size = new System.Drawing.Size(762, 547);
          this.splitContainer2.SplitterDistance = 200;
          this.splitContainer2.TabIndex = 3;
          this.splitContainer2.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.splitContainer2_SplitterMoved);
@@ -189,7 +189,7 @@
          this.treeView.Name = "treeView";
          this.treeView.SelectedImageIndex = 1;
          this.treeView.ShowNodeToolTips = true;
-         this.treeView.Size = new System.Drawing.Size(200, 543);
+         this.treeView.Size = new System.Drawing.Size(200, 521);
          this.treeView.TabIndex = 1;
          this.treeView.BeforeLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.treeView_BeforeLabelEdit);
          this.treeView.AfterLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.treeView_AfterLabelEdit);
@@ -248,7 +248,7 @@
          this.splitContainer3.Panel2.Controls.Add(this.referencesPanel);
          this.splitContainer3.Panel2.Controls.Add(this.dependenciesPanel);
          this.splitContainer3.Panel2.Controls.Add(this.panel2);
-         this.splitContainer3.Size = new System.Drawing.Size(558, 549);
+         this.splitContainer3.Size = new System.Drawing.Size(558, 527);
          this.splitContainer3.SplitterDistance = global::StonehearthEditor.Properties.Settings.Default.ManifestViewFileDependenciesSplitter;
          this.splitContainer3.TabIndex = 3;
          this.splitContainer3.TabStop = false;
@@ -261,7 +261,7 @@
          this.filePreviewTabs.Name = "filePreviewTabs";
          this.filePreviewTabs.SelectedIndex = 0;
          this.filePreviewTabs.ShowToolTips = true;
-         this.filePreviewTabs.Size = new System.Drawing.Size(318, 516);
+         this.filePreviewTabs.Size = new System.Drawing.Size(318, 494);
          this.filePreviewTabs.TabIndex = 2;
          // 
          // openFileButtonPanel
@@ -402,8 +402,8 @@
          // 
          this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
          this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-         this.Controls.Add(this.statusStrip);
          this.Controls.Add(this.splitContainer2);
+         this.Controls.Add(this.statusStrip);
          this.Name = "ManifestView";
          this.Size = new System.Drawing.Size(762, 569);
          this.Load += new System.EventHandler(this.ManifestView_Load);
