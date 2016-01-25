@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -167,6 +168,12 @@ namespace StonehearthEditor
                      {
                         int cost = (i + 1);
                         bool shouldWarn = false;
+                        JToken sellable = data.Json.SelectToken("entity_data.stonehearth:net_worth.shop_info.sellable");
+                        if (sellable != null && sellable.ToString() == "False")
+                        {
+                           shouldWarn = true;
+                        }
+
                         if (cost < data.RecommendedMinNetWorth * kMinRecommendedMultiplier)
                         {
                            shouldWarn = true;
@@ -181,6 +188,7 @@ namespace StonehearthEditor
                            graphics.FillRectangle(semiRed.Brush, location);
                         }
                      }
+
                   }
                }
             }
