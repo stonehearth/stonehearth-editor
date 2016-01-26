@@ -279,7 +279,7 @@ namespace StonehearthEditor
          try
          {
             StringWriter stringWriter = new StringWriter();
-            using (JsonTextWriter jsonTextWriter = new JsonTextWriter(stringWriter))
+            using (CustomJsonWriter jsonTextWriter = new CustomJsonWriter(stringWriter))
             {
                jsonTextWriter.Formatting = Newtonsoft.Json.Formatting.Indented;
                jsonTextWriter.Indentation = 3;
@@ -296,6 +296,59 @@ namespace StonehearthEditor
             Console.WriteLine("Could not convert json to string because of exception " + e.Message);
          }
          return null;
+      }
+
+      private class CustomJsonWriter : JsonTextWriter
+      {
+         private bool mWritingMinMax = false;
+         public CustomJsonWriter(TextWriter textWriter):
+            base(textWriter)
+         {
+         }
+
+         public override void WriteWhitespace(string ws)
+         {
+            base.WriteWhitespace(ws);
+
+         }
+         public override void WriteStartObject()
+         {
+
+            base.WriteStartObject();
+         }
+
+         protected override void WriteEnd(JsonToken token)
+         {
+            base.WriteEnd(token);
+         }
+         protected override void WriteIndentSpace()
+         {
+            base.WriteIndentSpace();
+         }
+         protected override void WriteIndent()
+         {
+            if (mWritingMinMax)
+            {
+               base.WriteIndentSpace();
+               mWritingMinMax = false;
+            }
+            else
+            {
+               base.WriteIndent();
+            }
+         }
+
+         public override void WritePropertyName(string name)
+         {
+            base.WritePropertyName(name);
+            if (name == "min" || name == "max" || name=="x" || name=="y" || name=="z")
+            {
+               mWritingMinMax = true;
+            } else
+            {
+               mWritingMinMax = false;
+            }
+         }
       }
 
       public static bool FixupLootTable(JObject json, string selector)
