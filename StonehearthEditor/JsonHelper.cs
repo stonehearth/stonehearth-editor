@@ -306,31 +306,11 @@ namespace StonehearthEditor
          {
          }
 
-         public override void WriteWhitespace(string ws)
-         {
-            base.WriteWhitespace(ws);
-
-         }
-         public override void WriteStartObject()
-         {
-
-            base.WriteStartObject();
-         }
-
-         protected override void WriteEnd(JsonToken token)
-         {
-            base.WriteEnd(token);
-         }
-         protected override void WriteIndentSpace()
-         {
-            base.WriteIndentSpace();
-         }
          protected override void WriteIndent()
          {
             if (mWritingMinMax)
             {
                base.WriteIndentSpace();
-               mWritingMinMax = false;
             }
             else
             {
@@ -338,16 +318,26 @@ namespace StonehearthEditor
             }
          }
 
+         public override void WriteEndObject()
+         {
+            base.WriteEndObject();
+            mWritingMinMax = false;
+         }
+
          public override void WritePropertyName(string name)
          {
-            base.WritePropertyName(name);
-            if (name == "min" || name == "max" || name=="x" || name=="y" || name=="z")
+            if (name=="x" || name=="y" || name=="z")
             {
                mWritingMinMax = true;
             } else
             {
                mWritingMinMax = false;
             }
+            base.WritePropertyName(name);
+         }
+         public override void WriteValue(object value)
+         {
+            base.WriteValue(value);
          }
       }
 
