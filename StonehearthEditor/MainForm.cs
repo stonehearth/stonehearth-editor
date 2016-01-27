@@ -33,26 +33,7 @@ namespace StonehearthEditor
       {
          if (string.IsNullOrWhiteSpace(kModsDirectoryPath))
          {
-            DialogResult result = modsFolderBrowserDialog.ShowDialog();
-            
-            if (result == DialogResult.OK)
-            {
-               string newPath = modsFolderBrowserDialog.SelectedPath;
-               if (!string.IsNullOrWhiteSpace(newPath))
-               {
-                  kModsDirectoryPath = modsFolderBrowserDialog.SelectedPath;
-                  Properties.Settings.Default["ModsDirectory"] = kModsDirectoryPath;
-                  Properties.Settings.Default.Save();
-               } else
-               {
-                  MessageBox.Show("invalid mods directory");
-                  return;
-               }
-            } else
-            {
-               MessageBox.Show("invalid mods directory");
-               return;
-            }
+            chooseModDirectory();
          }
          LoadModFiles();
          int initialTab = (int) Properties.Settings.Default["InitialTab"];
@@ -126,6 +107,37 @@ namespace StonehearthEditor
          mNetWorthVisualizer.SetManifestView(manifestView);
          //mNetWorthVisualizer.UpdateNetWorthData();
          mNetWorthVisualizer.Show(this);
+      }
+
+      private void chooseModDirectory()
+      {
+         DialogResult result = modsFolderBrowserDialog.ShowDialog();
+
+         if (result == DialogResult.OK)
+         {
+            string newPath = modsFolderBrowserDialog.SelectedPath;
+            if (!string.IsNullOrWhiteSpace(newPath))
+            {
+               kModsDirectoryPath = modsFolderBrowserDialog.SelectedPath;
+               Properties.Settings.Default["ModsDirectory"] = kModsDirectoryPath;
+               Properties.Settings.Default.Save();
+            }
+            else
+            {
+               MessageBox.Show("invalid mods directory");
+               return;
+            }
+         }
+         else
+         {
+            MessageBox.Show("invalid mods directory");
+            return;
+         }
+      }
+
+      private void changeModDirectoryToolStripMenuItem_Click(object sender, EventArgs e)
+      {
+         chooseModDirectory();
       }
    }
 }

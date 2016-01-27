@@ -151,6 +151,7 @@
          this.changeModDirectoryToolStripMenuItem.Name = "changeModDirectoryToolStripMenuItem";
          this.changeModDirectoryToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
          this.changeModDirectoryToolStripMenuItem.Text = "Change Mod Directory";
+         this.changeModDirectoryToolStripMenuItem.Click += new System.EventHandler(this.changeModDirectoryToolStripMenuItem_Click);
          // 
          // viewToolStripMenuItem
          // 

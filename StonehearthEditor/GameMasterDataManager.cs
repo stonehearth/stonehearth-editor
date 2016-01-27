@@ -228,9 +228,9 @@ namespace StonehearthEditor
             foreach (GameMasterNode node in campaignNodes)
             {
                GameMasterNodeType nodeType = node.NodeType;
-               if (nodeType == GameMasterNodeType.CAMP_PIECE)
+               if (nodeType == GameMasterNodeType.CAMP_PIECE || nodeType == GameMasterNodeType.UNKNOWN)
                {
-                  // Do not add camp pieces for now.
+                  // Do not add camp pieces or unknown node types.
                   continue;
                }
 

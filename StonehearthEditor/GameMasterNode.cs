@@ -12,11 +12,12 @@ namespace StonehearthEditor
 {
    public enum GameMasterNodeType
    {
-      UNKNOWN = 0,
+      UNSET = 0,
       CAMPAIGN = 1,
       ARC = 2,
       ENCOUNTER = 3,
       CAMP_PIECE = 4,
+      UNKNOWN = 5,
    };
 
    public class GameMasterNode
@@ -35,7 +36,7 @@ namespace StonehearthEditor
       public bool IsModified = false;
 
       private Dictionary<string, string> mEncounters = new Dictionary<string, string>();
-      private GameMasterNodeType mNodeType = GameMasterNodeType.UNKNOWN;
+      private GameMasterNodeType mNodeType = GameMasterNodeType.UNSET;
       public GameMasterNode(string module, string filePath)
       {
          mModule = module;
@@ -107,7 +108,7 @@ namespace StonehearthEditor
       {
          JToken fileTypeToken = mJson["type"];
          string fileType = fileTypeToken != null? fileTypeToken.ToString().ToUpper() : "";
-         GameMasterNodeType newNodeType = mNodeType;
+         GameMasterNodeType newNodeType = GameMasterNodeType.UNKNOWN;
          foreach (GameMasterNodeType nodeType in Enum.GetValues(typeof(GameMasterNodeType)))
          {
             if (fileType.Equals(nodeType.ToString()))
@@ -134,6 +135,7 @@ namespace StonehearthEditor
                   break;
                default:
                   Console.WriteLine("unknown encounter node type for file " + Path);
+                  mNodeData = new UnknownNodeData();
                   break;
             }
          }
@@ -340,10 +342,7 @@ namespace StonehearthEditor
             if (!set.Contains(node))
             {
                set.Add(node);
-               if (node.NodeData != null)
-               {
-                  node.NodeData.GetRelatedNodes(set);
-               }
+               node.NodeData.GetRelatedNodes(set);
             }
          }
          foreach (GameMasterNode node in mArcChallenges.Values)
@@ -351,10 +350,7 @@ namespace StonehearthEditor
             if (!set.Contains(node))
             {
                set.Add(node);
-               if (node.NodeData != null)
-               {
-                  node.NodeData.GetRelatedNodes(set);
-               }
+               node.NodeData.GetRelatedNodes(set);
             }
          }
          foreach (GameMasterNode node in mArcClimaxes.Values)
@@ -362,10 +358,7 @@ namespace StonehearthEditor
             if (!set.Contains(node))
             {
                set.Add(node);
-               if (node.NodeData != null)
-               {
-                  node.NodeData.GetRelatedNodes(set);
-               }
+               node.NodeData.GetRelatedNodes(set);
             }
          }
          foreach (GameMasterNode node in OrphanedNodes)
@@ -373,10 +366,7 @@ namespace StonehearthEditor
             if (!set.Contains(node))
             {
                set.Add(node);
-               if (node.NodeData != null)
-               {
-                  node.NodeData.GetRelatedNodes(set);
-               }
+               node.NodeData.GetRelatedNodes(set);
             }
          }
       }
@@ -900,6 +890,23 @@ namespace StonehearthEditor
          {
             FixupLoot("*.*.loot_drops");
          }
+      }
+   }
+
+   public class UnknownNodeData : NodeData
+   {
+      public override NodeData Clone(GameMasterNode nodeFile)
+      {
+         throw new NotImplementedException();
+      }
+
+      protected override void UpdateOutEdges(Graph graph)
+      {
+         throw new NotImplementedException();
+      }
+
+      public override void LoadData(Dictionary<string, GameMasterNode> allNodes)
+      {
       }
    }
 }
