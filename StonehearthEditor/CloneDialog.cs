@@ -15,7 +15,7 @@ namespace StonehearthEditor
       public interface IDialogCallback
       {
          // Returns true if we can close the dialog
-         bool OnAccept(string inputMessage);
+         bool OnAccept(CloneObjectParameters cloneParameters);
          void onCancelled();
       }
 
@@ -38,7 +38,9 @@ namespace StonehearthEditor
       {
          if (mCallback != null)
          {
-            bool isSuccess = mCallback.OnAccept(replacementText1.Text);
+            CloneObjectParameters parameters = new CloneObjectParameters();
+            parameters.AddStringReplacement(originalText1.Text, replacementText1.Text);
+            bool isSuccess = mCallback.OnAccept(parameters);
             if (isSuccess)
             {
                mCallback = null;

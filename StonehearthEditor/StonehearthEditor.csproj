@@ -89,6 +89,7 @@
     <Compile Include="CloneDialog.Designer.cs">
       <DependentUpon>CloneDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="CloneObjectParameters.cs" />
     <Compile Include="EncounterDesignerView.cs">
       <SubType>UserControl</SubType>
     </Compile>

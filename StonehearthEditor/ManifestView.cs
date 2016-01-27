@@ -326,16 +326,17 @@ namespace StonehearthEditor
             // Do nothing. user cancelled
          }
 
-         public bool OnAccept(string inputMessage)
+         public bool OnAccept(CloneObjectParameters parameters)
          {
             // Do the cloning
-            string potentialNewNodeName = inputMessage.Trim();
+            string originalName = mFileData.GetNameForCloning();
+            string potentialNewNodeName = parameters.TransformParameter(originalName);
             if (potentialNewNodeName.Length <= 1)
             {
                MessageBox.Show("You must enter a name longer than 1 character for the clone!");
                return false;
             }
-            if (potentialNewNodeName.Equals(mFileData.GetNameForCloning()))
+            if (potentialNewNodeName.Equals(originalName))
             {
                MessageBox.Show("You must enter a new unique name for the clone!");
                return false;
