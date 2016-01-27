@@ -59,11 +59,62 @@ namespace StonehearthEditor
          dialog.ShowDialog();
       }
 
-      private void openFileButton_Click(object sender, EventArgs e)
+      private void openFileButton_Click(object sender, EventArgs eventArgs)
       {
          // open file
          Button button = sender as Button;
-         System.Diagnostics.Process.Start(@button.Name);
+         string filePath = button.Name;
+         if (filePath.EndsWith(".qmo"))
+         {
+            // Find qubicle constructor.ini
+            string myDocuments = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            string qcIni = myDocuments + "/QubicleConstructor/1.0/QubicleConstructor.ini";
+            if (System.IO.File.Exists(qcIni))
+            {
+               try
+               {
+                  string directory = System.IO.Path.GetDirectoryName(filePath);
+                  string qcFile = "";
+                  using (StreamReader sr = new StreamReader(qcIni))
+                  {
+                     qcFile = sr.ReadToEnd();
+                  }
+                  int folderIndex = qcFile.IndexOf("[Folder]");
+                  string beforeFolder = "";
+                  string afterFolder = string.Empty;
+                  if (folderIndex >= 0)
+                  {
+                     beforeFolder = qcFile.Substring(0, folderIndex);
+                     string folderString = qcFile.Substring(folderIndex + 8);
+                     int endOfFolderString = folderString.IndexOf('[');
+                     if (endOfFolderString >=0)
+                     {
+                        afterFolder = folderString.Substring(endOfFolderString);
+                     }
+                  } else
+                  {
+                     beforeFolder = qcFile;
+                  }
+                  StringBuilder newQcFile = new StringBuilder();
+                  newQcFile.AppendLine(beforeFolder);
+                  newQcFile.AppendLine("[Folder]");
+                  newQcFile.AppendLine("Open=" + directory);
+                  newQcFile.AppendLine("Save=" + directory);
+                  newQcFile.AppendLine("Import=" + directory);
+                  newQcFile.AppendLine("Export=" + directory);
+                  newQcFile.AppendLine(afterFolder);
+                  using (StreamWriter sw = new StreamWriter(qcIni))
+                  {
+                     sw.Write(newQcFile.ToString());
+                  }
+               }
+               catch (Exception e)
+               {
+                  MessageBox.Show("Failure while reading QubicleConstructor ini file " + qcIni + ". Error: " + e.Message);
+               }
+            }
+         }
+         System.Diagnostics.Process.Start(@filePath);
       }
 
       public void SetSelectedFileData(FileData file)
