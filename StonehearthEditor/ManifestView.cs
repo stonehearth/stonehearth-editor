@@ -16,6 +16,8 @@ namespace StonehearthEditor
    {
       private FileData mSelectedFileData = null;
       private Dictionary<string, string> mLastModuleLocations = new Dictionary<string, string>();
+      private Dictionary<string, Image> mThumbnailCache = new Dictionary<string, Image>();
+      private const int kThumbnailSize = 20;
       public ManifestView()
       {
          InitializeComponent();
@@ -172,7 +174,14 @@ namespace StonehearthEditor
 
                   Button openFileButton = new Button();
                   openFileButton.Name = linkedFile.Value.Path;
-                  openFileButton.BackgroundImage = global::StonehearthEditor.Properties.Resources.pngFileIcon;
+                  Image thumbnail;
+                  if (!mThumbnailCache.TryGetValue(linkedFile.Value.Path, out thumbnail))
+                  {
+                     Image image = Image.FromFile(linkedFile.Value.Path);
+                     thumbnail = image.GetThumbnailImage(kThumbnailSize, kThumbnailSize, null, IntPtr.Zero);
+                     mThumbnailCache[linkedFile.Value.Path] = thumbnail;
+                  }
+                  openFileButton.BackgroundImage = thumbnail;
                   openFileButton.BackgroundImageLayout = ImageLayout.None;
                   openFileButton.Text = Path.GetFileName(openFileButton.Name);
                   openFileButton.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
