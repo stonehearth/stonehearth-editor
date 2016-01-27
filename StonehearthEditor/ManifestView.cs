@@ -111,6 +111,10 @@ namespace StonehearthEditor
       private void OnJsonFileDataSelected()
       {
          JsonFileData fileData = mSelectedFileData as JsonFileData;
+         if (fileData.TreeNode != null)
+         {
+            treeView.SelectedNode = fileData.TreeNode;
+         }
          List<string> addedOpenFiles = new List<string>();
          bool hasImage = false;
          foreach (FileData openedFile in fileData.OpenedFiles)
@@ -307,7 +311,8 @@ namespace StonehearthEditor
          JsonFileData jsonFileData = selectedFileData as JsonFileData;
          ModuleFile moduleFile = jsonFileData.GetModuleFile();
          CloneObjectParameters parameters = new CloneObjectParameters();
-         parameters.AddStringReplacement(moduleFile.ShortName, moduleFile.ShortName + ":fine");
+         parameters.AddStringReplacement(moduleFile.ShortName, moduleFile.ShortName + "_fine");
+         parameters.AddAliasReplacement(moduleFile.ShortName + "_fine", moduleFile.ShortName + ":fine");
          HashSet<string> dependencies = ModuleDataManager.GetInstance().PreviewCloneDependencies(selectedFileData, parameters);
          PreviewCloneAliasCallback callback = new PreviewCloneAliasCallback(this, selectedFileData, parameters);
          PreviewCloneDialog dialog = new PreviewCloneDialog("Creating " + moduleFile.ShortName + ":fine", dependencies, callback);

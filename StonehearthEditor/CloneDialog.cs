@@ -27,6 +27,9 @@ namespace StonehearthEditor
          Text = "Clone: " + clonedObjectName;
          AddNewRow(initialText);
          AcceptButton = cloneButton;
+
+         this.ActiveControl = parametersTable.GetControlFromPosition(1, 1);
+         //parametersTable.GetControlFromPosition(1, 1).Focus();
       }
 
       public void SetCallback(IDialogCallback callback)
@@ -91,6 +94,7 @@ namespace StonehearthEditor
          parametersTable.RowStyles.Add(new RowStyle(SizeType.Absolute, 25f));
          parametersTable.Controls.Add(newOriginalParam, 0, parametersTable.RowCount - 1);
          parametersTable.Controls.Add(newReplacementParam, 1, parametersTable.RowCount - 1);
+         newOriginalParam.Focus();
       }
    }
 }

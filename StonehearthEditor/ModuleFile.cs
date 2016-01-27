@@ -175,7 +175,7 @@ namespace StonehearthEditor
 
       public bool Clone(CloneObjectParameters parameters, HashSet<string> alreadyCloned, bool execute)
       {
-         string newAlias = parameters.TransformParameter(mAlias);
+         string newAlias = parameters.TransformAlias(mAlias);
          if (mModule.GetAliasFile(newAlias) != null)
          {
             MessageBox.Show("The alias " + newAlias + " already exists in manifest.json");
@@ -186,6 +186,7 @@ namespace StonehearthEditor
          {
             return false;
          }
+         alreadyCloned.Add(mModule.Name + ':' + newAlias);
          if (execute)
          {
             string fileLocation = "file(" + newPath.Replace(mModule.Path + "/", "") + ")";

@@ -223,7 +223,7 @@ namespace StonehearthEditor
                {
                   // This dependency is an alias. Clone the alias.
                   ModuleFile linkedAlias = modFileData.GetModuleFile();
-                  string aliasNewName = parameters.TransformParameter(dependencyName);
+                  string aliasNewName = parameters.TransformAlias(dependencyName);
                   if (!alreadyCloned.Contains(aliasNewName))
                   {
                      alreadyCloned.Add(aliasNewName);

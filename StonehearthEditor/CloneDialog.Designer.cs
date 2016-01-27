@@ -152,6 +152,7 @@
          this.Controls.Add(this.panel3);
          this.Controls.Add(this.panel1);
          this.Name = "CloneDialog";
+         this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
          this.Text = "Cloning: ";
          this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.CloneDialog_FormClosed);
          this.panel1.ResumeLayout(false);
