@@ -176,6 +176,45 @@ namespace StonehearthEditor
 
                break;
          }
+
+         JObject unitInfo = mJson.SelectToken("components.unit_info") as JObject;
+         if (unitInfo != null && unitInfo["description"] != null && unitInfo["display_name"] != null)
+         {
+            List<JProperty> properties = new List<JProperty>(unitInfo.Properties());
+            bool seenDisplayName = false;
+            bool needsSort = true;
+            int index = 0;
+            
+            foreach (JProperty prop in properties)
+            {
+               if (prop.Name == "description" && !seenDisplayName)
+               {
+                  AddError("display_name after description");
+                  needsSort = true;
+                  break;
+               }
+               if (prop.Name == "display_name")
+               {
+                  seenDisplayName = true;
+               }
+               index++;
+            }
+            if (needsSort)
+            {
+               JToken description = unitInfo["description"];
+               JToken icon = unitInfo["icon"];
+
+               unitInfo.Remove("description");
+               unitInfo.Remove("icon");
+               unitInfo.Add("description", description);
+               if (icon != null)
+               {
+                  unitInfo.Add("icon", icon);
+               }
+               mSaveJsonAfterParse = true;
+            }
+         }
+
       }
       public string GetJsonFileString()
       {
