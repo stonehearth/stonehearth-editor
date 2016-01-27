@@ -340,7 +340,10 @@ namespace StonehearthEditor
             if (!set.Contains(node))
             {
                set.Add(node);
-               node.NodeData.GetRelatedNodes(set);
+               if (node.NodeData != null)
+               {
+                  node.NodeData.GetRelatedNodes(set);
+               }
             }
          }
          foreach (GameMasterNode node in mArcChallenges.Values)
@@ -348,7 +351,10 @@ namespace StonehearthEditor
             if (!set.Contains(node))
             {
                set.Add(node);
-               node.NodeData.GetRelatedNodes(set);
+               if (node.NodeData != null)
+               {
+                  node.NodeData.GetRelatedNodes(set);
+               }
             }
          }
          foreach (GameMasterNode node in mArcClimaxes.Values)
@@ -356,7 +362,10 @@ namespace StonehearthEditor
             if (!set.Contains(node))
             {
                set.Add(node);
-               node.NodeData.GetRelatedNodes(set);
+               if (node.NodeData != null)
+               {
+                  node.NodeData.GetRelatedNodes(set);
+               }
             }
          }
          foreach (GameMasterNode node in OrphanedNodes)
@@ -364,7 +373,10 @@ namespace StonehearthEditor
             if (!set.Contains(node))
             {
                set.Add(node);
-               node.NodeData.GetRelatedNodes(set);
+               if (node.NodeData != null)
+               {
+                  node.NodeData.GetRelatedNodes(set);
+               }
             }
          }
       }

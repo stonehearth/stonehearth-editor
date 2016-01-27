@@ -234,7 +234,10 @@ namespace StonehearthEditor
                   continue;
                }
 
-               node.NodeData.UpdateGraph(mGraph);
+               if (node.NodeData != null)
+               {
+                  node.NodeData.UpdateGraph(mGraph);
+               }
             }
          }
          graphOwner.SetGraph(mGraph);
