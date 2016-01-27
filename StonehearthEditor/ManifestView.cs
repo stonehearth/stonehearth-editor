@@ -322,6 +322,7 @@ namespace StonehearthEditor
       {
          private FileData mFileData;
          private ManifestView mViewer;
+         private PreviewCloneAliasCallback mPreviewCallback;
          public CloneAliasCallback(ManifestView viewer, FileData file)
          {
             mViewer = viewer;
@@ -348,9 +349,16 @@ namespace StonehearthEditor
                return false;
             }
             HashSet<string> dependencies = ModuleDataManager.GetInstance().PreviewCloneDependencies(mFileData, parameters);
-            PreviewCloneAliasCallback callback = new PreviewCloneAliasCallback(mViewer, mFileData, parameters);
-            PreviewCloneDialog dialog = new PreviewCloneDialog("Creating " + potentialNewNodeName, dependencies, callback);
-            dialog.ShowDialog();
+
+            HashSet<string> savedUnwantedItems = mPreviewCallback != null ? mPreviewCallback.SavedUnwantedItems : null;
+            mPreviewCallback = new PreviewCloneAliasCallback(mViewer, mFileData, parameters);
+            mPreviewCallback.SavedUnwantedItems = savedUnwantedItems;
+            PreviewCloneDialog dialog = new PreviewCloneDialog("Creating " + potentialNewNodeName, dependencies, mPreviewCallback);
+            DialogResult result = dialog.ShowDialog();
+            if (result != DialogResult.OK)
+            {
+               return false;
+            }
             return true;
          }
       }
@@ -360,15 +368,18 @@ namespace StonehearthEditor
          private FileData mFileData;
          private ManifestView mViewer;
          private CloneObjectParameters mParameters;
+         public HashSet<string> SavedUnwantedItems;
          public PreviewCloneAliasCallback(ManifestView viewer, FileData fileData, CloneObjectParameters parameters)
          {
             mViewer = viewer;
             mFileData = fileData;
             mParameters = parameters;
          }
-         public void onCancelled()
+
+         public void onCancelled(HashSet<string> unwantedItems)
          {
             // Do nothing. user cancelled
+            SavedUnwantedItems = unwantedItems;
          }
 
          public bool OnAccept(HashSet<string> unwantedItems)
@@ -378,6 +389,11 @@ namespace StonehearthEditor
                mViewer.Reload();
             }
             return true;
+         }
+
+         public HashSet<string> GetSavedUnwantedItems()
+         {
+            return SavedUnwantedItems;
          }
       }
 

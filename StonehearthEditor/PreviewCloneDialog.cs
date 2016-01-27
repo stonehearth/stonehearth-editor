@@ -16,7 +16,8 @@ namespace StonehearthEditor
       {
          // Returns true if we can close the dialog
          bool OnAccept(HashSet<string> unwantedItems);
-         void onCancelled();
+         void onCancelled(HashSet<string> unwantedItems);
+         HashSet<string> GetSavedUnwantedItems();
       }
 
       private IDialogCallback mCallback;
@@ -27,26 +28,35 @@ namespace StonehearthEditor
          Text = title;
          dependenciesListBox.Items.Clear();
          mSet = set;
+
+         HashSet<string> unwantedItems = callback.GetSavedUnwantedItems();
          foreach (string item in mSet)
          {
-            dependenciesListBox.Items.Add(item, true);
+            bool isChecked = unwantedItems != null ? !unwantedItems.Contains(item) : true;
+            dependenciesListBox.Items.Add(item, isChecked);
          }
          mCallback = callback;
+      }
+
+      private HashSet<string> GetUnwantedItems()
+      {
+         HashSet<string> unwantedItems = new HashSet<string>(mSet);
+         foreach (object item in dependenciesListBox.CheckedItems)
+         {
+            unwantedItems.Remove(item.ToString());
+         }
+         return unwantedItems;
       }
 
       private void acceptButton_Click(object sender, EventArgs e)
       {
          if (mCallback != null)
          {
-            HashSet<string> unwantedItems = new HashSet<string>(mSet);
-            foreach(object item in dependenciesListBox.CheckedItems)
-            {
-               unwantedItems.Remove(item.ToString());
-            }
-            bool isSuccess = mCallback.OnAccept(unwantedItems);
+            bool isSuccess = mCallback.OnAccept(GetUnwantedItems());
             if (isSuccess)
             {
                mCallback = null;
+               DialogResult = DialogResult.OK;
                Close();
             }
          }
@@ -56,7 +66,7 @@ namespace StonehearthEditor
       {
          if (mCallback != null)
          {
-            mCallback.onCancelled();
+            mCallback.onCancelled(GetUnwantedItems());
             mCallback = null;
          }
       }
@@ -65,7 +75,7 @@ namespace StonehearthEditor
       {
          if (mCallback != null)
          {
-            mCallback.onCancelled();
+            mCallback.onCancelled(GetUnwantedItems());
             mCallback = null;
          }
       }
