@@ -123,14 +123,27 @@ namespace StonehearthEditor
 
       private void SearchForFileType(string directory, string fileType, List<string> luaFilesFound)
       {
-         foreach (string d in Directory.GetDirectories(directory))
+         if (!Directory.Exists(directory))
          {
-            foreach (string f in Directory.GetFiles(d, fileType))
+            return;
+         }
+         string[] directories = Directory.GetDirectories(directory);
+         if (directories == null)
+         {
+            return;
+         }
+         foreach (string d in directories)
+         {
+            string[] files = Directory.GetFiles(d, fileType);
+            if (files != null)
             {
-               string formatted = JsonHelper.NormalizeSystemPath(f);
-               luaFilesFound.Add(formatted);
+               foreach (string f in files)
+               {
+                  string formatted = JsonHelper.NormalizeSystemPath(f);
+                  luaFilesFound.Add(formatted);
+               }
+               SearchForFileType(d, fileType, luaFilesFound);
             }
-            SearchForFileType(d, fileType, luaFilesFound);
          }
       }
       private void ParseGenericEncounterScripts(string folderPath)

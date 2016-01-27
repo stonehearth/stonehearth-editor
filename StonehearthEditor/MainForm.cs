@@ -24,20 +24,34 @@ namespace StonehearthEditor
 
       public MainForm(string path)
       {
+         path = path.Trim();
          kModsDirectoryPath = JsonHelper.NormalizeSystemPath(path);
          InitializeComponent();
       }
 
       private void Form1_Load(object sender, EventArgs e)
       {
-         if (string.IsNullOrEmpty(kModsDirectoryPath))
+         if (string.IsNullOrWhiteSpace(kModsDirectoryPath))
          {
             DialogResult result = modsFolderBrowserDialog.ShowDialog();
+            
             if (result == DialogResult.OK)
             {
-               kModsDirectoryPath = modsFolderBrowserDialog.SelectedPath;
-               Properties.Settings.Default["ModsDirectory"] = kModsDirectoryPath;
-               Properties.Settings.Default.Save();
+               string newPath = modsFolderBrowserDialog.SelectedPath;
+               if (!string.IsNullOrWhiteSpace(newPath))
+               {
+                  kModsDirectoryPath = modsFolderBrowserDialog.SelectedPath;
+                  Properties.Settings.Default["ModsDirectory"] = kModsDirectoryPath;
+                  Properties.Settings.Default.Save();
+               } else
+               {
+                  MessageBox.Show("invalid mods directory");
+                  return;
+               }
+            } else
+            {
+               MessageBox.Show("invalid mods directory");
+               return;
             }
          }
          LoadModFiles();

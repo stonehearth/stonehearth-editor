@@ -46,6 +46,10 @@ namespace StonehearthEditor
       {
          // Parse Manifests
          string[] modFolders = Directory.GetDirectories(mModsDirectoryPath);
+         if (modFolders == null)
+         {
+            return;
+         }
          foreach (string modPath in modFolders)
          {
             string formatted = JsonHelper.NormalizeSystemPath(modPath);

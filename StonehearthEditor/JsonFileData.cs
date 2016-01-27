@@ -176,7 +176,12 @@ namespace StonehearthEditor
 
                break;
          }
+         //CheckDisplayName();
+      }
 
+      private void CheckDisplayName()
+      {
+         // make sure display name appears before the description field
          JObject unitInfo = mJson.SelectToken("components.unit_info") as JObject;
          if (unitInfo != null && unitInfo["description"] != null && unitInfo["display_name"] != null)
          {
@@ -184,7 +189,7 @@ namespace StonehearthEditor
             bool seenDisplayName = false;
             bool needsSort = true;
             int index = 0;
-            
+
             foreach (JProperty prop in properties)
             {
                if (prop.Name == "description" && !seenDisplayName)
@@ -214,8 +219,8 @@ namespace StonehearthEditor
                mSaveJsonAfterParse = true;
             }
          }
-
       }
+
       public string GetJsonFileString()
       {
          string jsonString = JsonHelper.GetFormattedJsonString(mJson);
