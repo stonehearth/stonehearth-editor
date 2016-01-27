@@ -28,25 +28,27 @@
       /// </summary>
       private void InitializeComponent()
       {
+         System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CloneDialog));
          this.textReplacementsLabel = new System.Windows.Forms.Label();
          this.panel1 = new System.Windows.Forms.Panel();
+         this.AddParamButton = new System.Windows.Forms.Button();
+         this.label3 = new System.Windows.Forms.Label();
+         this.label1 = new System.Windows.Forms.Label();
          this.panel2 = new System.Windows.Forms.Panel();
+         this.parametersTable = new System.Windows.Forms.TableLayoutPanel();
          this.panel3 = new System.Windows.Forms.Panel();
          this.cloneButton = new System.Windows.Forms.Button();
-         this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-         this.originalText1 = new System.Windows.Forms.TextBox();
-         this.replacementText1 = new System.Windows.Forms.TextBox();
-         this.label1 = new System.Windows.Forms.Label();
          this.panel1.SuspendLayout();
          this.panel2.SuspendLayout();
+         this.parametersTable.SuspendLayout();
          this.panel3.SuspendLayout();
-         this.tableLayoutPanel1.SuspendLayout();
          this.SuspendLayout();
          // 
          // textReplacementsLabel
          // 
          this.textReplacementsLabel.AutoSize = true;
-         this.textReplacementsLabel.Location = new System.Drawing.Point(3, 9);
+         this.textReplacementsLabel.Dock = System.Windows.Forms.DockStyle.Left;
+         this.textReplacementsLabel.Location = new System.Drawing.Point(5, 5);
          this.textReplacementsLabel.Name = "textReplacementsLabel";
          this.textReplacementsLabel.Size = new System.Drawing.Size(148, 13);
          this.textReplacementsLabel.TabIndex = 2;
@@ -54,86 +56,98 @@
          // 
          // panel1
          // 
+         this.panel1.Controls.Add(this.AddParamButton);
          this.panel1.Controls.Add(this.textReplacementsLabel);
          this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
          this.panel1.Location = new System.Drawing.Point(0, 0);
          this.panel1.Name = "panel1";
-         this.panel1.Size = new System.Drawing.Size(520, 29);
+         this.panel1.Padding = new System.Windows.Forms.Padding(5);
+         this.panel1.Size = new System.Drawing.Size(520, 35);
          this.panel1.TabIndex = 3;
+         // 
+         // AddParamButton
+         // 
+         this.AddParamButton.Dock = System.Windows.Forms.DockStyle.Right;
+         this.AddParamButton.Image = ((System.Drawing.Image)(resources.GetObject("AddParamButton.Image")));
+         this.AddParamButton.ImageAlign = System.Drawing.ContentAlignment.TopLeft;
+         this.AddParamButton.Location = new System.Drawing.Point(489, 5);
+         this.AddParamButton.Name = "AddParamButton";
+         this.AddParamButton.Size = new System.Drawing.Size(26, 25);
+         this.AddParamButton.TabIndex = 3;
+         this.AddParamButton.UseVisualStyleBackColor = true;
+         this.AddParamButton.Click += new System.EventHandler(this.AddParamButton_Click);
+         // 
+         // label3
+         // 
+         this.label3.AutoSize = true;
+         this.label3.Location = new System.Drawing.Point(263, 0);
+         this.label3.Name = "label3";
+         this.label3.Size = new System.Drawing.Size(107, 13);
+         this.label3.TabIndex = 6;
+         this.label3.Text = "with replacement text";
+         // 
+         // label1
+         // 
+         this.label1.AutoSize = true;
+         this.label1.Location = new System.Drawing.Point(3, 0);
+         this.label1.Name = "label1";
+         this.label1.Size = new System.Drawing.Size(78, 13);
+         this.label1.TabIndex = 4;
+         this.label1.Text = "original text . . .";
          // 
          // panel2
          // 
-         this.panel2.Controls.Add(this.tableLayoutPanel1);
+         this.panel2.AutoSize = true;
+         this.panel2.Controls.Add(this.parametersTable);
          this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
-         this.panel2.Location = new System.Drawing.Point(0, 29);
+         this.panel2.Location = new System.Drawing.Point(0, 35);
          this.panel2.Name = "panel2";
-         this.panel2.Size = new System.Drawing.Size(520, 162);
+         this.panel2.Size = new System.Drawing.Size(520, 120);
          this.panel2.TabIndex = 4;
+         // 
+         // parametersTable
+         // 
+         this.parametersTable.AutoScroll = true;
+         this.parametersTable.AutoSize = true;
+         this.parametersTable.ColumnCount = 2;
+         this.parametersTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+         this.parametersTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+         this.parametersTable.Controls.Add(this.label3, 1, 0);
+         this.parametersTable.Controls.Add(this.label1, 0, 0);
+         this.parametersTable.Dock = System.Windows.Forms.DockStyle.Fill;
+         this.parametersTable.Location = new System.Drawing.Point(0, 0);
+         this.parametersTable.Name = "parametersTable";
+         this.parametersTable.RowCount = 1;
+         this.parametersTable.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
+         this.parametersTable.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
+         this.parametersTable.Size = new System.Drawing.Size(520, 120);
+         this.parametersTable.TabIndex = 0;
          // 
          // panel3
          // 
          this.panel3.Controls.Add(this.cloneButton);
          this.panel3.Dock = System.Windows.Forms.DockStyle.Bottom;
-         this.panel3.Location = new System.Drawing.Point(0, 191);
+         this.panel3.Location = new System.Drawing.Point(0, 155);
          this.panel3.Name = "panel3";
+         this.panel3.Padding = new System.Windows.Forms.Padding(5);
          this.panel3.Size = new System.Drawing.Size(520, 35);
          this.panel3.TabIndex = 0;
          // 
          // cloneButton
          // 
-         this.cloneButton.Location = new System.Drawing.Point(433, 3);
+         this.cloneButton.Dock = System.Windows.Forms.DockStyle.Right;
+         this.cloneButton.Location = new System.Drawing.Point(440, 5);
          this.cloneButton.Name = "cloneButton";
-         this.cloneButton.Size = new System.Drawing.Size(75, 23);
+         this.cloneButton.Size = new System.Drawing.Size(75, 25);
          this.cloneButton.TabIndex = 0;
          this.cloneButton.Text = "Clone!";
          this.cloneButton.UseVisualStyleBackColor = true;
          this.cloneButton.Click += new System.EventHandler(this.cloneDialogButton_Click);
          // 
-         // tableLayoutPanel1
-         // 
-         this.tableLayoutPanel1.ColumnCount = 3;
-         this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 87.45763F));
-         this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 12.54237F));
-         this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 224F));
-         this.tableLayoutPanel1.Controls.Add(this.originalText1, 0, 0);
-         this.tableLayoutPanel1.Controls.Add(this.replacementText1, 2, 0);
-         this.tableLayoutPanel1.Controls.Add(this.label1, 1, 0);
-         this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-         this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
-         this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-         this.tableLayoutPanel1.RowCount = 2;
-         this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 17.28395F));
-         this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 82.71605F));
-         this.tableLayoutPanel1.Size = new System.Drawing.Size(520, 162);
-         this.tableLayoutPanel1.TabIndex = 0;
-         // 
-         // originalText1
-         // 
-         this.originalText1.Location = new System.Drawing.Point(3, 3);
-         this.originalText1.Name = "originalText1";
-         this.originalText1.Size = new System.Drawing.Size(245, 20);
-         this.originalText1.TabIndex = 0;
-         // 
-         // replacementText1
-         // 
-         this.replacementText1.Location = new System.Drawing.Point(298, 3);
-         this.replacementText1.Name = "replacementText1";
-         this.replacementText1.Size = new System.Drawing.Size(219, 20);
-         this.replacementText1.TabIndex = 1;
-         // 
-         // label1
-         // 
-         this.label1.AutoSize = true;
-         this.label1.Location = new System.Drawing.Point(261, 0);
-         this.label1.Name = "label1";
-         this.label1.Size = new System.Drawing.Size(26, 13);
-         this.label1.TabIndex = 2;
-         this.label1.Text = "with";
-         // 
          // CloneDialog
          // 
          this.AcceptButton = this.cloneButton;
-         this.ClientSize = new System.Drawing.Size(520, 226);
+         this.ClientSize = new System.Drawing.Size(520, 190);
          this.Controls.Add(this.panel2);
          this.Controls.Add(this.panel3);
          this.Controls.Add(this.panel1);
@@ -143,10 +157,12 @@
          this.panel1.ResumeLayout(false);
          this.panel1.PerformLayout();
          this.panel2.ResumeLayout(false);
+         this.panel2.PerformLayout();
+         this.parametersTable.ResumeLayout(false);
+         this.parametersTable.PerformLayout();
          this.panel3.ResumeLayout(false);
-         this.tableLayoutPanel1.ResumeLayout(false);
-         this.tableLayoutPanel1.PerformLayout();
          this.ResumeLayout(false);
+         this.PerformLayout();
 
       }
 
@@ -156,9 +172,9 @@
       private System.Windows.Forms.Panel panel2;
       private System.Windows.Forms.Panel panel3;
       private System.Windows.Forms.Button cloneButton;
-      private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-      private System.Windows.Forms.TextBox originalText1;
-      private System.Windows.Forms.TextBox replacementText1;
+      private System.Windows.Forms.TableLayoutPanel parametersTable;
+      private System.Windows.Forms.Button AddParamButton;
+      private System.Windows.Forms.Label label3;
       private System.Windows.Forms.Label label1;
    }
 }

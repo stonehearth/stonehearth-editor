@@ -25,7 +25,7 @@ namespace StonehearthEditor
       {
          InitializeComponent();
          Text = "Clone: " + clonedObjectName;
-         originalText1.Text = initialText;
+         AddNewRow(initialText);
          AcceptButton = cloneButton;
       }
 
@@ -39,7 +39,16 @@ namespace StonehearthEditor
          if (mCallback != null)
          {
             CloneObjectParameters parameters = new CloneObjectParameters();
-            parameters.AddStringReplacement(originalText1.Text, replacementText1.Text);
+
+            for (int row = 0; row < parametersTable.RowCount; row++)
+            {
+               TextBox original = parametersTable.GetControlFromPosition(0, row) as TextBox;
+               TextBox replacement = parametersTable.GetControlFromPosition(1, row) as TextBox;
+               if (!string.IsNullOrWhiteSpace(original.Text) && !string.IsNullOrWhiteSpace(replacement.Text))
+               {
+                  parameters.AddStringReplacement(original.Text, replacement.Text);
+               }
+            }
             bool isSuccess = mCallback.OnAccept(parameters);
             if (isSuccess)
             {
@@ -56,6 +65,29 @@ namespace StonehearthEditor
             mCallback.onCancelled();
             mCallback = null;
          }
+      }
+
+      private void AddParamButton_Click(object sender, EventArgs e)
+      {
+         AddNewRow(null);
+      }
+
+      private void AddNewRow(string originalName)
+      {
+         TextBox newOriginalParam = new TextBox();
+         newOriginalParam.Dock = DockStyle.Fill;
+         if (originalName != null)
+         {
+            newOriginalParam.Text = originalName;
+         }
+
+         TextBox newReplacementParam = new TextBox();
+         newReplacementParam.Dock = DockStyle.Fill;
+
+         parametersTable.RowCount = parametersTable.RowCount + 1;
+         parametersTable.RowStyles.Add(new RowStyle(SizeType.Absolute, 25f));
+         parametersTable.Controls.Add(newOriginalParam, 0, parametersTable.RowCount - 1);
+         parametersTable.Controls.Add(newReplacementParam, 1, parametersTable.RowCount - 1);
       }
    }
 }
