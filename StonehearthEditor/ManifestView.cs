@@ -306,10 +306,11 @@ namespace StonehearthEditor
          }
          JsonFileData jsonFileData = selectedFileData as JsonFileData;
          ModuleFile moduleFile = jsonFileData.GetModuleFile();
-         string newName = moduleFile.ShortName + ":fine";
-         HashSet<string> dependencies = ModuleDataManager.GetInstance().PreviewCloneDependencies(selectedFileData, newName);
-         PreviewCloneAliasCallback callback = new PreviewCloneAliasCallback(this, selectedFileData, newName);
-         PreviewCloneDialog dialog = new PreviewCloneDialog("Creating " + newName, dependencies, callback);
+         CloneObjectParameters parameters = new CloneObjectParameters();
+         parameters.AddStringReplacement(moduleFile.ShortName, moduleFile.ShortName + ":fine");
+         HashSet<string> dependencies = ModuleDataManager.GetInstance().PreviewCloneDependencies(selectedFileData, parameters);
+         PreviewCloneAliasCallback callback = new PreviewCloneAliasCallback(this, selectedFileData, parameters);
+         PreviewCloneDialog dialog = new PreviewCloneDialog("Creating " + moduleFile.ShortName + ":fine", dependencies, callback);
          dialog.ShowDialog();
       }
       private class CloneAliasCallback : CloneDialog.IDialogCallback
@@ -341,8 +342,8 @@ namespace StonehearthEditor
                MessageBox.Show("You must enter a new unique name for the clone!");
                return false;
             }
-            HashSet<string> dependencies = ModuleDataManager.GetInstance().PreviewCloneDependencies(mFileData, potentialNewNodeName);
-            PreviewCloneAliasCallback callback = new PreviewCloneAliasCallback(mViewer, mFileData, potentialNewNodeName);
+            HashSet<string> dependencies = ModuleDataManager.GetInstance().PreviewCloneDependencies(mFileData, parameters);
+            PreviewCloneAliasCallback callback = new PreviewCloneAliasCallback(mViewer, mFileData, parameters);
             PreviewCloneDialog dialog = new PreviewCloneDialog("Creating " + potentialNewNodeName, dependencies, callback);
             dialog.ShowDialog();
             return true;
@@ -353,12 +354,12 @@ namespace StonehearthEditor
       {
          private FileData mFileData;
          private ManifestView mViewer;
-         private string mNewName;
-         public PreviewCloneAliasCallback(ManifestView viewer, FileData fileData, string newName)
+         private CloneObjectParameters mParameters;
+         public PreviewCloneAliasCallback(ManifestView viewer, FileData fileData, CloneObjectParameters parameters)
          {
             mViewer = viewer;
             mFileData = fileData;
-            mNewName = newName;
+            mParameters = parameters;
          }
          public void onCancelled()
          {
@@ -367,7 +368,7 @@ namespace StonehearthEditor
 
          public bool OnAccept(HashSet<string> unwantedItems)
          {
-            if (ModuleDataManager.GetInstance().ExecuteClone(mFileData, mNewName, unwantedItems))
+            if (ModuleDataManager.GetInstance().ExecuteClone(mFileData, mParameters, unwantedItems))
             {
                mViewer.Reload();
             }
@@ -455,8 +456,10 @@ namespace StonehearthEditor
                      string fileName = data.FileName + ".qb";
                      if (defaultModelVariantNames.Contains(fileName))
                      {
+                        CloneObjectParameters parameters = new CloneObjectParameters();
+                        parameters.AddStringReplacement(data.FileName, data.FileName + "_iconic");
                         newQbFile = data.Path.Replace(".qb", "_iconic.qb");
-                        data.Clone(newQbFile, data.FileName, data.FileName + "_iconic", new HashSet<string>(), true);
+                        data.Clone(newQbFile, parameters, new HashSet<string>(), true);
                      }
                   }
                }

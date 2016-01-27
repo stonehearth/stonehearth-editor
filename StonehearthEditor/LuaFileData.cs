@@ -38,7 +38,7 @@ namespace StonehearthEditor
          return; // Do nothing
       }
 
-      public override bool Clone(string newPath, string oldName, string newFileName, HashSet<string> alreadyCloned, bool execute)
+      public override bool Clone(string newPath, CloneObjectParameters parameters, HashSet<string> alreadyCloned, bool execute)
       {
          return false;
       }

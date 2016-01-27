@@ -369,14 +369,11 @@ namespace StonehearthEditor
          return true;
       }
 
-      public override bool Clone(string newPath, string oldName, string newFileName, HashSet<string> alreadyCloned, bool execute)
+      public override bool Clone(string newPath, CloneObjectParameters parameters, HashSet<string> alreadyCloned, bool execute)
       {
-         string oldNameToUse = oldName;
-         string newNameToUse = newFileName;
          if (JsonType == JSONTYPE.RECIPE)
          {
-            oldNameToUse = oldName.Replace("_recipe", "");
-            newNameToUse = newFileName.Replace("_recipe", "");
+            string newNameToUse = parameters.TransformParameter(GetNameForCloning()).Replace("_recipe", "");
             if (execute)
             {
                JsonFileData recipesList = mRelatedFiles[mRelatedFiles.Count - 1] as JsonFileData;
@@ -406,10 +403,10 @@ namespace StonehearthEditor
                }
             }
          }
-         return base.Clone(newPath, oldNameToUse, newNameToUse, alreadyCloned, execute);
+         return base.Clone(newPath, parameters, alreadyCloned, execute);
       }
 
-      public override bool ShouldCloneDependency(string dependencyName, string oldName)
+      public override bool ShouldCloneDependency(string dependencyName, CloneObjectParameters parameters)
       {
          if (JsonType == JSONTYPE.RECIPE)
          {
@@ -425,7 +422,7 @@ namespace StonehearthEditor
                }
             }
          }
-         return base.ShouldCloneDependency(dependencyName, oldName);
+         return base.ShouldCloneDependency(dependencyName, parameters);
       }
 
       public override string GetNameForCloning()

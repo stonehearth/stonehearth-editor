@@ -51,7 +51,7 @@ namespace StonehearthEditor
          mRelatedFiles.Add(file);
       }
 
-      public override bool Clone(string newPath, string oldName, string newFileName, HashSet<string> alreadyCloned, bool execute)
+      public override bool Clone(string newPath, CloneObjectParameters parameters, HashSet<string> alreadyCloned, bool execute)
       {
          if (execute)
          {
@@ -69,7 +69,7 @@ namespace StonehearthEditor
             if (!alreadyCloned.Contains(newQmoPath))
             {
                alreadyCloned.Add(newQmoPath);
-               mLinkedFileData[qmoPath].Clone(newQmoPath, oldName, newFileName, alreadyCloned, execute);
+               mLinkedFileData[qmoPath].Clone(newQmoPath, parameters, alreadyCloned, execute);
             }
          }
          return true;

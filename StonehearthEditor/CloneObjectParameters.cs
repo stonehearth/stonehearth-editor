@@ -23,5 +23,17 @@ namespace StonehearthEditor
          }
          return newString;
       }
+
+      public bool IsDependency(string dependencyName)
+      {
+         foreach (string originalName in mStringReplacements.Keys)
+         {
+            if (dependencyName.Contains(originalName))
+            {
+               return true;
+            }
+         }
+         return false;
+      }
    }
 }

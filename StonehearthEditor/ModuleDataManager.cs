@@ -177,39 +177,39 @@ namespace StonehearthEditor
       }
 
       // Call to clone an alias. top level. nested clone calls should call the module directly.
-      public bool ExecuteClone(ModuleFile module, string newName, HashSet<string> unwantedItems)
+      public bool ExecuteClone(ModuleFile module, CloneObjectParameters parameters, HashSet<string> unwantedItems)
       {
-         return module.Clone(module.ShortName, newName, unwantedItems, true);
+         return module.Clone(parameters, unwantedItems, true);
       }
 
-      public bool ExecuteClone(FileData file, string newName, HashSet<string> unwantedItems)
+      public bool ExecuteClone(FileData file, CloneObjectParameters parameters, HashSet<string> unwantedItems)
       {
          ModuleFile owningFile = (file as IModuleFileData).GetModuleFile();
          if (owningFile != null)
          {
-            return ExecuteClone(owningFile, newName, unwantedItems);
+            return ExecuteClone(owningFile, parameters, unwantedItems);
          }
-         string newPath = file.Path.Replace(file.GetNameForCloning(), newName);
-         return file.Clone(newPath, file.GetNameForCloning(), newName, unwantedItems, true);
+         string newPath = parameters.TransformParameter(file.Path);
+         return file.Clone(newPath, parameters, unwantedItems, true);
       }
 
-      public HashSet<string> PreviewCloneDependencies(ModuleFile module, string newName)
+      public HashSet<string> PreviewCloneDependencies(ModuleFile module, CloneObjectParameters cloneParameters)
       {
          HashSet<string> alreadyCloned = new HashSet<string>();
-         module.Clone(module.ShortName, newName, alreadyCloned, false);
+         module.Clone(cloneParameters, alreadyCloned, false);
          return alreadyCloned;
       }
-      public HashSet<string> PreviewCloneDependencies(FileData file, string newName)
+      public HashSet<string> PreviewCloneDependencies(FileData file, CloneObjectParameters cloneParameters)
       {
          ModuleFile owningFile = (file as IModuleFileData).GetModuleFile();
          if (owningFile != null)
          {
-            return PreviewCloneDependencies(owningFile, newName);
+            return PreviewCloneDependencies(owningFile, cloneParameters);
          }
          HashSet<string> alreadyCloned = new HashSet<string>();
-         string newPath = file.Path.Replace(file.GetNameForCloning(), newName);
+         string newPath = cloneParameters.TransformParameter(file.Path);
 
-         file.Clone(newPath, file.GetNameForCloning(), newName, alreadyCloned, false);
+         file.Clone(newPath, cloneParameters, alreadyCloned, false);
          return alreadyCloned;
       }
    }

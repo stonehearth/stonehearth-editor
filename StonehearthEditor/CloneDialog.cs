@@ -44,7 +44,10 @@ namespace StonehearthEditor
             {
                TextBox original = parametersTable.GetControlFromPosition(0, row) as TextBox;
                TextBox replacement = parametersTable.GetControlFromPosition(1, row) as TextBox;
-               if (!string.IsNullOrWhiteSpace(original.Text) && !string.IsNullOrWhiteSpace(replacement.Text))
+               if ((original != null) &&
+                   (replacement != null) && 
+                   (!string.IsNullOrWhiteSpace(original.Text)) && 
+                   (!string.IsNullOrWhiteSpace(replacement.Text)))
                {
                   parameters.AddStringReplacement(original.Text, replacement.Text);
                }

@@ -173,21 +173,16 @@ namespace StonehearthEditor
          get { return mRootFile; }
       }
 
-      public bool Clone(string oldName, string newFileName, HashSet<string> alreadyCloned, bool execute)
+      public bool Clone(CloneObjectParameters parameters, HashSet<string> alreadyCloned, bool execute)
       {
-         string newAlias = mAlias.Replace(oldName, newFileName);
+         string newAlias = parameters.TransformParameter(mAlias);
          if (mModule.GetAliasFile(newAlias) != null)
          {
             MessageBox.Show("The alias " + newAlias + " already exists in manifest.json");
             return false;
          }
-         string newFileNameInPath = newFileName;
-         if (newFileName.IndexOf(':') >= 0)
-         {
-            newFileNameInPath = newFileName.Replace(':', '_');
-         }
-         string newPath = ResolvedPath.Replace(oldName, newFileNameInPath);
-         if (!FileData.Clone(newPath, oldName, newFileNameInPath, alreadyCloned, execute))
+         string newPath = parameters.TransformParameter(ResolvedPath);
+         if (!FileData.Clone(newPath, parameters, alreadyCloned, execute))
          {
             return false;
          }
