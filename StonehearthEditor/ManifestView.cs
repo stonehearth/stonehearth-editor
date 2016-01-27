@@ -45,13 +45,14 @@ namespace StonehearthEditor
          {
             return;
          }
-         if (!(selectedFileData is IModuleFileData))
+         IModuleFileData moduleFile = selectedFileData as IModuleFileData;
+         if (moduleFile == null)
          {
             return; // Don't know how to clone something not module file data
          }
-
+         string name = moduleFile.GetModuleFile() != null ? moduleFile.GetModuleFile().FullAlias : selectedFileData.FileName;
          CloneAliasCallback callback = new CloneAliasCallback(this, selectedFileData);
-         InputDialog dialog = new InputDialog("Clone " + selectedFileData.FileName, "Type name of duplicated. If recipe, leave out the '_recipe' at the end.", selectedFileData.GetNameForCloning(), "Clone!");
+         CloneDialog dialog = new CloneDialog(name, selectedFileData.GetNameForCloning());
          dialog.SetCallback(callback);
          dialog.ShowDialog();
       }
@@ -311,7 +312,7 @@ namespace StonehearthEditor
          PreviewCloneDialog dialog = new PreviewCloneDialog("Creating " + newName, dependencies, callback);
          dialog.ShowDialog();
       }
-      private class CloneAliasCallback : InputDialog.IDialogCallback
+      private class CloneAliasCallback : CloneDialog.IDialogCallback
       {
          private FileData mFileData;
          private ManifestView mViewer;

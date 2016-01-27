@@ -83,6 +83,12 @@
     <Compile Include="AliasSelectionDialog.Designer.cs">
       <DependentUpon>AliasSelectionDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="CloneDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CloneDialog.Designer.cs">
+      <DependentUpon>CloneDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="EncounterDesignerView.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -141,6 +147,9 @@
     <Compile Include="QubicleFileData.cs" />
     <EmbeddedResource Include="AliasSelectionDialog.resx">
       <DependentUpon>AliasSelectionDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CloneDialog.resx">
+      <DependentUpon>CloneDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="EncounterDesignerView.resx">
       <DependentUpon>EncounterDesignerView.cs</DependentUpon>
