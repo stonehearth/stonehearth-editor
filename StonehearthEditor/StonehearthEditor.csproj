@@ -204,6 +204,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <None Include="scripts\loc_fields.json" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -235,12 +236,27 @@
   <ItemGroup>
     <None Include="images\action_add_16xSM.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="scripts\check_loc_keys.py" />
+    <Content Include="scripts\generate_loc_keys.py" />
+    <Content Include="scripts\json_selector.py" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>
+    -->
   <Target Name="AfterBuild">
+    <Message Text="The name of the publish profile is $(ProjectDir)"/>
+    <PropertyGroup>
+      <CustomFolder>$(ProjectDir)\scripts</CustomFolder>
+    </PropertyGroup>
+    <CreateItem Include="$(CustomFolder)\*.*">
+      <Output TaskParameter="Include" ItemName="CustomFiles" />
+    </CreateItem> 
+    <Copy SourceFiles="@(CustomFiles)" DestinationFolder="$(TargetDir)\scripts" SkipUnchangedFiles="True" ContinueOnError="False" />
   </Target>
-  -->
+
+
 </Project>
