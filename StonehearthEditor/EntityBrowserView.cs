@@ -111,6 +111,9 @@ namespace StonehearthEditor
             JToken token = json.SelectToken("entity_data.stonehearth:combat:weapon_data.base_damage");
             string baseDamage = token == null ? "" : token.ToString();
             item.SubItems.Add(baseDamage);
+            JToken iLevelToken = json.SelectToken("components.stonehearth:equipment_piece.ilevel");
+            string iLevel = iLevelToken == null ? "none" : iLevelToken.ToString();
+            item.SubItems.Add(iLevel);
             string modName = modNames[entry.Key];
             item.SubItems.Add(modName);
 
@@ -140,6 +143,9 @@ namespace StonehearthEditor
             JToken token = json.SelectToken("entity_data.stonehearth:combat:armor_data.base_damage_reduction");
             string damageReduction = token == null ? "" : token.ToString();
             item.SubItems.Add(damageReduction);
+            JToken iLevelToken = json.SelectToken("components.stonehearth:equipment_piece.ilevel");
+            string iLevel = iLevelToken == null ? "none" : iLevelToken.ToString();
+            item.SubItems.Add(iLevel);
             string modName = modNames[entry.Key];
             item.SubItems.Add(modName);
 
@@ -266,7 +272,7 @@ namespace StonehearthEditor
       {
          if (e.IsSelected)
          {
-            this.updateOnItemSelection(netWorthJsonFiles, netWorthImagePaths, e.Item.Text);
+            this.updateOnItemSelection(weaponsJsonFiles, weaponsImagePaths, e.Item.Text);
          }
       }
 

@@ -50,6 +50,8 @@
          this.tabPage1 = new System.Windows.Forms.TabPage();
          this.killableEntitiesListView = new System.Windows.Forms.ListView();
          this.killableEntity = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+         this.weaponILevel = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+         this.defenseItemILevel = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
          ((System.ComponentModel.ISupportInitialize)(this.iconView)).BeginInit();
          this.killableEntitiesTab.SuspendLayout();
          this.netWorthItemsTab.SuspendLayout();
@@ -157,6 +159,7 @@
          this.weaponsListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.weaponAlias,
             this.baseDamage,
+            this.weaponILevel,
             this.mod});
          this.weaponsListView.Dock = System.Windows.Forms.DockStyle.Fill;
          this.weaponsListView.LabelEdit = true;
@@ -199,6 +202,7 @@
          this.defenseItemsListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.defenseItemAlias,
             this.damageReduction,
+            this.defenseItemILevel,
             this.defenseItemModName});
          this.defenseItemsListView.Dock = System.Windows.Forms.DockStyle.Fill;
          this.defenseItemsListView.LabelEdit = true;
@@ -255,6 +259,14 @@
          this.killableEntity.Text = "Entity";
          this.killableEntity.Width = -2;
          // 
+         // weaponILevel
+         // 
+         this.weaponILevel.Text = "iLevel";
+         // 
+         // defenseItemILevel
+         // 
+         this.defenseItemILevel.Text = "iLevel";
+         // 
          // EntityBrowserView
          // 
          this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -298,5 +310,7 @@
       private System.Windows.Forms.TabPage tabPage1;
       private System.Windows.Forms.ListView killableEntitiesListView;
       private System.Windows.Forms.ColumnHeader killableEntity;
+      private System.Windows.Forms.ColumnHeader weaponILevel;
+      private System.Windows.Forms.ColumnHeader defenseItemILevel;
    }
 }
