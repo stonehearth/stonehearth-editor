@@ -49,6 +49,7 @@ namespace StonehearthEditor
       {
          manifestView.Initialize();
          encounterDesignerView.Initialize();
+         entityBrowserView.Initialize();
       }
 
       private void tabControl_Selected(object sender, TabControlEventArgs e)

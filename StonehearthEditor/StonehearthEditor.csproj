@@ -98,6 +98,7 @@
     </Compile>
     <Compile Include="FileData.cs" />
     <Compile Include="GameMasterNode.cs" />
+    <Compile Include="ListViewItemComparer.cs" />
     <Compile Include="LuaFileData.cs" />
     <Compile Include="ImageFileData.cs" />
     <Compile Include="InputDialog.cs">
@@ -131,6 +132,12 @@
     <Compile Include="NetWorthVisualizer.Designer.cs">
       <DependentUpon>NetWorthVisualizer.cs</DependentUpon>
     </Compile>
+    <Compile Include="EntityBrowserView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="EntityBrowserView.Designer.cs">
+      <DependentUpon>EntityBrowserView.cs</DependentUpon>
+    </Compile>
     <Compile Include="PreviewCloneDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -144,11 +151,6 @@
     </Compile>
     <Compile Include="FilePreview.Designer.cs">
       <DependentUpon>FilePreview.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="QubicleFileData.cs" />
     <EmbeddedResource Include="AliasSelectionDialog.resx">
@@ -176,6 +178,9 @@
     <EmbeddedResource Include="NetWorthVisualizer.resx">
       <DependentUpon>NetWorthVisualizer.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="EntityBrowserView.resx">
+      <DependentUpon>EntityBrowserView.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="PreviewCloneDialog.resx">
       <DependentUpon>PreviewCloneDialog.cs</DependentUpon>
     </EmbeddedResource>
@@ -184,6 +189,11 @@
       <SubType>Designer</SubType>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <None Include="defaultJson\defaultIconic.json" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

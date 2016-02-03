@@ -91,6 +91,26 @@ namespace StonehearthEditor
          treeView.EndUpdate();
       }
 
+      // Returns an Object array with a map from alias to jsonfiledata and alias to modname
+      public Object[] FilterJsonByTerm(ListView listView, string filterTerm)
+      {
+         Dictionary<string, JsonFileData> aliasJsonMap = new Dictionary<string, JsonFileData>();
+         Dictionary<string, string> aliasModNameMap = new Dictionary<string, string>();
+         foreach (Module module in mModules.Values)
+         {
+            foreach (ModuleFile moduleFile in module.GetAliases())
+            {
+               JsonFileData data = moduleFile.GetJsonFileDataByTerm(filterTerm);
+               if (data != null)
+               {
+                  aliasJsonMap.Add(moduleFile.Name, data);
+                  aliasModNameMap.Add(moduleFile.Name, module.Name);
+               }
+            }
+         }
+         return new Object[] { aliasJsonMap, aliasModNameMap };
+      }
+
       public FileData GetSelectedFileData(TreeNode selected)
       {
          if (selected != null)

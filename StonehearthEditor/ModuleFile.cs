@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using System.IO;
 using System.Collections.Generic;
 using System.Windows.Forms;
@@ -204,6 +204,19 @@ namespace StonehearthEditor
             return true;
          }
          return false;
+      }
+
+      public JsonFileData GetJsonFileDataByTerm(string filterTerm)
+      {
+         JsonFileData jsonFileData = FileData as JsonFileData;
+         if (jsonFileData == null) return null;
+         JObject json = jsonFileData.Json;
+         if (json != null)
+         {
+            JToken token = json.SelectToken(filterTerm);
+            return token == null ? null : jsonFileData;
+         }
+         return null;
       }
 
       public string ShortName

@@ -1,4 +1,4 @@
-﻿namespace StonehearthEditor
+namespace StonehearthEditor
 {
    partial class MainForm
    {
@@ -33,6 +33,8 @@
          this.manifestView = new StonehearthEditor.ManifestView();
          this.encounterTab = new System.Windows.Forms.TabPage();
          this.encounterDesignerView = new StonehearthEditor.EncounterDesignerView();
+         this.entityBrowserTab = new System.Windows.Forms.TabPage();
+         this.entityBrowserView = new StonehearthEditor.EntityBrowserView();
          this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
          this.modsFolderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
          this.mainFormMenu = new System.Windows.Forms.MenuStrip();
@@ -45,6 +47,7 @@
          this.tabControl.SuspendLayout();
          this.manifestTab.SuspendLayout();
          this.encounterTab.SuspendLayout();
+         this.entityBrowserTab.SuspendLayout();
          this.mainFormMenu.SuspendLayout();
          this.SuspendLayout();
          // 
@@ -52,6 +55,7 @@
          // 
          this.tabControl.Controls.Add(this.manifestTab);
          this.tabControl.Controls.Add(this.encounterTab);
+         this.tabControl.Controls.Add(this.entityBrowserTab);
          this.tabControl.Dock = System.Windows.Forms.DockStyle.Fill;
          this.tabControl.Location = new System.Drawing.Point(0, 24);
          this.tabControl.Name = "tabControl";
@@ -97,6 +101,25 @@
          this.encounterDesignerView.Name = "encounterDesignerView";
          this.encounterDesignerView.Size = new System.Drawing.Size(1109, 549);
          this.encounterDesignerView.TabIndex = 0;
+         // 
+         // entityBrowserTab
+         // 
+         this.entityBrowserTab.Controls.Add(this.entityBrowserView);
+         this.entityBrowserTab.Location = new System.Drawing.Point(4, 22);
+         this.entityBrowserTab.Name = "entityBrowserTab";
+         this.entityBrowserTab.Padding = new System.Windows.Forms.Padding(3);
+         this.entityBrowserTab.Size = new System.Drawing.Size(1115, 555);
+         this.entityBrowserTab.TabIndex = 2;
+         this.entityBrowserTab.Text = "Entity Stats Browser";
+         this.entityBrowserTab.UseVisualStyleBackColor = true;
+         // 
+         // entityBrowserView
+         // 
+         this.entityBrowserView.Dock = System.Windows.Forms.DockStyle.Fill;
+         this.entityBrowserView.Location = new System.Drawing.Point(3, 3);
+         this.entityBrowserView.Name = "entityBrowserView";
+         this.entityBrowserView.Size = new System.Drawing.Size(1109, 549);
+         this.entityBrowserView.TabIndex = 0;
          // 
          // saveToolStripMenuItem
          // 
@@ -186,6 +209,7 @@
          this.tabControl.ResumeLayout(false);
          this.manifestTab.ResumeLayout(false);
          this.encounterTab.ResumeLayout(false);
+         this.entityBrowserTab.ResumeLayout(false);
          this.mainFormMenu.ResumeLayout(false);
          this.mainFormMenu.PerformLayout();
          this.ResumeLayout(false);
@@ -206,8 +230,9 @@
       private System.Windows.Forms.TabPage manifestTab;
       private ManifestView manifestView;
       private EncounterDesignerView encounterDesignerView;
+      private EntityBrowserView entityBrowserView;
+      private System.Windows.Forms.TabPage entityBrowserTab;
       private System.Windows.Forms.ToolStripMenuItem viewToolStripMenuItem;
       private System.Windows.Forms.ToolStripMenuItem netWorthVisualizerToolStripMenuItem;
    }
 }
-
