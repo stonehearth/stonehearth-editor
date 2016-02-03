@@ -60,7 +60,47 @@ namespace StonehearthEditor
          InitializeWeaponsView();
          InitializeDefenseItemsListView();
          InitializeKillableEntitiesListView();
+      }
 
+      public void InitializeTab(int index)
+      {
+         switch(index)
+         {
+            case 0:
+               netWorthListView.Items.Clear();
+               InitializeNetWorthItemsView();
+               break;
+            case 1:
+               weaponsListView.Items.Clear();
+               InitializeWeaponsView();
+               break;
+            case 2:
+               defenseItemsListView.Items.Clear();
+               InitializeDefenseItemsListView();
+               break;
+            case 3:
+               killableEntitiesListView.Items.Clear();
+               InitializeKillableEntitiesListView();
+               break;
+            default:
+               throw new IndexOutOfRangeException("Selected tab index does not match InitializeTab indices!");
+         }
+      }
+
+      public void Reload()
+      {
+         int index = this.entityBrowserTabControl.SelectedIndex;
+         try
+         {
+            InitializeTab(index);
+         }
+         catch(IndexOutOfRangeException e)
+         {
+            Console.WriteLine("Could not reload tab with index " 
+               + index.ToString()
+               + ". Exception: "
+               + e.Message);
+         }
       }
 
       private void InitializeNetWorthItemsView() {
@@ -97,8 +137,7 @@ namespace StonehearthEditor
          weaponsImagePaths = new Dictionary<string, string>();
          Object[] data = ModuleDataManager.GetInstance().FilterJsonByTerm(netWorthListView, "entity_data.stonehearth:combat:weapon_data");
          weaponsJsonFiles = (Dictionary<string, JsonFileData>)data[0];
-         Dictionary<string, string> weaponsModNames = (Dictionary<string, string>)data[1];
-         modNames = modNames == null ? weaponsModNames : MergeDictionaries<string, string>(new Dictionary<string, string>[] { modNames, weaponsModNames });
+         Dictionary<string, string> modNames = (Dictionary<string, string>)data[1];
          ImageList imageList = new ImageList();
 
          // populate listView
@@ -112,7 +151,7 @@ namespace StonehearthEditor
             string baseDamage = token == null ? "" : token.ToString();
             item.SubItems.Add(baseDamage);
             JToken iLevelToken = json.SelectToken("components.stonehearth:equipment_piece.ilevel");
-            string iLevel = iLevelToken == null ? "none" : iLevelToken.ToString();
+            string iLevel = iLevelToken == null ? "none" : iLevelToken.ToString(); //TODO: if none found, insert ilevel into json with value 0
             item.SubItems.Add(iLevel);
             string modName = modNames[entry.Key];
             item.SubItems.Add(modName);
@@ -129,8 +168,7 @@ namespace StonehearthEditor
          defenseImagePaths = new Dictionary<string, string>();
          Object[] data = ModuleDataManager.GetInstance().FilterJsonByTerm(defenseItemsListView, "entity_data.stonehearth:combat:armor_data");
          defenseJsonFiles = (Dictionary<string, JsonFileData>)data[0];
-         Dictionary<string, string> defenseModNames = (Dictionary<string, string>)data[1];
-         modNames = modNames == null ? defenseModNames : MergeDictionaries<string, string>(new Dictionary<string, string>[] { modNames, defenseModNames });
+         Dictionary<string, string> modNames = (Dictionary<string, string>)data[1];
          ImageList imageList = new ImageList();
 
          // populate listView
@@ -156,6 +194,7 @@ namespace StonehearthEditor
          defenseItemsListView.SmallImageList = imageList;
       }
 
+      // Not really killable entities per se. More like stuff with attributes.
       private void InitializeKillableEntitiesListView()
       {
          InitializeKillableEntitiesColumns();
@@ -361,6 +400,11 @@ namespace StonehearthEditor
             foreach (var x in dict)
                result[x.Key] = x.Value;
          return result;
+      }
+
+      private void netWorthListView_KeyDown(object sender, KeyEventArgs e)
+      {
+
       }
    }
 }

@@ -35,29 +35,29 @@
          this.modName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
          this.filePreviewTabs = new System.Windows.Forms.TabControl();
          this.iconView = new System.Windows.Forms.PictureBox();
-         this.killableEntitiesTab = new System.Windows.Forms.TabControl();
+         this.entityBrowserTabControl = new System.Windows.Forms.TabControl();
          this.netWorthItemsTab = new System.Windows.Forms.TabPage();
          this.weaponsTab = new System.Windows.Forms.TabPage();
          this.weaponsListView = new System.Windows.Forms.ListView();
          this.weaponAlias = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
          this.baseDamage = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+         this.weaponILevel = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
          this.mod = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
          this.defenseItemsTab = new System.Windows.Forms.TabPage();
          this.defenseItemsListView = new System.Windows.Forms.ListView();
          this.defenseItemAlias = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
          this.damageReduction = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+         this.defenseItemILevel = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
          this.defenseItemModName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-         this.tabPage1 = new System.Windows.Forms.TabPage();
+         this.killableEntitiesTab = new System.Windows.Forms.TabPage();
          this.killableEntitiesListView = new System.Windows.Forms.ListView();
          this.killableEntity = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-         this.weaponILevel = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-         this.defenseItemILevel = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
          ((System.ComponentModel.ISupportInitialize)(this.iconView)).BeginInit();
-         this.killableEntitiesTab.SuspendLayout();
+         this.entityBrowserTabControl.SuspendLayout();
          this.netWorthItemsTab.SuspendLayout();
          this.weaponsTab.SuspendLayout();
          this.defenseItemsTab.SuspendLayout();
-         this.tabPage1.SuspendLayout();
+         this.killableEntitiesTab.SuspendLayout();
          this.SuspendLayout();
          // 
          // netWorthListView
@@ -79,6 +79,7 @@
          this.netWorthListView.UseCompatibleStateImageBehavior = false;
          this.netWorthListView.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.netWorthListView_ColumnClick);
          this.netWorthListView.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.netWorthListView_ItemSelectionChanged);
+         this.netWorthListView.KeyDown += new System.Windows.Forms.KeyEventHandler(this.netWorthListView_KeyDown);
          // 
          // item
          // 
@@ -119,18 +120,18 @@
          this.iconView.TabIndex = 3;
          this.iconView.TabStop = false;
          // 
-         // killableEntitiesTab
+         // entityBrowserTabControl
          // 
-         this.killableEntitiesTab.Controls.Add(this.netWorthItemsTab);
-         this.killableEntitiesTab.Controls.Add(this.weaponsTab);
-         this.killableEntitiesTab.Controls.Add(this.defenseItemsTab);
-         this.killableEntitiesTab.Controls.Add(this.tabPage1);
-         this.killableEntitiesTab.Dock = System.Windows.Forms.DockStyle.Left;
-         this.killableEntitiesTab.Location = new System.Drawing.Point(0, 0);
-         this.killableEntitiesTab.Name = "killableEntitiesTab";
-         this.killableEntitiesTab.SelectedIndex = 0;
-         this.killableEntitiesTab.Size = new System.Drawing.Size(532, 618);
-         this.killableEntitiesTab.TabIndex = 4;
+         this.entityBrowserTabControl.Controls.Add(this.netWorthItemsTab);
+         this.entityBrowserTabControl.Controls.Add(this.weaponsTab);
+         this.entityBrowserTabControl.Controls.Add(this.defenseItemsTab);
+         this.entityBrowserTabControl.Controls.Add(this.killableEntitiesTab);
+         this.entityBrowserTabControl.Dock = System.Windows.Forms.DockStyle.Left;
+         this.entityBrowserTabControl.Location = new System.Drawing.Point(0, 0);
+         this.entityBrowserTabControl.Name = "entityBrowserTabControl";
+         this.entityBrowserTabControl.SelectedIndex = 0;
+         this.entityBrowserTabControl.Size = new System.Drawing.Size(532, 618);
+         this.entityBrowserTabControl.TabIndex = 4;
          // 
          // netWorthItemsTab
          // 
@@ -181,6 +182,10 @@
          this.baseDamage.Text = "Base Damage";
          this.baseDamage.Width = -2;
          // 
+         // weaponILevel
+         // 
+         this.weaponILevel.Text = "iLevel";
+         // 
          // mod
          // 
          this.mod.Text = "Mod Name";
@@ -224,21 +229,25 @@
          this.damageReduction.Text = "Damage Reduction";
          this.damageReduction.Width = -2;
          // 
+         // defenseItemILevel
+         // 
+         this.defenseItemILevel.Text = "iLevel";
+         // 
          // defenseItemModName
          // 
          this.defenseItemModName.Text = "Mod Name";
          this.defenseItemModName.Width = -2;
          // 
-         // tabPage1
+         // killableEntitiesTab
          // 
-         this.tabPage1.Controls.Add(this.killableEntitiesListView);
-         this.tabPage1.Location = new System.Drawing.Point(4, 22);
-         this.tabPage1.Name = "tabPage1";
-         this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-         this.tabPage1.Size = new System.Drawing.Size(524, 592);
-         this.tabPage1.TabIndex = 3;
-         this.tabPage1.Text = "Killable Entities";
-         this.tabPage1.UseVisualStyleBackColor = true;
+         this.killableEntitiesTab.Controls.Add(this.killableEntitiesListView);
+         this.killableEntitiesTab.Location = new System.Drawing.Point(4, 22);
+         this.killableEntitiesTab.Name = "killableEntitiesTab";
+         this.killableEntitiesTab.Padding = new System.Windows.Forms.Padding(3);
+         this.killableEntitiesTab.Size = new System.Drawing.Size(524, 592);
+         this.killableEntitiesTab.TabIndex = 3;
+         this.killableEntitiesTab.Text = "Killable Entities";
+         this.killableEntitiesTab.UseVisualStyleBackColor = true;
          // 
          // killableEntitiesListView
          // 
@@ -259,29 +268,21 @@
          this.killableEntity.Text = "Entity";
          this.killableEntity.Width = -2;
          // 
-         // weaponILevel
-         // 
-         this.weaponILevel.Text = "iLevel";
-         // 
-         // defenseItemILevel
-         // 
-         this.defenseItemILevel.Text = "iLevel";
-         // 
          // EntityBrowserView
          // 
          this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
          this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
          this.Controls.Add(this.filePreviewTabs);
          this.Controls.Add(this.iconView);
-         this.Controls.Add(this.killableEntitiesTab);
+         this.Controls.Add(this.entityBrowserTabControl);
          this.Name = "EntityBrowserView";
          this.Size = new System.Drawing.Size(1105, 618);
          ((System.ComponentModel.ISupportInitialize)(this.iconView)).EndInit();
-         this.killableEntitiesTab.ResumeLayout(false);
+         this.entityBrowserTabControl.ResumeLayout(false);
          this.netWorthItemsTab.ResumeLayout(false);
          this.weaponsTab.ResumeLayout(false);
          this.defenseItemsTab.ResumeLayout(false);
-         this.tabPage1.ResumeLayout(false);
+         this.killableEntitiesTab.ResumeLayout(false);
          this.ResumeLayout(false);
 
       }
@@ -295,7 +296,7 @@
       private System.Windows.Forms.PictureBox iconView;
       private System.Windows.Forms.ColumnHeader category;
       private System.Windows.Forms.ColumnHeader modName;
-      private System.Windows.Forms.TabControl killableEntitiesTab;
+      private System.Windows.Forms.TabControl entityBrowserTabControl;
       private System.Windows.Forms.TabPage netWorthItemsTab;
       private System.Windows.Forms.TabPage weaponsTab;
       private System.Windows.Forms.ListView weaponsListView;
@@ -307,7 +308,7 @@
       private System.Windows.Forms.ColumnHeader defenseItemAlias;
       private System.Windows.Forms.ColumnHeader damageReduction;
       private System.Windows.Forms.ColumnHeader defenseItemModName;
-      private System.Windows.Forms.TabPage tabPage1;
+      private System.Windows.Forms.TabPage killableEntitiesTab;
       private System.Windows.Forms.ListView killableEntitiesListView;
       private System.Windows.Forms.ColumnHeader killableEntity;
       private System.Windows.Forms.ColumnHeader weaponILevel;

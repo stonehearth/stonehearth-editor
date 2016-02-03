@@ -265,6 +265,7 @@ namespace StonehearthEditor
                treeView.SelectedNode = file.TreeNode;
             } 
          }
+         
       }
 
       private void treeView_AfterSelect(object sender, TreeViewEventArgs e)
