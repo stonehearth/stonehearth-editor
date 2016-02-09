@@ -71,6 +71,15 @@ namespace StonehearthEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        internal static string defaultMaterial {
+            get {
+                return ResourceManager.GetString("defaultMaterial", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {
         ///   &quot;value_in_gold&quot;: 1,
         ///   &quot;rarity&quot;: &quot;common&quot;,

@@ -52,12 +52,23 @@
          this.killableEntitiesTab = new System.Windows.Forms.TabPage();
          this.killableEntitiesListView = new System.Windows.Forms.ListView();
          this.killableEntity = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+         this.entityBrowserSplitContainer1 = new System.Windows.Forms.SplitContainer();
+         this.entityBrowserSplitContainer2 = new System.Windows.Forms.SplitContainer();
+         this.materialTags = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
          ((System.ComponentModel.ISupportInitialize)(this.iconView)).BeginInit();
          this.entityBrowserTabControl.SuspendLayout();
          this.netWorthItemsTab.SuspendLayout();
          this.weaponsTab.SuspendLayout();
          this.defenseItemsTab.SuspendLayout();
          this.killableEntitiesTab.SuspendLayout();
+         ((System.ComponentModel.ISupportInitialize)(this.entityBrowserSplitContainer1)).BeginInit();
+         this.entityBrowserSplitContainer1.Panel1.SuspendLayout();
+         this.entityBrowserSplitContainer1.Panel2.SuspendLayout();
+         this.entityBrowserSplitContainer1.SuspendLayout();
+         ((System.ComponentModel.ISupportInitialize)(this.entityBrowserSplitContainer2)).BeginInit();
+         this.entityBrowserSplitContainer2.Panel1.SuspendLayout();
+         this.entityBrowserSplitContainer2.Panel2.SuspendLayout();
+         this.entityBrowserSplitContainer2.SuspendLayout();
          this.SuspendLayout();
          // 
          // netWorthListView
@@ -67,14 +78,15 @@
             this.item,
             this.value,
             this.category,
-            this.modName});
+            this.modName,
+            this.materialTags});
          this.netWorthListView.Dock = System.Windows.Forms.DockStyle.Fill;
          this.netWorthListView.FullRowSelect = true;
          this.netWorthListView.GridLines = true;
          this.netWorthListView.LabelEdit = true;
          this.netWorthListView.Location = new System.Drawing.Point(3, 3);
          this.netWorthListView.Name = "netWorthListView";
-         this.netWorthListView.Size = new System.Drawing.Size(518, 586);
+         this.netWorthListView.Size = new System.Drawing.Size(496, 586);
          this.netWorthListView.TabIndex = 1;
          this.netWorthListView.UseCompatibleStateImageBehavior = false;
          this.netWorthListView.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.netWorthListView_ColumnClick);
@@ -104,18 +116,18 @@
          // filePreviewTabs
          // 
          this.filePreviewTabs.Dock = System.Windows.Forms.DockStyle.Fill;
-         this.filePreviewTabs.Location = new System.Drawing.Point(532, 0);
+         this.filePreviewTabs.Location = new System.Drawing.Point(0, 0);
          this.filePreviewTabs.Name = "filePreviewTabs";
          this.filePreviewTabs.SelectedIndex = 0;
-         this.filePreviewTabs.Size = new System.Drawing.Size(355, 618);
+         this.filePreviewTabs.Size = new System.Drawing.Size(380, 618);
          this.filePreviewTabs.TabIndex = 2;
          // 
          // iconView
          // 
-         this.iconView.Dock = System.Windows.Forms.DockStyle.Right;
-         this.iconView.Location = new System.Drawing.Point(887, 0);
+         this.iconView.Dock = System.Windows.Forms.DockStyle.Fill;
+         this.iconView.Location = new System.Drawing.Point(0, 0);
          this.iconView.Name = "iconView";
-         this.iconView.Size = new System.Drawing.Size(218, 618);
+         this.iconView.Size = new System.Drawing.Size(207, 618);
          this.iconView.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
          this.iconView.TabIndex = 3;
          this.iconView.TabStop = false;
@@ -126,11 +138,11 @@
          this.entityBrowserTabControl.Controls.Add(this.weaponsTab);
          this.entityBrowserTabControl.Controls.Add(this.defenseItemsTab);
          this.entityBrowserTabControl.Controls.Add(this.killableEntitiesTab);
-         this.entityBrowserTabControl.Dock = System.Windows.Forms.DockStyle.Left;
+         this.entityBrowserTabControl.Dock = System.Windows.Forms.DockStyle.Fill;
          this.entityBrowserTabControl.Location = new System.Drawing.Point(0, 0);
          this.entityBrowserTabControl.Name = "entityBrowserTabControl";
          this.entityBrowserTabControl.SelectedIndex = 0;
-         this.entityBrowserTabControl.Size = new System.Drawing.Size(532, 618);
+         this.entityBrowserTabControl.Size = new System.Drawing.Size(510, 618);
          this.entityBrowserTabControl.TabIndex = 4;
          // 
          // netWorthItemsTab
@@ -139,7 +151,7 @@
          this.netWorthItemsTab.Location = new System.Drawing.Point(4, 22);
          this.netWorthItemsTab.Name = "netWorthItemsTab";
          this.netWorthItemsTab.Padding = new System.Windows.Forms.Padding(3);
-         this.netWorthItemsTab.Size = new System.Drawing.Size(524, 592);
+         this.netWorthItemsTab.Size = new System.Drawing.Size(502, 592);
          this.netWorthItemsTab.TabIndex = 0;
          this.netWorthItemsTab.Text = "Net Worth Items";
          this.netWorthItemsTab.UseVisualStyleBackColor = true;
@@ -150,7 +162,7 @@
          this.weaponsTab.Location = new System.Drawing.Point(4, 22);
          this.weaponsTab.Name = "weaponsTab";
          this.weaponsTab.Padding = new System.Windows.Forms.Padding(3);
-         this.weaponsTab.Size = new System.Drawing.Size(524, 592);
+         this.weaponsTab.Size = new System.Drawing.Size(505, 586);
          this.weaponsTab.TabIndex = 1;
          this.weaponsTab.Text = "Weapons";
          this.weaponsTab.UseVisualStyleBackColor = true;
@@ -166,7 +178,7 @@
          this.weaponsListView.LabelEdit = true;
          this.weaponsListView.Location = new System.Drawing.Point(3, 3);
          this.weaponsListView.Name = "weaponsListView";
-         this.weaponsListView.Size = new System.Drawing.Size(518, 586);
+         this.weaponsListView.Size = new System.Drawing.Size(499, 580);
          this.weaponsListView.TabIndex = 0;
          this.weaponsListView.UseCompatibleStateImageBehavior = false;
          this.weaponsListView.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.weaponsListView_ColumnClick);
@@ -268,21 +280,67 @@
          this.killableEntity.Text = "Entity";
          this.killableEntity.Width = -2;
          // 
+         // entityBrowserSplitContainer1
+         // 
+         this.entityBrowserSplitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+         this.entityBrowserSplitContainer1.Location = new System.Drawing.Point(0, 0);
+         this.entityBrowserSplitContainer1.Name = "entityBrowserSplitContainer1";
+         // 
+         // entityBrowserSplitContainer1.Panel1
+         // 
+         this.entityBrowserSplitContainer1.Panel1.Controls.Add(this.entityBrowserTabControl);
+         // 
+         // entityBrowserSplitContainer1.Panel2
+         // 
+         this.entityBrowserSplitContainer1.Panel2.Controls.Add(this.filePreviewTabs);
+         this.entityBrowserSplitContainer1.Size = new System.Drawing.Size(894, 618);
+         this.entityBrowserSplitContainer1.SplitterDistance = 510;
+         this.entityBrowserSplitContainer1.TabIndex = 5;
+         // 
+         // entityBrowserSplitContainer2
+         // 
+         this.entityBrowserSplitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
+         this.entityBrowserSplitContainer2.Location = new System.Drawing.Point(0, 0);
+         this.entityBrowserSplitContainer2.Name = "entityBrowserSplitContainer2";
+         // 
+         // entityBrowserSplitContainer2.Panel1
+         // 
+         this.entityBrowserSplitContainer2.Panel1.Controls.Add(this.entityBrowserSplitContainer1);
+         // 
+         // entityBrowserSplitContainer2.Panel2
+         // 
+         this.entityBrowserSplitContainer2.Panel2.Controls.Add(this.iconView);
+         this.entityBrowserSplitContainer2.Size = new System.Drawing.Size(1105, 618);
+         this.entityBrowserSplitContainer2.SplitterDistance = 894;
+         this.entityBrowserSplitContainer2.TabIndex = 6;
+         // 
+         // materialTags
+         // 
+         this.materialTags.Text = "materials";
+         this.materialTags.Width = -2;
+         // 
          // EntityBrowserView
          // 
          this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
          this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-         this.Controls.Add(this.filePreviewTabs);
-         this.Controls.Add(this.iconView);
-         this.Controls.Add(this.entityBrowserTabControl);
+         this.Controls.Add(this.entityBrowserSplitContainer2);
          this.Name = "EntityBrowserView";
          this.Size = new System.Drawing.Size(1105, 618);
+         this.Load += new System.EventHandler(this.EntityBrowserView_Load);
          ((System.ComponentModel.ISupportInitialize)(this.iconView)).EndInit();
          this.entityBrowserTabControl.ResumeLayout(false);
          this.netWorthItemsTab.ResumeLayout(false);
          this.weaponsTab.ResumeLayout(false);
          this.defenseItemsTab.ResumeLayout(false);
          this.killableEntitiesTab.ResumeLayout(false);
+         this.entityBrowserSplitContainer1.Panel1.ResumeLayout(false);
+         this.entityBrowserSplitContainer1.Panel2.ResumeLayout(false);
+         ((System.ComponentModel.ISupportInitialize)(this.entityBrowserSplitContainer1)).EndInit();
+         this.entityBrowserSplitContainer1.ResumeLayout(false);
+         this.entityBrowserSplitContainer2.Panel1.ResumeLayout(false);
+         this.entityBrowserSplitContainer2.Panel2.ResumeLayout(false);
+         ((System.ComponentModel.ISupportInitialize)(this.entityBrowserSplitContainer2)).EndInit();
+         this.entityBrowserSplitContainer2.ResumeLayout(false);
          this.ResumeLayout(false);
 
       }
@@ -313,5 +371,8 @@
       private System.Windows.Forms.ColumnHeader killableEntity;
       private System.Windows.Forms.ColumnHeader weaponILevel;
       private System.Windows.Forms.ColumnHeader defenseItemILevel;
+      private System.Windows.Forms.SplitContainer entityBrowserSplitContainer1;
+      private System.Windows.Forms.SplitContainer entityBrowserSplitContainer2;
+      private System.Windows.Forms.ColumnHeader materialTags;
    }
 }
