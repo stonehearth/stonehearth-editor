@@ -120,12 +120,27 @@ namespace StonehearthEditor
             JToken token = json.SelectToken("entity_data.stonehearth:net_worth.value_in_gold");
             string goldValue = token == null ? "" : token.ToString();
             item.SubItems.Add(goldValue); // Net Worth
-            string category = entry.Key.Split(':')[0];
+            string material = "";
+            string category = "";
+
+            foreach (JsonFileData file in jsonFileData.OpenedFiles)
+            {
+               JObject fileJson = file.Json;
+               JToken categoryToken = fileJson.SelectToken("components.item.category");
+               JToken materialToken = fileJson.SelectToken("components.stonehearth:material.tags");
+               if (categoryToken != null)
+               {
+                  category = categoryToken.ToString();
+               }
+               if (materialToken != null)
+               {
+                  material = materialToken.ToString();
+               }
+            }
+
             item.SubItems.Add(category); // Category
             string modName = modNames[entry.Key];
             item.SubItems.Add(modName); // Mod Name
-            JToken materialToken = json.SelectToken("components.stonehearth:material.tags");
-            string material = materialToken == null ? "" : materialToken.ToString();
             item.SubItems.Add(material);
 
             this.addImages(jsonFileData, netWorthImagePaths, imageList, item, entry, ref index);
