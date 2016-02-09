@@ -628,10 +628,10 @@ namespace StonehearthEditor
          switch(mEncounterType)
          {
             case "generator":
-               Dictionary<string, string> generatorInfo = JsonHelper.GetJsonStringDictionary(NodeFile.Json, "generator_info");
-               if (generatorInfo.ContainsKey("spawn_edge"))
+               JToken generatorInfo = NodeFile.Json["generator_info"];
+               if (generatorInfo.SelectToken("spawn_edge") != null)
                {
-                  mOutEdgeStrings.Add(generatorInfo["spawn_edge"]);
+                  AddOutEdgesRecursive(generatorInfo["spawn_edge"], mOutEdgeStrings);
                }
                break;
             case "collection_quest":
