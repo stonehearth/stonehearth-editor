@@ -43,6 +43,7 @@ namespace StonehearthEditor
          netWorthListView.View = View.Details;
          netWorthListView.GridLines = true;
          netWorthListView.FullRowSelect = true;
+         netWorthListView.ShowItemToolTips = true;
 
          weaponsListView.View = View.Details;
          weaponsListView.GridLines = true;
@@ -130,10 +131,22 @@ namespace StonehearthEditor
                JToken materialToken = fileJson.SelectToken("components.stonehearth:material.tags");
                if (categoryToken != null)
                {
+                  if (category != "" && category != categoryToken.ToString())
+                  {
+                     item.BackColor = Color.Red;
+                     item.ToolTipText = "WARNING: Category specified in more than one place and are not identical";
+                     break;
+                  }
                   category = categoryToken.ToString();
                }
                if (materialToken != null)
                {
+                  if (material != "" && material != materialToken.ToString())
+                  {
+                     item.BackColor = Color.Red;
+                     item.ToolTipText = "WARNING: Material specified in more than one place and are not identical";
+                     break;
+                  }
                   material = materialToken.ToString();
                }
             }
