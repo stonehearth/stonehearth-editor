@@ -161,10 +161,14 @@ namespace StonehearthEditor
          Sort(aliasesObject);
       }
 
-      public void RemoveFromManifest(string alias)
+      public void RemoveFromManifest(string parent, string alias)
       {
-         JObject aliases = mManifestJson["aliases"] as JObject;
-         aliases.Property(alias).Remove();
+         JObject aliases = mManifestJson[parent] as JObject;
+         JProperty aliasProperty = aliases.Property(alias);
+         if (aliasProperty != null)
+         {
+            aliasProperty.Remove();
+         }
       }
 
       public void WriteManifestToFile()

@@ -790,7 +790,7 @@ namespace StonehearthEditor
             }
             
             mod.AddToManifest(e.Label, moduleFile.OriginalPath);
-            mod.RemoveFromManifest(moduleFile.Name);
+            mod.RemoveFromManifest("aliases", moduleFile.Name);
             mod.WriteManifestToFile();
             Reload();
          } else
@@ -806,7 +806,8 @@ namespace StonehearthEditor
          ModuleFile moduleFile = GetModuleFile(selectedFileData);
          if (moduleFile != null)
          {
-            moduleFile.Module.RemoveFromManifest(moduleFile.Name);
+            TreeNode parent = selectedNode.Parent;
+            moduleFile.Module.RemoveFromManifest(parent.Text, moduleFile.Name);
             moduleFile.Module.WriteManifestToFile();
             Reload();
          }

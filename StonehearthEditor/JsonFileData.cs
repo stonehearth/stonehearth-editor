@@ -175,6 +175,21 @@ namespace StonehearthEditor
                }
 
                break;
+            case JSONTYPE.AI_PACK:
+               JArray actions = mJson["actions"] as JArray;
+               if (actions != null)
+               {
+                  foreach (JToken action in actions)
+                  {
+                     string fullAlias = action.ToString();
+                     ModuleFile linkedAlias = ModuleDataManager.GetInstance().GetModuleFile(fullAlias);
+                     if (linkedAlias == null)
+                     {
+                        AddError("links to alias " + fullAlias + " which does not exist!");
+                     }
+                  }
+               }
+               break;
          }
          //CheckDisplayName();
       }
@@ -358,14 +373,11 @@ namespace StonehearthEditor
       // Returns true if should show parent node
       public override bool UpdateTreeNode(TreeNode node, string filter)
       {
+         base.UpdateTreeNode(node, filter);
          mTreeNode = node;
          node.Tag = this;
-         if (HasErrors)
-         {
-            node.SelectedImageIndex = 0;
-            node.ImageIndex = 0;
-            node.ToolTipText = Errors;
-         } else
+
+         if (!HasErrors)
          {
             node.SelectedImageIndex = (int)JsonType;
             node.ImageIndex = (int)JsonType;

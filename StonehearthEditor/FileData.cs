@@ -61,7 +61,16 @@ namespace StonehearthEditor
          mErrors = mErrors + error + "\n";
       }
 
-      public abstract bool UpdateTreeNode(TreeNode node, string filter);
+      public virtual bool UpdateTreeNode(TreeNode node, string filter)
+      {
+         if (HasErrors)
+         {
+            node.SelectedImageIndex = 0;
+            node.ImageIndex = 0;
+            node.ToolTipText = Errors;
+         }
+         return true;
+      }
       public bool TrySetFlatFileData(string newData)
       {
          string newFlatFileData;
@@ -143,7 +152,7 @@ namespace StonehearthEditor
             }
          } else
          {
-            mErrors = mErrors + "File " + Path + " does not exist.\n";
+            AddError("File " + Path + " does not exist.");
          }
 
          PostLoad();

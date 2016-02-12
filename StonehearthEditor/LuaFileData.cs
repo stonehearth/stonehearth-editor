@@ -18,8 +18,15 @@ namespace StonehearthEditor
          mDirectory = JsonHelper.NormalizeSystemPath(System.IO.Path.GetDirectoryName(Path));
       }
 
+      public override void AddError(string error)
+      {
+         base.AddError(error);
+         ModuleDataManager.GetInstance().HasErrors = true;
+      }
+
       public override bool UpdateTreeNode(TreeNode node, string filter)
       {
+         base.UpdateTreeNode(node, filter);
          mTreeNode = node;
          node.Tag = this;
          bool filterMatchesSelf = true;
@@ -28,9 +35,19 @@ namespace StonehearthEditor
          {
             filterMatchesSelf = false;
          }
-         node.SelectedImageIndex = 1;
-         node.ImageIndex = 1;
-         return filterMatchesSelf;
+         if (!HasErrors)
+         {
+            node.SelectedImageIndex = 1;
+            node.ImageIndex = 1;
+         }
+         if (!filterMatchesSelf)
+         {
+            if (!filter.Contains("error") || !HasErrors)
+            {
+               return false;
+            }
+         }
+         return true;
       }
 
       protected override void LoadInternal()
