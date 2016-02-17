@@ -191,7 +191,7 @@ namespace StonehearthEditor
                }
                break;
          }
-         //CheckDisplayName();
+         CheckDisplayName();
       }
 
       private void CheckDisplayName()
@@ -219,11 +219,11 @@ namespace StonehearthEditor
                }
                index++;
             }
+            JToken description = unitInfo["description"];
+            JToken icon = unitInfo["icon"];
+            JToken displayName = unitInfo["display_name"];
             if (needsSort)
             {
-               JToken description = unitInfo["description"];
-               JToken icon = unitInfo["icon"];
-
                unitInfo.Remove("description");
                unitInfo.Remove("icon");
                unitInfo.Add("description", description);
@@ -233,9 +233,24 @@ namespace StonehearthEditor
                }
                mSaveJsonAfterParse = true;
             }
+
+            CheckStringKeyExists(description.ToString());
+            CheckStringKeyExists(displayName.ToString());
          }
       }
-
+      private void CheckStringKeyExists(string key)
+      {
+         Regex matcher = new Regex(@"i18n\(([^)]+)\)");
+         Match locMatch = matcher.Match(key);
+         if (locMatch.Success)
+         {
+            key = locMatch.Groups[1].Value;
+            if (!ModuleDataManager.GetInstance().HasLocalizationKey(key))
+            {
+               AddError("Localization Key Not Found! " + key + " is not in en.json");
+            }
+         }
+      }
       public string GetJsonFileString()
       {
          string jsonString = JsonHelper.GetFormattedJsonString(mJson);

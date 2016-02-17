@@ -200,6 +200,26 @@ namespace StonehearthEditor
          return key;
       }
 
+      public bool HasLocalizationKey(string key)
+      {
+         string[] split = key.Split(':');
+         string modName = "stonehearth";
+         if (split.Length > 1)
+         {
+            modName = split[0];
+            key = split[1];
+         }
+         Module mod = GetMod(modName);
+         if (mod != null)
+         {
+            JToken token = mod.EnglishLocalizationJson.SelectToken(key);
+            if (token != null)
+            {
+               return true;
+            }
+         }
+         return false;
+      }
       // Call to clone an alias. top level. nested clone calls should call the module directly.
       public bool ExecuteClone(ModuleFile module, CloneObjectParameters parameters, HashSet<string> unwantedItems)
       {
