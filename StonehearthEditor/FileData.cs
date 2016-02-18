@@ -201,6 +201,11 @@ namespace StonehearthEditor
          return FileName;
       }
 
+      public override string ToString()
+      {
+         return Path;
+      }
+
       /// <summary>
       /// 
       /// </summary>

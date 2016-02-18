@@ -96,6 +96,12 @@
     <Compile Include="EncounterDesignerView.Designer.cs">
       <DependentUpon>EncounterDesignerView.cs</DependentUpon>
     </Compile>
+    <Compile Include="ErrorFileList.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ErrorFileList.Designer.cs">
+      <DependentUpon>ErrorFileList.cs</DependentUpon>
+    </Compile>
     <Compile Include="FileData.cs" />
     <Compile Include="GameMasterNode.cs" />
     <Compile Include="ListViewItemComparer.cs" />
@@ -161,6 +167,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="EncounterDesignerView.resx">
       <DependentUpon>EncounterDesignerView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ErrorFileList.resx">
+      <DependentUpon>ErrorFileList.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FilePreview.resx">
       <DependentUpon>FilePreview.cs</DependentUpon>
@@ -248,15 +257,13 @@
   </Target>
     -->
   <Target Name="AfterBuild">
-    <Message Text="The name of the publish profile is $(ProjectDir)"/>
+    <Message Text="The name of the publish profile is $(ProjectDir)" />
     <PropertyGroup>
       <CustomFolder>$(ProjectDir)\scripts</CustomFolder>
     </PropertyGroup>
     <CreateItem Include="$(CustomFolder)\*.*">
       <Output TaskParameter="Include" ItemName="CustomFiles" />
-    </CreateItem> 
+    </CreateItem>
     <Copy SourceFiles="@(CustomFiles)" DestinationFolder="$(TargetDir)\scripts" SkipUnchangedFiles="True" ContinueOnError="False" />
   </Target>
-
-
 </Project>

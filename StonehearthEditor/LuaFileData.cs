@@ -22,7 +22,7 @@ namespace StonehearthEditor
       {
          base.AddError(error);
          Console.WriteLine(error);
-         ModuleDataManager.GetInstance().HasErrors = true;
+         ModuleDataManager.GetInstance().AddErrorFile(this);
       }
 
       public override bool UpdateTreeNode(TreeNode node, string filter)

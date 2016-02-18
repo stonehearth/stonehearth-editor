@@ -17,6 +17,7 @@ namespace StonehearthEditor
       private FileData mSelectedFileData = null;
       private Dictionary<string, string> mLastModuleLocations = new Dictionary<string, string>();
       private Dictionary<string, Image> mThumbnailCache = new Dictionary<string, Image>();
+      private ErrorFileList mErrorFileListView;
       private const int kThumbnailSize = 20;
       public ManifestView()
       {
@@ -961,6 +962,13 @@ namespace StonehearthEditor
          {
             searchBox.Text = "error";
             searchButton.PerformClick();
+         }
+
+         // open up error file list view
+         if (mErrorFileListView == null || mErrorFileListView.IsDisposed)
+         {
+            mErrorFileListView = new ErrorFileList(this);
+            mErrorFileListView.Show(this);
          }
       }
    }

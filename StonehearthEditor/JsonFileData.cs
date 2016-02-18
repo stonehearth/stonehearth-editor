@@ -299,7 +299,7 @@ namespace StonehearthEditor
                return;
          }
          Console.WriteLine(error);
-         ModuleDataManager.GetInstance().HasErrors = true;
+         ModuleDataManager.GetInstance().AddErrorFile(this);
       }
 
       private FileData GetFileDataFactory(string path)
