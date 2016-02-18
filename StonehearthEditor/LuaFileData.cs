@@ -21,6 +21,7 @@ namespace StonehearthEditor
       public override void AddError(string error)
       {
          base.AddError(error);
+         Console.WriteLine(error);
          ModuleDataManager.GetInstance().HasErrors = true;
       }
 

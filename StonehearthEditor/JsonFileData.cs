@@ -298,6 +298,7 @@ namespace StonehearthEditor
             case JSONTYPE.ENCOUNTER:
                return;
          }
+         Console.WriteLine(error);
          ModuleDataManager.GetInstance().HasErrors = true;
       }
 

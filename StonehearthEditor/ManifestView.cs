@@ -743,7 +743,18 @@ namespace StonehearthEditor
             if (!foundFile)
             {
                FileData data;
+               bool hasFileData = false;
                if (mSelectedFileData.ReferencedByFileData.TryGetValue(selectedItem, out data))
+               {
+                  hasFileData = true;
+               }
+               string fullPath = ModuleDataManager.GetInstance().ModsDirectoryPath + selectedItem;
+               if (!hasFileData && mSelectedFileData.LinkedFileData.TryGetValue(fullPath, out data))
+               {
+                  hasFileData = true;
+               }
+
+               if (hasFileData)
                {
                   SetSelectedFileData(data);
                   if (data.TreeNode != null)
