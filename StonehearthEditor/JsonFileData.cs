@@ -78,6 +78,50 @@ namespace StonehearthEditor
          }
       }
 
+      public void AddMixin(string mixin)
+      {
+         JToken mixins = mJson.SelectToken("mixins");
+         if (mixins == null)
+         {
+            mJson.AddFirst(new JProperty("mixins", mixin));
+            mSaveJsonAfterParse = true;
+            AddError("mixin added");
+         } else
+         {
+            JArray mixinsArray = (mixins as JArray);
+            if (mixinsArray == null)
+            {
+               string existingMixin = mixins.ToString();
+               if (existingMixin != mixin)
+               {
+                  mixinsArray = new JArray();
+                  mJson["mixins"] = mixinsArray;
+                  mixinsArray.Add(mixins.ToString());
+                  mSaveJsonAfterParse = true;
+                  AddError("mixin added");
+               }
+            }
+            if (mixinsArray != null) {
+               HashSet<string> allMixins = new HashSet<string>();
+               foreach(JToken property in mixinsArray.Children())
+               {
+                  allMixins.Add(property.ToString());
+               }
+               if (!allMixins.Contains(mixin))
+               {
+                  mSaveJsonAfterParse = true;
+                  AddError("mixin added");
+               }
+               allMixins.Add(mixin);
+               mixinsArray.Clear();
+               foreach(string hashsetMixin in allMixins)
+               {
+                  mixinsArray.Add(hashsetMixin);
+               }
+            }
+         }
+      }
+
       private void CheckForNoNetWorth()
       {
          // check for errors
@@ -126,7 +170,9 @@ namespace StonehearthEditor
                      ghostFilePath = JsonHelper.NormalizeSystemPath(ghostFilePath);
                      JsonFileData ghost = new JsonFileData(ghostFilePath);
                      ghost.Load();
+                     ghost.AddMixin("stonehearth:mixins:placed_object");
                      mOpenedFiles.Add(ghost);
+                     ghost.PostLoad();
                   }
                   JToken iconicForm = entityFormsComponent["iconic_form"];
                   if (iconicForm != null)
