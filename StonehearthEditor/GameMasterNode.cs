@@ -291,6 +291,16 @@ namespace StonehearthEditor
       private int mNumArcNodes = 0;
       public List<GameMasterNode> OrphanedNodes = new List<GameMasterNode>();
 
+      // Return a list of all the arcs in the campaign
+      public IList<GameMasterNode> GetAllArcs()
+      {
+         var ret = new List<GameMasterNode>();
+         ret.AddRange(mArcTriggers.Values);
+         ret.AddRange(mArcChallenges.Values);
+         ret.AddRange(mArcClimaxes.Values);
+         return ret;
+      }
+
       public override void LoadData(Dictionary<string, GameMasterNode> allNodes)
       {
          mArcTriggers = new Dictionary<string, GameMasterNode>();

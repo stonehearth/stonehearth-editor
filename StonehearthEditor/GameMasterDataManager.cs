@@ -4,6 +4,7 @@ using System.Linq;
 using System.Windows.Forms;
 using Microsoft.Msagl.Drawing;
 using Microsoft.Msagl.Layout.Layered;
+using System;
 
 namespace StonehearthEditor
 {
@@ -164,7 +165,7 @@ namespace StonehearthEditor
       {
          List<string> filePaths = new List<string>();
          SearchForFileType(folderPath, "*.lua", filePaths);
-         
+
          foreach (string filepath in filePaths)
          {
             EncounterScriptFile file = new EncounterScriptFile(filepath);
@@ -221,7 +222,8 @@ namespace StonehearthEditor
          mGraph.Directed = true;
          mGraph.LayoutAlgorithmSettings = new SugiyamaLayoutSettings();
 
-         if (mCurrentGraphRoot != null) { 
+         if (mCurrentGraphRoot != null)
+         {
             HashSet<GameMasterNode> campaignNodes = new HashSet<GameMasterNode>();
             mCurrentGraphRoot.NodeData.GetRelatedNodes(campaignNodes);
 
@@ -262,6 +264,7 @@ namespace StonehearthEditor
          campaignsTree.ExpandAll();
          treeView.Nodes.Add(campaignsTree);
       }
+
       public bool AddNewGenericScriptNode(IGraphOwner owner, string scriptNodeName, string filePath)
       {
          if (mCurrentGraphRoot == null)
@@ -273,7 +276,31 @@ namespace StonehearthEditor
          GameMasterNode newNode = new GameMasterNode(mCurrentGraphRoot.Module, filePath);
          mGameMasterNodes.Add(newNode.Path, newNode);
          newNode.Load(mGameMasterNodes);
-         (mCurrentGraphRoot.NodeData as CampaignNodeData).OrphanedNodes.Add(newNode);
+
+         string nodeName = Path.GetFileNameWithoutExtension(filePath);
+         CampaignNodeData campaignNodeData = mCurrentGraphRoot.NodeData as CampaignNodeData;
+         string arcsDir = Path.GetFullPath(Path.Combine(campaignNodeData.NodeFile.Path, "..", "arcs")).ToUpperInvariant();
+         string filePathUpper = Path.GetFullPath(filePath).ToUpperInvariant();
+
+         bool foundMatchingArc = false;
+         foreach (var arcNode in campaignNodeData.GetAllArcs())
+         {
+            string arcDir = Path.GetFullPath(Path.Combine(arcNode.Path, "..")).ToUpperInvariant();
+            if (filePathUpper.StartsWith(arcDir))
+            {
+               // Add new node to arc's index file (ex. game_events_arc) using nodeName as the key
+               (arcNode.NodeData as ArcNodeData).AddEncounter(newNode.NodeData as EncounterNodeData);
+               newNode.Owner = arcNode;
+               foundMatchingArc = true;
+               break;
+            }
+         }
+
+         if (!foundMatchingArc) {
+            (mCurrentGraphRoot.NodeData as CampaignNodeData).OrphanedNodes.Add(newNode);
+            newNode.Owner = mCurrentGraphRoot;
+         }
+
          RefreshGraph(owner);
          return true;
       }
