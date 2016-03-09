@@ -300,7 +300,7 @@ namespace StonehearthEditor
                   if (System.IO.File.Exists(linkedFile.Value.Path))
                   {
                      imgPaths[jsonEntry.Key] = linkedFile.Value.Path;
-                     imgList.Images.Add(Image.FromFile(linkedFile.Value.Path));
+                     imgList.Images.Add(ThumbnailCache.GetThumbnail(linkedFile.Value.Path));
                      imgList.ImageSize = new Size(32, 32);
                      listItem.ImageIndex = index;
                      index++;

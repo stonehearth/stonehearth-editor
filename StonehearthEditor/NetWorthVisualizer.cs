@@ -14,7 +14,6 @@ namespace StonehearthEditor
    public partial class NetWorthVisualizer : Form
    {
       private Dictionary<int, List<JsonFileData>> mNetWorthValues;
-      private Dictionary<string, Image> mThumbnailCache = new Dictionary<string, Image>();
       private int mMaxNetWorth = 0;
       private int mItemCount = 0;
       private ManifestView mManifestView;
@@ -152,13 +151,7 @@ namespace StonehearthEditor
                   }
                   else
                   {
-                     Image thumbnail;
-                     if (!mThumbnailCache.TryGetValue(imageFile, out thumbnail))
-                     {
-                        Image image = Image.FromFile(imageFile);
-                        thumbnail = image.GetThumbnailImage(cellSizeZoomed, cellSizeZoomed, null, IntPtr.Zero);
-                        mThumbnailCache[imageFile] = thumbnail;
-                     }
+                     Image thumbnail = ThumbnailCache.GetThumbnail(imageFile);
 
                      int ylocation = canvasHeight - (j + 1) * cellSizeZoomed - maxRows - kBottomOffset - 1;
                      Rectangle location = new Rectangle(i * cellSizeZoomed, ylocation, cellSizeZoomed, cellSizeZoomed);

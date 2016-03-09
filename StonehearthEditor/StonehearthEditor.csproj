@@ -159,6 +159,7 @@
       <DependentUpon>FilePreview.cs</DependentUpon>
     </Compile>
     <Compile Include="QubicleFileData.cs" />
+    <Compile Include="ThumbnailCache.cs" />
     <EmbeddedResource Include="AliasSelectionDialog.resx">
       <DependentUpon>AliasSelectionDialog.cs</DependentUpon>
     </EmbeddedResource>
