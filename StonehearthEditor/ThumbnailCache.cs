@@ -20,10 +20,13 @@ namespace StonehearthEditor
          Image thumbnail;
          if (!sThumbnailCache.TryGetValue(imageFile, out thumbnail))
          {
-            Image image = Image.FromFile(imageFile);
-            thumbnail = image.GetThumbnailImage(kDefaultSize, kDefaultSize, null, IntPtr.Zero);
-            sThumbnailCache[imageFile] = thumbnail;
-            image.Dispose();
+            if (System.IO.File.Exists(imageFile))
+            {
+               Image image = Image.FromFile(imageFile);
+               thumbnail = image.GetThumbnailImage(kDefaultSize, kDefaultSize, null, IntPtr.Zero);
+               sThumbnailCache[imageFile] = thumbnail;
+               image.Dispose();
+            }
          }
          return thumbnail;
       }

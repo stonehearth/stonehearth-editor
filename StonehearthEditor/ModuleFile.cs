@@ -15,8 +15,6 @@ namespace StonehearthEditor
    };
    public class ModuleFile
    {
-      private static Dictionary<string, int> kAverageMaterialCost = new Dictionary<string, int>();
-
       private Module mModule;
       private string mAlias;
       private string mOriginalFilePath;
@@ -246,61 +244,6 @@ namespace StonehearthEditor
          RecommendNetWorth();
       }
 
-      public static int GetAverageMaterialCost(string material)
-      {
-         if (kAverageMaterialCost.ContainsKey(material))
-         {
-            return kAverageMaterialCost[material];
-         }
-         int sumCost = 0;
-         int numItems = 0;
-         foreach (Module mod in ModuleDataManager.GetInstance().GetAllModules())
-         {
-            foreach (ModuleFile file in mod.GetAliases())
-            {
-               JsonFileData data = file.FileData as JsonFileData;
-               if (data == null)
-               {
-                  continue;
-               }
-               int netWorth = data.NetWorth;
-               if (netWorth <= 0)
-               {
-                  continue;
-               }
-               JToken tags = data.Json.SelectToken("components.stonehearth:material.tags");
-               if (tags != null)
-               {
-                  string tagString = tags.ToString();
-                  string[] split = material.Split(' ');
-                  bool isMaterial = true;
-                  foreach(string tag in split)
-                  {
-                     if (!tagString.Contains(tag))
-                     {
-                        isMaterial = false;
-                        break;
-                     }
-                  }
-                  if (isMaterial)
-                  {
-                     numItems++;
-                     sumCost = sumCost + netWorth;
-                  }
-               }
-            }
-         }
-
-         if (numItems > 0)
-         {
-            int averageCost = sumCost / numItems;
-            kAverageMaterialCost[material] = averageCost;
-            return averageCost;
-         }
-
-         return 0;
-      }
-
       private static int kWorkUnitsWorth = 2;
       private void RecommendNetWorth()
       {
@@ -348,7 +291,7 @@ namespace StonehearthEditor
                      {
                         // try get cost of material
                         string materialString = material.ToString();
-                        costPer = ModuleFile.GetAverageMaterialCost(materialString);
+                        costPer = ModuleDataManager.GetInstance().GetAverageMaterialCost(materialString);
                      }
                      JToken uri = ingredient["uri"];
                      if (uri != null)

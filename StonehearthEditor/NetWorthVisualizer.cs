@@ -171,7 +171,7 @@ namespace StonehearthEditor
                         {
                            shouldWarn = true;
                         }
-                        if (cost > (data.RecommendedMaxNetWorth * kMaxRecommendedMultiplier))
+                        if (cost > (data.RecommendedMaxNetWorth * kMaxRecommendedMultiplier + 1))
                         {
                            shouldWarn = true;
                         }

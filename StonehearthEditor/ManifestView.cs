@@ -16,7 +16,6 @@ namespace StonehearthEditor
    {
       private FileData mSelectedFileData = null;
       private Dictionary<string, string> mLastModuleLocations = new Dictionary<string, string>();
-      private Dictionary<string, Image> mThumbnailCache = new Dictionary<string, Image>();
       private ErrorFileList mErrorFileListView;
       private const int kThumbnailSize = 20;
       public ManifestView()
@@ -215,33 +214,29 @@ namespace StonehearthEditor
                }
                else if (linkedFile.Value is ImageFileData)
                {
-                  if (!hasImage)
+                  string imageFilePath = linkedFile.Value.Path;
+                  if (System.IO.File.Exists(imageFilePath))
                   {
-                     if (System.IO.File.Exists(linkedFile.Value.Path))
+                     if (!hasImage)
                      {
-                        iconView.ImageLocation = linkedFile.Value.Path;
+                        iconView.ImageLocation = imageFilePath;
                         hasImage = true;
                      }
-                  }
 
-                  Button openFileButton = new Button();
-                  openFileButton.Name = linkedFile.Value.Path;
-                  Image thumbnail;
-                  if (!mThumbnailCache.TryGetValue(linkedFile.Value.Path, out thumbnail))
-                  {
-                     Image image = Image.FromFile(linkedFile.Value.Path);
-                     thumbnail = image.GetThumbnailImage(kThumbnailSize, kThumbnailSize, null, IntPtr.Zero);
-                     mThumbnailCache[linkedFile.Value.Path] = thumbnail;
+                     Button openFileButton = new Button();
+                     openFileButton.Name = imageFilePath;
+                     Image thumbnail = ThumbnailCache.GetThumbnail(imageFilePath);
+
+                     openFileButton.BackgroundImage = thumbnail;
+                     openFileButton.BackgroundImageLayout = ImageLayout.None;
+                     openFileButton.Text = Path.GetFileName(openFileButton.Name);
+                     openFileButton.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+                     openFileButton.UseVisualStyleBackColor = true;
+                     openFileButton.Click += new System.EventHandler(openFileButton_Click);
+                     openFileButton.Padding = new Padding(22, 2, 2, 2);
+                     openFileButton.AutoSize = true;
+                     openFileButtonPanel.Controls.Add(openFileButton);
                   }
-                  openFileButton.BackgroundImage = thumbnail;
-                  openFileButton.BackgroundImageLayout = ImageLayout.None;
-                  openFileButton.Text = Path.GetFileName(openFileButton.Name);
-                  openFileButton.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-                  openFileButton.UseVisualStyleBackColor = true;
-                  openFileButton.Click += new System.EventHandler(openFileButton_Click);
-                  openFileButton.Padding = new Padding(22, 2, 2, 2);
-                  openFileButton.AutoSize = true;
-                  openFileButtonPanel.Controls.Add(openFileButton);
                }
             }
          }

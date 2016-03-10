@@ -18,6 +18,7 @@ namespace StonehearthEditor
       private Dictionary<String, Module> mModules = new Dictionary<String, Module>();
 
       private HashSet<FileData> mFilesWithErrors = new HashSet<FileData>();
+      private Dictionary<string, int> mAverageMaterialCost = new Dictionary<string, int>();
 
       public ModuleDataManager(string modsDirectoryPath)
       {
@@ -261,6 +262,63 @@ namespace StonehearthEditor
 
          file.Clone(newPath, cloneParameters, alreadyCloned, false);
          return alreadyCloned;
+      }
+
+      public int GetAverageMaterialCost(string material)
+      {
+         if (mAverageMaterialCost.ContainsKey(material))
+         {
+            return mAverageMaterialCost[material];
+         }
+         int sumCost = 0;
+         int numItems = 0;
+         string[] split = material.Split(' ');
+         foreach (Module mod in ModuleDataManager.GetInstance().GetAllModules())
+         {
+            foreach (ModuleFile file in mod.GetAliases())
+            {
+               JsonFileData data = file.FileData as JsonFileData;
+               if (data == null)
+               {
+                  continue;
+               }
+               int netWorth = data.NetWorth;
+               if (netWorth <= 0)
+               {
+                  continue;
+               }
+               JToken tags = data.Json.SelectToken("components.stonehearth:material.tags");
+               if (tags != null)
+               {
+                  string tagString = tags.ToString();
+                  string[] currentTagSplit = tagString.Split(' ');
+                  HashSet<string> currentTagSet = new HashSet<string>(currentTagSplit);
+                  bool isMaterial = true;
+                  foreach (string tag in split)
+                  {
+                     if (!currentTagSet.Contains(tag))
+                     {
+                        isMaterial = false;
+                        break;
+                     }
+                  }
+                  if (isMaterial)
+                  {
+                     numItems++;
+                     sumCost = sumCost + netWorth;
+                  }
+               }
+            }
+         }
+
+         if (numItems > 0)
+         {
+            int averageCost = sumCost / numItems;
+            mAverageMaterialCost[material] = averageCost;
+            return averageCost;
+         }
+
+         return 0;
       }
    }
 }
