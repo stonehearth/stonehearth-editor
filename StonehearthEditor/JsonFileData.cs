@@ -238,6 +238,10 @@ namespace StonehearthEditor
                break;
          }
          CheckDisplayName();
+         if (Json != null && Json.SelectToken("components.effect_list.effects") != null)
+         {
+            AddError("effect_list component is using 'effects' to specify a list of effects. This is bad because these effects will not restart after save load. You should put all the effects into a single file and reference that file as 'default'");
+         }
       }
 
       private void CheckDisplayName()
