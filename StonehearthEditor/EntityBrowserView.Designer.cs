@@ -33,6 +33,7 @@
          this.value = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
          this.category = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
          this.modName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+         this.materialTags = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
          this.filePreviewTabs = new System.Windows.Forms.TabControl();
          this.iconView = new System.Windows.Forms.PictureBox();
          this.entityBrowserTabControl = new System.Windows.Forms.TabControl();
@@ -54,7 +55,7 @@
          this.killableEntity = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
          this.entityBrowserSplitContainer1 = new System.Windows.Forms.SplitContainer();
          this.entityBrowserSplitContainer2 = new System.Windows.Forms.SplitContainer();
-         this.materialTags = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+         this.handedness = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
          ((System.ComponentModel.ISupportInitialize)(this.iconView)).BeginInit();
          this.entityBrowserTabControl.SuspendLayout();
          this.netWorthItemsTab.SuspendLayout();
@@ -113,6 +114,11 @@
          this.modName.Text = "Mod Name";
          this.modName.Width = -2;
          // 
+         // materialTags
+         // 
+         this.materialTags.Text = "materials";
+         this.materialTags.Width = -2;
+         // 
          // filePreviewTabs
          // 
          this.filePreviewTabs.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -162,7 +168,7 @@
          this.weaponsTab.Location = new System.Drawing.Point(4, 22);
          this.weaponsTab.Name = "weaponsTab";
          this.weaponsTab.Padding = new System.Windows.Forms.Padding(3);
-         this.weaponsTab.Size = new System.Drawing.Size(505, 586);
+         this.weaponsTab.Size = new System.Drawing.Size(502, 592);
          this.weaponsTab.TabIndex = 1;
          this.weaponsTab.Text = "Weapons";
          this.weaponsTab.UseVisualStyleBackColor = true;
@@ -173,12 +179,13 @@
             this.weaponAlias,
             this.baseDamage,
             this.weaponILevel,
+            this.handedness,
             this.mod});
          this.weaponsListView.Dock = System.Windows.Forms.DockStyle.Fill;
          this.weaponsListView.LabelEdit = true;
          this.weaponsListView.Location = new System.Drawing.Point(3, 3);
          this.weaponsListView.Name = "weaponsListView";
-         this.weaponsListView.Size = new System.Drawing.Size(499, 580);
+         this.weaponsListView.Size = new System.Drawing.Size(496, 586);
          this.weaponsListView.TabIndex = 0;
          this.weaponsListView.UseCompatibleStateImageBehavior = false;
          this.weaponsListView.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.weaponsListView_ColumnClick);
@@ -197,6 +204,12 @@
          // weaponILevel
          // 
          this.weaponILevel.Text = "iLevel";
+
+         // 
+         // handedness
+         // 
+         this.handedness.Text = "Handedness";
+         this.handedness.Width = -2;
          // 
          // mod
          // 
@@ -209,7 +222,7 @@
          this.defenseItemsTab.Location = new System.Drawing.Point(4, 22);
          this.defenseItemsTab.Name = "defenseItemsTab";
          this.defenseItemsTab.Padding = new System.Windows.Forms.Padding(3);
-         this.defenseItemsTab.Size = new System.Drawing.Size(524, 592);
+         this.defenseItemsTab.Size = new System.Drawing.Size(502, 592);
          this.defenseItemsTab.TabIndex = 2;
          this.defenseItemsTab.Text = "Defensive Items";
          this.defenseItemsTab.UseVisualStyleBackColor = true;
@@ -225,7 +238,7 @@
          this.defenseItemsListView.LabelEdit = true;
          this.defenseItemsListView.Location = new System.Drawing.Point(3, 3);
          this.defenseItemsListView.Name = "defenseItemsListView";
-         this.defenseItemsListView.Size = new System.Drawing.Size(518, 586);
+         this.defenseItemsListView.Size = new System.Drawing.Size(496, 586);
          this.defenseItemsListView.TabIndex = 1;
          this.defenseItemsListView.UseCompatibleStateImageBehavior = false;
          this.defenseItemsListView.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.defenseItemsListView_ColumnClick);
@@ -256,7 +269,7 @@
          this.killableEntitiesTab.Location = new System.Drawing.Point(4, 22);
          this.killableEntitiesTab.Name = "killableEntitiesTab";
          this.killableEntitiesTab.Padding = new System.Windows.Forms.Padding(3);
-         this.killableEntitiesTab.Size = new System.Drawing.Size(524, 592);
+         this.killableEntitiesTab.Size = new System.Drawing.Size(502, 592);
          this.killableEntitiesTab.TabIndex = 3;
          this.killableEntitiesTab.Text = "Killable Entities";
          this.killableEntitiesTab.UseVisualStyleBackColor = true;
@@ -269,7 +282,7 @@
          this.killableEntitiesListView.LabelEdit = true;
          this.killableEntitiesListView.Location = new System.Drawing.Point(3, 3);
          this.killableEntitiesListView.Name = "killableEntitiesListView";
-         this.killableEntitiesListView.Size = new System.Drawing.Size(518, 586);
+         this.killableEntitiesListView.Size = new System.Drawing.Size(496, 586);
          this.killableEntitiesListView.TabIndex = 2;
          this.killableEntitiesListView.UseCompatibleStateImageBehavior = false;
          this.killableEntitiesListView.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.killableEntitiesListView_ColumnClick);
@@ -313,11 +326,7 @@
          this.entityBrowserSplitContainer2.Size = new System.Drawing.Size(1105, 618);
          this.entityBrowserSplitContainer2.SplitterDistance = 894;
          this.entityBrowserSplitContainer2.TabIndex = 6;
-         // 
-         // materialTags
-         // 
-         this.materialTags.Text = "materials";
-         this.materialTags.Width = -2;
+
          // 
          // EntityBrowserView
          // 
@@ -374,5 +383,6 @@
       private System.Windows.Forms.SplitContainer entityBrowserSplitContainer1;
       private System.Windows.Forms.SplitContainer entityBrowserSplitContainer2;
       private System.Windows.Forms.ColumnHeader materialTags;
+      private System.Windows.Forms.ColumnHeader handedness;
    }
 }

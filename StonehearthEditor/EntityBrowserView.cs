@@ -184,10 +184,20 @@ namespace StonehearthEditor
             JToken iLevelToken = json.SelectToken("components.stonehearth:equipment_piece.ilevel");
             string iLevel = iLevelToken == null ? "none" : iLevelToken.ToString(); //TODO: if none found, insert ilevel into json with value 0
             item.SubItems.Add(iLevel);
+            JToken meleeAttackAnim = json.SelectToken("entity_data.stonehearth:combat:melee_attacks.[0].name");
+            if (meleeAttackAnim == null || meleeAttackAnim.ToString().Contains("1h"))
+            {
+               item.SubItems.Add("1h");
+            }
+            else
+            {
+               item.SubItems.Add("2h");
+            }
+
             string modName = modNames[entry.Key];
             item.SubItems.Add(modName);
 
-            this.addImages(jsonFileData, weaponsImagePaths, imageList, item, entry, ref index);
+            addImages(jsonFileData, weaponsImagePaths, imageList, item, entry, ref index);
 
             weaponsListView.Items.Add(item);
          }
