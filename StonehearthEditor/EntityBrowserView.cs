@@ -193,6 +193,9 @@ namespace StonehearthEditor
             {
                item.SubItems.Add("2h");
             }
+            JToken rolesToken = json.SelectToken("components.stonehearth:equipment_piece.roles");
+            string roles = rolesToken == null ? "none" : rolesToken.ToString();
+            item.SubItems.Add(roles);
 
             string modName = modNames[entry.Key];
             item.SubItems.Add(modName);

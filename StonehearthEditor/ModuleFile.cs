@@ -176,7 +176,7 @@ namespace StonehearthEditor
          string newAlias = parameters.TransformAlias(mAlias);
          if (mModule.GetAliasFile(newAlias) != null)
          {
-            MessageBox.Show("The alias " + newAlias + " already exists in manifest.json");
+            // MessageBox.Show("The alias " + newAlias + " already exists in manifest.json");
             return false;
          }
          string newPath = parameters.TransformParameter(ResolvedPath);

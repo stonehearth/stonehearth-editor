@@ -43,6 +43,7 @@
          this.weaponAlias = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
          this.baseDamage = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
          this.weaponILevel = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+         this.handedness = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
          this.mod = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
          this.defenseItemsTab = new System.Windows.Forms.TabPage();
          this.defenseItemsListView = new System.Windows.Forms.ListView();
@@ -55,7 +56,7 @@
          this.killableEntity = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
          this.entityBrowserSplitContainer1 = new System.Windows.Forms.SplitContainer();
          this.entityBrowserSplitContainer2 = new System.Windows.Forms.SplitContainer();
-         this.handedness = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+         this.roles = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
          ((System.ComponentModel.ISupportInitialize)(this.iconView)).BeginInit();
          this.entityBrowserTabControl.SuspendLayout();
          this.netWorthItemsTab.SuspendLayout();
@@ -180,6 +181,7 @@
             this.baseDamage,
             this.weaponILevel,
             this.handedness,
+            this.roles,
             this.mod});
          this.weaponsListView.Dock = System.Windows.Forms.DockStyle.Fill;
          this.weaponsListView.LabelEdit = true;
@@ -204,7 +206,6 @@
          // weaponILevel
          // 
          this.weaponILevel.Text = "iLevel";
-
          // 
          // handedness
          // 
@@ -326,7 +327,11 @@
          this.entityBrowserSplitContainer2.Size = new System.Drawing.Size(1105, 618);
          this.entityBrowserSplitContainer2.SplitterDistance = 894;
          this.entityBrowserSplitContainer2.TabIndex = 6;
-
+         // 
+         // roles
+         // 
+         this.roles.Text = "Roles";
+         this.roles.Width = -2;
          // 
          // EntityBrowserView
          // 
@@ -384,5 +389,6 @@
       private System.Windows.Forms.SplitContainer entityBrowserSplitContainer2;
       private System.Windows.Forms.ColumnHeader materialTags;
       private System.Windows.Forms.ColumnHeader handedness;
+      private System.Windows.Forms.ColumnHeader roles;
    }
 }
