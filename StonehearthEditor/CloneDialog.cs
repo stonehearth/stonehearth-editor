@@ -25,6 +25,18 @@ namespace StonehearthEditor
       {
          InitializeComponent();
          Text = "Clone: " + clonedObjectName;
+
+         int index = clonedObjectName.IndexOf(':');
+         if (index != -1 && clonedObjectName.Length > index)
+         {
+            // Since user must specify a new alias, if alias doesn't contain 
+            //the file name (initialText), make a new row with the old alias name as text to replace
+            string oldAlias = clonedObjectName.Substring(index + 1);
+            if (!oldAlias.Contains(initialText))
+            {
+               AddNewRow(oldAlias);
+            }
+         }
          AddNewRow(initialText);
          AcceptButton = cloneButton;
 
