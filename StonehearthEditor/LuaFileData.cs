@@ -58,7 +58,7 @@ namespace StonehearthEditor
 
       public override bool Clone(string newPath, CloneObjectParameters parameters, HashSet<string> alreadyCloned, bool execute)
       {
-         return false;
+         return base.Clone(newPath, parameters, alreadyCloned, execute);
       }
 
       public void SetModuleFile(ModuleFile moduleFile)
