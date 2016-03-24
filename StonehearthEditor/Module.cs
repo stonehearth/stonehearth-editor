@@ -157,8 +157,12 @@ namespace StonehearthEditor
             aliases = mManifestJson["aliases"];
          }
          JObject aliasesObject = aliases as JObject;
-         aliasesObject.Add(alias, path);
-         Sort(aliasesObject);
+         if (aliasesObject.Property(alias) == null)
+         {
+            // Only add the alias if it doesn't already exist
+            aliasesObject.Add(alias, path);
+            Sort(aliasesObject);
+         }
       }
 
       public void RemoveFromManifest(string parent, string alias)
