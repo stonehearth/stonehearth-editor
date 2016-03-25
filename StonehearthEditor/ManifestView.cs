@@ -150,7 +150,9 @@ namespace StonehearthEditor
             filePreviewTabs.TabPages.Clear();
             selectedFilePathTextBox.Text = "";
             dependenciesListBox.Items.Clear();
+            referencesListBox.Items.Clear();
             openFileButtonPanel.Controls.Clear();
+            iconView.ImageLocation = "";
          }
       }
 
@@ -255,6 +257,10 @@ namespace StonehearthEditor
       {
          // Reload the manifest tab.
          Initialize();
+         if (searchBox.Text == "error" && !ModuleDataManager.GetInstance().HasErrors)
+         {
+            searchBox.Text = "";
+         }
          searchButton.PerformClick();
 
          if (Properties.Settings.Default.LastSelectedManifestPath != null)
@@ -262,10 +268,19 @@ namespace StonehearthEditor
             FileData file = ModuleDataManager.GetInstance().GetSelectedFileData(Properties.Settings.Default.LastSelectedManifestPath);
             if (file != null && file.TreeNode != null)
             {
-               treeView.SelectedNode = file.TreeNode;
+               if (treeView.Nodes.Contains(file.TreeNode))
+               {
+                  treeView.SelectedNode = file.TreeNode;
+               } else
+               {
+                  // If we're somehow in a bad state.
+                  SetSelectedFileData(null);
+               }
             } 
+         } else
+         {
+            SetSelectedFileData(null);
          }
-         
       }
 
       private void treeView_AfterSelect(object sender, TreeViewEventArgs e)

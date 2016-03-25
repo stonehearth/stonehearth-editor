@@ -498,6 +498,7 @@ namespace StonehearthEditor
                FileData recipeJsonData = mOpenedFiles[1];
                TreeNode recipes = new TreeNode(recipeJsonData.FileName);
                recipeJsonData.UpdateTreeNode(recipes, filter);
+
                foreach (KeyValuePair<string, FileData> recipe in recipeJsonData.LinkedFileData)
                {
                   string recipePath = recipe.Key;
