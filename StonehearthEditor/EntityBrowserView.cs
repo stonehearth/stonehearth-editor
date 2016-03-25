@@ -11,7 +11,7 @@ using Newtonsoft.Json.Linq;
 
 namespace StonehearthEditor
 {
-   public partial class EntityBrowserView : UserControl
+   public partial class EntityBrowserView : UserControl, IReloadable
    {
       private int sortColumn = -1;
       Dictionary<string, JsonFileData> netWorthJsonFiles;
@@ -400,7 +400,7 @@ namespace StonehearthEditor
                   newTabPage.ImageIndex = 0;
                   newTabPage.ToolTipText = openedFile.Errors;
                }
-               FilePreview filePreview = new FilePreview(openedFile);
+               FilePreview filePreview = new FilePreview(this, openedFile);
                filePreview.Dock = DockStyle.Fill;
                newTabPage.Controls.Add(filePreview);
                filePreviewTabs.TabPages.Add(newTabPage);

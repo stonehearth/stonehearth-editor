@@ -284,12 +284,40 @@ namespace StonehearthEditor
                mSaveJsonAfterParse = true;
             }
 
-            CheckStringKeyExists(description.ToString());
-            CheckStringKeyExists(displayName.ToString());
+            CheckStringKeyExists(description, "components.unit_info.description");
+            CheckStringKeyExists(displayName, "components.unit_info.display_name");
+         }
+
+         // Check for display name and description in recipes
+         switch(mJsonType)
+         {
+            case JSONTYPE.RECIPE:
+               CheckStringKeyExists(mJson.SelectToken("recipe_name"), "recipe_name");
+               CheckStringKeyExists(mJson.SelectToken("description"), "description");
+               break;
+            case JSONTYPE.BUFF:
+               JToken invisibleToPlayer = mJson.SelectToken("invisible_to_player");
+               bool isInvisible = invisibleToPlayer != null ? invisibleToPlayer.Value<Boolean>() : false;
+               if (!isInvisible)
+               {
+                  CheckStringKeyExists(mJson.SelectToken("display_name"), "display_name");
+                  CheckStringKeyExists(mJson.SelectToken("description"), "description");
+               }
+               break;
+            case JSONTYPE.COMMAND:
+               CheckStringKeyExists(mJson.SelectToken("display_name"), "display_name");
+               CheckStringKeyExists(mJson.SelectToken("description"), "description");
+               break;
          }
       }
-      private void CheckStringKeyExists(string key)
+      private void CheckStringKeyExists(JToken token, string tokenName)
       {
+         if (token == null)
+         {
+            //AddError("The string for " + tokenName + " does not exist! Please add localization support");
+            return;
+         }
+         string key = token.ToString();
          Regex matcher = new Regex(@"i18n\(([^)]+)\)");
          Match locMatch = matcher.Match(key);
          if (locMatch.Success)
@@ -298,6 +326,12 @@ namespace StonehearthEditor
             if (!ModuleDataManager.GetInstance().HasLocalizationKey(key))
             {
                AddError("Localization Key Not Found! " + key + " is not in en.json");
+            }
+         } else
+         {
+            if (key.Length > 0)
+            {
+               AddError("The string for " + tokenName + " is '" + key + "', which is not a valid localization key. Please add localization support");
             }
          }
       }

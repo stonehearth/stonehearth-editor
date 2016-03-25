@@ -13,12 +13,6 @@ REGEX_PATTERN = re.compile('i18n\([^)]+\)')
 ONLY_ALLOWED_FILES = [
 ]
 
-ALLOWED_MODS = [
-   "stonehearth",
-   "rayyas_children",
-   "debugtools"
-]
-
 SKIPPED_FILES = [
    'manifest.json',
    'en.json'
@@ -45,7 +39,7 @@ TEMP_LOC_FILE = 'generated_loc.json'
 EN_JSON_PATH = "/locales/"
 EN_JSON_FILE = "en.json"
 
-MODS_PATH = "source/stonehearth_data/mods"
+DEFAULT_ROOT_PATH = "source/stonehearth_data/mods"
 
 # "/stonehearth/data/gm/campaigns/goblin_war/arcs"
 
@@ -53,10 +47,10 @@ def _print_info(string):
    if args.debug:
       print string
 
-def get_files_to_be_parsed():
+def get_files_to_be_parsed(mods_path):
    files_to_be_parsed = []
    if args.all:
-      for root, dirs, files in os.walk(MODS_PATH):
+      for root, dirs, files in os.walk(mods_path):
          root = root.replace('\\', "/")
          for f in files:
             files_to_be_parsed.append(os.path.join(root, f))         
@@ -65,13 +59,14 @@ def get_files_to_be_parsed():
    return files_to_be_parsed
 
 class LocGenerator:
-   def __init__(self, mod, file_list):
+   def __init__(self, root_path, mod, file_list):
       self.mod = mod
       self.file_list = file_list
-      self.root_path = "source/stonehearth_data/mods/" + self.mod
+      self.mod_path = root_path + "/" + self.mod
+      self.python_location = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
 
    def generate_loc_keys(self):
-      self.root_path = "source/stonehearth_data/mods/" + self.mod
+
       self.choice_regex_pattern = re.compile(self.mod + ':')
 
       if len(self.file_list) <= 0:
@@ -80,7 +75,7 @@ class LocGenerator:
       if args.dry_run:
          loc_file_path = 'generated_loc/'
       else:
-         loc_file_path = self.root_path + EN_JSON_PATH
+         loc_file_path = self.mod_path + EN_JSON_PATH
 
       try:
          loc_file = open(loc_file_path + EN_JSON_FILE, 'r+')
@@ -91,16 +86,16 @@ class LocGenerator:
          loc_file = open(loc_file_path + EN_JSON_FILE, 'w')
          loc_dictionary = OrderedDict()
 
-      loc_fields_data = open('scripts/i18n/loc_fields.json')
+      loc_fields_data = open(os.path.join(self.python_location, 'loc_fields.json'))
       self.LOCALIZABLE_FIELDS = json.load(loc_fields_data, object_pairs_hook=OrderedDict)
 
       for path in self.file_list:
-         if not self.root_path in path:
+         if not self.mod_path in path:
             continue
          if not os.path.isfile(path):
             continue
          root, f = os.path.split(path)
-         split_root = root.split(self.root_path + "/")
+         split_root = root.split(self.mod_path + "/")
          file_name_info = os.path.splitext(f)
 
          if len(split_root) > 1:
@@ -330,8 +325,9 @@ class LocGenerator:
       return found_parents
 
 class GenerateLocKeys:
-   def __init__(self, files):
+   def __init__(self, root_path, files):
       self.files_to_be_parsed = {}
+      self.root_path = root_path
       for sample_file in files:
          root, f = os.path.split(sample_file)
          if ONLY_ALLOWED_FILES and not f in ONLY_ALLOWED_FILES:
@@ -343,12 +339,10 @@ class GenerateLocKeys:
             continue
 
          # Find the mod name
-         file_directory = root.split(MODS_PATH)
+         file_directory = root.split(root_path)
          if len(file_directory) <= 1:
             continue
          mod = file_directory[1].split('/')[1]
-         if not mod in ALLOWED_MODS:
-            continue
             
          if not mod in self.files_to_be_parsed:
             self.files_to_be_parsed[mod] = []
@@ -356,16 +350,17 @@ class GenerateLocKeys:
 
    def process_files(self):
       for mod, file_list in self.files_to_be_parsed.iteritems():
-         loc_generator = LocGenerator(mod, file_list)
+         loc_generator = LocGenerator(self.root_path, mod, file_list)
          loc_generator.generate_loc_keys()
 
 if __name__ == "__main__":
    parser = argparse.ArgumentParser(description='Stonehearth Auto Localization Key Generator.')
+   parser.add_argument('-r', '--root', type=str, help='the root folder of all the mods for stonehearth')
    parser.add_argument('-d', '--debug', action='store_true', help='prints debug information about the key generation')
    parser.add_argument('-n', '--dry_run', action='store_true', help='do not actually write to the real files, so json files will not be modified and the keys will be written to ' + TEMP_LOC_FILE)
    parser.add_argument('-a', '--all', action='store_true', help='run the parser on everything in the mods folder. USE WITH CAUTION')
    parser.add_argument('files', metavar='F', type=str, nargs='*', help='a file for the generator to consider. Only files ending with .json will be parsed.')
 
    args = parser.parse_args(sys.argv[1:])
-   loc_generator = GenerateLocKeys(get_files_to_be_parsed())
+   loc_generator = GenerateLocKeys(args.root, get_files_to_be_parsed(args.root))
    loc_generator.process_files()

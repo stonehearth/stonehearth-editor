@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json.Linq;
+using System.Diagnostics;
 
 namespace StonehearthEditor
 {
@@ -17,11 +18,13 @@ namespace StonehearthEditor
       private FileData mFileData;
       private int mI18nTooltipLine = -1;
       private string mI18nLocKey = null;
-      public FilePreview(FileData fileData)
+      private IReloadable mOwner;
+      public FilePreview(IReloadable owner, FileData fileData)
       {
          mFileData = fileData;
          InitializeComponent();
          textBox.Text = mFileData.FlatFileData;
+         mOwner = owner;
       }
 
       private void textBox_Leave(object sender, EventArgs e)
@@ -118,20 +121,20 @@ namespace StonehearthEditor
 
       private void localizeFile_Click(object sender, EventArgs e)
       {
-         /*
          ProcessStartInfo start = new ProcessStartInfo();
-         start.FileName = "my/full/path/to/python.exe";
-         start.Arguments = string.Format("{0} {1}", cmd, args);
-         start.UseShellExecute = false;
-         start.RedirectStandardOutput = true;
-         using (Process process = Process.Start(start))
+         string generateLocPythonFile = Environment.CurrentDirectory + "/scripts/generate_loc_keys.py";
+         start.FileName = generateLocPythonFile;
+         string filePath = mFileData.Path;
+         string modsRoot = ModuleDataManager.GetInstance().ModsDirectoryPath;
+         start.Arguments = string.Format("-r {0} {1}", modsRoot, filePath);
+         Console.WriteLine("executing command: " + generateLocPythonFile + " -r " + modsRoot + " " + filePath);
+
+         Process myProcess = Process.Start(start);
+         myProcess.WaitForExit();
+         if (mOwner != null)
          {
-            using (StreamReader reader = process.StandardOutput)
-            {
-               string result = reader.ReadToEnd();
-               Console.Write(result);
-            }
-         }*/
+            mOwner.Reload();
+         }
       }
       
       protected override bool ProcessDialogKey(Keys keyData)

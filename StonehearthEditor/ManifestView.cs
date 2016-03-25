@@ -12,7 +12,11 @@ using Newtonsoft.Json.Linq;
 
 namespace StonehearthEditor
 {
-   public partial class ManifestView : UserControl
+   public interface IReloadable
+   {
+      void Reload();
+   }
+   public partial class ManifestView : UserControl, IReloadable
    {
       private FileData mSelectedFileData = null;
       private Dictionary<string, string> mLastModuleLocations = new Dictionary<string, string>();
@@ -155,7 +159,7 @@ namespace StonehearthEditor
          FileData openedFile = mSelectedFileData;
          TabPage newTabPage = new TabPage();
          newTabPage.Text = openedFile.FileName;
-         FilePreview filePreview = new FilePreview(openedFile);
+         FilePreview filePreview = new FilePreview(this, openedFile);
          filePreview.Dock = DockStyle.Fill;
          newTabPage.Controls.Add(filePreview);
          filePreviewTabs.TabPages.Add(newTabPage);
@@ -183,7 +187,7 @@ namespace StonehearthEditor
                newTabPage.ImageIndex = 0;
                newTabPage.ToolTipText = openedFile.Errors;
             }
-            FilePreview filePreview = new FilePreview(openedFile);
+            FilePreview filePreview = new FilePreview(this, openedFile);
             filePreview.Dock = DockStyle.Fill;
             newTabPage.Controls.Add(filePreview);
             filePreviewTabs.TabPages.Add(newTabPage);
