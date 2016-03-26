@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections;
 using System.ComponentModel;
 using System.Drawing;
 using System.Data;
@@ -454,6 +455,90 @@ namespace StonehearthEditor
       private void EntityBrowserView_Load(object sender, EventArgs e)
       {
 
+      }
+
+      private void filterListViewButton_Click(object sender, EventArgs e)
+      {
+         ListView listView = null;
+         foreach (Control control in entityBrowserTabControl.SelectedTab.Controls)
+         {
+            if (control.Name.Contains("ListView"))
+            {
+               listView = control as ListView;
+               break;
+            }
+         }
+         if (listView != null)
+         {
+            InputDialog dialog = new InputDialog("Filter By", "(Separate search terms with a comma) Filter items containing text:", "", "Filter");
+            InputDialog.IDialogCallback callback = new FilterItemsCallback(this, listView);
+            dialog.SetCallback(callback);
+            dialog.Show();
+         }
+      }
+
+      private void reloadToolStripItem_Click(object sender, EventArgs e)
+      {
+         Reload();
+      }
+
+      private class FilterItemsCallback : InputDialog.IDialogCallback
+      {
+         private ListView mView;
+         private EntityBrowserView mOwner;
+         public FilterItemsCallback(EntityBrowserView owner, ListView listView)
+         {
+            mView = listView;
+            mOwner = owner;
+         }
+         public void onCancelled()
+         {
+            // Do nothing. user cancelled
+         }
+
+         public bool OnAccept(string inputMessage)
+         {
+            if (mView == null)
+            {
+               return false;
+            }
+            mView.BeginUpdate();
+            mOwner.Reload();
+
+            // TODO: Only check materials column
+            List<ListViewItem> items = new List<ListViewItem>(mView.Items.Cast<ListViewItem>());
+            string[] filterTerms = inputMessage.Replace(" ","").Split(',');
+            foreach (ListViewItem item in items)
+            {
+               if (!ContainsAllStrings(item.Text, filterTerms))
+               {
+                  bool containsFilterTerm = false;
+                  foreach (ListViewItem.ListViewSubItem subItem in item.SubItems)
+                  {
+                     if (ContainsAllStrings(subItem.Text, filterTerms))
+                     {
+                        containsFilterTerm = true;
+                     }
+                  }
+                  if (!containsFilterTerm)
+                  {
+                     mView.Items.Remove(item);
+                  }
+               }
+            }
+            mView.EndUpdate();
+            return true;
+         }
+
+         private bool ContainsAllStrings(string input, string[] strings)
+         {
+            bool result = true;
+            foreach (string s in strings)
+            {
+               result = result && input.Contains(s);
+            }
+            return result;
+         }
       }
    }
 }

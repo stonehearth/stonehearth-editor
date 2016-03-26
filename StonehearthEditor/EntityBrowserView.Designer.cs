@@ -28,6 +28,7 @@
       /// </summary>
       private void InitializeComponent()
       {
+         System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(EntityBrowserView));
          this.netWorthListView = new System.Windows.Forms.ListView();
          this.item = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
          this.value = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -44,6 +45,7 @@
          this.baseDamage = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
          this.weaponILevel = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
          this.handedness = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+         this.roles = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
          this.mod = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
          this.defenseItemsTab = new System.Windows.Forms.TabPage();
          this.defenseItemsListView = new System.Windows.Forms.ListView();
@@ -55,8 +57,10 @@
          this.killableEntitiesListView = new System.Windows.Forms.ListView();
          this.killableEntity = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
          this.entityBrowserSplitContainer1 = new System.Windows.Forms.SplitContainer();
+         this.entityBrowserToolStrip = new System.Windows.Forms.ToolStrip();
+         this.filterListViewButton = new System.Windows.Forms.ToolStripButton();
          this.entityBrowserSplitContainer2 = new System.Windows.Forms.SplitContainer();
-         this.roles = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+         this.reloadToolStripItem = new System.Windows.Forms.ToolStripButton();
          ((System.ComponentModel.ISupportInitialize)(this.iconView)).BeginInit();
          this.entityBrowserTabControl.SuspendLayout();
          this.netWorthItemsTab.SuspendLayout();
@@ -67,6 +71,7 @@
          this.entityBrowserSplitContainer1.Panel1.SuspendLayout();
          this.entityBrowserSplitContainer1.Panel2.SuspendLayout();
          this.entityBrowserSplitContainer1.SuspendLayout();
+         this.entityBrowserToolStrip.SuspendLayout();
          ((System.ComponentModel.ISupportInitialize)(this.entityBrowserSplitContainer2)).BeginInit();
          this.entityBrowserSplitContainer2.Panel1.SuspendLayout();
          this.entityBrowserSplitContainer2.Panel2.SuspendLayout();
@@ -88,7 +93,7 @@
          this.netWorthListView.LabelEdit = true;
          this.netWorthListView.Location = new System.Drawing.Point(3, 3);
          this.netWorthListView.Name = "netWorthListView";
-         this.netWorthListView.Size = new System.Drawing.Size(496, 586);
+         this.netWorthListView.Size = new System.Drawing.Size(496, 561);
          this.netWorthListView.TabIndex = 1;
          this.netWorthListView.UseCompatibleStateImageBehavior = false;
          this.netWorthListView.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.netWorthListView_ColumnClick);
@@ -146,10 +151,10 @@
          this.entityBrowserTabControl.Controls.Add(this.defenseItemsTab);
          this.entityBrowserTabControl.Controls.Add(this.killableEntitiesTab);
          this.entityBrowserTabControl.Dock = System.Windows.Forms.DockStyle.Fill;
-         this.entityBrowserTabControl.Location = new System.Drawing.Point(0, 0);
+         this.entityBrowserTabControl.Location = new System.Drawing.Point(0, 25);
          this.entityBrowserTabControl.Name = "entityBrowserTabControl";
          this.entityBrowserTabControl.SelectedIndex = 0;
-         this.entityBrowserTabControl.Size = new System.Drawing.Size(510, 618);
+         this.entityBrowserTabControl.Size = new System.Drawing.Size(510, 593);
          this.entityBrowserTabControl.TabIndex = 4;
          // 
          // netWorthItemsTab
@@ -158,7 +163,7 @@
          this.netWorthItemsTab.Location = new System.Drawing.Point(4, 22);
          this.netWorthItemsTab.Name = "netWorthItemsTab";
          this.netWorthItemsTab.Padding = new System.Windows.Forms.Padding(3);
-         this.netWorthItemsTab.Size = new System.Drawing.Size(502, 592);
+         this.netWorthItemsTab.Size = new System.Drawing.Size(502, 567);
          this.netWorthItemsTab.TabIndex = 0;
          this.netWorthItemsTab.Text = "Net Worth Items";
          this.netWorthItemsTab.UseVisualStyleBackColor = true;
@@ -169,7 +174,7 @@
          this.weaponsTab.Location = new System.Drawing.Point(4, 22);
          this.weaponsTab.Name = "weaponsTab";
          this.weaponsTab.Padding = new System.Windows.Forms.Padding(3);
-         this.weaponsTab.Size = new System.Drawing.Size(502, 592);
+         this.weaponsTab.Size = new System.Drawing.Size(502, 568);
          this.weaponsTab.TabIndex = 1;
          this.weaponsTab.Text = "Weapons";
          this.weaponsTab.UseVisualStyleBackColor = true;
@@ -187,7 +192,7 @@
          this.weaponsListView.LabelEdit = true;
          this.weaponsListView.Location = new System.Drawing.Point(3, 3);
          this.weaponsListView.Name = "weaponsListView";
-         this.weaponsListView.Size = new System.Drawing.Size(496, 586);
+         this.weaponsListView.Size = new System.Drawing.Size(496, 562);
          this.weaponsListView.TabIndex = 0;
          this.weaponsListView.UseCompatibleStateImageBehavior = false;
          this.weaponsListView.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.weaponsListView_ColumnClick);
@@ -212,6 +217,11 @@
          this.handedness.Text = "Handedness";
          this.handedness.Width = -2;
          // 
+         // roles
+         // 
+         this.roles.Text = "Roles";
+         this.roles.Width = -2;
+         // 
          // mod
          // 
          this.mod.Text = "Mod Name";
@@ -223,7 +233,7 @@
          this.defenseItemsTab.Location = new System.Drawing.Point(4, 22);
          this.defenseItemsTab.Name = "defenseItemsTab";
          this.defenseItemsTab.Padding = new System.Windows.Forms.Padding(3);
-         this.defenseItemsTab.Size = new System.Drawing.Size(502, 592);
+         this.defenseItemsTab.Size = new System.Drawing.Size(502, 568);
          this.defenseItemsTab.TabIndex = 2;
          this.defenseItemsTab.Text = "Defensive Items";
          this.defenseItemsTab.UseVisualStyleBackColor = true;
@@ -239,7 +249,7 @@
          this.defenseItemsListView.LabelEdit = true;
          this.defenseItemsListView.Location = new System.Drawing.Point(3, 3);
          this.defenseItemsListView.Name = "defenseItemsListView";
-         this.defenseItemsListView.Size = new System.Drawing.Size(496, 586);
+         this.defenseItemsListView.Size = new System.Drawing.Size(496, 562);
          this.defenseItemsListView.TabIndex = 1;
          this.defenseItemsListView.UseCompatibleStateImageBehavior = false;
          this.defenseItemsListView.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.defenseItemsListView_ColumnClick);
@@ -270,7 +280,7 @@
          this.killableEntitiesTab.Location = new System.Drawing.Point(4, 22);
          this.killableEntitiesTab.Name = "killableEntitiesTab";
          this.killableEntitiesTab.Padding = new System.Windows.Forms.Padding(3);
-         this.killableEntitiesTab.Size = new System.Drawing.Size(502, 592);
+         this.killableEntitiesTab.Size = new System.Drawing.Size(502, 568);
          this.killableEntitiesTab.TabIndex = 3;
          this.killableEntitiesTab.Text = "Killable Entities";
          this.killableEntitiesTab.UseVisualStyleBackColor = true;
@@ -283,7 +293,7 @@
          this.killableEntitiesListView.LabelEdit = true;
          this.killableEntitiesListView.Location = new System.Drawing.Point(3, 3);
          this.killableEntitiesListView.Name = "killableEntitiesListView";
-         this.killableEntitiesListView.Size = new System.Drawing.Size(496, 586);
+         this.killableEntitiesListView.Size = new System.Drawing.Size(496, 562);
          this.killableEntitiesListView.TabIndex = 2;
          this.killableEntitiesListView.UseCompatibleStateImageBehavior = false;
          this.killableEntitiesListView.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.killableEntitiesListView_ColumnClick);
@@ -303,6 +313,7 @@
          // entityBrowserSplitContainer1.Panel1
          // 
          this.entityBrowserSplitContainer1.Panel1.Controls.Add(this.entityBrowserTabControl);
+         this.entityBrowserSplitContainer1.Panel1.Controls.Add(this.entityBrowserToolStrip);
          // 
          // entityBrowserSplitContainer1.Panel2
          // 
@@ -310,6 +321,30 @@
          this.entityBrowserSplitContainer1.Size = new System.Drawing.Size(894, 618);
          this.entityBrowserSplitContainer1.SplitterDistance = 510;
          this.entityBrowserSplitContainer1.TabIndex = 5;
+         // 
+         // entityBrowserToolStrip
+         // 
+         this.entityBrowserToolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.filterListViewButton,
+            this.reloadToolStripItem});
+         this.entityBrowserToolStrip.Location = new System.Drawing.Point(0, 0);
+         this.entityBrowserToolStrip.MaximumSize = new System.Drawing.Size(0, 50);
+         this.entityBrowserToolStrip.Name = "entityBrowserToolStrip";
+         this.entityBrowserToolStrip.Size = new System.Drawing.Size(510, 25);
+         this.entityBrowserToolStrip.TabIndex = 5;
+         this.entityBrowserToolStrip.Text = "toolStrip1";
+         // 
+         // filterListViewButton
+         // 
+         this.filterListViewButton.BackColor = System.Drawing.SystemColors.ControlDark;
+         this.filterListViewButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+         this.filterListViewButton.Image = ((System.Drawing.Image)(resources.GetObject("filterListViewButton.Image")));
+         this.filterListViewButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+         this.filterListViewButton.Margin = new System.Windows.Forms.Padding(0, 1, 4, 2);
+         this.filterListViewButton.Name = "filterListViewButton";
+         this.filterListViewButton.Size = new System.Drawing.Size(85, 22);
+         this.filterListViewButton.Text = "Filter Items By";
+         this.filterListViewButton.Click += new System.EventHandler(this.filterListViewButton_Click);
          // 
          // entityBrowserSplitContainer2
          // 
@@ -328,10 +363,16 @@
          this.entityBrowserSplitContainer2.SplitterDistance = 894;
          this.entityBrowserSplitContainer2.TabIndex = 6;
          // 
-         // roles
+         // reloadToolStripItem
          // 
-         this.roles.Text = "Roles";
-         this.roles.Width = -2;
+         this.reloadToolStripItem.BackColor = System.Drawing.SystemColors.ControlDark;
+         this.reloadToolStripItem.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+         this.reloadToolStripItem.Image = ((System.Drawing.Image)(resources.GetObject("reloadToolStripItem.Image")));
+         this.reloadToolStripItem.ImageTransparentColor = System.Drawing.Color.Magenta;
+         this.reloadToolStripItem.Name = "reloadToolStripItem";
+         this.reloadToolStripItem.Size = new System.Drawing.Size(47, 22);
+         this.reloadToolStripItem.Text = "Reload";
+         this.reloadToolStripItem.Click += new System.EventHandler(this.reloadToolStripItem_Click);
          // 
          // EntityBrowserView
          // 
@@ -348,9 +389,12 @@
          this.defenseItemsTab.ResumeLayout(false);
          this.killableEntitiesTab.ResumeLayout(false);
          this.entityBrowserSplitContainer1.Panel1.ResumeLayout(false);
+         this.entityBrowserSplitContainer1.Panel1.PerformLayout();
          this.entityBrowserSplitContainer1.Panel2.ResumeLayout(false);
          ((System.ComponentModel.ISupportInitialize)(this.entityBrowserSplitContainer1)).EndInit();
          this.entityBrowserSplitContainer1.ResumeLayout(false);
+         this.entityBrowserToolStrip.ResumeLayout(false);
+         this.entityBrowserToolStrip.PerformLayout();
          this.entityBrowserSplitContainer2.Panel1.ResumeLayout(false);
          this.entityBrowserSplitContainer2.Panel2.ResumeLayout(false);
          ((System.ComponentModel.ISupportInitialize)(this.entityBrowserSplitContainer2)).EndInit();
@@ -390,5 +434,8 @@
       private System.Windows.Forms.ColumnHeader materialTags;
       private System.Windows.Forms.ColumnHeader handedness;
       private System.Windows.Forms.ColumnHeader roles;
+      private System.Windows.Forms.ToolStrip entityBrowserToolStrip;
+      private System.Windows.Forms.ToolStripButton filterListViewButton;
+      private System.Windows.Forms.ToolStripButton reloadToolStripItem;
    }
 }
