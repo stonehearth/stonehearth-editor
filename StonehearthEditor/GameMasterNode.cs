@@ -600,6 +600,7 @@ namespace StonehearthEditor
       public override void PostLoadFixup()
       {
          string selector = null;
+         string monsterTuningSelector = null;
          switch (mEncounterType)
          {
             case "create_camp":
@@ -607,6 +608,7 @@ namespace StonehearthEditor
                break;
             case "city_raid":
                selector = "city_raid_info.missions.*.members.*.loot_drops";
+               monsterTuningSelector = "city_raid_info.missions.*.members.*";
                break;
             case "donation_dialog":
                selector = "donation_dialog_info.loot_table";
@@ -616,11 +618,25 @@ namespace StonehearthEditor
                break;
             case "create_mission":
                selector = "create_mission_info.mission.members.*.loot_drops";
+               monsterTuningSelector = "create_mission_info.mission.members.*";
                break;
          }
          if (selector != null)
          {
             FixupLoot(selector);
+         }
+         if (monsterTuningSelector != null)
+         {
+            if (NodeFile.Json != null)
+            {
+               foreach(JToken token in NodeFile.Json.SelectTokens(monsterTuningSelector))
+               {
+                  if (token["tuning"] == null)
+                  {
+                     Console.WriteLine(NodeFile.Path + " does not have monster tuning!");
+                  }
+               }
+            }
          }
       }
 
