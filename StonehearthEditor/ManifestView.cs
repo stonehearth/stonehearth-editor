@@ -29,6 +29,7 @@ namespace StonehearthEditor
 
       public void Initialize()
       {
+         ThumbnailCache.ClearCache();
          new ModuleDataManager(MainForm.kModsDirectoryPath);
          ModuleDataManager.GetInstance().Load();
          ModuleDataManager.GetInstance().FilterAliasTree(treeView, null);

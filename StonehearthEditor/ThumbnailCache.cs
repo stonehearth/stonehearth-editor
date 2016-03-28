@@ -22,13 +22,28 @@ namespace StonehearthEditor
          {
             if (System.IO.File.Exists(imageFile))
             {
-               Image image = Image.FromFile(imageFile);
-               thumbnail = image.GetThumbnailImage(kDefaultSize, kDefaultSize, null, IntPtr.Zero);
-               sThumbnailCache[imageFile] = thumbnail;
-               image.Dispose();
+               try {
+                  Image image = Image.FromFile(imageFile);
+                  thumbnail = image.GetThumbnailImage(kDefaultSize, kDefaultSize, null, IntPtr.Zero);
+                  sThumbnailCache[imageFile] = thumbnail;
+                  image.Dispose();
+               } catch(Exception e)
+               {
+                  MessageBox.Show("Error reading image file: " + imageFile + ". Error: " + e.Message + ". Is the image the proper format?");
+                  // Not an image?
+               }
             }
          }
          return thumbnail;
+      }
+
+      public static void ClearCache()
+      {
+         foreach(Image img in sThumbnailCache.Values)
+         {
+            img.Dispose();
+         }
+         sThumbnailCache.Clear();
       }
    }
 }
