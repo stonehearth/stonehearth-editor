@@ -13,7 +13,7 @@ namespace StonehearthEditor
       LUA = 1,
       JSON = 2,
    };
-   public class ModuleFile
+   public class ModuleFile: IDisposable
    {
       private Module mModule;
       private string mAlias;
@@ -364,6 +364,18 @@ namespace StonehearthEditor
                   }
                }
             }
+         }
+      }
+
+      public void Dispose()
+      {
+         mModule = null;
+         mReferencesCache.Clear();
+         if (mFileData != null)
+         {
+            FileData data = mFileData;
+            mFileData = null;
+            data.Dispose();
          }
       }
    }

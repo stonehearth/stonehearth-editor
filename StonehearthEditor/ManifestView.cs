@@ -269,14 +269,7 @@ namespace StonehearthEditor
             FileData file = ModuleDataManager.GetInstance().GetSelectedFileData(Properties.Settings.Default.LastSelectedManifestPath);
             if (file != null && file.TreeNode != null)
             {
-               if (treeView.Nodes.Contains(file.TreeNode))
-               {
-                  treeView.SelectedNode = file.TreeNode;
-               } else
-               {
-                  // If we're somehow in a bad state.
-                  SetSelectedFileData(null);
-               }
+               treeView.SelectedNode = file.TreeNode;
             } 
          } else
          {

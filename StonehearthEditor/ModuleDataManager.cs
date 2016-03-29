@@ -6,13 +6,12 @@ using System.Windows.Forms;
 
 namespace StonehearthEditor
 {
-   public class ModuleDataManager
+   public class ModuleDataManager : IDisposable
    {
       private static ModuleDataManager sInstance = null;
       public static ModuleDataManager GetInstance()
       {
          return sInstance;
-
       }
       private string mModsDirectoryPath;
       private Dictionary<String, Module> mModules = new Dictionary<String, Module>();
@@ -22,6 +21,11 @@ namespace StonehearthEditor
 
       public ModuleDataManager(string modsDirectoryPath)
       {
+         if (sInstance != null)
+         {
+            sInstance.Dispose();
+            sInstance = null;
+         }
          mModsDirectoryPath = JsonHelper.NormalizeSystemPath(modsDirectoryPath);
          sInstance = this;
       }
@@ -319,6 +323,17 @@ namespace StonehearthEditor
          }
 
          return 0;
+      }
+
+      public void Dispose()
+      {
+         foreach(Module module in mModules.Values)
+         {
+            module.Dispose();
+         }
+         mModules.Clear();
+         mFilesWithErrors.Clear();
+         mAverageMaterialCost.Clear();
       }
    }
 }

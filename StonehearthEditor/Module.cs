@@ -8,7 +8,7 @@ using System.Windows.Forms;
 
 namespace StonehearthEditor
 {
-   public class Module
+   public class Module: IDisposable
    {
       private string mPath;
       private string mName;
@@ -249,6 +249,19 @@ namespace StonehearthEditor
          }
 
          return hasItems ? root: null;
+      }
+
+      public void Dispose()
+      {
+         foreach(Dictionary<string, ModuleFile> dictionary in mModuleFiles.Values)
+         {
+            foreach(ModuleFile moduleFile in dictionary.Values)
+            {
+               moduleFile.Dispose();
+            }
+            dictionary.Clear();
+         }
+         mModuleFiles.Clear();
       }
    }
 }

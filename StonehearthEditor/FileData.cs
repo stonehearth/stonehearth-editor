@@ -13,13 +13,14 @@ namespace StonehearthEditor
       void SetModuleFile(ModuleFile moduleFile);
       ModuleFile GetModuleFile();
    }
-   public abstract class FileData
+   public abstract class FileData : IDisposable
    {
       protected TreeNode mTreeNode;
       private string mFlatFileData;
       protected bool mIsModified = false;
 
       protected string mPath;
+      private bool isDisposing = false;
       private string mErrors = null;
       protected List<ModuleFile> mLinkedAliases = new List<ModuleFile>();
       protected Dictionary<string, FileData> mLinkedFileData = new Dictionary<string, FileData>();
@@ -33,7 +34,8 @@ namespace StonehearthEditor
       public List<FileData> RelatedFiles { get { return mRelatedFiles; } }
 
       public Dictionary<string, FileData> ReferencedByFileData { get { return mReferencedByFileData; } }
-      public TreeNode TreeNode {
+      public TreeNode TreeNode
+      {
          get { return mTreeNode; }
       }
 
@@ -82,7 +84,8 @@ namespace StonehearthEditor
          }
          return false;
       }
-      public void TrySaveFile() {
+      public void TrySaveFile()
+      {
          if (mIsModified)
          {
             try
@@ -102,7 +105,7 @@ namespace StonehearthEditor
       public void FillDependencyListItems(ListBox listView)
       {
          listView.Items.Clear();
-         foreach(string dependency in GetDependencies().Keys)
+         foreach (string dependency in GetDependencies().Keys)
          {
             listView.Items.Add(dependency);
          }
@@ -150,7 +153,8 @@ namespace StonehearthEditor
                sr.DiscardBufferedData();
                LoadInternal();
             }
-         } else
+         }
+         else
          {
             AddError("File " + Path + " does not exist.");
          }
@@ -174,7 +178,7 @@ namespace StonehearthEditor
       }
       protected FileData GetLinkedFileData(string path)
       {
-         foreach(FileData data in OpenedFiles)
+         foreach (FileData data in OpenedFiles)
          {
             if (data.Path == path)
             {
@@ -225,7 +229,7 @@ namespace StonehearthEditor
             System.IO.Directory.CreateDirectory(directory);
          }
          // Figure out what dependency files need to exist
-         foreach(KeyValuePair<string, FileData> dependencyKV in GetDependencies())
+         foreach (KeyValuePair<string, FileData> dependencyKV in GetDependencies())
          {
             string dependencyName = dependencyKV.Key;
             FileData dependencyFile = dependencyKV.Value;
@@ -243,7 +247,8 @@ namespace StonehearthEditor
                      alreadyCloned.Add(aliasNewName);
                      linkedAlias.Clone(parameters, alreadyCloned, execute);
                   }
-               } else
+               }
+               else
                {
                   // This dependency is just a FileData, clone the fileData.
                   string linkedPath = ModuleDataManager.GetInstance().ModsDirectoryPath + dependencyName;
@@ -266,6 +271,38 @@ namespace StonehearthEditor
             }
          }
          return true;
+      }
+
+      public void Dispose()
+      {
+         if (isDisposing)
+         {
+            return;
+         }
+         isDisposing = true;
+         foreach (ModuleFile alias in mLinkedAliases)
+         {
+            alias.Dispose();
+         }
+         mLinkedAliases.Clear();
+
+         foreach (FileData opened in mOpenedFiles)
+         {
+            opened.Dispose();
+         }
+         mOpenedFiles.Clear();
+
+         foreach (FileData related in mRelatedFiles)
+         {
+            related.Dispose();
+         }
+         mRelatedFiles.Clear();
+
+         foreach (FileData referenced in mReferencedByFileData.Values)
+         {
+            referenced.Dispose();
+         }
+         mReferencedByFileData.Clear();
       }
    }
 }
