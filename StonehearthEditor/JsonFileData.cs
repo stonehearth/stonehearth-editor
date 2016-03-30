@@ -209,6 +209,47 @@ namespace StonehearthEditor
                   mOpenedFiles.Add(recipes);
                   recipes.ReferencedByFileData[GetAliasOrFlatName()] = this;
                }
+
+               JObject jobEquipment = mJson["equipment"] as JObject;
+               if (jobEquipment != null)
+               {
+                  foreach(JToken equippedItem in jobEquipment.Children())
+                  {
+                     string equipmentJson = equippedItem.Last.ToString();
+                     FileData fileData = null;
+                     if (equipmentJson.IndexOf(':') >= 0)
+                     {
+                        foreach (ModuleFile alias in mLinkedAliases) {
+                           if (alias.FullAlias.Equals(equipmentJson))
+                           {
+                              fileData = alias.FileData;
+                           }
+                        }
+                     } else
+                     {
+                        equipmentJson = JsonHelper.GetFileFromFileJson(equipmentJson, directory);
+                        mLinkedFileData.TryGetValue(equipmentJson, out fileData);
+                     }
+
+                     JsonFileData jsonFileData = fileData as JsonFileData;
+                     if (jsonFileData != null)
+                     {
+                        JToken equipment_piece = jsonFileData.mJson.SelectToken("components.stonehearth:equipment_piece");
+                        if (equipment_piece != null)
+                        {
+                           JToken ilevel = equipment_piece["ilevel"];
+                           if (ilevel != null && ilevel.Value<int>() > 0)
+                           {
+                              JToken noDrop = equipment_piece["no_drop"];
+                              if (noDrop == null || !noDrop.Value<bool>())
+                              {
+                                 AddError("Equipment piece " + equipmentJson + " is not set to no_drop=true even through it is a job equipment!");
+                              }
+                           }
+                        }
+                     }
+                  }
+               }
                break;
             case JSONTYPE.RECIPE:
                JToken portrait = mJson["portrait"];
