@@ -250,6 +250,7 @@ namespace StonehearthEditor
                      }
                   }
                }
+               //AlterJobExperience();
                break;
             case JSONTYPE.RECIPE:
                JToken portrait = mJson["portrait"];
@@ -282,6 +283,26 @@ namespace StonehearthEditor
          if (Json != null && Json.SelectToken("components.effect_list.effects") != null)
          {
             AddError("effect_list component is using 'effects' to specify a list of effects. This is bad because these effects will not restart after save load. You should put all the effects into a single file and reference that file as 'default'");
+         }
+      }
+
+      private bool mHasAlteredExperience = false;
+      private void AlterJobExperience()
+      {
+         JObject xpRewards = mJson.SelectToken("xp_rewards") as JObject;
+         if (xpRewards != null && !mHasAlteredExperience)
+         {
+            foreach (JToken xp in xpRewards.Children())
+            {
+               JProperty property = xp as JProperty;
+               JValue xpValue = property.Value as JValue;
+               int value = xpValue.Value<int>();
+               int newValue = value - 5;
+               xpValue.Value = newValue;
+            }
+            AddError("Needs Save after job experience altered");
+            mSaveJsonAfterParse = true;
+            mHasAlteredExperience = true;
          }
       }
 
