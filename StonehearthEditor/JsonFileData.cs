@@ -293,6 +293,8 @@ namespace StonehearthEditor
          FixupCombatData("stonehearth:combat:melee_defenses");
          FixupCombatData("stonehearth:combat:ranged_attacks");
       }
+
+      private static Dictionary<string, int> kCombatTuning = new Dictionary<string, int>();
       private void FixupCombatData(string dataName)
       {
          JArray actions = mJson.SelectToken("entity_data." + dataName) as JArray;
@@ -302,15 +304,31 @@ namespace StonehearthEditor
             foreach (JToken actionToken in actions.Children())
             {
                JObject action = actionToken as JObject;
-               
+               string name = action["name"].ToString();
                if (action["effect"] == null)
                {
-                  JToken nameProperty = action["name"] as JToken;
-                  string name = nameProperty.ToString();
                   action.Remove("name");
                   action.AddFirst(new JProperty("effect", name));
                   action.AddFirst(new JProperty("name", name));
                   hasError = true;
+               }
+
+               int cooldown = 0;
+               JToken cooldownToken = action["cooldown"];
+               if (cooldownToken != null)
+               {
+                  cooldown = cooldownToken.Value<int>();
+               }
+               if (kCombatTuning.ContainsKey(name))
+               {
+                  int existingCooldown = kCombatTuning[name];
+                  if (existingCooldown != cooldown)
+                  {
+                     AddError("Action has a cooldown in a different file that is different");
+                  }
+               } else
+               {
+                  kCombatTuning[name] = cooldown;
                }
             }
             if (hasError)
