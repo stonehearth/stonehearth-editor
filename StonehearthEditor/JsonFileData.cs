@@ -284,6 +284,41 @@ namespace StonehearthEditor
          {
             AddError("effect_list component is using 'effects' to specify a list of effects. This is bad because these effects will not restart after save load. You should put all the effects into a single file and reference that file as 'default'");
          }
+         FixUpAllCombatData();
+      }
+
+      private void FixUpAllCombatData()
+      {
+         FixupCombatData("stonehearth:combat:melee_attacks");
+         FixupCombatData("stonehearth:combat:melee_defenses");
+         FixupCombatData("stonehearth:combat:ranged_attacks");
+      }
+      private void FixupCombatData(string dataName)
+      {
+         JArray actions = mJson.SelectToken("entity_data." + dataName) as JArray;
+         if (actions != null)
+         {
+            bool hasError = false;
+            foreach (JToken actionToken in actions.Children())
+            {
+               JObject action = actionToken as JObject;
+               
+               if (action["effect"] == null)
+               {
+                  JToken nameProperty = action["name"] as JToken;
+                  string name = nameProperty.ToString();
+                  action.Remove("name");
+                  action.AddFirst(new JProperty("effect", name));
+                  action.AddFirst(new JProperty("name", name));
+                  hasError = true;
+               }
+            }
+            if (hasError)
+            {
+               AddError("Action name and effect need to be separated");
+               mSaveJsonAfterParse = true;
+            }
+         }
       }
 
       private bool mHasAlteredExperience = false;
