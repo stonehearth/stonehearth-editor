@@ -119,7 +119,11 @@ namespace StonehearthEditor
             Uri fromUri = new Uri(fromPath);
             Uri toUri = new Uri(toPath);
 
-            if (fromUri.Scheme != toUri.Scheme) { return toPath; } // path can't be made relative.
+            if (fromUri.Scheme != toUri.Scheme)
+            {
+                // path can't be made relative.
+                return toPath;
+            }
 
             Uri relativeUri = fromUri.MakeRelativeUri(toUri);
             string relativePath = Uri.UnescapeDataString(relativeUri.ToString());
