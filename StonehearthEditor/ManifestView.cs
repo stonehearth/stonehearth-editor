@@ -371,7 +371,7 @@ namespace StonehearthEditor
             IModuleFileData moduleFileData = file as IModuleFileData;
             if (moduleFileData == null)
             {
-                return null; //only module file data can have modulefiles
+                return null; // only module file data can have modulefiles
             }
             return moduleFileData.GetModuleFile();
         }

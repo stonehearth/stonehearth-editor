@@ -30,7 +30,7 @@ namespace StonehearthEditor
             if (index != -1 && clonedObjectName.Length > index)
             {
                 // Since user must specify a new alias, if alias doesn't contain
-                //the file name (initialText), make a new row with the old alias name as text to replace
+                // the file name (initialText), make a new row with the old alias name as text to replace
                 string oldAlias = clonedObjectName.Substring(index + 1);
                 if (!oldAlias.Contains(initialText))
                 {
@@ -41,7 +41,7 @@ namespace StonehearthEditor
             AcceptButton = cloneButton;
 
             this.ActiveControl = parametersTable.GetControlFromPosition(1, 1);
-            //parametersTable.GetControlFromPosition(1, 1).Focus();
+            ////parametersTable.GetControlFromPosition(1, 1).Focus();
         }
 
         public void SetCallback(IDialogCallback callback)

@@ -223,7 +223,7 @@ namespace StonehearthEditor
         /// <returns></returns>
         public virtual bool Clone(string newPath, CloneObjectParameters parameters, HashSet<string> alreadyCloned, bool execute)
         {
-            //Ensure directory exists
+            // Ensure directory exists
             string directory = System.IO.Path.GetDirectoryName(newPath);
             alreadyCloned.Add(newPath);
             if (execute)

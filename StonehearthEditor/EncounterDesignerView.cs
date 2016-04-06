@@ -130,7 +130,7 @@ namespace StonehearthEditor
 
         private void graphViewer_EdgeRemoved(object sender, EventArgs e)
         {
-            //TODO yshan: replace this
+            // TODO yshan: replace this
             Console.WriteLine("edge removed!");
         }
 

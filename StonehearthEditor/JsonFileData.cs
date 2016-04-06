@@ -72,7 +72,7 @@ namespace StonehearthEditor
             if (mSaveJsonAfterParse)
             {
                 TrySetFlatFileData(GetJsonFileString());
-                //TrySaveFile();
+                ////TrySaveFile();
                 mSaveJsonAfterParse = false;
             }
         }
@@ -145,7 +145,7 @@ namespace StonehearthEditor
             }
             else
             {
-                //mNetWorth
+                // mNetWorth
                 string netWorthString = netWorthData["value_in_gold"].ToString();
                 if (!string.IsNullOrEmpty(netWorthString))
                 {
@@ -254,7 +254,7 @@ namespace StonehearthEditor
                             }
                         }
                     }
-                    //AlterJobExperience();
+                    ////AlterJobExperience();
                     break;
                 case JSONTYPE.RECIPE:
                     JToken portrait = mJson["portrait"];
@@ -434,7 +434,7 @@ namespace StonehearthEditor
         {
             if (token == null)
             {
-                //AddError("The string for " + tokenName + " does not exist! Please add localization support");
+                ////AddError("The string for " + tokenName + " does not exist! Please add localization support");
                 return;
             }
             string key = token.ToString();

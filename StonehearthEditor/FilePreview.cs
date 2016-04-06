@@ -127,7 +127,7 @@ namespace StonehearthEditor
             string filePath = mFileData.Path;
             string modsRoot = ModuleDataManager.GetInstance().ModsDirectoryPath;
             start.Arguments = string.Format("-r {0} {1}", modsRoot, filePath);
-            //MessageBox.Show("executing command: " + generateLocPythonFile + " -r " + modsRoot + " " + filePath);
+            ////MessageBox.Show("executing command: " + generateLocPythonFile + " -r " + modsRoot + " " + filePath);
 
             Process myProcess = Process.Start(start);
             myProcess.WaitForExit();

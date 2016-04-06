@@ -82,7 +82,7 @@ namespace StonehearthEditor
 
         public void FilterAliasTree(TreeView treeView, string searchTerm)
         {
-            treeView.BeginUpdate(); //blocks repainting tree till all objects loaded
+            treeView.BeginUpdate(); // blocks repainting tree till all objects loaded
 
             // filter
             treeView.Nodes.Clear();
@@ -98,7 +98,7 @@ namespace StonehearthEditor
             }
             treeView.Nodes.AddRange(filteredNodes.ToArray());
 
-            //enables redrawing tree after all objects have been added
+            // enables redrawing tree after all objects have been added
             treeView.EndUpdate();
         }
 

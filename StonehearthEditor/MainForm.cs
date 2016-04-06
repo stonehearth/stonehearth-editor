@@ -56,14 +56,14 @@ namespace StonehearthEditor
 
         private void tabControl_Selected(object sender, TabControlEventArgs e)
         {
-            //e.TabPageIndex;
+            // e.TabPageIndex;
             Properties.Settings.Default["InitialTab"] = e.TabPageIndex;
             Properties.Settings.Default.Save();
         }
 
         private void saveAllToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            //TODO yshan: revisit this
+            // TODO yshan: revisit this
             GameMasterDataManager.GetInstance().SaveModifiedFiles();
         }
 
@@ -109,7 +109,7 @@ namespace StonehearthEditor
             }
             mNetWorthVisualizer = new NetWorthVisualizer();
             mNetWorthVisualizer.SetManifestView(manifestView);
-            //mNetWorthVisualizer.UpdateNetWorthData();
+            ////mNetWorthVisualizer.UpdateNetWorthData();
             mNetWorthVisualizer.Show(this);
         }
 
