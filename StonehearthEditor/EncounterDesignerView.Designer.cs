@@ -40,8 +40,7 @@
          this.encounterTabRightSide = new System.Windows.Forms.Panel();
          this.graphViewer = new Microsoft.Msagl.GraphViewerGdi.GViewer();
          this.encounterRightSideFilePath = new System.Windows.Forms.TextBox();
-         this.panel1 = new System.Windows.Forms.Panel();
-         this.nodeInfoJsonPreview = new System.Windows.Forms.RichTextBox();
+         this.nodePreview = new System.Windows.Forms.Panel();
          this.nodeInfoPanel = new System.Windows.Forms.Panel();
          this.openEncounterFileButton = new System.Windows.Forms.Button();
          this.nodeInfoSubType = new System.Windows.Forms.Label();
@@ -50,13 +49,13 @@
          this.toolStrip1 = new System.Windows.Forms.ToolStrip();
          this.toolstripSaveButton = new System.Windows.Forms.ToolStripButton();
          this.encounterTreeView = new System.Windows.Forms.TreeView();
+         this.nodePath = new System.Windows.Forms.Label();
          this.encounterGraphContextMenu.SuspendLayout();
          ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
          this.splitContainer1.Panel1.SuspendLayout();
          this.splitContainer1.Panel2.SuspendLayout();
          this.splitContainer1.SuspendLayout();
          this.encounterTabRightSide.SuspendLayout();
-         this.panel1.SuspendLayout();
          this.nodeInfoPanel.SuspendLayout();
          this.toolStrip1.SuspendLayout();
          this.SuspendLayout();
@@ -115,7 +114,7 @@
          // 
          // splitContainer1.Panel2
          // 
-         this.splitContainer1.Panel2.Controls.Add(this.panel1);
+         this.splitContainer1.Panel2.Controls.Add(this.nodePreview);
          this.splitContainer1.Panel2.Controls.Add(this.nodeInfoPanel);
          this.splitContainer1.Size = new System.Drawing.Size(875, 473);
          this.splitContainer1.SplitterDistance = global::StonehearthEditor.Properties.Settings.Default.EncounterDesignerViewTreeSplitterDistance;
@@ -190,34 +189,22 @@
          this.encounterRightSideFilePath.Size = new System.Drawing.Size(4, 20);
          this.encounterRightSideFilePath.TabIndex = 2;
          // 
-         // panel1
+         // nodePreview
          // 
-         this.panel1.Controls.Add(this.nodeInfoJsonPreview);
-         this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
-         this.panel1.Location = new System.Drawing.Point(0, 30);
-         this.panel1.Name = "panel1";
-         this.panel1.Size = new System.Drawing.Size(875, 118);
-         this.panel1.TabIndex = 5;
-         // 
-         // nodeInfoJsonPreview
-         // 
-         this.nodeInfoJsonPreview.Dock = System.Windows.Forms.DockStyle.Fill;
-         this.nodeInfoJsonPreview.Font = new System.Drawing.Font("Courier New", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-         this.nodeInfoJsonPreview.Location = new System.Drawing.Point(0, 0);
-         this.nodeInfoJsonPreview.Margin = new System.Windows.Forms.Padding(10);
-         this.nodeInfoJsonPreview.Name = "nodeInfoJsonPreview";
-         this.nodeInfoJsonPreview.Size = new System.Drawing.Size(875, 118);
-         this.nodeInfoJsonPreview.TabIndex = 4;
-         this.nodeInfoJsonPreview.Text = "";
-         this.nodeInfoJsonPreview.WordWrap = false;
-         this.nodeInfoJsonPreview.Leave += new System.EventHandler(this.nodeInfoJsonPreview_Leave);
-         this.nodeInfoJsonPreview.MouseMove += new System.Windows.Forms.MouseEventHandler(this.nodeInfoJsonPreview_MouseMove);
+         this.nodePreview.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+         this.nodePreview.Location = new System.Drawing.Point(0, 30);
+         this.nodePreview.Name = "nodePreview";
+         this.nodePreview.Size = new System.Drawing.Size(875, 118);
+         this.nodePreview.TabIndex = 5;
          // 
          // nodeInfoPanel
          // 
          this.nodeInfoPanel.BackColor = System.Drawing.Color.Silver;
          this.nodeInfoPanel.Controls.Add(this.openEncounterFileButton);
          this.nodeInfoPanel.Controls.Add(this.nodeInfoSubType);
+         this.nodeInfoPanel.Controls.Add(this.nodePath);
          this.nodeInfoPanel.Controls.Add(this.nodeInfoType);
          this.nodeInfoPanel.Controls.Add(this.nodeInfoName);
          this.nodeInfoPanel.Dock = System.Windows.Forms.DockStyle.Top;
@@ -228,7 +215,7 @@
          // 
          // openEncounterFileButton
          // 
-         this.openEncounterFileButton.Location = new System.Drawing.Point(606, 2);
+         this.openEncounterFileButton.Location = new System.Drawing.Point(477, 6);
          this.openEncounterFileButton.Name = "openEncounterFileButton";
          this.openEncounterFileButton.Size = new System.Drawing.Size(75, 23);
          this.openEncounterFileButton.TabIndex = 4;
@@ -296,6 +283,15 @@
          this.encounterTreeView.TabIndex = 6;
          this.encounterTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.encounterTreeView_AfterSelect);
          // 
+         // nodePath
+         // 
+         this.nodePath.AutoSize = true;
+         this.nodePath.Location = new System.Drawing.Point(581, 11);
+         this.nodePath.Name = "nodePath";
+         this.nodePath.Size = new System.Drawing.Size(50, 13);
+         this.nodePath.TabIndex = 5;
+         this.nodePath.Text = "path.json";
+         // 
          // EncounterDesignerView
          // 
          this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -312,7 +308,6 @@
          this.splitContainer1.ResumeLayout(false);
          this.encounterTabRightSide.ResumeLayout(false);
          this.encounterTabRightSide.PerformLayout();
-         this.panel1.ResumeLayout(false);
          this.nodeInfoPanel.ResumeLayout(false);
          this.nodeInfoPanel.PerformLayout();
          this.toolStrip1.ResumeLayout(false);
@@ -334,8 +329,7 @@
       private System.Windows.Forms.Panel encounterTabRightSide;
       private Microsoft.Msagl.GraphViewerGdi.GViewer graphViewer;
       private System.Windows.Forms.TextBox encounterRightSideFilePath;
-      private System.Windows.Forms.Panel panel1;
-      private System.Windows.Forms.RichTextBox nodeInfoJsonPreview;
+      private System.Windows.Forms.Panel nodePreview;
       private System.Windows.Forms.Panel nodeInfoPanel;
       private System.Windows.Forms.Button openEncounterFileButton;
       private System.Windows.Forms.Label nodeInfoSubType;
@@ -344,5 +338,6 @@
       private System.Windows.Forms.ToolStrip toolStrip1;
       private System.Windows.Forms.ToolStripButton toolstripSaveButton;
       private System.Windows.Forms.TreeView encounterTreeView;
+      private System.Windows.Forms.Label nodePath;
    }
 }

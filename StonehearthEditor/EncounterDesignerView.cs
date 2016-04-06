@@ -13,14 +13,14 @@ using System.Text.RegularExpressions;
 
 namespace StonehearthEditor
 {
-   public partial class EncounterDesignerView : UserControl, IGraphOwner
+   public partial class EncounterDesignerView : UserControl, IGraphOwner, IReloadable
    {
       private static double kMaxDrag = 20;
 
       private GameMasterNode mSelectedNode = null;
       private Timer refreshGraphTimer = null;
       private double mPreviousMouseX, mPreviousMouseY;
-      private int mI18nTooltipLine = -1;
+      private FilePreview mNodePreview = null;
 
       public EncounterDesignerView()
       {
@@ -58,14 +58,23 @@ namespace StonehearthEditor
             nodeInfoName.Text = node.Name;
             encounterRightSideFilePath.Text = node.Path;
             nodeInfoType.Text = node.NodeType.ToString();
+            nodePath.Text = node.Path;
             nodeInfoSubType.Text = node.NodeType == GameMasterNodeType.ENCOUNTER ? ((EncounterNodeData)node.NodeData).EncounterType : "";
-            nodeInfoJsonPreview.Text = node.GetJsonFileString();
-            nodeInfoJsonPreview.ScrollToCaret();
+
+            if (mNodePreview != null)
+            {
+               nodePreview.Controls.Remove(mNodePreview);
+            }
+
+            mNodePreview = new FilePreview(this, node.FileData);
+            mNodePreview.Dock = DockStyle.Fill;
+            nodePreview.Controls.Add(mNodePreview);
 
             copyGameMasterNode.Text = "Clone " + node.Name;
             copyGameMasterNode.Enabled = true;
             openEncounterFileButton.Visible = true;
             deleteNodeToolStripMenuItem.Visible = true;
+            
          }
          else
          {
@@ -74,7 +83,11 @@ namespace StonehearthEditor
             encounterRightSideFilePath.Text = string.Empty;
             nodeInfoType.Text = string.Empty;
             nodeInfoSubType.Text = string.Empty;
-            nodeInfoJsonPreview.Text = string.Empty;
+            nodePath.Text = string.Empty;
+            if (mNodePreview != null)
+            {
+               nodePreview.Controls.Remove(mNodePreview);
+            }
 
             copyGameMasterNode.Text = "Clone Node";
             copyGameMasterNode.Enabled = false;
@@ -164,42 +177,10 @@ namespace StonehearthEditor
 
       private void nodeInfoJsonPreview_Leave(object sender, EventArgs e)
       {
-         string json = nodeInfoJsonPreview.Text;
-         if (mSelectedNode != null)
-         {
-            GameMasterDataManager.GetInstance().TryModifyJson(this, mSelectedNode, json);
-         }
       }
 
       private void nodeInfoJsonPreview_MouseMove(object sender, MouseEventArgs e)
       {
-         int charIndex = nodeInfoJsonPreview.GetCharIndexFromPosition(e.Location);
-         int line = nodeInfoJsonPreview.GetLineFromCharIndex(charIndex);
-
-         if (nodeInfoJsonPreview.Lines.Length <= line)
-         {
-            return;
-         }
-         if (mI18nTooltipLine == line)
-         {
-            return;
-         }
-         i18nTooltip.Hide(nodeInfoJsonPreview);
-
-         mI18nTooltipLine = line;
-         string lineString = nodeInfoJsonPreview.Lines[line];
-         Regex matcher = new Regex(@"i18n\(([^)]+)\)");
-         Match locMatch = matcher.Match(lineString);
-         if (locMatch.Success)
-         {
-            string translated = ModuleDataManager.GetInstance().LocalizeString(locMatch.Groups[1].Value);
-            translated = JsonHelper.WordWrap(translated, 100);
-            i18nTooltip.Show(translated, nodeInfoJsonPreview, e.Location);
-         }
-         else
-         {
-            i18nTooltip.Hide(nodeInfoJsonPreview);
-         }
       }
 
       private string mSelectedNewScriptNode = null;
@@ -292,15 +273,11 @@ namespace StonehearthEditor
 
       private void StonehearthEditor_KeyDown(object sender, KeyEventArgs e)
       {
-         if (e.Control && e.KeyCode == Keys.S)
-         {
-            string json = nodeInfoJsonPreview.Text;
-            if (mSelectedNode != null)
-            {
-               GameMasterDataManager.GetInstance().TryModifyJson(this, mSelectedNode, json);
-            }
-            GameMasterDataManager.GetInstance().SaveModifiedFiles();
-         }
+      }
+
+      public void Reload()
+      {
+         // Reload the encounter designer.
       }
 
       private class CloneDialogCallback : InputDialog.IDialogCallback

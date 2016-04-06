@@ -28,7 +28,7 @@ namespace StonehearthEditor
       private string mPath;
       private string mDirectory;
       private string mFileName;
-      private JObject mJson;
+      private JsonFileData mJsonFileData;
       private NodeData mNodeData;
       public GameMasterNode Owner;
       private string mModule;
@@ -74,9 +74,14 @@ namespace StonehearthEditor
          get { return mNodeData; }
       }
 
+      public FileData FileData
+      {
+         get { return mJsonFileData; }
+      }
+
       public JObject Json
       {
-         get { return mJson; }
+         get { return mJsonFileData.Json; }
       }
       public string Module
       {
@@ -87,13 +92,9 @@ namespace StonehearthEditor
       {
          try
          {
-            using (StreamReader sr = new StreamReader(mPath, Encoding.UTF8))
-            {
-               string fileString = sr.ReadToEnd();
-
-               mJson = JObject.Parse(fileString);
-               OnFileChanged(allNodes);
-            }
+            mJsonFileData = new JsonFileData(mPath);
+            mJsonFileData.Load();
+            OnFileChanged(allNodes);
          } catch(Exception e)
          {
             MessageBox.Show("Unable to load " + mPath + ". Error: " + e.Message);
@@ -106,7 +107,7 @@ namespace StonehearthEditor
 
       public void OnFileChanged(Dictionary<string, GameMasterNode> allNodes)
       {
-         JToken fileTypeToken = mJson["type"];
+         JToken fileTypeToken = Json["type"];
          string fileType = fileTypeToken != null? fileTypeToken.ToString().ToUpper() : "";
          GameMasterNodeType newNodeType = GameMasterNodeType.UNKNOWN;
          foreach (GameMasterNodeType nodeType in Enum.GetValues(typeof(GameMasterNodeType)))
@@ -161,7 +162,7 @@ namespace StonehearthEditor
                jsonTextWriter.IndentChar = ' ';
 
                JsonSerializer jsonSeralizer = new JsonSerializer();
-               jsonSeralizer.Serialize(jsonTextWriter, mJson);
+               jsonSeralizer.Serialize(jsonTextWriter, Json);
             }
             return stringWriter.ToString();
          }
@@ -178,11 +179,11 @@ namespace StonehearthEditor
             JObject newJson = JObject.Parse(newJsonString);
             if (newJson != null)
             {
-               if (newJson.ToString().Equals(mJson.ToString()))
+               if (newJson.ToString().Equals(Json.ToString()))
                {
                   return false; // not modified because jsons are equivalent
                }
-               mJson = newJson;
+               mJsonFileData.TrySetFlatFileData(newJsonString);
                IsModified = true;
             }
          } catch(Exception e)
@@ -222,7 +223,7 @@ namespace StonehearthEditor
             newNode.mNodeData = newNodeData;
             newNode.mNodeType = NodeType;
 
-            newNode.mJson = JObject.Parse(mJson.ToString());
+            newNode.mJsonFileData.TrySetFlatFileData(Json.ToString());
             return newNode;
          } catch(Exception e)
          {
