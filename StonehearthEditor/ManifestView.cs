@@ -420,7 +420,7 @@ namespace StonehearthEditor
                 mFileData = file;
             }
 
-            public void onCancelled()
+            public void OnCancelled()
             {
                 // Do nothing. user cancelled
             }
@@ -473,7 +473,7 @@ namespace StonehearthEditor
                 mParameters = parameters;
             }
 
-            public void onCancelled(HashSet<string> unwantedItems)
+            public void OnCancelled(HashSet<string> unwantedItems)
             {
                 // Do nothing. user cancelled
                 SavedUnwantedItems = unwantedItems;
@@ -990,7 +990,7 @@ namespace StonehearthEditor
                 mFilePath = filePath;
             }
 
-            public void onCancelled()
+            public void OnCancelled()
             {
                 // Do nothing. user cancelled
             }

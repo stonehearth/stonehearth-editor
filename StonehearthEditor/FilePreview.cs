@@ -264,7 +264,7 @@ namespace StonehearthEditor
                 return true;
             }
 
-            public void onCancelled()
+            public void OnCancelled()
             {
             }
         }

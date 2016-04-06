@@ -292,7 +292,7 @@ namespace StonehearthEditor
                 mNode = node;
             }
 
-            public void onCancelled()
+            public void OnCancelled()
             {
                 // Do nothing. user cancelled
             }

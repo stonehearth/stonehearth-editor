@@ -11,7 +11,7 @@ namespace StonehearthEditor
             // Returns true if we can close the dialog
             bool OnAccept(HashSet<string> unwantedItems);
 
-            void onCancelled(HashSet<string> unwantedItems);
+            void OnCancelled(HashSet<string> unwantedItems);
 
             HashSet<string> GetSavedUnwantedItems();
         }
@@ -65,7 +65,7 @@ namespace StonehearthEditor
         {
             if (mCallback != null)
             {
-                mCallback.onCancelled(GetUnwantedItems());
+                mCallback.OnCancelled(GetUnwantedItems());
                 mCallback = null;
             }
         }
@@ -74,7 +74,7 @@ namespace StonehearthEditor
         {
             if (mCallback != null)
             {
-                mCallback.onCancelled(GetUnwantedItems());
+                mCallback.OnCancelled(GetUnwantedItems());
                 mCallback = null;
             }
         }

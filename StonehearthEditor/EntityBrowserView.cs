@@ -513,7 +513,7 @@ namespace StonehearthEditor
                 mOwner = owner;
             }
 
-            public void onCancelled()
+            public void OnCancelled()
             {
                 // Do nothing. user cancelled
             }
