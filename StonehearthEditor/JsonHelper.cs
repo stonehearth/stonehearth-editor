@@ -314,7 +314,7 @@ namespace StonehearthEditor
             {
                 if (mWritingMinMax)
                 {
-                    base.WriteIndentSpace();
+                    WriteIndentSpace();
                 }
                 else
                 {
