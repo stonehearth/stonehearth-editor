@@ -868,7 +868,7 @@ namespace StonehearthEditor
                         // Cannot add more than one edge to generator
                         return false;
                     case "random_out_edge":
-                        JObject randomOutEdgesDictionary = (NodeFile.Json["random_out_edge_info"]["out_edges"] as JObject);
+                        JObject randomOutEdgesDictionary = (JObject)NodeFile.Json["random_out_edge_info"]["out_edges"];
                         randomOutEdgesDictionary.Add(inEdge, JObject.Parse(@"{""weight"":1 }"));
                         mOutEdgeStrings.Add(inEdge);
                         break;

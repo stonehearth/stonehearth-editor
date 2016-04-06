@@ -88,7 +88,7 @@ namespace StonehearthEditor
             }
             else
             {
-                JArray mixinsArray = (mixins as JArray);
+                JArray mixinsArray = mixins as JArray;
                 if (mixinsArray == null)
                 {
                     string existingMixin = mixins.ToString();

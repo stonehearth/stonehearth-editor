@@ -303,7 +303,7 @@ namespace StonehearthEditor
                 addIconicVersionToolStripMenuItem.Visible = CanAddEntityForm(file, "iconic");
                 addGhostToolStripMenuItem.Visible = !CanAddEntityForm(file, "iconic") && CanAddEntityForm(file, "ghost");
                 makeFineVersionToolStripMenuItem.Visible = CanAddFineVersion(file);
-                removeFromManifestToolStripMenuItem.Visible = (GetModuleFile(file) != null);
+                removeFromManifestToolStripMenuItem.Visible = GetModuleFile(file) != null;
                 aliasContextDuplicate.Visible = true;
                 copyFullAliasToolStripMenuItem.Visible = true;
                 addNewAliasToolStripMenuItem.Visible = false;
@@ -702,7 +702,7 @@ namespace StonehearthEditor
                 }
                 else
                 {
-                    JArray mixinsArray = (mixins as JArray);
+                    JArray mixinsArray = mixins as JArray;
                     if (mixinsArray == null)
                     {
                         mixinsArray = new JArray();

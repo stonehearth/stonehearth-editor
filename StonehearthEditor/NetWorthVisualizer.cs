@@ -155,7 +155,7 @@ namespace StonehearthEditor
 
                             if (data.RecommendedMaxNetWorth > 0)
                             {
-                                int cost = (i + 1);
+                                int cost = i + 1;
                                 bool shouldWarn = false;
                                 JToken sellable = data.Json.SelectToken("entity_data.stonehearth:net_worth.shop_info.sellable");
                                 if (sellable != null && sellable.ToString() == "False")
