@@ -4,7 +4,6 @@ using System.Linq;
 using System.Windows.Forms;
 using Microsoft.Msagl.Drawing;
 using Microsoft.Msagl.Layout.Layered;
-using System;
 
 namespace StonehearthEditor
 {
