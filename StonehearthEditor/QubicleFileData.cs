@@ -3,7 +3,7 @@ using System.Windows.Forms;
 
 namespace StonehearthEditor
 {
-    class QubicleFileData : FileData
+    internal class QubicleFileData : FileData
     {
         private string mDirectory;
         private bool mIsQb = true;

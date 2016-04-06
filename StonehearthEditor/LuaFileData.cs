@@ -4,7 +4,7 @@ using System.Windows.Forms;
 
 namespace StonehearthEditor
 {
-    class LuaFileData : FileData, IModuleFileData
+    internal class LuaFileData : FileData, IModuleFileData
     {
         private string mDirectory;
         private ModuleFile mOwner;

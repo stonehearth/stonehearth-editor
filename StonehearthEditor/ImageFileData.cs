@@ -3,7 +3,7 @@ using System.Windows.Forms;
 
 namespace StonehearthEditor
 {
-    class ImageFileData : FileData
+    internal class ImageFileData : FileData
     {
         private string mDirectory;
 

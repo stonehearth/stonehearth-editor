@@ -15,14 +15,14 @@ namespace StonehearthEditor
     public partial class EntityBrowserView : UserControl, IReloadable
     {
         private int sortColumn = -1;
-        Dictionary<string, JsonFileData> netWorthJsonFiles;
-        Dictionary<string, JsonFileData> weaponsJsonFiles;
-        Dictionary<string, JsonFileData> defenseJsonFiles;
-        Dictionary<string, JsonFileData> killableEntitiesJsonFiles;
-        Dictionary<string, string> modNames;
-        Dictionary<string, string> netWorthImagePaths;
-        Dictionary<string, string> weaponsImagePaths;
-        Dictionary<string, string> defenseImagePaths;
+        private Dictionary<string, JsonFileData> netWorthJsonFiles;
+        private Dictionary<string, JsonFileData> weaponsJsonFiles;
+        private Dictionary<string, JsonFileData> defenseJsonFiles;
+        private Dictionary<string, JsonFileData> killableEntitiesJsonFiles;
+        private Dictionary<string, string> modNames;
+        private Dictionary<string, string> netWorthImagePaths;
+        private Dictionary<string, string> weaponsImagePaths;
+        private Dictionary<string, string> defenseImagePaths;
 
         private string[] attributesOfInterest = new string[] { "max_health",
                                                              "speed",

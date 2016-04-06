@@ -3,13 +3,13 @@ using System.Windows.Forms;
 
 namespace StonehearthEditor
 {
-    static class Program
+    internal static class Program
     {
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             string path = (string)Properties.Settings.Default["ModsDirectory"];
             if (args.Length > 0)
