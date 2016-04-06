@@ -40,6 +40,7 @@ namespace StonehearthEditor
                     }
                 }
             }
+
             return string.Empty;
         }
 
@@ -57,11 +58,13 @@ namespace StonehearthEditor
                     {
                         continue;
                     }
+
                     int netWorth = data.NetWorth;
                     if (netWorth <= 0)
                     {
                         continue;
                     }
+
                     string imageFile = FindImageForFile(data);
                     if (string.IsNullOrEmpty(imageFile))
                     {
@@ -73,12 +76,14 @@ namespace StonehearthEditor
                     {
                         mMaxNetWorth = netWorth;
                     }
+
                     List<JsonFileData> list;
                     if (!mNetWorthValues.TryGetValue(netWorth, out list))
                     {
                         list = new List<JsonFileData>();
                         mNetWorthValues[netWorth] = list;
                     }
+
                     list.Add(data);
                     if (list.Count > mItemCount)
                     {
@@ -86,6 +91,7 @@ namespace StonehearthEditor
                     }
                 }
             }
+
             canvas.Refresh();
         }
 
@@ -166,10 +172,12 @@ namespace StonehearthEditor
                                 {
                                     shouldWarn = true;
                                 }
+
                                 if (cost > ((data.RecommendedMaxNetWorth * kMaxRecommendedMultiplier) + 1))
                                 {
                                     shouldWarn = true;
                                 }
+
                                 if (shouldWarn)
                                 {
                                     Pen semiRed = new Pen(Color.FromArgb(100, Color.Red));
@@ -185,6 +193,7 @@ namespace StonehearthEditor
             {
                 graphics.DrawLine(System.Drawing.Pens.Black, new Point(i, 0), new Point(i, canvasHeightLimit));
             }
+
             for (int j = 0; j < canvasHeightLimit; j += cellSizeZoomed)
             {
                 graphics.DrawLine(System.Drawing.Pens.Black, new Point(0, j), new Point(canvasWidth, j));
@@ -234,9 +243,11 @@ namespace StonehearthEditor
 
                         imageTooltip.Show(tooltip, canvas, pos);
                     }
+
                     return;
                 }
             }
+
             mHoveredFileData = null;
             imageTooltip.Hide(canvas);
         }

@@ -22,6 +22,7 @@ namespace StonehearthEditor
             UpdateGraphNode(graphNode);
             UpdateOutEdges(graph);
         }
+
         public virtual void UpdateGraphNode(Node graphNode)
         {
             graphNode.Attr.LabelWidthToHeightRatio = 1;
@@ -47,6 +48,7 @@ namespace StonehearthEditor
         {
             return false;
         }
+
         protected void MakeNodePrivate(Node node)
         {
             node.Attr.Shape = Shape.Box;

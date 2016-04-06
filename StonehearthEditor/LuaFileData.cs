@@ -33,11 +33,13 @@ namespace StonehearthEditor
             {
                 filterMatchesSelf = false;
             }
+
             if (!HasErrors)
             {
                 node.SelectedImageIndex = 1;
                 node.ImageIndex = 1;
             }
+
             if (!filterMatchesSelf)
             {
                 if (!filter.Contains("error") || !HasErrors)
@@ -45,6 +47,7 @@ namespace StonehearthEditor
                     return false;
                 }
             }
+
             return true;
         }
 

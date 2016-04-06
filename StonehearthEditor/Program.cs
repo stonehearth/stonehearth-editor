@@ -16,6 +16,7 @@ namespace StonehearthEditor
             {
                 path = args[0];
             }
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new MainForm(path));

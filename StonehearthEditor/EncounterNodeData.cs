@@ -22,10 +22,12 @@ namespace StonehearthEditor
         {
             get { return mIsStartNode; }
         }
+
         public string InEdge
         {
             get { return mInEdge; }
         }
+
         public string EncounterType
         {
             get { return mEncounterType; }
@@ -46,6 +48,7 @@ namespace StonehearthEditor
                         {
                             AddOutEdgesRecursive(child, list);
                         }
+
                         break;
                     case "weighted_edge":
                         JToken outEdge = outEdgeSpec["out_edge"];
@@ -66,6 +69,7 @@ namespace StonehearthEditor
             {
                 AddOutEdgesRecursive(outEdgeSpec, returned);
             }
+
             return returned;
         }
 
@@ -93,10 +97,12 @@ namespace StonehearthEditor
                     monsterTuningSelector = "create_mission_info.mission.members.*";
                     break;
             }
+
             if (selector != null)
             {
                 FixupLoot(selector);
             }
+
             if (monsterTuningSelector != null)
             {
                 if (NodeFile.Json != null)
@@ -122,6 +128,7 @@ namespace StonehearthEditor
             {
                 mIsStartNode = true;
             }
+
             mOutEdgeStrings = ParseOutEdges(NodeFile.Json["out_edge"]);
             switch (mEncounterType)
             {
@@ -131,6 +138,7 @@ namespace StonehearthEditor
                     {
                         AddOutEdgesRecursive(generatorInfo["spawn_edge"], mOutEdgeStrings);
                     }
+
                     break;
                 case "collection_quest":
                     Dictionary<string, string> collectionEdges = JsonHelper.GetJsonStringDictionary(NodeFile.Json["collection_quest_info"], "out_edges");
@@ -145,6 +153,7 @@ namespace StonehearthEditor
                             {
                                 list = new List<string>();
                             }
+
                             list.Add(choice);
                             mChoiceEdgeInfo[outEdge] = list;
                             if (!mOutEdgeStrings.Contains(outEdge))
@@ -153,6 +162,7 @@ namespace StonehearthEditor
                             }
                         }
                     }
+
                     break;
                 case "dialog_tree":
                     // Go through all the dialog nodes and add ot edges
@@ -171,6 +181,7 @@ namespace StonehearthEditor
                                 {
                                     list = new List<string>();
                                 }
+
                                 list.Add(translatedParentName);
                                 mChoiceEdgeInfo[outEdge] = list;
                                 if (!mOutEdgeStrings.Contains(outEdge))
@@ -180,12 +191,14 @@ namespace StonehearthEditor
                             }
                         }
                     }
+
                     break;
                 case "counter":
                     foreach (JToken nodeData in NodeFile.Json["counter_info"]["out_edges"].Values())
                     {
                         mOutEdgeStrings.Add(nodeData.ToString());
                     }
+
                     break;
             }
         }
@@ -204,11 +217,13 @@ namespace StonehearthEditor
                     base.UpdateGraphNode(graphNode);
                     break;
             }
+
             if (NodeFile.Owner == null)
             {
                 graphNode.Attr.Color = Color.Red;
             }
         }
+
         protected override void UpdateOutEdges(Graph graph)
         {
             GameMasterNode arcFile = NodeFile.Owner;
@@ -282,6 +297,7 @@ namespace StonehearthEditor
                     }
                 }
             }
+
             return outEdges;
         }
 
@@ -303,12 +319,14 @@ namespace StonehearthEditor
 
             return newNodeData;
         }
+
         public override bool AddOutEdge(GameMasterNode nodeFile)
         {
             if (nodeFile.NodeType != GameMasterNodeType.ENCOUNTER)
             {
                 return false;
             }
+
             EncounterNodeData encounterData = nodeFile.NodeData as EncounterNodeData;
             string inEdge = encounterData.InEdge;
 
@@ -324,6 +342,7 @@ namespace StonehearthEditor
                 // This item is already part of the out edges
                 return false;
             }
+
             if (!mOutEdgeStrings.Contains(inEdge))
             {
                 // This out edge isn't already in the list of possible out edges, see if we can add it.
@@ -360,6 +379,7 @@ namespace StonehearthEditor
                 ownerArcData.AddEncounter(encounterData);
                 nodeFile.Owner = NodeFile.Owner;
             }
+
             NodeFile.IsModified = true;
             return true;
         }

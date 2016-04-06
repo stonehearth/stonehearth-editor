@@ -41,10 +41,12 @@ namespace StonehearthEditor
             {
                 return;
             }
+
             if (mI18nTooltipLine == line)
             {
                 return;
             }
+
             i18nTooltip.Hide(textBox);
 
             mI18nTooltipLine = line;
@@ -64,6 +66,7 @@ namespace StonehearthEditor
                 mI18nLocKey = null;
             }
         }
+
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Save();
@@ -76,6 +79,7 @@ namespace StonehearthEditor
                 MessageBox.Show("Unable to save " + mFileData.FileName + ". Invalid Json");
                 return;
             }
+
             mFileData.TrySaveFile();
             TabPage parentControl = Parent as TabPage;
             if (parentControl != null)
@@ -98,6 +102,7 @@ namespace StonehearthEditor
                     parentControl.Text = mFileData.FileName + "*";
                 }
             }
+
             if (e.KeyCode == Keys.Tab)
             {
                 e.Handled = true;
@@ -143,6 +148,7 @@ namespace StonehearthEditor
             {
                 return false;
             }
+
             return base.ProcessDialogKey(keyData);
         }
 
@@ -156,6 +162,7 @@ namespace StonehearthEditor
             AliasSelectionDialog aliasDialog = new AliasSelectionDialog(new AliasSelectCallback(textBox));
             aliasDialog.ShowDialog();
         }
+
         private class AliasSelectCallback : AliasSelectionDialog.IDialogCallback
         {
             private RichTextBox mTextBox;
@@ -163,6 +170,7 @@ namespace StonehearthEditor
             {
                 mTextBox = textbox;
             }
+
             public bool OnAccept(HashSet<string> aliases)
             {
                 StringBuilder aliasInsert = new StringBuilder();
@@ -173,9 +181,11 @@ namespace StonehearthEditor
                     {
                         aliasInsert.AppendLine(",");
                     }
+
                     isFirst = false;
                     aliasInsert.Append('"' + alias + '"');
                 }
+
                 mTextBox.SelectionLength = 1;
                 mTextBox.SelectedText = aliasInsert.ToString();
                 return true;
@@ -193,6 +203,7 @@ namespace StonehearthEditor
             {
                 mLocKey = key;
             }
+
             public bool OnAccept(string inputMessage)
             {
                 string key = mLocKey;
@@ -204,12 +215,14 @@ namespace StonehearthEditor
                     modName = split[0];
                     key = split[1];
                 }
+
                 Module mod = ModuleDataManager.GetInstance().GetMod(modName);
                 if (mod == null)
                 {
                     MessageBox.Show("Could not change loc key. There is no mod named " + modName);
                     return true;
                 }
+
                 JValue token = mod.EnglishLocalizationJson.SelectToken(key) as JValue;
                 if (token == null)
                 {
@@ -222,17 +235,21 @@ namespace StonehearthEditor
                         {
                             break;
                         }
+
                         if (parent[tokenSplit[i]] == null)
                         {
                             parent[tokenSplit[i]] = new JObject();
                         }
+
                         parent = parent[tokenSplit[i]] as JObject;
                     }
+
                     if (parent == null)
                     {
                         MessageBox.Show("Could not insert localization token " + mLocKey);
                         return true;
                     }
+
                     parent.Add(tokenSplit[tokenSplit.Length - 1], inputMessage);
                 }
                 else
@@ -255,6 +272,7 @@ namespace StonehearthEditor
             {
                 return;
             }
+
             EditLocStringCallback callback = new EditLocStringCallback(mI18nLocKey);
             string translated = ModuleDataManager.GetInstance().LocalizeString(mI18nLocKey);
             InputDialog dialog = new InputDialog("Edit Loc String", "Edit Loc Text For: " + mI18nLocKey, translated, "Edit");

@@ -142,8 +142,10 @@ namespace StonehearthEditor
                             item.ToolTipText = "WARNING: Category specified in more than one place and are not identical";
                             break;
                         }
+
                         category = categoryToken.ToString();
                     }
+
                     if (materialToken != null)
                     {
                         if (material != "" && material != materialToken.ToString())
@@ -152,6 +154,7 @@ namespace StonehearthEditor
                             item.ToolTipText = "WARNING: Material specified in more than one place and are not identical";
                             break;
                         }
+
                         material = materialToken.ToString();
                     }
                 }
@@ -165,6 +168,7 @@ namespace StonehearthEditor
 
                 netWorthListView.Items.Add(item);
             }
+
             netWorthListView.SmallImageList = imageList;
         }
 
@@ -198,6 +202,7 @@ namespace StonehearthEditor
                 {
                     item.SubItems.Add("2h");
                 }
+
                 JToken rolesToken = json.SelectToken("components.stonehearth:equipment_piece.roles");
                 string roles = rolesToken == null ? "none" : rolesToken.ToString();
                 item.SubItems.Add(roles);
@@ -209,6 +214,7 @@ namespace StonehearthEditor
 
                 weaponsListView.Items.Add(item);
             }
+
             weaponsListView.SmallImageList = imageList;
         }
 
@@ -240,6 +246,7 @@ namespace StonehearthEditor
 
                 defenseItemsListView.Items.Add(item);
             }
+
             defenseItemsListView.SmallImageList = imageList;
         }
 
@@ -270,6 +277,7 @@ namespace StonehearthEditor
                     {
                         continue;
                     }
+
                     JToken jValue = attribute.Value.SelectToken("value");
                     if (jValue != null)
                     {
@@ -278,6 +286,7 @@ namespace StonehearthEditor
                         subItems.Insert(i - 1, new ListViewItem.ListViewSubItem(item, jValue.ToString()));
                     }
                 }
+
                 item.SubItems.AddRange(subItems.ToArray());
                 killableEntitiesListView.Items.Add(item);
             }
@@ -313,6 +322,7 @@ namespace StonehearthEditor
                 {
                     continue;
                 }
+
                 foreach (KeyValuePair<string, FileData> linkedFile in openedFile.LinkedFileData)
                 {
                     if (linkedFile.Value is ImageFileData)
@@ -345,6 +355,7 @@ namespace StonehearthEditor
         {
             onColumnClick(defenseItemsListView, e);
         }
+
         private void killableEntitiesListView_ColumnClick(object sender, ColumnClickEventArgs e)
         {
             onColumnClick(killableEntitiesListView, e);
@@ -403,11 +414,13 @@ namespace StonehearthEditor
                     {
                         newTabPage.Text = newTabPage.Text + "*";
                     }
+
                     if (openedFile.HasErrors)
                     {
                         newTabPage.ImageIndex = 0;
                         newTabPage.ToolTipText = openedFile.Errors;
                     }
+
                     FilePreview filePreview = new FilePreview(this, openedFile);
                     filePreview.Dock = DockStyle.Fill;
                     newTabPage.Controls.Add(filePreview);
@@ -471,6 +484,7 @@ namespace StonehearthEditor
                     break;
                 }
             }
+
             if (listView != null)
             {
                 InputDialog dialog = new InputDialog("Filter By", "(Separate search terms with a comma) Filter items containing text:", "", "Filter");
@@ -494,6 +508,7 @@ namespace StonehearthEditor
                 mView = listView;
                 mOwner = owner;
             }
+
             public void onCancelled()
             {
                 // Do nothing. user cancelled
@@ -505,6 +520,7 @@ namespace StonehearthEditor
                 {
                     return false;
                 }
+
                 mView.BeginUpdate();
                 mOwner.Reload();
 
@@ -523,12 +539,14 @@ namespace StonehearthEditor
                                 containsFilterTerm = true;
                             }
                         }
+
                         if (!containsFilterTerm)
                         {
                             mView.Items.Remove(item);
                         }
                     }
                 }
+
                 mView.EndUpdate();
                 return true;
             }
@@ -540,6 +558,7 @@ namespace StonehearthEditor
                 {
                     result = result && input.Contains(s);
                 }
+
                 return result;
             }
         }

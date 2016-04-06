@@ -11,6 +11,7 @@ namespace StonehearthEditor
         void SetModuleFile(ModuleFile moduleFile);
         ModuleFile GetModuleFile();
     }
+
     public abstract class FileData : IDisposable
     {
         protected TreeNode mTreeNode;
@@ -43,14 +44,17 @@ namespace StonehearthEditor
         {
             get { return System.IO.Path.GetFileNameWithoutExtension(Path); }
         }
+
         public bool IsModified
         {
             get { return mIsModified; }
         }
+
         public virtual string Errors
         {
             get { return mErrors; }
         }
+
         public virtual bool HasErrors
         {
             get { return mErrors != null; }
@@ -69,8 +73,10 @@ namespace StonehearthEditor
                 node.ImageIndex = 0;
                 node.ToolTipText = Errors;
             }
+
             return true;
         }
+
         public bool TrySetFlatFileData(string newData)
         {
             string newFlatFileData;
@@ -80,8 +86,10 @@ namespace StonehearthEditor
                 mIsModified = true;
                 return true;
             }
+
             return false;
         }
+
         public void TrySaveFile()
         {
             if (mIsModified)
@@ -92,6 +100,7 @@ namespace StonehearthEditor
                     {
                         wr.Write(FlatFileData);
                     }
+
                     mIsModified = false;
                 }
                 catch (Exception e)
@@ -100,6 +109,7 @@ namespace StonehearthEditor
                 }
             }
         }
+
         public void FillDependencyListItems(ListBox listView)
         {
             listView.Items.Clear();
@@ -129,6 +139,7 @@ namespace StonehearthEditor
                     dependencies.Add(alias, dependency.FileData);
                 }
             }
+
             foreach (KeyValuePair<string, FileData> file in LinkedFileData)
             {
                 string filePathWithoutBase = file.Key.Replace(ModuleDataManager.GetInstance().ModsDirectoryPath, "");
@@ -137,6 +148,7 @@ namespace StonehearthEditor
                     dependencies.Add(filePathWithoutBase, file.Value);
                 }
             }
+
             return dependencies;
         }
 
@@ -159,6 +171,7 @@ namespace StonehearthEditor
 
             PostLoad();
         }
+
         public string FlatFileData
         {
             get { return mFlatFileData; }
@@ -178,6 +191,7 @@ namespace StonehearthEditor
             newFlatFileData = newData;
             return true;
         }
+
         protected FileData GetLinkedFileData(string path)
         {
             foreach (FileData data in OpenedFiles)
@@ -187,6 +201,7 @@ namespace StonehearthEditor
                     return data;
                 }
             }
+
             foreach (FileData data in RelatedFiles)
             {
                 if (data.Path == path)
@@ -194,6 +209,7 @@ namespace StonehearthEditor
                     return data;
                 }
             }
+
             return null;
         }
 
@@ -230,6 +246,7 @@ namespace StonehearthEditor
             {
                 System.IO.Directory.CreateDirectory(directory);
             }
+
             // Figure out what dependency files need to exist
             foreach (KeyValuePair<string, FileData> dependencyKV in GetDependencies())
             {
@@ -272,6 +289,7 @@ namespace StonehearthEditor
                     wr.Write(newFlatFile);
                 }
             }
+
             return true;
         }
 
@@ -281,29 +299,34 @@ namespace StonehearthEditor
             {
                 return;
             }
+
             isDisposing = true;
             foreach (ModuleFile alias in LinkedAliases)
             {
                 alias.Dispose();
             }
+
             LinkedAliases.Clear();
 
             foreach (FileData opened in OpenedFiles)
             {
                 opened.Dispose();
             }
+
             OpenedFiles.Clear();
 
             foreach (FileData related in RelatedFiles)
             {
                 related.Dispose();
             }
+
             RelatedFiles.Clear();
 
             foreach (FileData referenced in ReferencedByFileData.Values)
             {
                 referenced.Dispose();
             }
+
             ReferencedByFileData.Clear();
         }
     }

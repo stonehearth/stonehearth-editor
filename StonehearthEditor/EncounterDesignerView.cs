@@ -42,6 +42,7 @@ namespace StonehearthEditor
                     addNewGameMasterNode.DropDownItems.Add(scriptFile.Name);
                 }
             }
+
             encounterTreeView.Nodes.Clear();
             GameMasterDataManager.GetInstance().FillEncounterNodeTree(encounterTreeView);
         }
@@ -192,6 +193,7 @@ namespace StonehearthEditor
                 saveNewEncounterNodeDialog.ShowDialog(this);
             }
         }
+
         private void saveNewEncounterNodeDialog_FileOk(object sender, CancelEventArgs e)
         {
             string filePath = saveNewEncounterNodeDialog.FileName;
@@ -199,6 +201,7 @@ namespace StonehearthEditor
             {
                 return;
             }
+
             filePath = JsonHelper.NormalizeSystemPath(filePath);
             GameMasterNode existingNode = GameMasterDataManager.GetInstance().GetGameMasterNode(filePath);
             if (existingNode != null)
@@ -206,6 +209,7 @@ namespace StonehearthEditor
                 MessageBox.Show("Cannot override an existing node. Either edit that node or create a new name.");
                 return;
             }
+
             GameMasterDataManager.GetInstance().AddNewGenericScriptNode(this, mSelectedNewScriptNode, filePath);
         }
 
@@ -285,6 +289,7 @@ namespace StonehearthEditor
                 mViewer = viewer;
                 mNode = node;
             }
+
             public void onCancelled()
             {
                 // Do nothing. user cancelled
@@ -299,11 +304,13 @@ namespace StonehearthEditor
                     MessageBox.Show("You must enter a name longer than 1 character for the clone!");
                     return false;
                 }
+
                 if (potentialNewNodeName.Equals(mNode.Name))
                 {
                     MessageBox.Show("You must enter a new unique name for the clone!");
                     return false;
                 }
+
                 GameMasterDataManager.GetInstance().CloneNode(mViewer, mNode, potentialNewNodeName);
                 return true;
             }

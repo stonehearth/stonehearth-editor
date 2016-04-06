@@ -33,6 +33,7 @@ namespace StonehearthEditor
                mAllAliases.Add(alias.FullAlias);
             }
          }
+
          SetFilter(null);
       }
 
@@ -64,6 +65,7 @@ namespace StonehearthEditor
                string alias = (string)obj;
                selected.Add(alias);
             }
+
             bool isSuccess = mCallback.OnAccept(selected);
             if (isSuccess)
             {

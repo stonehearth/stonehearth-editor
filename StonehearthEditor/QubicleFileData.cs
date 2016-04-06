@@ -23,11 +23,13 @@ namespace StonehearthEditor
         {
             return false; // Qubicle files
         }
+
         public override void Load()
         {
             // do not actually load the binary
             LoadInternal();
         }
+
         protected override void LoadInternal()
         {
             if (mIsQb)
@@ -42,6 +44,7 @@ namespace StonehearthEditor
                 }
             }
         }
+
         public void AddLinkingJsonFile(JsonFileData file)
         {
             RelatedFiles.Add(file);
@@ -58,6 +61,7 @@ namespace StonehearthEditor
                     System.IO.File.Copy(Path, newPath);
                 }
             }
+
             string qmoPath = GetQmoPath();
             if (mIsQb && LinkedFileData.ContainsKey(qmoPath))
             {
@@ -68,6 +72,7 @@ namespace StonehearthEditor
                     LinkedFileData[qmoPath].Clone(newQmoPath, parameters, alreadyCloned, execute);
                 }
             }
+
             return true;
         }
 
@@ -82,6 +87,7 @@ namespace StonehearthEditor
             {
                 return GetQmoPath();
             }
+
             return Path;
         }
     }

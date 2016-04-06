@@ -57,6 +57,7 @@ namespace StonehearthEditor
                         }
                     }
                 }
+
                 ParseLinkedAliases(jsonString);
                 ParseLinkedFiles(jsonString);
                 ParseJsonSpecificData();
@@ -101,6 +102,7 @@ namespace StonehearthEditor
                         AddError("mixin added");
                     }
                 }
+
                 if (mixinsArray != null)
                 {
                     HashSet<string> allMixins = new HashSet<string>();
@@ -108,11 +110,13 @@ namespace StonehearthEditor
                     {
                         allMixins.Add(property.ToString());
                     }
+
                     if (!allMixins.Contains(mixin))
                     {
                         mSaveJsonAfterParse = true;
                         AddError("mixin added");
                     }
+
                     allMixins.Add(mixin);
                     mixinsArray.Clear();
                     foreach (string hashsetMixin in allMixins)
@@ -139,6 +143,7 @@ namespace StonehearthEditor
                         entityData = new JObject();
                         mJson["entity_data"] = entityData;
                     }
+
                     entityData.Add("stonehearth:net_worth", netWorth);
                     mSaveJsonAfterParse = true;
                 }
@@ -175,6 +180,7 @@ namespace StonehearthEditor
                             OpenedFiles.Add(ghost);
                             ghost.PostLoad();
                         }
+
                         JToken iconicForm = entityFormsComponent["iconic_form"];
                         if (iconicForm != null)
                         {
@@ -184,6 +190,7 @@ namespace StonehearthEditor
                             iconic.Load();
                             OpenedFiles.Add(iconic);
                         }
+
                         CheckForNoNetWorth();
                     }
                     else
@@ -193,6 +200,7 @@ namespace StonehearthEditor
                             CheckForNoNetWorth();
                         }
                     }
+
                     break;
                 case JSONTYPE.JOB:
                     // Parse crafter stuff
@@ -208,6 +216,7 @@ namespace StonehearthEditor
                         {
                             recipes.RelatedFiles.Add(recipe);
                         }
+
                         OpenedFiles.Add(recipes);
                         recipes.ReferencedByFileData[GetAliasOrFlatName()] = this;
                     }
@@ -254,6 +263,7 @@ namespace StonehearthEditor
                             }
                         }
                     }
+
                     ////AlterJobExperience();
                     break;
                 case JSONTYPE.RECIPE:
@@ -281,13 +291,16 @@ namespace StonehearthEditor
                             }
                         }
                     }
+
                     break;
             }
+
             CheckDisplayName();
             if (Json != null && Json.SelectToken("components.effect_list.effects") != null)
             {
                 AddError("effect_list component is using 'effects' to specify a list of effects. This is bad because these effects will not restart after save load. You should put all the effects into a single file and reference that file as 'default'");
             }
+
             FixUpAllCombatData();
         }
 
@@ -323,6 +336,7 @@ namespace StonehearthEditor
                     {
                         cooldown = cooldownToken.Value<int>();
                     }
+
                     if (kCombatTuning.ContainsKey(name))
                     {
                         int existingCooldown = kCombatTuning[name];
@@ -336,6 +350,7 @@ namespace StonehearthEditor
                         kCombatTuning[name] = cooldown;
                     }
                 }
+
                 if (hasError)
                 {
                     AddError("Action name and effect need to be separated");
@@ -358,6 +373,7 @@ namespace StonehearthEditor
                     int newValue = value - 5;
                     xpValue.Value = newValue;
                 }
+
                 AddError("Needs Save after job experience altered");
                 mSaveJsonAfterParse = true;
                 mHasAlteredExperience = true;
@@ -383,12 +399,15 @@ namespace StonehearthEditor
                         needsSort = true;
                         break;
                     }
+
                     if (prop.Name == "display_name")
                     {
                         seenDisplayName = true;
                     }
+
                     index++;
                 }
+
                 JToken description = unitInfo["description"];
                 JToken icon = unitInfo["icon"];
                 JToken displayName = unitInfo["display_name"];
@@ -401,6 +420,7 @@ namespace StonehearthEditor
                     {
                         unitInfo.Add("icon", icon);
                     }
+
                     mSaveJsonAfterParse = true;
                 }
 
@@ -423,6 +443,7 @@ namespace StonehearthEditor
                         CheckStringKeyExists(mJson.SelectToken("display_name"), "display_name");
                         CheckStringKeyExists(mJson.SelectToken("description"), "description");
                     }
+
                     break;
                 case JSONTYPE.COMMAND:
                     CheckStringKeyExists(mJson.SelectToken("display_name"), "display_name");
@@ -430,6 +451,7 @@ namespace StonehearthEditor
                     break;
             }
         }
+
         private void CheckStringKeyExists(JToken token, string tokenName)
         {
             if (token == null)
@@ -437,6 +459,7 @@ namespace StonehearthEditor
                 ////AddError("The string for " + tokenName + " does not exist! Please add localization support");
                 return;
             }
+
             string key = token.ToString();
             Regex matcher = new Regex(@"i18n\(([^)]+)\)");
             Match locMatch = matcher.Match(key);
@@ -456,6 +479,7 @@ namespace StonehearthEditor
                 }
             }
         }
+
         public string GetJsonFileString()
         {
             string jsonString = JsonHelper.GetFormattedJsonString(mJson);
@@ -463,6 +487,7 @@ namespace StonehearthEditor
             {
                 Console.WriteLine("Could not convert {0} to json string", Path);
             }
+
             return jsonString != null ? jsonString : "INVALID JSON";
         }
 
@@ -485,10 +510,12 @@ namespace StonehearthEditor
                         AddError("Links to non-existent file " + linkedFile);
                         continue;
                     }
+
                     if (LinkedFileData.ContainsKey(linkedFile))
                     {
                         continue;
                     }
+
                     FileData linkedFileData = GetFileDataFactory(linkedFile);
                     if (linkedFileData != null)
                     {
@@ -498,6 +525,7 @@ namespace StonehearthEditor
                 }
             }
         }
+
         public override void AddError(string error)
         {
             base.AddError(error);
@@ -506,6 +534,7 @@ namespace StonehearthEditor
                 case JSONTYPE.ENCOUNTER:
                     return;
             }
+
             Console.WriteLine(error);
             ModuleDataManager.GetInstance().AddErrorFile(this);
         }
@@ -532,6 +561,7 @@ namespace StonehearthEditor
                     jsonFileData.RelatedFiles.Add(this);
                     return jsonFileData;
             }
+
             return null;
         }
 
@@ -553,10 +583,12 @@ namespace StonehearthEditor
                 {
                     continue;
                 }
+
                 LinkedAliases.Add(linkedAlias);
                 linkedAlias.AddReference(GetAliasOrFlatName(), this);
             }
         }
+
         protected override bool TryChangeFlatFileData(string newData, out string newFlatFileData)
         {
             try
@@ -570,6 +602,7 @@ namespace StonehearthEditor
                 newFlatFileData = null;
                 return false;
             }
+
             return true;
         }
 
@@ -635,6 +668,7 @@ namespace StonehearthEditor
                             hasChildMatchingFilter = true;
                         }
                     }
+
                     node.Nodes.Add(recipes);
                 }
             }
@@ -666,6 +700,7 @@ namespace StonehearthEditor
                         {
                             break;
                         }
+
                         foreach (JToken recipe in token.First["recipes"].Children())
                         {
                             if (recipe.Last.ToString().Contains(FileName))
@@ -675,6 +710,7 @@ namespace StonehearthEditor
                             }
                         }
                     }
+
                     if (foundParent != null)
                     {
                         string recipeFileName = System.IO.Path.GetFileName(newPath);
@@ -684,6 +720,7 @@ namespace StonehearthEditor
                     }
                 }
             }
+
             return base.Clone(newPath, parameters, alreadyCloned, execute);
         }
 
@@ -703,6 +740,7 @@ namespace StonehearthEditor
                     }
                 }
             }
+
             return base.ShouldCloneDependency(dependencyName, parameters);
         }
 
@@ -718,6 +756,7 @@ namespace StonehearthEditor
                     fileName = fileName.Replace("_description", "");
                     break;
             }
+
             return fileName;
         }
 
@@ -735,10 +774,12 @@ namespace StonehearthEditor
         {
             get { return mJsonType; }
         }
+
         public string Directory
         {
             get { return mDirectory; }
         }
+
         public JObject Json
         {
             get { return mJson; }

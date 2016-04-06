@@ -28,6 +28,7 @@ namespace StonehearthEditor
                 path = path.Trim();
                 kModsDirectoryPath = JsonHelper.NormalizeSystemPath(path);
             }
+
             InitializeComponent();
         }
 
@@ -37,6 +38,7 @@ namespace StonehearthEditor
             {
                 chooseModDirectory();
             }
+
             LoadModFiles();
             int initialTab = (int)Properties.Settings.Default["InitialTab"];
             tabControl.SelectedIndex = initialTab;
@@ -97,6 +99,7 @@ namespace StonehearthEditor
             {
                 Settings.Default.MainFormSize = this.RestoreBounds.Size;
             }
+
             Properties.Settings.Default.Save();
         }
 
@@ -107,6 +110,7 @@ namespace StonehearthEditor
                 mNetWorthVisualizer.UpdateNetWorthData();
                 return;
             }
+
             mNetWorthVisualizer = new NetWorthVisualizer();
             mNetWorthVisualizer.SetManifestView(manifestView);
             ////mNetWorthVisualizer.UpdateNetWorthData();

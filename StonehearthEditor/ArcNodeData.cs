@@ -65,6 +65,7 @@ namespace StonehearthEditor
                     }
                 }
             }
+
             return inEdges;
         }
 
@@ -85,6 +86,7 @@ namespace StonehearthEditor
         {
             return new ArcNodeData();
         }
+
         public void AddEncounter(EncounterNodeData encounter)
         {
             // TODO, get relative path
@@ -110,6 +112,7 @@ namespace StonehearthEditor
                     return true;
                 }
             }
+
             return false;
         }
     }

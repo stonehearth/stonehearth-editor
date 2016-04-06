@@ -30,6 +30,7 @@ namespace StonehearthEditor
                     }
                 }
             }
+
             return thumbnail;
         }
 
@@ -39,6 +40,7 @@ namespace StonehearthEditor
             {
                 img.Dispose();
             }
+
             sThumbnailCache.Clear();
         }
     }

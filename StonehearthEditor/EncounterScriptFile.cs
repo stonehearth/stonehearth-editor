@@ -36,11 +36,13 @@ namespace StonehearthEditor
                         {
                             sb.AppendLine(line);
                         }
+
                         if (line.StartsWith("<StonehearthEditor>"))
                         {
                             started = true;
                         }
                     }
+
                     mDefaultJson = sb.ToString();
                 }
             }

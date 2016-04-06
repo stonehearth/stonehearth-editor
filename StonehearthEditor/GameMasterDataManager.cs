@@ -32,6 +32,7 @@ namespace StonehearthEditor
         {
             get { return mCurrentGraphRoot; }
         }
+
         public void Load()
         {
             ParseGenericEncounterScripts(MainForm.kModsDirectoryPath + "/stonehearth/services/server/game_master/controllers");
@@ -56,6 +57,7 @@ namespace StonehearthEditor
                 SelectCampaign(graphOwner, selectedNode.Parent.Text, selectedNode.Text);
             }
         }
+
         public void SelectCampaign(IGraphOwner graphOwner, string module, string name)
         {
             foreach (GameMasterNode node in mCampaignNodes)
@@ -74,6 +76,7 @@ namespace StonehearthEditor
             {
                 return mGameMasterNodes[nodeId];
             }
+
             return null;
         }
 
@@ -113,6 +116,7 @@ namespace StonehearthEditor
                 RefreshGraph(graphOwner);
             }
         }
+
         public void SaveModifiedFiles()
         {
             foreach (GameMasterNode node in mGameMasterNodes.Values)
@@ -127,11 +131,13 @@ namespace StonehearthEditor
             {
                 return;
             }
+
             string[] directories = Directory.GetDirectories(directory);
             if (directories == null)
             {
                 return;
             }
+
             foreach (string d in directories)
             {
                 string[] files = Directory.GetFiles(d, fileType);
@@ -142,10 +148,12 @@ namespace StonehearthEditor
                         string formatted = JsonHelper.NormalizeSystemPath(f);
                         luaFilesFound.Add(formatted);
                     }
+
                     SearchForFileType(d, fileType, luaFilesFound);
                 }
             }
         }
+
         private void ParseGenericEncounterScripts(string folderPath)
         {
             List<string> genericScriptFiles = new List<string>();
@@ -179,9 +187,11 @@ namespace StonehearthEditor
                     kCollisions[fileName] = numCollisions;
                     fileName = fileName + "(" + numCollisions + ")";
                 }
+
                 mCustomScriptNodes.Add(fileName, file);
             }
         }
+
         private void ParseNodeGraph(string moduleName, string folderPath)
         {
             List<string> nodeFiles = new List<string>();
@@ -241,6 +251,7 @@ namespace StonehearthEditor
                     }
                 }
             }
+
             graphOwner.SetGraph(mGraph);
         }
 
@@ -257,9 +268,11 @@ namespace StonehearthEditor
                     moduleTreeNodes[node.Module] = parent;
                     campaignsTree.Nodes.Add(parent);
                 }
+
                 TreeNode treeNode = new TreeNode(node.Name);
                 parent.Nodes.Add(treeNode);
             }
+
             campaignsTree.ExpandAll();
             treeView.Nodes.Add(campaignsTree);
         }
@@ -270,6 +283,7 @@ namespace StonehearthEditor
             {
                 return false;
             }
+
             EncounterScriptFile scriptFile = mGenericScriptNodes[scriptNodeName];
             scriptFile.WriteDefaultToFile(filePath);
             GameMasterNode newNode = new GameMasterNode(mCurrentGraphRoot.Module, filePath);
@@ -312,6 +326,7 @@ namespace StonehearthEditor
             {
                 return false;
             }
+
             File.Delete(nodePath);
             mGameMasterNodes.Remove(nodePath);
 

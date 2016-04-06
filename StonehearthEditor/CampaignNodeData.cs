@@ -83,6 +83,7 @@ namespace StonehearthEditor
                     node.NodeData.GetRelatedNodes(set);
                 }
             }
+
             foreach (GameMasterNode node in mArcChallenges.Values)
             {
                 if (!set.Contains(node))
@@ -91,6 +92,7 @@ namespace StonehearthEditor
                     node.NodeData.GetRelatedNodes(set);
                 }
             }
+
             foreach (GameMasterNode node in mArcClimaxes.Values)
             {
                 if (!set.Contains(node))
@@ -99,6 +101,7 @@ namespace StonehearthEditor
                     node.NodeData.GetRelatedNodes(set);
                 }
             }
+
             foreach (GameMasterNode node in OrphanedNodes)
             {
                 if (!set.Contains(node))
@@ -127,6 +130,7 @@ namespace StonehearthEditor
                     graph.AddEdge(triggerNode.Id, node.Id);
                 }
             }
+
             foreach (GameMasterNode node in mArcChallenges.Values)
             {
                 if (node.NodeType == GameMasterNodeType.ARC)
@@ -138,6 +142,7 @@ namespace StonehearthEditor
                     graph.AddEdge(triggerNode.Id, node.Id);
                 }
             }
+
             foreach (GameMasterNode node in mArcClimaxes.Values)
             {
                 if (node.NodeType == GameMasterNodeType.ARC)
@@ -158,6 +163,7 @@ namespace StonehearthEditor
                 mArcTriggers.Add(nodeFile.Name, nodeFile);
                 return true;
             }
+
             return false;
         }
     }

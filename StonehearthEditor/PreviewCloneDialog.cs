@@ -29,6 +29,7 @@ namespace StonehearthEditor
                 bool isChecked = unwantedItems != null ? !unwantedItems.Contains(item) : true;
                 dependenciesListBox.Items.Add(item, isChecked);
             }
+
             mCallback = callback;
         }
 
@@ -39,6 +40,7 @@ namespace StonehearthEditor
             {
                 unwantedItems.Remove(item.ToString());
             }
+
             return unwantedItems;
         }
 

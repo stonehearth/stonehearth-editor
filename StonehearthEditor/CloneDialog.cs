@@ -37,6 +37,7 @@ namespace StonehearthEditor
                     AddNewRow(oldAlias);
                 }
             }
+
             AddNewRow(initialText);
             AcceptButton = cloneButton;
 
@@ -67,6 +68,7 @@ namespace StonehearthEditor
                         parameters.AddStringReplacement(original.Text, replacement.Text);
                     }
                 }
+
                 bool isSuccess = mCallback.OnAccept(parameters);
                 if (isSuccess)
                 {

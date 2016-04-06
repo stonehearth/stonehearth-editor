@@ -19,6 +19,7 @@ namespace StonehearthEditor
             {
                 returned = selectedElement.Value.Trim();
             }
+
             return returned;
         }
 
@@ -40,6 +41,7 @@ namespace StonehearthEditor
                     returned.Add(selectedElement.Value);
                 }
             }
+
             return returned;
         }
 
@@ -62,6 +64,7 @@ namespace StonehearthEditor
                     returned.Add(selectedElement.ToString());
                 }
             }
+
             return returned;
         }
 
@@ -79,13 +82,16 @@ namespace StonehearthEditor
                     {
                         name = element.Attribute("item").Value;
                     }
+
                     name = name.Trim();
                     value = value.Trim();
                     returned.Add(name, value);
                 }
             }
+
             return returned;
         }
+
         public static Dictionary<string, string> GetJsonStringDictionary(JToken root, string elementName)
         {
             Dictionary<string, string> returned = new Dictionary<string, string>();
@@ -167,6 +173,7 @@ namespace StonehearthEditor
                     fullPath = fullPath.Substring(index + 3);
                     index = fullPath.IndexOf("../");
                 }
+
                 splitParentPath = parentPath.Split(delimeter, parentPathCount);
                 splitParentPath[splitParentPath.Length - 1] = "";
                 parentPath = string.Join("/", splitParentPath);
@@ -177,6 +184,7 @@ namespace StonehearthEditor
                 string folderName = fullPath.Substring(fullPath.LastIndexOf('/') + 1);
                 fullPath = fullPath + "/" + folderName + ".json";
             }
+
             if (fullPath.StartsWith("/"))
             {
                 if (startedWithFile)
@@ -187,6 +195,7 @@ namespace StonehearthEditor
                     {
                         mod = mod.Substring(0, firstSlash);
                     }
+
                     fullPath = ModuleDataManager.GetInstance().ModsDirectoryPath + '/' + mod + fullPath;
                 }
                 else
@@ -198,6 +207,7 @@ namespace StonehearthEditor
             {
                 fullPath = parentPath + "/" + fullPath;
             }
+
             return fullPath;
         }
 
@@ -208,6 +218,7 @@ namespace StonehearthEditor
             {
                 normalized = char.ToUpperInvariant(normalized[0]) + normalized.Substring(1);
             }
+
             return normalized;
         }
 
@@ -299,12 +310,14 @@ namespace StonehearthEditor
                     jsonSeralizer.NullValueHandling = NullValueHandling.Ignore;
                     jsonSeralizer.Serialize(jsonTextWriter, json);
                 }
+
                 return stringWriter.ToString();
             }
             catch (Exception e)
             {
                 Console.WriteLine("Could not convert json to string because of exception " + e.Message);
             }
+
             return null;
         }
 
@@ -344,8 +357,10 @@ namespace StonehearthEditor
                 {
                     mWritingMinMax = false;
                 }
+
                 base.WritePropertyName(name);
             }
+
             public override void WriteValue(object value)
             {
                 base.WriteValue(value);
@@ -370,6 +385,7 @@ namespace StonehearthEditor
                     {
                         always.Add("num_rolls", lootDrops["num_rolls"]);
                     }
+
                     foreach (JToken itemToken in lootDrops["items"].Children())
                     {
                         JObject item = itemToken as JObject;
@@ -389,9 +405,11 @@ namespace StonehearthEditor
                                 index++;
                                 uriTest = shortUri + index;
                             }
+
                             items.Add(uriTest, item);
                         }
                     }
+
                     always.Add("items", items);
                     entries.Add("default", always);
                     newLootDrops.Add("entries", entries);
@@ -399,6 +417,7 @@ namespace StonehearthEditor
                     modified = true;
                 }
             }
+
             return modified;
         }
     }

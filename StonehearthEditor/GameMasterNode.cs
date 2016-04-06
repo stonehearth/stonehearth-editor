@@ -60,10 +60,12 @@ namespace StonehearthEditor
         {
             get { return mPath; }
         }
+
         public string Directory
         {
             get { return mDirectory; }
         }
+
         public GameMasterNodeType NodeType
         {
             get { return mNodeType; }
@@ -83,6 +85,7 @@ namespace StonehearthEditor
         {
             get { return mJsonFileData.Json; }
         }
+
         public string Module
         {
             get { return mModule; }
@@ -100,6 +103,7 @@ namespace StonehearthEditor
             {
                 MessageBox.Show("Unable to load " + mPath + ". Error: " + e.Message);
             }
+
             if (mNodeData != null)
             {
                 mNodeData.PostLoadFixup();
@@ -118,6 +122,7 @@ namespace StonehearthEditor
                     newNodeType = nodeType;
                 }
             }
+
             if (newNodeType != mNodeType)
             {
                 mNodeType = newNodeType;
@@ -141,6 +146,7 @@ namespace StonehearthEditor
                         break;
                 }
             }
+
             if (mNodeData != null)
             {
                 mNodeData.NodeFile = this;
@@ -165,12 +171,14 @@ namespace StonehearthEditor
                     JsonSerializer jsonSeralizer = new JsonSerializer();
                     jsonSeralizer.Serialize(jsonTextWriter, Json);
                 }
+
                 return stringWriter.ToString();
             }
             catch (Exception e)
             {
                 Console.WriteLine("Could not convert " + mPath + " to string because of exception " + e.Message);
             }
+
             return "INVALID JSON";
         }
 
@@ -185,6 +193,7 @@ namespace StonehearthEditor
                     {
                         return false; // not modified because jsons are equivalent
                     }
+
                     mJsonFileData.TrySetFlatFileData(newJsonString);
                     IsModified = true;
                 }
@@ -194,6 +203,7 @@ namespace StonehearthEditor
                 MessageBox.Show("Unable to modify json. Error: " + e.Message);
                 return false;
             }
+
             return true;
         }
 
@@ -215,6 +225,7 @@ namespace StonehearthEditor
                 }
             }
         }
+
         public GameMasterNode Clone(string newFileName)
         {
             try
@@ -234,6 +245,7 @@ namespace StonehearthEditor
             {
                 MessageBox.Show("Unable to clone Game Master Node to " + newFileName + ". Error: " + e.Message);
             }
+
             return null;
         }
     }

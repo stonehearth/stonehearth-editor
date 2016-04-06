@@ -28,6 +28,7 @@ namespace StonehearthEditor
             {
                 return new List<ModuleFile>();
             }
+
             return mModuleFiles["aliases"].Values;
         }
 
@@ -35,6 +36,7 @@ namespace StonehearthEditor
         {
             get { return mName; }
         }
+
         public string Path
         {
             get { return mPath; }
@@ -44,6 +46,7 @@ namespace StonehearthEditor
         {
             get { return mEnglishLocalizationJson; }
         }
+
         public void InitializeFromManifest()
         {
             string stonehearthModManifest = Path + "/manifest.json";
@@ -115,10 +118,12 @@ namespace StonehearthEditor
                 }
             }
         }
+
         public ModuleFile GetAliasFile(string alias)
         {
             return GetModuleFile("aliases", alias);
         }
+
         public ModuleFile GetModuleFile(string fileType, string alias)
         {
             ModuleFile returned = null;
@@ -126,6 +131,7 @@ namespace StonehearthEditor
             {
                 mModuleFiles[fileType].TryGetValue(alias, out returned);
             }
+
             return returned;
         }
 
@@ -136,6 +142,7 @@ namespace StonehearthEditor
             {
                 prop.Remove();
             }
+
             properties.Sort(
                delegate (JProperty a, JProperty b)
                {
@@ -156,6 +163,7 @@ namespace StonehearthEditor
                 mManifestJson.Add("aliases", null);
                 aliases = mManifestJson["aliases"];
             }
+
             JObject aliasesObject = aliases as JObject;
             if (aliasesObject.Property(alias) == null)
             {
@@ -208,6 +216,7 @@ namespace StonehearthEditor
                 }
             }
         }
+
         public void PostLoadFixup()
         {
             foreach (ModuleFile moduleFile in GetAliases())
@@ -231,6 +240,7 @@ namespace StonehearthEditor
                 {
                     subRoot.ExpandAll();
                 }
+
                 subRoot.SelectedImageIndex = 100;
                 subRoot.ImageIndex = 100;
                 foreach (ModuleFile alias in pair.Value.Values)
@@ -241,6 +251,7 @@ namespace StonehearthEditor
                         subRoot.Nodes.Add(newNode);
                     }
                 }
+
                 if (subRoot.Nodes.Count > 0)
                 {
                     hasItems = true;
@@ -259,8 +270,10 @@ namespace StonehearthEditor
                 {
                     moduleFile.Dispose();
                 }
+
                 dictionary.Clear();
             }
+
             mModuleFiles.Clear();
         }
     }
