@@ -87,7 +87,6 @@ namespace StonehearthEditor
             return FindFileData(FileData, path, 3);
         }
 
-
         public TreeNode GetTreeNode(string filter)
         {
             TreeNode treeNode = new TreeNode(Name);

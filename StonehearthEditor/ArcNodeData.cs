@@ -110,6 +110,5 @@ namespace StonehearthEditor
                 }
             }
         }
-
     }
 }

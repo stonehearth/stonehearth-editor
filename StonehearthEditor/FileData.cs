@@ -151,7 +151,6 @@ namespace StonehearthEditor
             get { return mFlatFileData; }
         }
 
-
         public virtual bool ShouldCloneDependency(string dependencyName, CloneObjectParameters parameters)
         {
             return parameters.IsDependency(dependencyName);

@@ -181,7 +181,6 @@ namespace StonehearthEditor
             }
         }
 
-
         public override NodeData Clone(GameMasterNode nodeFile)
         {
             EncounterNodeData newNodeData = new EncounterNodeData();
