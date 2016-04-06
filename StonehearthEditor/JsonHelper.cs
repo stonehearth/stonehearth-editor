@@ -206,7 +206,7 @@ namespace StonehearthEditor
         }
 
         // Word Wrap code taken from http://www.softcircuits.com/Blog/post/2010/01/10/Implementing-Word-Wrap-in-C.aspx
-        public const string _newline = "\r\n";
+        private const string kNewline = "\r\n";
 
         public static string WordWrap(string the_string, int width)
         {
@@ -221,12 +221,12 @@ namespace StonehearthEditor
             for (pos = 0; pos < the_string.Length; pos = next)
             {
                 // Find end of line
-                int eol = the_string.IndexOf(_newline, pos);
+                int eol = the_string.IndexOf(kNewline, pos);
 
                 if (eol == -1)
                     next = eol = the_string.Length;
                 else
-                    next = eol + _newline.Length;
+                    next = eol + kNewline.Length;
 
                 // Copy this line of text, breaking into smaller lines as needed
                 if (eol > pos)
@@ -239,7 +239,7 @@ namespace StonehearthEditor
                             len = BreakLine(the_string, pos, width);
 
                         sb.Append(the_string, pos, len);
-                        sb.Append(_newline);
+                        sb.Append(kNewline);
 
                         // Trim whitespace following break
                         pos += len;
@@ -249,7 +249,7 @@ namespace StonehearthEditor
 
                     } while (eol > pos);
                 }
-                else sb.Append(_newline); // Empty line
+                else sb.Append(kNewline); // Empty line
             }
 
             return sb.ToString();
