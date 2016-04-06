@@ -24,12 +24,15 @@ namespace StonehearthEditor
         private Dictionary<string, string> weaponsImagePaths;
         private Dictionary<string, string> defenseImagePaths;
 
-        private string[] attributesOfInterest = new string[] { "max_health",
-                                                             "speed",
-                                                             "menace",
-                                                             "courage",
-                                                             "muscle",
-                                                             "exp_reward" };
+        private string[] attributesOfInterest = new string[]
+        {
+            "max_health",
+            "speed",
+            "menace",
+            "courage",
+            "muscle",
+            "exp_reward"
+        };
 
         public EntityBrowserView()
         {

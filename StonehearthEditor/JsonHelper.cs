@@ -247,7 +247,8 @@ namespace StonehearthEditor
                         while (pos < eol && char.IsWhiteSpace(the_string[pos]))
                             pos++;
 
-                    } while (eol > pos);
+                    }
+                    while (eol > pos);
                 }
                 else sb.Append(kNewline); // Empty line
             }
