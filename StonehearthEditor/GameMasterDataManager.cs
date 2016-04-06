@@ -36,6 +36,7 @@ namespace StonehearthEditor
         public void Load()
         {
             ParseGenericEncounterScripts(MainForm.kModsDirectoryPath + "/stonehearth/services/server/game_master/controllers");
+
             // get the game master index location
             foreach (Module module in ModuleDataManager.GetInstance().GetAllModules())
             {

@@ -22,6 +22,7 @@ namespace StonehearthEditor
         private FileData mFileData = null;
         private FileType mType = FileType.UNKNOWN;
         private bool mIsFineVersion = false;
+
         // Needed because at the timer we load aliases, the referenced alias might not be loaded
         protected Dictionary<string, FileData> mReferencesCache = new Dictionary<string, FileData>();
         public ModuleFile(Module module, string alias, string filePath)
@@ -296,6 +297,7 @@ namespace StonehearthEditor
                     }
 
                     int totalCost = 0;
+
                     // If we are created by a recipe, look at the ingredients for the recipe to calculate net worth of all ingredients ...
                     JArray ingredients = refJson.Json["ingredients"] as JArray;
                     if (ingredients != null)

@@ -291,6 +291,7 @@ namespace StonehearthEditor
                             // Find start of whitespace
             while (i >= 0 && char.IsWhiteSpace(text[pos + i]))
                 i--;
+
             // Return length of text before whitespace
             return i + 1;
         }

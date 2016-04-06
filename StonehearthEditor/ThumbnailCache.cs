@@ -26,6 +26,7 @@ namespace StonehearthEditor
                     catch (Exception e)
                     {
                         MessageBox.Show("Error reading image file: " + imageFile + ". Error: " + e.Message + ". Is the image the proper format?");
+
                         // Not an image?
                     }
                 }
