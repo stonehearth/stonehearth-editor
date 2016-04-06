@@ -306,7 +306,7 @@ namespace StonehearthEditor
                                 }
                             }
                             int count = int.Parse(ingredient["count"].ToString());
-                            totalCost = totalCost + costPer * count;
+                            totalCost = totalCost + (costPer * count);
                         }
                     }
                     jsonFileData.RecommendedMinNetWorth = totalCost / productCount;
@@ -315,7 +315,7 @@ namespace StonehearthEditor
                     if (workUnits != null)
                     {
                         int units = int.Parse(workUnits.ToString());
-                        totalCost = totalCost + units * kWorkUnitsWorth;
+                        totalCost = totalCost + (units * kWorkUnitsWorth);
                     }
                     jsonFileData.RecommendedMaxNetWorth = totalCost / productCount;
                 }

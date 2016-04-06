@@ -115,7 +115,7 @@ namespace StonehearthEditor
             int maxRows = Math.Min(mItemCount, kMaxRows);
             int canvasWidth = maxCols * (cellSizeZoomed + 1);
             int canvasHeightLimit = maxRows * (cellSizeZoomed + 1);
-            int canvasHeight = maxRows * (cellSizeZoomed + 1) + kBottomOffset;
+            int canvasHeight = (maxRows * (cellSizeZoomed + 1)) + kBottomOffset;
 
             canvas.Width = canvasWidth;
             canvas.Height = canvasHeight;
@@ -148,7 +148,7 @@ namespace StonehearthEditor
                         {
                             Image thumbnail = ThumbnailCache.GetThumbnail(imageFile);
 
-                            int ylocation = canvasHeight - (j + 1) * cellSizeZoomed - maxRows - kBottomOffset - 1;
+                            int ylocation = canvasHeight - ((j + 1) * cellSizeZoomed) - maxRows - kBottomOffset - 1;
                             Rectangle location = new Rectangle(i * cellSizeZoomed, ylocation, cellSizeZoomed, cellSizeZoomed);
                             graphics.DrawImage(thumbnail, location);
 
@@ -166,7 +166,7 @@ namespace StonehearthEditor
                                 {
                                     shouldWarn = true;
                                 }
-                                if (cost > (data.RecommendedMaxNetWorth * kMaxRecommendedMultiplier + 1))
+                                if (cost > ((data.RecommendedMaxNetWorth * kMaxRecommendedMultiplier) + 1))
                                 {
                                     shouldWarn = true;
                                 }
@@ -228,7 +228,7 @@ namespace StonehearthEditor
                         string tooltip = mHoveredFileData.FileName;
                         if (mHoveredFileData.RecommendedMinNetWorth >= 0)
                         {
-                            tooltip = tooltip + "\n Recommended Net Worth: " + mHoveredFileData.RecommendedMinNetWorth + " - " + mHoveredFileData.RecommendedMaxNetWorth * kMaxRecommendedMultiplier;
+                            tooltip = tooltip + "\n Recommended Net Worth: " + mHoveredFileData.RecommendedMinNetWorth + " - " + (mHoveredFileData.RecommendedMaxNetWorth * kMaxRecommendedMultiplier);
                             tooltip = tooltip + "\n Average: " + mHoveredFileData.RecommendedMaxNetWorth;
                         }
 
