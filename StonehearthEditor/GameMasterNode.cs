@@ -18,7 +18,7 @@ namespace StonehearthEditor
         ENCOUNTER = 3,
         CAMP_PIECE = 4,
         UNKNOWN = 5,
-    };
+    }
 
     public class GameMasterNode
     {

@@ -19,7 +19,7 @@ namespace StonehearthEditor
         ANIMATION = 8,
         ENCOUNTER = 9,
         JOB = 10,
-    };
+    }
 
     public class JsonFileData : FileData, IModuleFileData
     {
@@ -473,7 +473,9 @@ namespace StonehearthEditor
             foreach (Match match in matcher.Matches(jsonString))
             {
                 string matchValue = match.Value;
-                if (matchValue != "file(animations)" && matchValue != "file(effects)") // Sigh, special case these because they're more like folders instead of files
+
+                // Sigh, special case these because they're more like folders instead of files
+                if (matchValue != "file(animations)" && matchValue != "file(effects)")
                 {
                     string linkedFile = JsonHelper.GetFileFromFileJson(match.Value, directory);
                     linkedFile = JsonHelper.NormalizeSystemPath(linkedFile);

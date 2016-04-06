@@ -10,7 +10,7 @@ namespace StonehearthEditor
         UNKNOWN = 0,
         LUA = 1,
         JSON = 2,
-    };
+    }
     public class ModuleFile : IDisposable
     {
         private Module mModule;
@@ -62,7 +62,9 @@ namespace StonehearthEditor
         public void TryLoad()
         {
             IModuleFileData fileData = null;
-            if (mType == FileType.JSON) // only load Json
+
+            // only load Json
+            if (mType == FileType.JSON)
             {
                 fileData = new JsonFileData(ResolvedPath);
 
