@@ -28,7 +28,7 @@ namespace StonehearthEditor
          mCallback = callback;
          foreach (Module mod in ModuleDataManager.GetInstance().GetAllModules())
          {
-            foreach(ModuleFile alias in mod.GetAliases())
+            foreach (ModuleFile alias in mod.GetAliases())
             {
                mAllAliases.Add(alias.FullAlias);
             }
@@ -40,7 +40,7 @@ namespace StonehearthEditor
       {
          bool isEmpty = string.IsNullOrWhiteSpace(filter);
          listBox.Items.Clear();
-         foreach(string alias in mAllAliases)
+         foreach (string alias in mAllAliases)
          {
             if (isEmpty || alias.Contains(filter))
             {
@@ -59,7 +59,7 @@ namespace StonehearthEditor
          if (mCallback != null)
          {
             HashSet<string> selected = new HashSet<string>();
-            foreach(object obj in listBox.SelectedItems)
+            foreach (object obj in listBox.SelectedItems)
             {
                string alias = (string)obj;
                selected.Add(alias);
