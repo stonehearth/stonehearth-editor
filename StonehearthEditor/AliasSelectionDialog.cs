@@ -17,7 +17,7 @@ namespace StonehearthEditor
          // Returns true if we can close the dialog
          bool OnAccept(HashSet<string> aliases);
 
-         void onCancelled();
+         void OnCancelled();
       }
 
       private HashSet<string> mAllAliases = new HashSet<string>();
@@ -80,7 +80,7 @@ namespace StonehearthEditor
       {
          if (mCallback != null)
          {
-            mCallback.onCancelled();
+            mCallback.OnCancelled();
             mCallback = null;
          }
       }
