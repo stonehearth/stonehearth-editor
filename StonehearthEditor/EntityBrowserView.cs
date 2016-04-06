@@ -108,7 +108,7 @@ namespace StonehearthEditor
         private void InitializeNetWorthItemsView()
         {
             netWorthImagePaths = new Dictionary<string, string>();
-            Object[] data = ModuleDataManager.GetInstance().FilterJsonByTerm(netWorthListView, "entity_data.stonehearth:net_worth");
+            object[] data = ModuleDataManager.GetInstance().FilterJsonByTerm(netWorthListView, "entity_data.stonehearth:net_worth");
             netWorthJsonFiles = (Dictionary<string, JsonFileData>)data[0];
             modNames = (Dictionary<string, string>)data[1];
             ImageList imageList = new ImageList();
@@ -168,7 +168,7 @@ namespace StonehearthEditor
         private void InitializeWeaponsView()
         {
             weaponsImagePaths = new Dictionary<string, string>();
-            Object[] data = ModuleDataManager.GetInstance().FilterJsonByTerm(netWorthListView, "entity_data.stonehearth:combat:weapon_data");
+            object[] data = ModuleDataManager.GetInstance().FilterJsonByTerm(netWorthListView, "entity_data.stonehearth:combat:weapon_data");
             weaponsJsonFiles = (Dictionary<string, JsonFileData>)data[0];
             Dictionary<string, string> modNames = (Dictionary<string, string>)data[1];
             ImageList imageList = new ImageList();
@@ -212,7 +212,7 @@ namespace StonehearthEditor
         private void InitializeDefenseItemsListView()
         {
             defenseImagePaths = new Dictionary<string, string>();
-            Object[] data = ModuleDataManager.GetInstance().FilterJsonByTerm(defenseItemsListView, "entity_data.stonehearth:combat:armor_data");
+            object[] data = ModuleDataManager.GetInstance().FilterJsonByTerm(defenseItemsListView, "entity_data.stonehearth:combat:armor_data");
             defenseJsonFiles = (Dictionary<string, JsonFileData>)data[0];
             Dictionary<string, string> modNames = (Dictionary<string, string>)data[1];
             ImageList imageList = new ImageList();
@@ -245,7 +245,7 @@ namespace StonehearthEditor
         {
             InitializeKillableEntitiesColumns();
 
-            Object[] data = ModuleDataManager.GetInstance().FilterJsonByTerm(killableEntitiesListView, "components.stonehearth:attributes");
+            object[] data = ModuleDataManager.GetInstance().FilterJsonByTerm(killableEntitiesListView, "components.stonehearth:attributes");
             killableEntitiesJsonFiles = (Dictionary<string, JsonFileData>)data[0];
 
             foreach (KeyValuePair<string, JsonFileData> entry in killableEntitiesJsonFiles)
@@ -347,7 +347,7 @@ namespace StonehearthEditor
             onColumnClick(killableEntitiesListView, e);
         }
 
-        private void netWorthListView_ItemSelectionChanged(Object sender, ListViewItemSelectionChangedEventArgs e)
+        private void netWorthListView_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
         {
             if (e.IsSelected)
             {

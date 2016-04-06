@@ -13,7 +13,7 @@ namespace StonehearthEditor
     {
         public static string GetJsonStringValue(XElement root, string elementName)
         {
-            string returned = String.Empty;
+            string returned = string.Empty;
             XElement selectedElement = root.Element(elementName);
             if (selectedElement != null && selectedElement.Value != null)
             {
@@ -111,10 +111,10 @@ namespace StonehearthEditor
         }
 
         // This function from http://stackoverflow.com/questions/275689/how-to-get-relative-path-from-absolute-path
-        public static String MakeRelativePath(String fromPath, String toPath)
+        public static string MakeRelativePath(string fromPath, string toPath)
         {
-            if (String.IsNullOrEmpty(fromPath)) throw new ArgumentNullException("fromPath");
-            if (String.IsNullOrEmpty(toPath)) throw new ArgumentNullException("toPath");
+            if (string.IsNullOrEmpty(fromPath)) throw new ArgumentNullException("fromPath");
+            if (string.IsNullOrEmpty(toPath)) throw new ArgumentNullException("toPath");
 
             Uri fromUri = new Uri(fromPath);
             Uri toUri = new Uri(toPath);
@@ -122,7 +122,7 @@ namespace StonehearthEditor
             if (fromUri.Scheme != toUri.Scheme) { return toPath; } // path can't be made relative.
 
             Uri relativeUri = fromUri.MakeRelativeUri(toUri);
-            String relativePath = Uri.UnescapeDataString(relativeUri.ToString());
+            string relativePath = Uri.UnescapeDataString(relativeUri.ToString());
 
             if (toUri.Scheme.ToUpperInvariant() == "FILE")
             {
@@ -135,7 +135,7 @@ namespace StonehearthEditor
         public static string GetFileFromFileJson(string fileJson, string parentPath)
         {
             parentPath = JsonHelper.NormalizeSystemPath(parentPath);
-            string fullPath = String.Empty;
+            string fullPath = string.Empty;
             bool startedWithFile = false;
             if (fileJson.StartsWith("file("))
             {
@@ -200,7 +200,7 @@ namespace StonehearthEditor
             string normalized = path.Replace(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
             if (normalized.Length > 1 && normalized[1] == ':')
             {
-                normalized = Char.ToUpperInvariant(normalized[0]) + normalized.Substring(1);
+                normalized = char.ToUpperInvariant(normalized[0]) + normalized.Substring(1);
             }
             return normalized;
         }
@@ -244,7 +244,7 @@ namespace StonehearthEditor
                         // Trim whitespace following break
                         pos += len;
 
-                        while (pos < eol && Char.IsWhiteSpace(the_string[pos]))
+                        while (pos < eol && char.IsWhiteSpace(the_string[pos]))
                             pos++;
 
                     } while (eol > pos);
@@ -267,12 +267,12 @@ namespace StonehearthEditor
         {
             // Find last whitespace in line
             int i = max - 1;
-            while (i >= 0 && !Char.IsWhiteSpace(text[pos + i]))
+            while (i >= 0 && !char.IsWhiteSpace(text[pos + i]))
                 i--;
             if (i < 0)
                 return max; // No whitespace found; break at maximum length
                             // Find start of whitespace
-            while (i >= 0 && Char.IsWhiteSpace(text[pos + i]))
+            while (i >= 0 && char.IsWhiteSpace(text[pos + i]))
                 i--;
             // Return length of text before whitespace
             return i + 1;

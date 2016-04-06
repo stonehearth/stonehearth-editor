@@ -14,7 +14,7 @@ namespace StonehearthEditor
             return sInstance;
         }
         private string mModsDirectoryPath;
-        private Dictionary<String, Module> mModules = new Dictionary<String, Module>();
+        private Dictionary<string, Module> mModules = new Dictionary<string, Module>();
 
         private HashSet<FileData> mFilesWithErrors = new HashSet<FileData>();
         private Dictionary<string, int> mAverageMaterialCost = new Dictionary<string, int>();
@@ -103,7 +103,7 @@ namespace StonehearthEditor
         }
 
         // Returns an Object array with a map from alias to jsonfiledata and alias to modname
-        public Object[] FilterJsonByTerm(ListView listView, string filterTerm)
+        public object[] FilterJsonByTerm(ListView listView, string filterTerm)
         {
             Dictionary<string, JsonFileData> aliasJsonMap = new Dictionary<string, JsonFileData>();
             Dictionary<string, string> aliasModNameMap = new Dictionary<string, string>();
@@ -119,7 +119,7 @@ namespace StonehearthEditor
                     }
                 }
             }
-            return new Object[] { aliasJsonMap, aliasModNameMap };
+            return new object[] { aliasJsonMap, aliasModNameMap };
         }
 
         public FileData GetSelectedFileData(TreeNode selected)

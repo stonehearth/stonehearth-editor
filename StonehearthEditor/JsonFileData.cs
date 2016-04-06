@@ -417,7 +417,7 @@ namespace StonehearthEditor
                     break;
                 case JSONTYPE.BUFF:
                     JToken invisibleToPlayer = mJson.SelectToken("invisible_to_player");
-                    bool isInvisible = invisibleToPlayer != null ? invisibleToPlayer.Value<Boolean>() : false;
+                    bool isInvisible = invisibleToPlayer != null ? invisibleToPlayer.Value<bool>() : false;
                     if (!isInvisible)
                     {
                         CheckStringKeyExists(mJson.SelectToken("display_name"), "display_name");

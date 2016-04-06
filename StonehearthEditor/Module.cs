@@ -31,11 +31,11 @@ namespace StonehearthEditor
             return mModuleFiles["aliases"].Values;
         }
 
-        public String Name
+        public string Name
         {
             get { return mName; }
         }
-        public String Path
+        public string Path
         {
             get { return mPath; }
         }
