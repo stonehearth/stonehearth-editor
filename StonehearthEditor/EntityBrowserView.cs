@@ -460,8 +460,11 @@ namespace StonehearthEditor
         {
             var result = new Dictionary<TKey, TValue>();
             foreach (var dict in dictionaries)
+            {
                 foreach (var x in dict)
                     result[x.Key] = x.Value;
+            }
+
             return result;
         }
 
