@@ -254,9 +254,10 @@ namespace StonehearthEditor
                 JObject json = jsonFileData.Json;
                 ListViewItem item = new ListViewItem(entry.Key);
                 List<ListViewItem.ListViewSubItem> subItems = new List<ListViewItem.ListViewSubItem>();
-                populateWithDefaultValue<ListViewItem.ListViewSubItem>(subItems,
-                                                                       new ListViewItem.ListViewSubItem(),
-                                                                       killableEntitiesListView.Columns.Count);
+                populateWithDefaultValue<ListViewItem.ListViewSubItem>(
+                    subItems,
+                    new ListViewItem.ListViewSubItem(),
+                    killableEntitiesListView.Columns.Count);
                 JObject jAttributes = (JObject)json.SelectToken("components.stonehearth:attributes");
 
                 foreach (JProperty attribute in jAttributes.Properties())
@@ -295,12 +296,13 @@ namespace StonehearthEditor
             }
         }
 
-        private void addImages(JsonFileData jsonFileData,
-                               Dictionary<string, string> imgPaths,
-                               ImageList imgList,
-                               ListViewItem listItem,
-                               KeyValuePair<string, JsonFileData> jsonEntry,
-                               ref int index)
+        private void addImages(
+            JsonFileData jsonFileData,
+            Dictionary<string, string> imgPaths,
+            ImageList imgList,
+            ListViewItem listItem,
+            KeyValuePair<string, JsonFileData> jsonEntry,
+            ref int index)
         {
             foreach (FileData openedFile in jsonFileData.OpenedFiles)
             {
@@ -377,10 +379,11 @@ namespace StonehearthEditor
             }
         }
 
-        private void updateOnItemSelection(Dictionary<string,
-                                           JsonFileData> categoryJsonFiles,
-                                           Dictionary<string, string> imgPaths,
-                                           string alias)
+        private void updateOnItemSelection(
+            Dictionary<string,
+            JsonFileData> categoryJsonFiles,
+            Dictionary<string, string> imgPaths,
+            string alias)
         {
             filePreviewTabs.TabPages.Clear();
             iconView.ImageLocation = "";
@@ -435,8 +438,7 @@ namespace StonehearthEditor
             }
 
             lv.Sort();
-            lv.ListViewItemSorter = new ListViewItemComparer(e.Column,
-                                                              lv.Sorting);
+            lv.ListViewItemSorter = new ListViewItemComparer(e.Column, lv.Sorting);
         }
 
         public static Dictionary<TKey, TValue> MergeDictionaries<TKey, TValue>(IEnumerable<Dictionary<TKey, TValue>> dictionaries)
