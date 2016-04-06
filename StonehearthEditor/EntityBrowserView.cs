@@ -455,12 +455,10 @@ namespace StonehearthEditor
 
         private void netWorthListView_KeyDown(object sender, KeyEventArgs e)
         {
-
         }
 
         private void EntityBrowserView_Load(object sender, EventArgs e)
         {
-
         }
 
         private void filterListViewButton_Click(object sender, EventArgs e)

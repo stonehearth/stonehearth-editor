@@ -10,7 +10,6 @@ using System.Linq;
 
 namespace StonehearthEditor
 {
-
     public class CampPieceNodeData : NodeData
     {
         public override NodeData Clone(GameMasterNode nodeFile)

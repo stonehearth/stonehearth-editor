@@ -173,7 +173,6 @@ namespace StonehearthEditor
 
         private void graphViewer_MouseUp(object sender, MouseEventArgs e)
         {
-
         }
 
         private void nodeInfoJsonPreview_Leave(object sender, EventArgs e)
@@ -244,7 +243,6 @@ namespace StonehearthEditor
 
         private void nodeInfoSubType_Click(object sender, EventArgs e)
         {
-
         }
 
         private void encounterTreeView_AfterSelect(object sender, TreeViewEventArgs e)
@@ -258,7 +256,6 @@ namespace StonehearthEditor
 
         private void toolstripSaveButton_Click(object sender, EventArgs e)
         {
-
         }
 
         private void copyGameMasterNode_Click(object sender, EventArgs e)

@@ -130,7 +130,6 @@ namespace StonehearthEditor
                 }
                 else
                 {
-
                 }
 
                 List<JsonFileData> list;

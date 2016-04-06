@@ -10,7 +10,6 @@ using System.Linq;
 
 namespace StonehearthEditor
 {
-
     public class CampaignNodeData : NodeData
     {
         private string mRarity;

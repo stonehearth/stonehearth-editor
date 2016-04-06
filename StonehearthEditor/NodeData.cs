@@ -10,7 +10,6 @@ using System.Linq;
 
 namespace StonehearthEditor
 {
-
     public abstract class NodeData
     {
         public GameMasterNode NodeFile;

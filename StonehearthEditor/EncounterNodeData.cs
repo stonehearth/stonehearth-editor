@@ -10,7 +10,6 @@ using System.Linq;
 
 namespace StonehearthEditor
 {
-
     public class EncounterNodeData : NodeData
     {
         private string mEncounterType;
