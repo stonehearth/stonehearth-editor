@@ -15,7 +15,7 @@ namespace StonehearthEditor
     public class ModuleFile : IDisposable
     {
         // Needed because at the time we load aliases, the referenced alias might not be loaded
-        protected Dictionary<string, FileData> mReferencesCache = new Dictionary<string, FileData>();
+        protected Dictionary<string, FileData> mReferencesCache { get; set; } = new Dictionary<string, FileData>();
 
         private Module mModule;
         private string mAlias;

@@ -8,8 +8,9 @@ namespace StonehearthEditor
 {
     public abstract class FileData : IDisposable
     {
-        protected TreeNode mTreeNode;
-        protected bool mIsModified = false;
+        protected TreeNode mTreeNode { get; set; }
+
+        protected bool mIsModified { get; set; }
 
         private string mFlatFileData;
         private bool isDisposing = false;
