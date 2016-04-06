@@ -10,930 +10,939 @@ using System.Linq;
 
 namespace StonehearthEditor
 {
-   public enum GameMasterNodeType
-   {
-      UNSET = 0,
-      CAMPAIGN = 1,
-      ARC = 2,
-      ENCOUNTER = 3,
-      CAMP_PIECE = 4,
-      UNKNOWN = 5,
-   };
+    public enum GameMasterNodeType
+    {
+        UNSET = 0,
+        CAMPAIGN = 1,
+        ARC = 2,
+        ENCOUNTER = 3,
+        CAMP_PIECE = 4,
+        UNKNOWN = 5,
+    };
 
-   public class GameMasterNode
-   {
-      private static int kNodeIndex = 0;
-      public static Color kPurple = new Color(224, 210, 227);
-      public static Color kGreen = new Color(196, 243, 177);
-      private string mPath;
-      private string mDirectory;
-      private string mFileName;
-      private JsonFileData mJsonFileData;
-      private NodeData mNodeData;
-      public GameMasterNode Owner;
-      private string mModule;
+    public class GameMasterNode
+    {
+        private static int kNodeIndex = 0;
+        public static Color kPurple = new Color(224, 210, 227);
+        public static Color kGreen = new Color(196, 243, 177);
+        private string mPath;
+        private string mDirectory;
+        private string mFileName;
+        private JsonFileData mJsonFileData;
+        private NodeData mNodeData;
+        public GameMasterNode Owner;
+        private string mModule;
 
-      public bool IsModified = false;
+        public bool IsModified = false;
 
-      private Dictionary<string, string> mEncounters = new Dictionary<string, string>();
-      private GameMasterNodeType mNodeType = GameMasterNodeType.UNSET;
-      public GameMasterNode(string module, string filePath)
-      {
-         mModule = module;
-         mPath = filePath;
-         mDirectory = JsonHelper.NormalizeSystemPath(System.IO.Path.GetDirectoryName(mPath));
-         mFileName = System.IO.Path.GetFileNameWithoutExtension(mPath);
-         kNodeIndex++;
-      }
+        private Dictionary<string, string> mEncounters = new Dictionary<string, string>();
+        private GameMasterNodeType mNodeType = GameMasterNodeType.UNSET;
+        public GameMasterNode(string module, string filePath)
+        {
+            mModule = module;
+            mPath = filePath;
+            mDirectory = JsonHelper.NormalizeSystemPath(System.IO.Path.GetDirectoryName(mPath));
+            mFileName = System.IO.Path.GetFileNameWithoutExtension(mPath);
+            kNodeIndex++;
+        }
 
-      public string Id
-      {
-         get { return mPath; }
-      }
+        public string Id
+        {
+            get { return mPath; }
+        }
 
-      public string Name
-      {
-         get { return mFileName; }
-      }
+        public string Name
+        {
+            get { return mFileName; }
+        }
 
-      public string Path
-      {
-         get { return mPath; }
-      }
-      public string Directory
-      {
-         get { return mDirectory; }
-      }
-      public GameMasterNodeType NodeType
-      {
-         get { return mNodeType; }
-      }
+        public string Path
+        {
+            get { return mPath; }
+        }
+        public string Directory
+        {
+            get { return mDirectory; }
+        }
+        public GameMasterNodeType NodeType
+        {
+            get { return mNodeType; }
+        }
 
-      public NodeData NodeData
-      {
-         get { return mNodeData; }
-      }
+        public NodeData NodeData
+        {
+            get { return mNodeData; }
+        }
 
-      public FileData FileData
-      {
-         get { return mJsonFileData; }
-      }
+        public FileData FileData
+        {
+            get { return mJsonFileData; }
+        }
 
-      public JObject Json
-      {
-         get { return mJsonFileData.Json; }
-      }
-      public string Module
-      {
-         get { return mModule; }
-      }
+        public JObject Json
+        {
+            get { return mJsonFileData.Json; }
+        }
+        public string Module
+        {
+            get { return mModule; }
+        }
 
-      public void Load(Dictionary<string, GameMasterNode> allNodes)
-      {
-         try
-         {
-            mJsonFileData = new JsonFileData(mPath);
-            mJsonFileData.Load();
-            OnFileChanged(allNodes);
-         } catch(Exception e)
-         {
-            MessageBox.Show("Unable to load " + mPath + ". Error: " + e.Message);
-         }
-         if (mNodeData != null)
-         {
-            mNodeData.PostLoadFixup();
-         }
-      }
-
-      public void OnFileChanged(Dictionary<string, GameMasterNode> allNodes)
-      {
-         JToken fileTypeToken = Json["type"];
-         string fileType = fileTypeToken != null? fileTypeToken.ToString().ToUpper() : "";
-         GameMasterNodeType newNodeType = GameMasterNodeType.UNKNOWN;
-         foreach (GameMasterNodeType nodeType in Enum.GetValues(typeof(GameMasterNodeType)))
-         {
-            if (fileType.Equals(nodeType.ToString()))
+        public void Load(Dictionary<string, GameMasterNode> allNodes)
+        {
+            try
             {
-               newNodeType = nodeType;
-            }
-         }
-         if (newNodeType != mNodeType)
-         {
-            mNodeType = newNodeType;
-            switch (mNodeType)
-            {
-               case GameMasterNodeType.ENCOUNTER:
-                  mNodeData = new EncounterNodeData();
-                  break;
-               case GameMasterNodeType.ARC:
-                  mNodeData = new ArcNodeData();
-                  break;
-               case GameMasterNodeType.CAMPAIGN:
-                  mNodeData = new CampaignNodeData();
-                  break;
-               case GameMasterNodeType.CAMP_PIECE:
-                  mNodeData = new CampPieceNodeData();
-                  break;
-               default:
-                  Console.WriteLine("unknown encounter node type for file " + Path);
-                  mNodeData = new UnknownNodeData();
-                  break;
-            }
-         }
-         if (mNodeData != null)
-         {
-            mNodeData.NodeFile = this;
-            mNodeData.LoadData(allNodes);
-         }
-      }
-
-      /**
-      Note: this is expensive!
-      **/
-      public string GetJsonFileString()
-      {
-         try
-         {
-            StringWriter stringWriter = new StringWriter();
-            using (JsonTextWriter jsonTextWriter = new JsonTextWriter(stringWriter))
-            {
-               jsonTextWriter.Formatting = Newtonsoft.Json.Formatting.Indented;
-               jsonTextWriter.Indentation = 3;
-               jsonTextWriter.IndentChar = ' ';
-
-               JsonSerializer jsonSeralizer = new JsonSerializer();
-               jsonSeralizer.Serialize(jsonTextWriter, Json);
-            }
-            return stringWriter.ToString();
-         }
-         catch (Exception e)
-         {
-            Console.WriteLine("Could not convert " + mPath + " to string because of exception " + e.Message);
-         }
-         return "INVALID JSON";
-      }
-
-      public bool TryModifyJson(string newJsonString)
-      {
-         try {
-            JObject newJson = JObject.Parse(newJsonString);
-            if (newJson != null)
-            {
-               if (newJson.ToString().Equals(Json.ToString()))
-               {
-                  return false; // not modified because jsons are equivalent
-               }
-               mJsonFileData.TrySetFlatFileData(newJsonString);
-               IsModified = true;
-            }
-         } catch(Exception e)
-         {
-            MessageBox.Show("Unable to modify json. Error: " + e.Message);
-            return false;
-         }
-         return true;
-      }
-
-      public void SaveIfNecessary()
-      {
-         if (IsModified)
-         {
-            try {
-               using (StreamWriter wr = new StreamWriter(mPath, false, new UTF8Encoding(false)))
-               {
-                  string jsonAsString = GetJsonFileString();
-                  wr.Write(jsonAsString);
-               }
+                mJsonFileData = new JsonFileData(mPath);
+                mJsonFileData.Load();
+                OnFileChanged(allNodes);
             }
             catch (Exception e)
             {
-               Console.WriteLine("Could not write to file " + mPath + " because of exception: " + e.Message);
+                MessageBox.Show("Unable to load " + mPath + ". Error: " + e.Message);
             }
-
-         }
-      }
-      public GameMasterNode Clone(string newFileName)
-      {
-         try {
-            string newPath = mDirectory + '/' + newFileName + ".json";
-            GameMasterNode newNode = new GameMasterNode(mModule, newPath);
-            newNode.IsModified = true;
-            NodeData newNodeData = NodeData.Clone(newNode);
-            newNodeData.NodeFile = newNode;
-            newNode.mNodeData = newNodeData;
-            newNode.mNodeType = NodeType;
-
-            newNode.mJsonFileData.TrySetFlatFileData(Json.ToString());
-            return newNode;
-         } catch(Exception e)
-         {
-            MessageBox.Show("Unable to clone Game Master Node to " + newFileName + ". Error: " + e.Message);
-         }
-         return null;
-      }
-   }
-
-   public abstract class NodeData
-   {
-      public GameMasterNode NodeFile;
-      public abstract void LoadData(Dictionary<string, GameMasterNode> allNodes);
-
-      public virtual void UpdateGraph(Graph graph)
-      {
-         Node graphNode = graph.AddNode(NodeFile.Id);
-         graphNode.LabelText = NodeFile.Name;
-         UpdateGraphNode(graphNode);
-         UpdateOutEdges(graph);
-      }
-      public virtual void UpdateGraphNode(Node graphNode)
-      {
-         graphNode.Attr.LabelWidthToHeightRatio = 1;
-         graphNode.Attr.Shape = Shape.Box;
-         graphNode.Attr.FillColor = GameMasterNode.kGreen;
-         graphNode.Attr.LabelMargin = 6;
-      }
-
-      protected abstract void UpdateOutEdges(Graph graph);
-
-      public virtual void GetRelatedNodes(HashSet<GameMasterNode> set)
-      {
-         set.Add(NodeFile);
-      }
-
-      public virtual void PostLoadFixup() { }
-
-      public abstract NodeData Clone(GameMasterNode nodeFile);
-
-      public virtual bool AddOutEdge(GameMasterNode nodeFile)
-      {
-         return false;
-      }
-      protected void MakeNodePrivate(Node node)
-      {
-         node.Attr.Shape = Shape.Box;
-         node.Attr.LabelMargin = 3;
-         node.Attr.FillColor = GameMasterNode.kPurple;
-         node.Label.FontSize = 6;
-      }
-
-      protected void FixupLoot(string selector)
-      {
-         NodeFile.IsModified = JsonHelper.FixupLootTable(NodeFile.Json, selector);
-         NodeFile.SaveIfNecessary();
-      }
-   }
-
-   public class CampaignNodeData : NodeData
-   {
-      private string mRarity;
-      private Dictionary<string, GameMasterNode> mArcTriggers;
-      private Dictionary<string, GameMasterNode> mArcChallenges;
-      private Dictionary<string, GameMasterNode> mArcClimaxes;
-      private int mNumArcNodes = 0;
-      public List<GameMasterNode> OrphanedNodes = new List<GameMasterNode>();
-
-      // Return a list of all the arcs in the campaign
-      public IList<GameMasterNode> GetAllArcs()
-      {
-         var ret = new List<GameMasterNode>();
-         ret.AddRange(mArcTriggers.Values);
-         ret.AddRange(mArcChallenges.Values);
-         ret.AddRange(mArcClimaxes.Values);
-         return ret;
-      }
-
-      public override void LoadData(Dictionary<string, GameMasterNode> allNodes)
-      {
-         mArcTriggers = new Dictionary<string, GameMasterNode>();
-         mArcChallenges = new Dictionary<string, GameMasterNode>();
-         mArcClimaxes = new Dictionary<string, GameMasterNode>();
-         mNumArcNodes = 0;
-         mRarity = NodeFile.Json["rarity"].ToString();
-         JToken arcs = NodeFile.Json["arcs"];
-
-         Dictionary<string, string> triggers = JsonConvert.DeserializeObject<Dictionary<string, string>>(arcs["trigger"].ToString());
-         Dictionary<string, string> challenges = JsonConvert.DeserializeObject<Dictionary<string, string>>(arcs["challenge"].ToString());
-         Dictionary<string, string> climaxes = JsonConvert.DeserializeObject<Dictionary<string, string>>(arcs["climax"].ToString());
-
-         SetSelfAsOwner(triggers, mArcTriggers, allNodes);
-         SetSelfAsOwner(challenges, mArcChallenges, allNodes);
-         SetSelfAsOwner(climaxes, mArcClimaxes, allNodes);
-      }
-
-      private void SetSelfAsOwner(Dictionary<string, string> children, Dictionary<string, GameMasterNode> toUpdate, Dictionary<string, GameMasterNode> allNodes)
-      {
-         int lastIndexOfSlash = NodeFile.Path.LastIndexOf('/');
-         string nodeFilePathWithoutFileName = NodeFile.Path.Substring(0, lastIndexOfSlash);
-         foreach (KeyValuePair<string, string> child in children)
-         {
-            string absoluteFilePath = JsonHelper.GetFileFromFileJson(child.Value, nodeFilePathWithoutFileName);
-            GameMasterNode otherFile = null;
-            if (allNodes.TryGetValue(absoluteFilePath, out otherFile))
+            if (mNodeData != null)
             {
-               // this is a proper edge
-               otherFile.Owner = NodeFile;
-               toUpdate.Add(child.Key, otherFile);
-               mNumArcNodes++;
+                mNodeData.PostLoadFixup();
             }
-         }
-      }
+        }
 
-      public override void UpdateGraphNode(Node graphNode)
-      {
-         base.UpdateGraphNode(graphNode);
-         graphNode.Attr.FillColor = Color.LightBlue;
-      }
+        public void OnFileChanged(Dictionary<string, GameMasterNode> allNodes)
+        {
+            JToken fileTypeToken = Json["type"];
+            string fileType = fileTypeToken != null ? fileTypeToken.ToString().ToUpper() : "";
+            GameMasterNodeType newNodeType = GameMasterNodeType.UNKNOWN;
+            foreach (GameMasterNodeType nodeType in Enum.GetValues(typeof(GameMasterNodeType)))
+            {
+                if (fileType.Equals(nodeType.ToString()))
+                {
+                    newNodeType = nodeType;
+                }
+            }
+            if (newNodeType != mNodeType)
+            {
+                mNodeType = newNodeType;
+                switch (mNodeType)
+                {
+                    case GameMasterNodeType.ENCOUNTER:
+                        mNodeData = new EncounterNodeData();
+                        break;
+                    case GameMasterNodeType.ARC:
+                        mNodeData = new ArcNodeData();
+                        break;
+                    case GameMasterNodeType.CAMPAIGN:
+                        mNodeData = new CampaignNodeData();
+                        break;
+                    case GameMasterNodeType.CAMP_PIECE:
+                        mNodeData = new CampPieceNodeData();
+                        break;
+                    default:
+                        Console.WriteLine("unknown encounter node type for file " + Path);
+                        mNodeData = new UnknownNodeData();
+                        break;
+                }
+            }
+            if (mNodeData != null)
+            {
+                mNodeData.NodeFile = this;
+                mNodeData.LoadData(allNodes);
+            }
+        }
 
-      public override void GetRelatedNodes(HashSet<GameMasterNode> set)
-      {
-         base.GetRelatedNodes(set);
-         
-         foreach (GameMasterNode node in mArcTriggers.Values)
-         {
-            if (!set.Contains(node))
+        /**
+        Note: this is expensive!
+        **/
+        public string GetJsonFileString()
+        {
+            try
             {
-               set.Add(node);
-               node.NodeData.GetRelatedNodes(set);
-            }
-         }
-         foreach (GameMasterNode node in mArcChallenges.Values)
-         {
-            if (!set.Contains(node))
-            {
-               set.Add(node);
-               node.NodeData.GetRelatedNodes(set);
-            }
-         }
-         foreach (GameMasterNode node in mArcClimaxes.Values)
-         {
-            if (!set.Contains(node))
-            {
-               set.Add(node);
-               node.NodeData.GetRelatedNodes(set);
-            }
-         }
-         foreach (GameMasterNode node in OrphanedNodes)
-         {
-            if (!set.Contains(node))
-            {
-               set.Add(node);
-               node.NodeData.GetRelatedNodes(set);
-            }
-         }
-      }
+                StringWriter stringWriter = new StringWriter();
+                using (JsonTextWriter jsonTextWriter = new JsonTextWriter(stringWriter))
+                {
+                    jsonTextWriter.Formatting = Newtonsoft.Json.Formatting.Indented;
+                    jsonTextWriter.Indentation = 3;
+                    jsonTextWriter.IndentChar = ' ';
 
-      public override NodeData Clone(GameMasterNode nodeFile)
-      {
-         return new CampaignNodeData();
-      }
+                    JsonSerializer jsonSeralizer = new JsonSerializer();
+                    jsonSeralizer.Serialize(jsonTextWriter, Json);
+                }
+                return stringWriter.ToString();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Could not convert " + mPath + " to string because of exception " + e.Message);
+            }
+            return "INVALID JSON";
+        }
 
-      protected override void UpdateOutEdges(Graph graph)
-      {
-         foreach (GameMasterNode node in mArcTriggers.Values)
-         {
-            if (node.NodeType == GameMasterNodeType.ARC)
+        public bool TryModifyJson(string newJsonString)
+        {
+            try
             {
-               Node triggerNode = graph.AddNode(NodeFile.Id + "#trigger");
-               triggerNode.LabelText = "trigger";
-               MakeNodePrivate(triggerNode);
-               graph.AddEdge(NodeFile.Id, triggerNode.Id);
-               graph.AddEdge(triggerNode.Id, node.Id);
+                JObject newJson = JObject.Parse(newJsonString);
+                if (newJson != null)
+                {
+                    if (newJson.ToString().Equals(Json.ToString()))
+                    {
+                        return false; // not modified because jsons are equivalent
+                    }
+                    mJsonFileData.TrySetFlatFileData(newJsonString);
+                    IsModified = true;
+                }
             }
-         }
-         foreach (GameMasterNode node in mArcChallenges.Values)
-         {
-            if (node.NodeType == GameMasterNodeType.ARC)
+            catch (Exception e)
             {
-               Node triggerNode = graph.AddNode(NodeFile.Id + "#challenge");
-               triggerNode.LabelText = "challenge";
-               MakeNodePrivate(triggerNode);
-               graph.AddEdge(NodeFile.Id, triggerNode.Id);
-               graph.AddEdge(triggerNode.Id, node.Id);
+                MessageBox.Show("Unable to modify json. Error: " + e.Message);
+                return false;
             }
-         }
-         foreach (GameMasterNode node in mArcClimaxes.Values)
-         {
-            if (node.NodeType == GameMasterNodeType.ARC)
-            {
-               Node triggerNode = graph.AddNode(NodeFile.Id + "#climax");
-               triggerNode.LabelText = "climax";
-               MakeNodePrivate(triggerNode);
-               graph.AddEdge(NodeFile.Id, triggerNode.Id);
-               graph.AddEdge(triggerNode.Id, node.Id);
-            }
-         }
-      }
-
-      public override bool AddOutEdge(GameMasterNode nodeFile)
-      {
-         if (nodeFile.NodeType == GameMasterNodeType.ARC)
-         {
-            mArcTriggers.Add(nodeFile.Name, nodeFile);
             return true;
-         }
-         return false;
-      }
-   }
+        }
 
-   public class ArcNodeData : NodeData
-   {
-      private string mRarity;
-      private Dictionary<string, string> mEncounters;
-      private List<GameMasterNode> mEncounterFiles;
-      public override void LoadData(Dictionary<string, GameMasterNode> allNodes)
-      {
-         mEncounters = new Dictionary<string, string>();
-         mEncounterFiles = new List<GameMasterNode>();
-         mRarity = NodeFile.Json["rarity"].ToString();
-         mEncounters = JsonConvert.DeserializeObject<Dictionary<string, string>>(NodeFile.Json["encounters"].ToString());
-         int lastIndexOfSlash = NodeFile.Path.LastIndexOf('/');
-         string nodeFilePathWithoutFileName = NodeFile.Path.Substring(0, lastIndexOfSlash);
-         foreach(string filename in mEncounters.Values)
-         {
-            string absoluteFilePath = JsonHelper.GetFileFromFileJson(filename, nodeFilePathWithoutFileName);
-            GameMasterNode otherFile = null;
-            if (allNodes.TryGetValue(absoluteFilePath, out otherFile))
+        public void SaveIfNecessary()
+        {
+            if (IsModified)
             {
-               // this is a proper edge
-               otherFile.Owner = NodeFile;
-               mEncounterFiles.Add(otherFile);
-            }
-         }
-      }
+                try
+                {
+                    using (StreamWriter wr = new StreamWriter(mPath, false, new UTF8Encoding(false)))
+                    {
+                        string jsonAsString = GetJsonFileString();
+                        wr.Write(jsonAsString);
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Could not write to file " + mPath + " because of exception: " + e.Message);
+                }
 
-      protected override void UpdateOutEdges(Graph graph)
-      {
-         foreach (GameMasterNode file in mEncounterFiles)
-         {
-            if (file.NodeType == GameMasterNodeType.ENCOUNTER)
+            }
+        }
+        public GameMasterNode Clone(string newFileName)
+        {
+            try
             {
-               EncounterNodeData nodeData = file.NodeData as EncounterNodeData;
-               if (nodeData.IsStartNode)
-               {
-                  graph.AddEdge(NodeFile.Id, file.Id);
-               }
-            }
-         }
-      }
+                string newPath = mDirectory + '/' + newFileName + ".json";
+                GameMasterNode newNode = new GameMasterNode(mModule, newPath);
+                newNode.IsModified = true;
+                NodeData newNodeData = NodeData.Clone(newNode);
+                newNodeData.NodeFile = newNode;
+                newNode.mNodeData = newNodeData;
+                newNode.mNodeType = NodeType;
 
-      public List<GameMasterNode> GetEncountersWithInEdge(string inEdgeName)
-      {
-         List<GameMasterNode> inEdges = new List<GameMasterNode>();
-         foreach (GameMasterNode file in mEncounterFiles)
-         {
-            if (file.NodeType == GameMasterNodeType.ENCOUNTER)
+                newNode.mJsonFileData.TrySetFlatFileData(Json.ToString());
+                return newNode;
+            }
+            catch (Exception e)
             {
-               EncounterNodeData nodeData = file.NodeData as EncounterNodeData;
-               if (nodeData.InEdge.Equals(inEdgeName))
-               {
-                  inEdges.Add(file);
-               }
+                MessageBox.Show("Unable to clone Game Master Node to " + newFileName + ". Error: " + e.Message);
             }
-         }
-         return inEdges;
-      }
+            return null;
+        }
+    }
 
-      public override void GetRelatedNodes(HashSet<GameMasterNode> set)
-      {
-         base.GetRelatedNodes(set);
-         foreach (GameMasterNode node in mEncounterFiles)
-         {
-            if (!set.Contains(node))
+    public abstract class NodeData
+    {
+        public GameMasterNode NodeFile;
+        public abstract void LoadData(Dictionary<string, GameMasterNode> allNodes);
+
+        public virtual void UpdateGraph(Graph graph)
+        {
+            Node graphNode = graph.AddNode(NodeFile.Id);
+            graphNode.LabelText = NodeFile.Name;
+            UpdateGraphNode(graphNode);
+            UpdateOutEdges(graph);
+        }
+        public virtual void UpdateGraphNode(Node graphNode)
+        {
+            graphNode.Attr.LabelWidthToHeightRatio = 1;
+            graphNode.Attr.Shape = Shape.Box;
+            graphNode.Attr.FillColor = GameMasterNode.kGreen;
+            graphNode.Attr.LabelMargin = 6;
+        }
+
+        protected abstract void UpdateOutEdges(Graph graph);
+
+        public virtual void GetRelatedNodes(HashSet<GameMasterNode> set)
+        {
+            set.Add(NodeFile);
+        }
+
+        public virtual void PostLoadFixup() { }
+
+        public abstract NodeData Clone(GameMasterNode nodeFile);
+
+        public virtual bool AddOutEdge(GameMasterNode nodeFile)
+        {
+            return false;
+        }
+        protected void MakeNodePrivate(Node node)
+        {
+            node.Attr.Shape = Shape.Box;
+            node.Attr.LabelMargin = 3;
+            node.Attr.FillColor = GameMasterNode.kPurple;
+            node.Label.FontSize = 6;
+        }
+
+        protected void FixupLoot(string selector)
+        {
+            NodeFile.IsModified = JsonHelper.FixupLootTable(NodeFile.Json, selector);
+            NodeFile.SaveIfNecessary();
+        }
+    }
+
+    public class CampaignNodeData : NodeData
+    {
+        private string mRarity;
+        private Dictionary<string, GameMasterNode> mArcTriggers;
+        private Dictionary<string, GameMasterNode> mArcChallenges;
+        private Dictionary<string, GameMasterNode> mArcClimaxes;
+        private int mNumArcNodes = 0;
+        public List<GameMasterNode> OrphanedNodes = new List<GameMasterNode>();
+
+        // Return a list of all the arcs in the campaign
+        public IList<GameMasterNode> GetAllArcs()
+        {
+            var ret = new List<GameMasterNode>();
+            ret.AddRange(mArcTriggers.Values);
+            ret.AddRange(mArcChallenges.Values);
+            ret.AddRange(mArcClimaxes.Values);
+            return ret;
+        }
+
+        public override void LoadData(Dictionary<string, GameMasterNode> allNodes)
+        {
+            mArcTriggers = new Dictionary<string, GameMasterNode>();
+            mArcChallenges = new Dictionary<string, GameMasterNode>();
+            mArcClimaxes = new Dictionary<string, GameMasterNode>();
+            mNumArcNodes = 0;
+            mRarity = NodeFile.Json["rarity"].ToString();
+            JToken arcs = NodeFile.Json["arcs"];
+
+            Dictionary<string, string> triggers = JsonConvert.DeserializeObject<Dictionary<string, string>>(arcs["trigger"].ToString());
+            Dictionary<string, string> challenges = JsonConvert.DeserializeObject<Dictionary<string, string>>(arcs["challenge"].ToString());
+            Dictionary<string, string> climaxes = JsonConvert.DeserializeObject<Dictionary<string, string>>(arcs["climax"].ToString());
+
+            SetSelfAsOwner(triggers, mArcTriggers, allNodes);
+            SetSelfAsOwner(challenges, mArcChallenges, allNodes);
+            SetSelfAsOwner(climaxes, mArcClimaxes, allNodes);
+        }
+
+        private void SetSelfAsOwner(Dictionary<string, string> children, Dictionary<string, GameMasterNode> toUpdate, Dictionary<string, GameMasterNode> allNodes)
+        {
+            int lastIndexOfSlash = NodeFile.Path.LastIndexOf('/');
+            string nodeFilePathWithoutFileName = NodeFile.Path.Substring(0, lastIndexOfSlash);
+            foreach (KeyValuePair<string, string> child in children)
             {
-               set.Add(node);
-               node.NodeData.GetRelatedNodes(set);
+                string absoluteFilePath = JsonHelper.GetFileFromFileJson(child.Value, nodeFilePathWithoutFileName);
+                GameMasterNode otherFile = null;
+                if (allNodes.TryGetValue(absoluteFilePath, out otherFile))
+                {
+                    // this is a proper edge
+                    otherFile.Owner = NodeFile;
+                    toUpdate.Add(child.Key, otherFile);
+                    mNumArcNodes++;
+                }
             }
-         }
-      }
+        }
 
-      public override NodeData Clone(GameMasterNode nodeFile)
-      {
-         return new ArcNodeData();
-      }
-      public void AddEncounter(EncounterNodeData encounter)
-      {
-         // TODO, get relative path
-         GameMasterNode encounterNodeFile = encounter.NodeFile;
-         string filePath = encounterNodeFile.Path;
-         string selfPath = NodeFile.Directory + '/';
-         filePath = "file(" + filePath.Replace(selfPath, "") + ")";
-         mEncounters.Add(encounterNodeFile.Name, filePath);
-         mEncounterFiles.Add(encounterNodeFile);
-         NodeFile.Json["encounters"][encounterNodeFile.Name] = filePath;
-         NodeFile.IsModified = true;
-      }
+        public override void UpdateGraphNode(Node graphNode)
+        {
+            base.UpdateGraphNode(graphNode);
+            graphNode.Attr.FillColor = Color.LightBlue;
+        }
 
-      public override bool AddOutEdge(GameMasterNode nodeFile)
-      {
-         if (nodeFile.NodeType == GameMasterNodeType.ENCOUNTER)
-         {
-            EncounterNodeData encounterData = nodeFile.NodeData as EncounterNodeData;
-            if (encounterData.IsStartNode && !mEncounterFiles.Contains(nodeFile))
+        public override void GetRelatedNodes(HashSet<GameMasterNode> set)
+        {
+            base.GetRelatedNodes(set);
+
+            foreach (GameMasterNode node in mArcTriggers.Values)
             {
-               // can only add an edge between this and the encounter if the encounter is a start node
-               AddEncounter(encounterData);
-               return true;
+                if (!set.Contains(node))
+                {
+                    set.Add(node);
+                    node.NodeData.GetRelatedNodes(set);
+                }
             }
-         }
-         return false;
-      }
-   }
-
-   public class EncounterNodeData: NodeData
-   {
-      private string mEncounterType;
-      private string mInEdge; // This is the name of the node as referred to others by the out edges of others.
-      private List<string> mOutEdgeStrings;
-      private Dictionary<string, List<string>> mChoiceEdgeInfo; // Map of edge to list of choices
-      private bool mIsStartNode = false;
-
-      public bool IsStartNode
-      {
-         get { return mIsStartNode; }
-      }
-      public string InEdge
-      {
-         get { return mInEdge; }
-      }
-      public string EncounterType
-      {
-         get { return mEncounterType; }
-      }
-
-      private void AddOutEdgesRecursive(JToken outEdgeSpec, List<string> list)
-      {
-         if (!(outEdgeSpec is JValue))
-         {
-            string specType = outEdgeSpec["type"].ToString();
-            switch (specType)
+            foreach (GameMasterNode node in mArcChallenges.Values)
             {
-               case "trigger_one":
-               case "trigger_many":
-                  JToken outEdges = outEdgeSpec["out_edges"];
-                  IList<JToken> results = outEdges.ToList();
-                  foreach (JToken child in results)
-                  {
-                     AddOutEdgesRecursive(child, list);
-                  }
-                  break;
-               case "weighted_edge":
-                  JToken outEdge = outEdgeSpec["out_edge"];
-                  AddOutEdgesRecursive(outEdge, list);
-                  break;
+                if (!set.Contains(node))
+                {
+                    set.Add(node);
+                    node.NodeData.GetRelatedNodes(set);
+                }
             }
-         }
-         else
-         {
-            list.Add(outEdgeSpec.ToString());
-         }
-      }
-
-      private List<string> ParseOutEdges(JToken outEdgeSpec)
-      {
-         List<string> returned = new List<string>();
-         if (outEdgeSpec != null)
-         {
-            AddOutEdgesRecursive(outEdgeSpec, returned);
-         }
-         return returned;
-      }
-
-      public override void PostLoadFixup()
-      {
-         string selector = null;
-         string monsterTuningSelector = null;
-         switch (mEncounterType)
-         {
-            case "create_camp":
-               selector = "create_camp_info.*.loot_drops";
-               break;
-            case "city_raid":
-               selector = "city_raid_info.missions.*.members.*.loot_drops";
-               monsterTuningSelector = "city_raid_info.missions.*.members.*";
-               break;
-            case "donation_dialog":
-               selector = "donation_dialog_info.loot_table";
-               break;
-            case "donation":
-               selector = "donation_info.loot_table";
-               break;
-            case "create_mission":
-               selector = "create_mission_info.mission.members.*.loot_drops";
-               monsterTuningSelector = "create_mission_info.mission.members.*";
-               break;
-         }
-         if (selector != null)
-         {
-            FixupLoot(selector);
-         }
-         if (monsterTuningSelector != null)
-         {
-            if (NodeFile.Json != null)
+            foreach (GameMasterNode node in mArcClimaxes.Values)
             {
-               foreach(JToken token in NodeFile.Json.SelectTokens(monsterTuningSelector))
-               {
-                  if (token["tuning"] == null)
-                  {
-                     Console.WriteLine(NodeFile.Path + " does not have monster tuning!");
-                  }
-               }
+                if (!set.Contains(node))
+                {
+                    set.Add(node);
+                    node.NodeData.GetRelatedNodes(set);
+                }
             }
-         }
-      }
+            foreach (GameMasterNode node in OrphanedNodes)
+            {
+                if (!set.Contains(node))
+                {
+                    set.Add(node);
+                    node.NodeData.GetRelatedNodes(set);
+                }
+            }
+        }
 
-      public override void LoadData(Dictionary<string, GameMasterNode> allNodes)
-      {
-         mOutEdgeStrings = new List<string>();
-         mChoiceEdgeInfo = new Dictionary<string, List<string>>();
-         mEncounterType = NodeFile.Json["encounter_type"].ToString();
-         mInEdge = NodeFile.Json["in_edge"].ToString();
-         if (mInEdge.Equals("start"))
-         {
-            mIsStartNode = true;
-         }
-         mOutEdgeStrings = ParseOutEdges(NodeFile.Json["out_edge"]);
-         switch(mEncounterType)
-         {
-            case "generator":
-               JToken generatorInfo = NodeFile.Json["generator_info"];
-               if (generatorInfo.SelectToken("spawn_edge") != null)
-               {
-                  AddOutEdgesRecursive(generatorInfo["spawn_edge"], mOutEdgeStrings);
-               }
-               break;
-            case "collection_quest":
-               Dictionary<string, string> collectionEdges = JsonHelper.GetJsonStringDictionary(NodeFile.Json["collection_quest_info"], "out_edges");
-               foreach (KeyValuePair<string, string> collectionEdge in collectionEdges)
-               {
-                  string outEdge = collectionEdge.Value;
-                  string choice = collectionEdge.Key;
-                  if (!outEdge.Equals("none"))
-                  {
-                     List<string> list;
-                     if (!mChoiceEdgeInfo.TryGetValue(outEdge, out list))
-                     {
-                        list = new List<string>();
-                     }
-                     list.Add(choice);
-                     mChoiceEdgeInfo[outEdge] = list;
-                     if (!mOutEdgeStrings.Contains(outEdge))
-                     {
-                        mOutEdgeStrings.Add(outEdge);
-                     }
-                  }
-               }
-               break;
-            case "dialog_tree":
-               // Go through all the dialog nodes and add ot edges
-               foreach(JToken dialogNode in NodeFile.Json["dialog_tree_info"]["nodes"].Children())
-               {
-                  JToken choices = dialogNode.First["bulletin"]["choices"];
-                  foreach (JToken nodeData in choices.Values())
-                  {
-                     string parentName = (nodeData.Parent as JProperty).Name;
-                     string translatedParentName = ModuleDataManager.GetInstance().LocalizeString(parentName);
-                     List<string> outEdges = JsonHelper.GetJsonStringArray(nodeData, "out_edge");
-                     foreach(string outEdge in outEdges)
-                     {
-                        List<string> list;
-                        if (!mChoiceEdgeInfo.TryGetValue(outEdge, out list))
+        public override NodeData Clone(GameMasterNode nodeFile)
+        {
+            return new CampaignNodeData();
+        }
+
+        protected override void UpdateOutEdges(Graph graph)
+        {
+            foreach (GameMasterNode node in mArcTriggers.Values)
+            {
+                if (node.NodeType == GameMasterNodeType.ARC)
+                {
+                    Node triggerNode = graph.AddNode(NodeFile.Id + "#trigger");
+                    triggerNode.LabelText = "trigger";
+                    MakeNodePrivate(triggerNode);
+                    graph.AddEdge(NodeFile.Id, triggerNode.Id);
+                    graph.AddEdge(triggerNode.Id, node.Id);
+                }
+            }
+            foreach (GameMasterNode node in mArcChallenges.Values)
+            {
+                if (node.NodeType == GameMasterNodeType.ARC)
+                {
+                    Node triggerNode = graph.AddNode(NodeFile.Id + "#challenge");
+                    triggerNode.LabelText = "challenge";
+                    MakeNodePrivate(triggerNode);
+                    graph.AddEdge(NodeFile.Id, triggerNode.Id);
+                    graph.AddEdge(triggerNode.Id, node.Id);
+                }
+            }
+            foreach (GameMasterNode node in mArcClimaxes.Values)
+            {
+                if (node.NodeType == GameMasterNodeType.ARC)
+                {
+                    Node triggerNode = graph.AddNode(NodeFile.Id + "#climax");
+                    triggerNode.LabelText = "climax";
+                    MakeNodePrivate(triggerNode);
+                    graph.AddEdge(NodeFile.Id, triggerNode.Id);
+                    graph.AddEdge(triggerNode.Id, node.Id);
+                }
+            }
+        }
+
+        public override bool AddOutEdge(GameMasterNode nodeFile)
+        {
+            if (nodeFile.NodeType == GameMasterNodeType.ARC)
+            {
+                mArcTriggers.Add(nodeFile.Name, nodeFile);
+                return true;
+            }
+            return false;
+        }
+    }
+
+    public class ArcNodeData : NodeData
+    {
+        private string mRarity;
+        private Dictionary<string, string> mEncounters;
+        private List<GameMasterNode> mEncounterFiles;
+        public override void LoadData(Dictionary<string, GameMasterNode> allNodes)
+        {
+            mEncounters = new Dictionary<string, string>();
+            mEncounterFiles = new List<GameMasterNode>();
+            mRarity = NodeFile.Json["rarity"].ToString();
+            mEncounters = JsonConvert.DeserializeObject<Dictionary<string, string>>(NodeFile.Json["encounters"].ToString());
+            int lastIndexOfSlash = NodeFile.Path.LastIndexOf('/');
+            string nodeFilePathWithoutFileName = NodeFile.Path.Substring(0, lastIndexOfSlash);
+            foreach (string filename in mEncounters.Values)
+            {
+                string absoluteFilePath = JsonHelper.GetFileFromFileJson(filename, nodeFilePathWithoutFileName);
+                GameMasterNode otherFile = null;
+                if (allNodes.TryGetValue(absoluteFilePath, out otherFile))
+                {
+                    // this is a proper edge
+                    otherFile.Owner = NodeFile;
+                    mEncounterFiles.Add(otherFile);
+                }
+            }
+        }
+
+        protected override void UpdateOutEdges(Graph graph)
+        {
+            foreach (GameMasterNode file in mEncounterFiles)
+            {
+                if (file.NodeType == GameMasterNodeType.ENCOUNTER)
+                {
+                    EncounterNodeData nodeData = file.NodeData as EncounterNodeData;
+                    if (nodeData.IsStartNode)
+                    {
+                        graph.AddEdge(NodeFile.Id, file.Id);
+                    }
+                }
+            }
+        }
+
+        public List<GameMasterNode> GetEncountersWithInEdge(string inEdgeName)
+        {
+            List<GameMasterNode> inEdges = new List<GameMasterNode>();
+            foreach (GameMasterNode file in mEncounterFiles)
+            {
+                if (file.NodeType == GameMasterNodeType.ENCOUNTER)
+                {
+                    EncounterNodeData nodeData = file.NodeData as EncounterNodeData;
+                    if (nodeData.InEdge.Equals(inEdgeName))
+                    {
+                        inEdges.Add(file);
+                    }
+                }
+            }
+            return inEdges;
+        }
+
+        public override void GetRelatedNodes(HashSet<GameMasterNode> set)
+        {
+            base.GetRelatedNodes(set);
+            foreach (GameMasterNode node in mEncounterFiles)
+            {
+                if (!set.Contains(node))
+                {
+                    set.Add(node);
+                    node.NodeData.GetRelatedNodes(set);
+                }
+            }
+        }
+
+        public override NodeData Clone(GameMasterNode nodeFile)
+        {
+            return new ArcNodeData();
+        }
+        public void AddEncounter(EncounterNodeData encounter)
+        {
+            // TODO, get relative path
+            GameMasterNode encounterNodeFile = encounter.NodeFile;
+            string filePath = encounterNodeFile.Path;
+            string selfPath = NodeFile.Directory + '/';
+            filePath = "file(" + filePath.Replace(selfPath, "") + ")";
+            mEncounters.Add(encounterNodeFile.Name, filePath);
+            mEncounterFiles.Add(encounterNodeFile);
+            NodeFile.Json["encounters"][encounterNodeFile.Name] = filePath;
+            NodeFile.IsModified = true;
+        }
+
+        public override bool AddOutEdge(GameMasterNode nodeFile)
+        {
+            if (nodeFile.NodeType == GameMasterNodeType.ENCOUNTER)
+            {
+                EncounterNodeData encounterData = nodeFile.NodeData as EncounterNodeData;
+                if (encounterData.IsStartNode && !mEncounterFiles.Contains(nodeFile))
+                {
+                    // can only add an edge between this and the encounter if the encounter is a start node
+                    AddEncounter(encounterData);
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
+    public class EncounterNodeData : NodeData
+    {
+        private string mEncounterType;
+        private string mInEdge; // This is the name of the node as referred to others by the out edges of others.
+        private List<string> mOutEdgeStrings;
+        private Dictionary<string, List<string>> mChoiceEdgeInfo; // Map of edge to list of choices
+        private bool mIsStartNode = false;
+
+        public bool IsStartNode
+        {
+            get { return mIsStartNode; }
+        }
+        public string InEdge
+        {
+            get { return mInEdge; }
+        }
+        public string EncounterType
+        {
+            get { return mEncounterType; }
+        }
+
+        private void AddOutEdgesRecursive(JToken outEdgeSpec, List<string> list)
+        {
+            if (!(outEdgeSpec is JValue))
+            {
+                string specType = outEdgeSpec["type"].ToString();
+                switch (specType)
+                {
+                    case "trigger_one":
+                    case "trigger_many":
+                        JToken outEdges = outEdgeSpec["out_edges"];
+                        IList<JToken> results = outEdges.ToList();
+                        foreach (JToken child in results)
                         {
-                           list = new List<string>();
+                            AddOutEdgesRecursive(child, list);
                         }
-                        list.Add(translatedParentName);
-                        mChoiceEdgeInfo[outEdge] = list;
-                        if (!mOutEdgeStrings.Contains(outEdge))
-                        {
-                           mOutEdgeStrings.Add(outEdge);
-                        }
-                     }
-                  }
-               }
-               break;
-            case "counter":
-               foreach (JToken nodeData in NodeFile.Json["counter_info"]["out_edges"].Values())
-               {
-                  mOutEdgeStrings.Add(nodeData.ToString());
-               }
-               break;
-         }
-      }
-
-      public override void UpdateGraphNode(Node graphNode)
-      {
-         switch (mEncounterType)
-         {
-            case "generator":
-               graphNode.Attr.LineWidth = 2;
-               graphNode.Attr.Shape = Shape.Circle;
-               graphNode.Attr.FillColor = GameMasterNode.kGreen;
-               graphNode.Attr.LabelMargin = 6;
-               break;
-            default:
-               base.UpdateGraphNode(graphNode);
-               break;
-         }
-         if (NodeFile.Owner == null)
-         {
-            graphNode.Attr.Color = Color.Red;
-         }
-      }
-      protected override void UpdateOutEdges(Graph graph)
-      {
-         GameMasterNode arcFile = NodeFile.Owner;
-         if (arcFile != null)
-         {
-            ArcNodeData arc = arcFile.NodeData as ArcNodeData;
-            foreach (string inEdgeName in mOutEdgeStrings)
-            {
-               List<GameMasterNode> linkedEncounters = arc.GetEncountersWithInEdge(inEdgeName);
-               if (linkedEncounters.Count == 1 && linkedEncounters[0].Name.Equals(inEdgeName))
-               {
-                  if (mChoiceEdgeInfo.ContainsKey(inEdgeName))
-                  {
-                     foreach (string choice in mChoiceEdgeInfo[inEdgeName])
-                     {
-                        Node choiceNode = graph.AddNode(NodeFile.Id + "#" + choice);
-                        choiceNode.LabelText = '"' + choice + '"';
-                        MakeNodePrivate(choiceNode);
-                        graph.AddEdge(NodeFile.Id, choiceNode.Id);
-                        graph.AddEdge(choiceNode.Id, linkedEncounters[0].Id);
-                     }
-                  }
-                  else
-                  {
-                     graph.AddEdge(NodeFile.Id, linkedEncounters[0].Id);
-                  }
-               }
-               else
-               {
-                  Node arcOutNode = graph.AddNode(arcFile.Id + "#" + inEdgeName);
-                  arcOutNode.LabelText = inEdgeName;
-                  MakeNodePrivate(arcOutNode);
-                  if (mChoiceEdgeInfo.ContainsKey(inEdgeName))
-                  {
-                     foreach (string choice in mChoiceEdgeInfo[inEdgeName])
-                     {
-                        Node choiceNode = graph.AddNode(NodeFile.Id + "#" + choice);
-                        choiceNode.LabelText = '"' + choice + '"';
-                        MakeNodePrivate(choiceNode);
-                        graph.AddEdge(NodeFile.Id, choiceNode.Id);
-                        graph.AddEdge(choiceNode.Id, arcOutNode.Id);
-                     }
-                  } else {
-                     graph.AddEdge(NodeFile.Id, arcOutNode.Id);
-                  }
-
-                  foreach (GameMasterNode linkedEncounter in linkedEncounters)
-                  {
-                     graph.AddEdge(arcOutNode.Id, linkedEncounter.Id);
-                  }
-               }
+                        break;
+                    case "weighted_edge":
+                        JToken outEdge = outEdgeSpec["out_edge"];
+                        AddOutEdgesRecursive(outEdge, list);
+                        break;
+                }
             }
-         }
-      }
-
-      // Returns list of out edges
-      private List<string> GetOutEdges()
-      {
-         List<string> outEdges = new List<string>();
-         GameMasterNode arcFile = NodeFile.Owner;
-         if (arcFile != null)
-         {
-            ArcNodeData arc = arcFile.NodeData as ArcNodeData;
-            foreach (string inEdgeName in mOutEdgeStrings)
+            else
             {
-               foreach (GameMasterNode linkedEncounter in arc.GetEncountersWithInEdge(inEdgeName))
-               {
-                  outEdges.Add(linkedEncounter.Id);
-               }
+                list.Add(outEdgeSpec.ToString());
             }
-         }
-         return outEdges;
-      }
+        }
 
-      public override NodeData Clone(GameMasterNode nodeFile)
-      {
-         EncounterNodeData newNodeData = new EncounterNodeData();
-         newNodeData.NodeFile = nodeFile;
-         newNodeData.mEncounterType = mEncounterType;
-         newNodeData.mInEdge = mInEdge;
-         newNodeData.mOutEdgeStrings = new List<string>();
-         newNodeData.mIsStartNode = mIsStartNode;
+        private List<string> ParseOutEdges(JToken outEdgeSpec)
+        {
+            List<string> returned = new List<string>();
+            if (outEdgeSpec != null)
+            {
+                AddOutEdgesRecursive(outEdgeSpec, returned);
+            }
+            return returned;
+        }
 
-         if (NodeFile.Owner != null && NodeFile.Owner.NodeType == GameMasterNodeType.ARC)
-         {
-            ArcNodeData ownerArcData = NodeFile.Owner.NodeData as ArcNodeData;
-            ownerArcData.AddEncounter(newNodeData);
-            nodeFile.Owner = NodeFile.Owner;
-         }
-
-         return newNodeData;
-      }
-      public override bool AddOutEdge(GameMasterNode nodeFile)
-      {
-         if (nodeFile.NodeType != GameMasterNodeType.ENCOUNTER)
-         {
-            return false;
-         }
-         EncounterNodeData encounterData = nodeFile.NodeData as EncounterNodeData;
-         string inEdge = encounterData.InEdge;
-
-         if (encounterData.IsStartNode)
-         {
-            // Cannot add start nodes to an encounter. they should be added to arc
-            return false;
-         }
-
-         List<string> outEdges = GetOutEdges();
-         if (outEdges.Contains(nodeFile.Id))
-         {
-            // This item is already part of the out edges
-            return false;
-         }
-         if (!mOutEdgeStrings.Contains(inEdge))
-         {
-            // This out edge isn't already in the list of possible out edges, see if we can add it.
+        public override void PostLoadFixup()
+        {
+            string selector = null;
+            string monsterTuningSelector = null;
             switch (mEncounterType)
             {
-               case "generator":
-                  // Cannot add more than one edge to generator
-                  return false;
-               case "random_out_edge":
-                  JObject randomOutEdgesDictionary = (NodeFile.Json["random_out_edge_info"]["out_edges"] as JObject);
-                  randomOutEdgesDictionary.Add(inEdge, JObject.Parse(@"{""weight"":1 }"));
-                  mOutEdgeStrings.Add(inEdge);
-                  break;
-               case "collection_quest":
-                  return false;
-               case "dialog_tree":
-                  // We can't add to a dialog tree, you have to specify a node.
-                  return false;
-               case "counter":
-                  // Cannot add to a counter because it either does fail or success
-                  return false;
-               default:
-                  NodeFile.Json.Remove("out_edge");
-                  mOutEdgeStrings.Add(inEdge);
-                  NodeFile.Json.Add("out_edge", JsonConvert.SerializeObject(mOutEdgeStrings));
-                  break;
+                case "create_camp":
+                    selector = "create_camp_info.*.loot_drops";
+                    break;
+                case "city_raid":
+                    selector = "city_raid_info.missions.*.members.*.loot_drops";
+                    monsterTuningSelector = "city_raid_info.missions.*.members.*";
+                    break;
+                case "donation_dialog":
+                    selector = "donation_dialog_info.loot_table";
+                    break;
+                case "donation":
+                    selector = "donation_info.loot_table";
+                    break;
+                case "create_mission":
+                    selector = "create_mission_info.mission.members.*.loot_drops";
+                    monsterTuningSelector = "create_mission_info.mission.members.*";
+                    break;
             }
-         }
+            if (selector != null)
+            {
+                FixupLoot(selector);
+            }
+            if (monsterTuningSelector != null)
+            {
+                if (NodeFile.Json != null)
+                {
+                    foreach (JToken token in NodeFile.Json.SelectTokens(monsterTuningSelector))
+                    {
+                        if (token["tuning"] == null)
+                        {
+                            Console.WriteLine(NodeFile.Path + " does not have monster tuning!");
+                        }
+                    }
+                }
+            }
+        }
 
-         if (nodeFile.Owner != NodeFile.Owner)
-         {
-            // make sure encounter is added to this tree
-            ArcNodeData ownerArcData = NodeFile.Owner.NodeData as ArcNodeData;
-            ownerArcData.AddEncounter(encounterData);
-            nodeFile.Owner = NodeFile.Owner;
-         }
-         NodeFile.IsModified = true;
-         return true;
-      }
-   }
+        public override void LoadData(Dictionary<string, GameMasterNode> allNodes)
+        {
+            mOutEdgeStrings = new List<string>();
+            mChoiceEdgeInfo = new Dictionary<string, List<string>>();
+            mEncounterType = NodeFile.Json["encounter_type"].ToString();
+            mInEdge = NodeFile.Json["in_edge"].ToString();
+            if (mInEdge.Equals("start"))
+            {
+                mIsStartNode = true;
+            }
+            mOutEdgeStrings = ParseOutEdges(NodeFile.Json["out_edge"]);
+            switch (mEncounterType)
+            {
+                case "generator":
+                    JToken generatorInfo = NodeFile.Json["generator_info"];
+                    if (generatorInfo.SelectToken("spawn_edge") != null)
+                    {
+                        AddOutEdgesRecursive(generatorInfo["spawn_edge"], mOutEdgeStrings);
+                    }
+                    break;
+                case "collection_quest":
+                    Dictionary<string, string> collectionEdges = JsonHelper.GetJsonStringDictionary(NodeFile.Json["collection_quest_info"], "out_edges");
+                    foreach (KeyValuePair<string, string> collectionEdge in collectionEdges)
+                    {
+                        string outEdge = collectionEdge.Value;
+                        string choice = collectionEdge.Key;
+                        if (!outEdge.Equals("none"))
+                        {
+                            List<string> list;
+                            if (!mChoiceEdgeInfo.TryGetValue(outEdge, out list))
+                            {
+                                list = new List<string>();
+                            }
+                            list.Add(choice);
+                            mChoiceEdgeInfo[outEdge] = list;
+                            if (!mOutEdgeStrings.Contains(outEdge))
+                            {
+                                mOutEdgeStrings.Add(outEdge);
+                            }
+                        }
+                    }
+                    break;
+                case "dialog_tree":
+                    // Go through all the dialog nodes and add ot edges
+                    foreach (JToken dialogNode in NodeFile.Json["dialog_tree_info"]["nodes"].Children())
+                    {
+                        JToken choices = dialogNode.First["bulletin"]["choices"];
+                        foreach (JToken nodeData in choices.Values())
+                        {
+                            string parentName = (nodeData.Parent as JProperty).Name;
+                            string translatedParentName = ModuleDataManager.GetInstance().LocalizeString(parentName);
+                            List<string> outEdges = JsonHelper.GetJsonStringArray(nodeData, "out_edge");
+                            foreach (string outEdge in outEdges)
+                            {
+                                List<string> list;
+                                if (!mChoiceEdgeInfo.TryGetValue(outEdge, out list))
+                                {
+                                    list = new List<string>();
+                                }
+                                list.Add(translatedParentName);
+                                mChoiceEdgeInfo[outEdge] = list;
+                                if (!mOutEdgeStrings.Contains(outEdge))
+                                {
+                                    mOutEdgeStrings.Add(outEdge);
+                                }
+                            }
+                        }
+                    }
+                    break;
+                case "counter":
+                    foreach (JToken nodeData in NodeFile.Json["counter_info"]["out_edges"].Values())
+                    {
+                        mOutEdgeStrings.Add(nodeData.ToString());
+                    }
+                    break;
+            }
+        }
 
-   public class CampPieceNodeData : NodeData
-   {
-      public override NodeData Clone(GameMasterNode nodeFile)
-      {
-         throw new NotImplementedException();
-      }
+        public override void UpdateGraphNode(Node graphNode)
+        {
+            switch (mEncounterType)
+            {
+                case "generator":
+                    graphNode.Attr.LineWidth = 2;
+                    graphNode.Attr.Shape = Shape.Circle;
+                    graphNode.Attr.FillColor = GameMasterNode.kGreen;
+                    graphNode.Attr.LabelMargin = 6;
+                    break;
+                default:
+                    base.UpdateGraphNode(graphNode);
+                    break;
+            }
+            if (NodeFile.Owner == null)
+            {
+                graphNode.Attr.Color = Color.Red;
+            }
+        }
+        protected override void UpdateOutEdges(Graph graph)
+        {
+            GameMasterNode arcFile = NodeFile.Owner;
+            if (arcFile != null)
+            {
+                ArcNodeData arc = arcFile.NodeData as ArcNodeData;
+                foreach (string inEdgeName in mOutEdgeStrings)
+                {
+                    List<GameMasterNode> linkedEncounters = arc.GetEncountersWithInEdge(inEdgeName);
+                    if (linkedEncounters.Count == 1 && linkedEncounters[0].Name.Equals(inEdgeName))
+                    {
+                        if (mChoiceEdgeInfo.ContainsKey(inEdgeName))
+                        {
+                            foreach (string choice in mChoiceEdgeInfo[inEdgeName])
+                            {
+                                Node choiceNode = graph.AddNode(NodeFile.Id + "#" + choice);
+                                choiceNode.LabelText = '"' + choice + '"';
+                                MakeNodePrivate(choiceNode);
+                                graph.AddEdge(NodeFile.Id, choiceNode.Id);
+                                graph.AddEdge(choiceNode.Id, linkedEncounters[0].Id);
+                            }
+                        }
+                        else
+                        {
+                            graph.AddEdge(NodeFile.Id, linkedEncounters[0].Id);
+                        }
+                    }
+                    else
+                    {
+                        Node arcOutNode = graph.AddNode(arcFile.Id + "#" + inEdgeName);
+                        arcOutNode.LabelText = inEdgeName;
+                        MakeNodePrivate(arcOutNode);
+                        if (mChoiceEdgeInfo.ContainsKey(inEdgeName))
+                        {
+                            foreach (string choice in mChoiceEdgeInfo[inEdgeName])
+                            {
+                                Node choiceNode = graph.AddNode(NodeFile.Id + "#" + choice);
+                                choiceNode.LabelText = '"' + choice + '"';
+                                MakeNodePrivate(choiceNode);
+                                graph.AddEdge(NodeFile.Id, choiceNode.Id);
+                                graph.AddEdge(choiceNode.Id, arcOutNode.Id);
+                            }
+                        }
+                        else
+                        {
+                            graph.AddEdge(NodeFile.Id, arcOutNode.Id);
+                        }
 
-      protected override void UpdateOutEdges(Graph graph)
-      {
-         throw new NotImplementedException();
-      }
+                        foreach (GameMasterNode linkedEncounter in linkedEncounters)
+                        {
+                            graph.AddEdge(arcOutNode.Id, linkedEncounter.Id);
+                        }
+                    }
+                }
+            }
+        }
 
-      public override void LoadData(Dictionary<string, GameMasterNode> allNodes)
-      {
-      }
+        // Returns list of out edges
+        private List<string> GetOutEdges()
+        {
+            List<string> outEdges = new List<string>();
+            GameMasterNode arcFile = NodeFile.Owner;
+            if (arcFile != null)
+            {
+                ArcNodeData arc = arcFile.NodeData as ArcNodeData;
+                foreach (string inEdgeName in mOutEdgeStrings)
+                {
+                    foreach (GameMasterNode linkedEncounter in arc.GetEncountersWithInEdge(inEdgeName))
+                    {
+                        outEdges.Add(linkedEncounter.Id);
+                    }
+                }
+            }
+            return outEdges;
+        }
 
-      public override void PostLoadFixup()
-      {
-         if (NodeFile.Json["script_info"] != null)
-         {
-            FixupLoot("script_info.loot_chests.*.loot_drops");
-         } else
-         {
-            FixupLoot("*.*.loot_drops");
-         }
-      }
-   }
+        public override NodeData Clone(GameMasterNode nodeFile)
+        {
+            EncounterNodeData newNodeData = new EncounterNodeData();
+            newNodeData.NodeFile = nodeFile;
+            newNodeData.mEncounterType = mEncounterType;
+            newNodeData.mInEdge = mInEdge;
+            newNodeData.mOutEdgeStrings = new List<string>();
+            newNodeData.mIsStartNode = mIsStartNode;
 
-   public class UnknownNodeData : NodeData
-   {
-      public override NodeData Clone(GameMasterNode nodeFile)
-      {
-         throw new NotImplementedException();
-      }
+            if (NodeFile.Owner != null && NodeFile.Owner.NodeType == GameMasterNodeType.ARC)
+            {
+                ArcNodeData ownerArcData = NodeFile.Owner.NodeData as ArcNodeData;
+                ownerArcData.AddEncounter(newNodeData);
+                nodeFile.Owner = NodeFile.Owner;
+            }
 
-      protected override void UpdateOutEdges(Graph graph)
-      {
-         throw new NotImplementedException();
-      }
+            return newNodeData;
+        }
+        public override bool AddOutEdge(GameMasterNode nodeFile)
+        {
+            if (nodeFile.NodeType != GameMasterNodeType.ENCOUNTER)
+            {
+                return false;
+            }
+            EncounterNodeData encounterData = nodeFile.NodeData as EncounterNodeData;
+            string inEdge = encounterData.InEdge;
 
-      public override void LoadData(Dictionary<string, GameMasterNode> allNodes)
-      {
-      }
-   }
+            if (encounterData.IsStartNode)
+            {
+                // Cannot add start nodes to an encounter. they should be added to arc
+                return false;
+            }
+
+            List<string> outEdges = GetOutEdges();
+            if (outEdges.Contains(nodeFile.Id))
+            {
+                // This item is already part of the out edges
+                return false;
+            }
+            if (!mOutEdgeStrings.Contains(inEdge))
+            {
+                // This out edge isn't already in the list of possible out edges, see if we can add it.
+                switch (mEncounterType)
+                {
+                    case "generator":
+                        // Cannot add more than one edge to generator
+                        return false;
+                    case "random_out_edge":
+                        JObject randomOutEdgesDictionary = (NodeFile.Json["random_out_edge_info"]["out_edges"] as JObject);
+                        randomOutEdgesDictionary.Add(inEdge, JObject.Parse(@"{""weight"":1 }"));
+                        mOutEdgeStrings.Add(inEdge);
+                        break;
+                    case "collection_quest":
+                        return false;
+                    case "dialog_tree":
+                        // We can't add to a dialog tree, you have to specify a node.
+                        return false;
+                    case "counter":
+                        // Cannot add to a counter because it either does fail or success
+                        return false;
+                    default:
+                        NodeFile.Json.Remove("out_edge");
+                        mOutEdgeStrings.Add(inEdge);
+                        NodeFile.Json.Add("out_edge", JsonConvert.SerializeObject(mOutEdgeStrings));
+                        break;
+                }
+            }
+
+            if (nodeFile.Owner != NodeFile.Owner)
+            {
+                // make sure encounter is added to this tree
+                ArcNodeData ownerArcData = NodeFile.Owner.NodeData as ArcNodeData;
+                ownerArcData.AddEncounter(encounterData);
+                nodeFile.Owner = NodeFile.Owner;
+            }
+            NodeFile.IsModified = true;
+            return true;
+        }
+    }
+
+    public class CampPieceNodeData : NodeData
+    {
+        public override NodeData Clone(GameMasterNode nodeFile)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override void UpdateOutEdges(Graph graph)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void LoadData(Dictionary<string, GameMasterNode> allNodes)
+        {
+        }
+
+        public override void PostLoadFixup()
+        {
+            if (NodeFile.Json["script_info"] != null)
+            {
+                FixupLoot("script_info.loot_chests.*.loot_drops");
+            }
+            else
+            {
+                FixupLoot("*.*.loot_drops");
+            }
+        }
+    }
+
+    public class UnknownNodeData : NodeData
+    {
+        public override NodeData Clone(GameMasterNode nodeFile)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override void UpdateOutEdges(Graph graph)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void LoadData(Dictionary<string, GameMasterNode> allNodes)
+        {
+        }
+    }
 }
