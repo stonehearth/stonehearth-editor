@@ -113,8 +113,10 @@ namespace StonehearthEditor
         // This function from http://stackoverflow.com/questions/275689/how-to-get-relative-path-from-absolute-path
         public static string MakeRelativePath(string fromPath, string toPath)
         {
-            if (string.IsNullOrEmpty(fromPath)) throw new ArgumentNullException("fromPath");
-            if (string.IsNullOrEmpty(toPath)) throw new ArgumentNullException("toPath");
+            if (string.IsNullOrEmpty(fromPath))
+                throw new ArgumentNullException("fromPath");
+            if (string.IsNullOrEmpty(toPath))
+                throw new ArgumentNullException("toPath");
 
             Uri fromUri = new Uri(fromPath);
             Uri toUri = new Uri(toPath);

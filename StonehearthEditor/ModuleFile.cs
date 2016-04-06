@@ -208,7 +208,8 @@ namespace StonehearthEditor
         public JsonFileData GetJsonFileDataByTerm(string filterTerm)
         {
             JsonFileData jsonFileData = FileData as JsonFileData;
-            if (jsonFileData == null) return null;
+            if (jsonFileData == null)
+                return null;
             JObject json = jsonFileData.Json;
             if (json != null)
             {
