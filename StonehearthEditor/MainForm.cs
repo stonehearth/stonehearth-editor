@@ -4,11 +4,6 @@ using System.Windows.Forms;
 
 namespace StonehearthEditor
 {
-    public interface IGraphOwner
-    {
-        void SetGraph(Microsoft.Msagl.Drawing.Graph graph);
-    }
-
     public partial class MainForm : Form
     {
         public static string kModsDirectoryPath { get; set; }
