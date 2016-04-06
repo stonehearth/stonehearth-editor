@@ -209,7 +209,7 @@ namespace StonehearthEditor
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="newPath"></param>
         /// <param name="oldName"></param>
