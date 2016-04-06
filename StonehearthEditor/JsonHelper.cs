@@ -266,7 +266,10 @@ namespace StonehearthEditor
                     }
                     while (eol > pos);
                 }
-                else sb.Append(kNewline); // Empty line
+                else
+                {
+                    sb.Append(kNewline); // Empty line
+                }
             }
 
             return sb.ToString();
