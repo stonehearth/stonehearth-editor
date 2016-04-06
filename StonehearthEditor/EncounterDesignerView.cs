@@ -19,7 +19,8 @@ namespace StonehearthEditor
 
         private GameMasterNode mSelectedNode = null;
         private Timer refreshGraphTimer = null;
-        private double mPreviousMouseX, mPreviousMouseY;
+        private double mPreviousMouseX;
+        private double mPreviousMouseY;
         private FilePreview mNodePreview = null;
 
         public EncounterDesignerView()
