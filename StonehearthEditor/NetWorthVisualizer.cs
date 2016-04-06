@@ -176,7 +176,6 @@ namespace StonehearthEditor
                                     graphics.FillRectangle(semiRed.Brush, location);
                                 }
                             }
-
                         }
                     }
                 }

@@ -75,7 +75,6 @@ namespace StonehearthEditor
                 copyGameMasterNode.Enabled = true;
                 openEncounterFileButton.Visible = true;
                 deleteNodeToolStripMenuItem.Visible = true;
-
             }
             else
             {

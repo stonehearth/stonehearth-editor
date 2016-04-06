@@ -67,7 +67,6 @@ namespace StonehearthEditor
             if (mType == FileType.JSON)
             {
                 fileData = new JsonFileData(ResolvedPath);
-
             }
             else if (mType == FileType.LUA)
             {

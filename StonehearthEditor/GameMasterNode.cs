@@ -213,7 +213,6 @@ namespace StonehearthEditor
                 {
                     Console.WriteLine("Could not write to file " + mPath + " because of exception: " + e.Message);
                 }
-
             }
         }
         public GameMasterNode Clone(string newFileName)

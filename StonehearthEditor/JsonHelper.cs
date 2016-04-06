@@ -252,7 +252,6 @@ namespace StonehearthEditor
 
                         while (pos < eol && char.IsWhiteSpace(the_string[pos]))
                             pos++;
-
                     }
                     while (eol > pos);
                 }

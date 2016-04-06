@@ -923,7 +923,6 @@ namespace StonehearthEditor
                         nameWithoutExtension = nameWithoutExtension.Substring(0, nameWithoutExtension.Length - 7);
                         samplePath = samplePath + ':' + nameWithoutExtension;
                     }
-
                 }
             }
 
