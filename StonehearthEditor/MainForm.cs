@@ -11,7 +11,7 @@ namespace StonehearthEditor
 
     public partial class MainForm : Form
     {
-        public static string kModsDirectoryPath;
+        public static string kModsDirectoryPath { get; set; }
 
         private NetWorthVisualizer mNetWorthVisualizer;
 
