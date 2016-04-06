@@ -33,8 +33,8 @@ namespace StonehearthEditor
         public int RecommendedMinNetWorth = -1;
 
         public JsonFileData(string path)
+            : base(path)
         {
-            mPath = path;
             mDirectory = JsonHelper.NormalizeSystemPath(System.IO.Path.GetDirectoryName(Path));
         }
 
@@ -42,7 +42,7 @@ namespace StonehearthEditor
         {
             try
             {
-                mOpenedFiles.Add(this);
+                OpenedFiles.Add(this);
                 string jsonString = FlatFileData;
                 mJson = JObject.Parse(jsonString);
                 JToken typeObject = mJson["type"];
@@ -63,7 +63,7 @@ namespace StonehearthEditor
             }
             catch (Exception e)
             {
-                AddError("Failed to load json file " + mPath + ". Error: " + e.Message);
+                AddError("Failed to load json file " + Path + ". Error: " + e.Message);
             }
         }
 
@@ -172,7 +172,7 @@ namespace StonehearthEditor
                             JsonFileData ghost = new JsonFileData(ghostFilePath);
                             ghost.Load();
                             ghost.AddMixin("stonehearth:mixins:placed_object");
-                            mOpenedFiles.Add(ghost);
+                            OpenedFiles.Add(ghost);
                             ghost.PostLoad();
                         }
                         JToken iconicForm = entityFormsComponent["iconic_form"];
@@ -182,7 +182,7 @@ namespace StonehearthEditor
                             iconicFilePath = JsonHelper.NormalizeSystemPath(iconicFilePath);
                             JsonFileData iconic = new JsonFileData(iconicFilePath);
                             iconic.Load();
-                            mOpenedFiles.Add(iconic);
+                            OpenedFiles.Add(iconic);
                         }
                         CheckForNoNetWorth();
                     }
@@ -206,9 +206,9 @@ namespace StonehearthEditor
                         recipes.Load();
                         foreach (FileData recipe in recipes.LinkedFileData.Values)
                         {
-                            recipes.mRelatedFiles.Add(recipe);
+                            recipes.RelatedFiles.Add(recipe);
                         }
-                        mOpenedFiles.Add(recipes);
+                        OpenedFiles.Add(recipes);
                         recipes.ReferencedByFileData[GetAliasOrFlatName()] = this;
                     }
 
@@ -221,7 +221,7 @@ namespace StonehearthEditor
                             FileData fileData = null;
                             if (equipmentJson.IndexOf(':') >= 0)
                             {
-                                foreach (ModuleFile alias in mLinkedAliases)
+                                foreach (ModuleFile alias in LinkedAliases)
                                 {
                                     if (alias.FullAlias.Equals(equipmentJson))
                                     {
@@ -232,7 +232,7 @@ namespace StonehearthEditor
                             else
                             {
                                 equipmentJson = JsonHelper.GetFileFromFileJson(equipmentJson, directory);
-                                mLinkedFileData.TryGetValue(equipmentJson, out fileData);
+                                LinkedFileData.TryGetValue(equipmentJson, out fileData);
                             }
 
                             JsonFileData jsonFileData = fileData as JsonFileData;
@@ -263,7 +263,7 @@ namespace StonehearthEditor
                         string portraitImageLocation = portrait.ToString();
                         portraitImageLocation = JsonHelper.GetFileFromFileJson(portraitImageLocation, directory);
                         ImageFileData image = new ImageFileData(portraitImageLocation);
-                        mLinkedFileData.Add(portraitImageLocation, image);
+                        LinkedFileData.Add(portraitImageLocation, image);
                     }
 
                     break;
@@ -461,7 +461,7 @@ namespace StonehearthEditor
             string jsonString = JsonHelper.GetFormattedJsonString(mJson);
             if (jsonString == null)
             {
-                Console.WriteLine("Could not convert " + mPath + " to json string");
+                Console.WriteLine("Could not convert {0} to json string", Path);
             }
             return jsonString != null ? jsonString : "INVALID JSON";
         }
@@ -485,14 +485,14 @@ namespace StonehearthEditor
                         AddError("Links to non-existent file " + linkedFile);
                         continue;
                     }
-                    if (mLinkedFileData.ContainsKey(linkedFile))
+                    if (LinkedFileData.ContainsKey(linkedFile))
                     {
                         continue;
                     }
                     FileData linkedFileData = GetFileDataFactory(linkedFile);
                     if (linkedFileData != null)
                     {
-                        mLinkedFileData.Add(linkedFile, linkedFileData);
+                        LinkedFileData.Add(linkedFile, linkedFileData);
                         linkedFileData.ReferencedByFileData[GetAliasOrFlatName()] = this;
                     }
                 }
@@ -538,7 +538,7 @@ namespace StonehearthEditor
         private string GetAliasOrFlatName()
         {
             ModuleFile moduleFile = GetModuleFile();
-            string flatPath = mPath.Replace(ModuleDataManager.GetInstance().ModsDirectoryPath, "");
+            string flatPath = Path.Replace(ModuleDataManager.GetInstance().ModsDirectoryPath, "");
             return (moduleFile != null) ? moduleFile.FullAlias : flatPath;
         }
 
@@ -553,7 +553,7 @@ namespace StonehearthEditor
                 {
                     continue;
                 }
-                mLinkedAliases.Add(linkedAlias);
+                LinkedAliases.Add(linkedAlias);
                 linkedAlias.AddReference(GetAliasOrFlatName(), this);
             }
         }
@@ -582,7 +582,7 @@ namespace StonehearthEditor
                     return true;
                 }
 
-                foreach (FileData file in mOpenedFiles)
+                foreach (FileData file in OpenedFiles)
                 {
                     if (file.Errors != null)
                     {
@@ -617,9 +617,9 @@ namespace StonehearthEditor
             bool hasChildMatchingFilter = false;
             if (JsonType == JSONTYPE.JOB)
             {
-                if (mOpenedFiles.Count > 1)
+                if (OpenedFiles.Count > 1)
                 {
-                    FileData recipeJsonData = mOpenedFiles[1];
+                    FileData recipeJsonData = OpenedFiles[1];
                     TreeNode recipes = new TreeNode(recipeJsonData.FileName);
                     recipeJsonData.UpdateTreeNode(recipes, filter);
 
@@ -657,7 +657,7 @@ namespace StonehearthEditor
                 string newNameToUse = parameters.TransformParameter(GetNameForCloning()).Replace("_recipe", "");
                 if (execute)
                 {
-                    JsonFileData recipesList = mRelatedFiles[mRelatedFiles.Count - 1] as JsonFileData;
+                    JsonFileData recipesList = RelatedFiles[RelatedFiles.Count - 1] as JsonFileData;
                     JObject json = recipesList.mJson;
                     JToken foundParent = null;
                     foreach (JToken token in json["craftable_recipes"].Children())

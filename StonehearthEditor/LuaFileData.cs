@@ -10,8 +10,8 @@ namespace StonehearthEditor
         private ModuleFile mOwner;
 
         public LuaFileData(string path)
+            : base(path)
         {
-            mPath = path;
             mDirectory = JsonHelper.NormalizeSystemPath(System.IO.Path.GetDirectoryName(Path));
         }
 

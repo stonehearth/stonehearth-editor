@@ -17,27 +17,27 @@ namespace StonehearthEditor
         private string mFlatFileData;
         protected bool mIsModified = false;
 
-        protected string mPath;
         private bool isDisposing = false;
         private string mErrors = null;
-        protected List<ModuleFile> mLinkedAliases = new List<ModuleFile>();
-        protected Dictionary<string, FileData> mLinkedFileData = new Dictionary<string, FileData>();
-        protected List<FileData> mOpenedFiles = new List<FileData>();
-        protected List<FileData> mRelatedFiles = new List<FileData>();
-        protected Dictionary<string, FileData> mReferencedByFileData = new Dictionary<string, FileData>();
 
-        public List<ModuleFile> LinkedAliases { get { return mLinkedAliases; } }
-        public Dictionary<string, FileData> LinkedFileData { get { return mLinkedFileData; } }
-        public List<FileData> OpenedFiles { get { return mOpenedFiles; } }
-        public List<FileData> RelatedFiles { get { return mRelatedFiles; } }
+        public List<ModuleFile> LinkedAliases { get; } = new List<ModuleFile>();
+        public Dictionary<string, FileData> LinkedFileData { get; } = new Dictionary<string, FileData>();
+        public List<FileData> OpenedFiles { get; } = new List<FileData>();
+        public List<FileData> RelatedFiles { get; } = new List<FileData>();
 
-        public Dictionary<string, FileData> ReferencedByFileData { get { return mReferencedByFileData; } }
+        public Dictionary<string, FileData> ReferencedByFileData { get; } = new Dictionary<string, FileData>();
+
+        protected FileData(string path)
+        {
+            this.Path = path;
+        }
+
         public TreeNode TreeNode
         {
             get { return mTreeNode; }
         }
 
-        public string Path { get { return mPath; } }
+        public string Path { get; }
 
         public string FileName
         {
@@ -165,9 +165,13 @@ namespace StonehearthEditor
         }
 
         // custom load call
-        protected virtual void LoadInternal() { }
+        protected virtual void LoadInternal()
+        {
+        }
 
-        protected virtual void PostLoad() { }
+        protected virtual void PostLoad()
+        {
+        }
 
         protected virtual bool TryChangeFlatFileData(string newData, out string newFlatFileData)
         {
@@ -209,7 +213,7 @@ namespace StonehearthEditor
         }
 
         /// <summary>
-        ///
+        /// 
         /// </summary>
         /// <param name="newPath"></param>
         /// <param name="oldName"></param>
@@ -278,29 +282,29 @@ namespace StonehearthEditor
                 return;
             }
             isDisposing = true;
-            foreach (ModuleFile alias in mLinkedAliases)
+            foreach (ModuleFile alias in LinkedAliases)
             {
                 alias.Dispose();
             }
-            mLinkedAliases.Clear();
+            LinkedAliases.Clear();
 
-            foreach (FileData opened in mOpenedFiles)
+            foreach (FileData opened in OpenedFiles)
             {
                 opened.Dispose();
             }
-            mOpenedFiles.Clear();
+            OpenedFiles.Clear();
 
-            foreach (FileData related in mRelatedFiles)
+            foreach (FileData related in RelatedFiles)
             {
                 related.Dispose();
             }
-            mRelatedFiles.Clear();
+            RelatedFiles.Clear();
 
-            foreach (FileData referenced in mReferencedByFileData.Values)
+            foreach (FileData referenced in ReferencedByFileData.Values)
             {
                 referenced.Dispose();
             }
-            mReferencedByFileData.Clear();
+            ReferencedByFileData.Clear();
         }
     }
 }

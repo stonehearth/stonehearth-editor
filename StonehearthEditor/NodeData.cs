@@ -38,7 +38,9 @@ namespace StonehearthEditor
             set.Add(NodeFile);
         }
 
-        public virtual void PostLoadFixup() { }
+        public virtual void PostLoadFixup()
+        {
+        }
 
         public abstract NodeData Clone(GameMasterNode nodeFile);
 

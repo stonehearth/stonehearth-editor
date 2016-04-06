@@ -39,6 +39,7 @@
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>
     </DocumentationFile>
+    <CodeAnalysisRuleSet>StonehearthEditor.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -48,6 +49,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>StonehearthEditor.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Msagl">
@@ -84,6 +86,9 @@
     <Compile Include="AliasSelectionDialog.Designer.cs">
       <DependentUpon>AliasSelectionDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="ArcNodeData.cs" />
+    <Compile Include="CampaignNodeData.cs" />
+    <Compile Include="CampPieceNodeData.cs" />
     <Compile Include="CloneDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -97,6 +102,7 @@
     <Compile Include="EncounterDesignerView.Designer.cs">
       <DependentUpon>EncounterDesignerView.cs</DependentUpon>
     </Compile>
+    <Compile Include="EncounterNodeData.cs" />
     <Compile Include="ErrorFileList.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -145,6 +151,7 @@
     <Compile Include="EntityBrowserView.Designer.cs">
       <DependentUpon>EntityBrowserView.cs</DependentUpon>
     </Compile>
+    <Compile Include="NodeData.cs" />
     <Compile Include="PreviewCloneDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -161,6 +168,7 @@
     </Compile>
     <Compile Include="QubicleFileData.cs" />
     <Compile Include="ThumbnailCache.cs" />
+    <Compile Include="UnknownNodeData.cs" />
     <EmbeddedResource Include="AliasSelectionDialog.resx">
       <DependentUpon>AliasSelectionDialog.cs</DependentUpon>
     </EmbeddedResource>
@@ -217,6 +225,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <None Include="scripts\loc_fields.json" />
+    <None Include="StonehearthEditor.ruleset" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

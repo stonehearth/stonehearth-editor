@@ -10,8 +10,8 @@ namespace StonehearthEditor
         private bool mHasQmo = false;
 
         public QubicleFileData(string path)
+            : base(path)
         {
-            mPath = path;
             mDirectory = JsonHelper.NormalizeSystemPath(System.IO.Path.GetDirectoryName(Path));
             if (System.IO.Path.GetExtension(path).Equals(".qmo"))
             {
@@ -38,13 +38,13 @@ namespace StonehearthEditor
                 {
                     mHasQmo = true;
                     QubicleFileData qmoFile = new QubicleFileData(qmoPath);
-                    mLinkedFileData.Add(qmoPath, qmoFile);
+                    LinkedFileData.Add(qmoPath, qmoFile);
                 }
             }
         }
         public void AddLinkingJsonFile(JsonFileData file)
         {
-            mRelatedFiles.Add(file);
+            RelatedFiles.Add(file);
         }
 
         public override bool Clone(string newPath, CloneObjectParameters parameters, HashSet<string> alreadyCloned, bool execute)
@@ -59,13 +59,13 @@ namespace StonehearthEditor
                 }
             }
             string qmoPath = GetQmoPath();
-            if (mIsQb && mLinkedFileData.ContainsKey(qmoPath))
+            if (mIsQb && LinkedFileData.ContainsKey(qmoPath))
             {
                 string newQmoPath = newPath.Replace(".qb", ".qmo");
                 if (!alreadyCloned.Contains(newQmoPath))
                 {
                     alreadyCloned.Add(newQmoPath);
-                    mLinkedFileData[qmoPath].Clone(newQmoPath, parameters, alreadyCloned, execute);
+                    LinkedFileData[qmoPath].Clone(newQmoPath, parameters, alreadyCloned, execute);
                 }
             }
             return true;
@@ -82,7 +82,7 @@ namespace StonehearthEditor
             {
                 return GetQmoPath();
             }
-            return mPath;
+            return Path;
         }
     }
 }

@@ -8,8 +8,8 @@ namespace StonehearthEditor
         private string mDirectory;
 
         public ImageFileData(string path)
+            : base(path)
         {
-            mPath = path;
             mDirectory = JsonHelper.NormalizeSystemPath(System.IO.Path.GetDirectoryName(Path));
         }
 
@@ -28,7 +28,7 @@ namespace StonehearthEditor
         }
         public void AddLinkingJsonFile(JsonFileData file)
         {
-            mRelatedFiles.Add(file);
+            RelatedFiles.Add(file);
         }
         public override bool Clone(string newPath, CloneObjectParameters parameters, HashSet<string> alreadyCloned, bool execute)
         {
