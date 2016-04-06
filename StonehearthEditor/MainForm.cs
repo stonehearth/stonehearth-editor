@@ -24,8 +24,11 @@ namespace StonehearthEditor
 
       public MainForm(string path)
       {
-         path = path.Trim();
-         kModsDirectoryPath = JsonHelper.NormalizeSystemPath(path);
+         if (path != null)
+         {
+            path = path.Trim();
+            kModsDirectoryPath = JsonHelper.NormalizeSystemPath(path);
+         }
          InitializeComponent();
       }
 
@@ -36,7 +39,7 @@ namespace StonehearthEditor
             chooseModDirectory();
          }
          LoadModFiles();
-         int initialTab = (int) Properties.Settings.Default["InitialTab"];
+         int initialTab = (int)Properties.Settings.Default["InitialTab"];
          tabControl.SelectedIndex = initialTab;
 
          if (Properties.Settings.Default.MainFormSize != null)
@@ -120,7 +123,7 @@ namespace StonehearthEditor
             string newPath = modsFolderBrowserDialog.SelectedPath;
             if (!string.IsNullOrWhiteSpace(newPath))
             {
-               kModsDirectoryPath = modsFolderBrowserDialog.SelectedPath;
+               kModsDirectoryPath = JsonHelper.NormalizeSystemPath(modsFolderBrowserDialog.SelectedPath);
                Properties.Settings.Default["ModsDirectory"] = kModsDirectoryPath;
                Properties.Settings.Default.Save();
             }
