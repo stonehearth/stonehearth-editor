@@ -144,12 +144,8 @@ namespace StonehearthEditor
                 prop.Remove();
             }
 
-            properties.Sort(
-               delegate (JProperty a, JProperty b)
-               {
-                   return a.Name.CompareTo(b.Name);
-               }
-            );
+            properties.Sort((a, b) => a.Name.CompareTo(b.Name));
+
             foreach (var prop in properties)
             {
                 jObj.Add(prop);
