@@ -426,7 +426,6 @@ namespace StonehearthEditor
             lv.ListViewItemSorter = new ListViewItemComparer(e.Column);
             lv.Sort();
 
-
             if (e.Column != sortColumn)
             {
                 sortColumn = e.Column;

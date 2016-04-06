@@ -175,7 +175,6 @@ namespace StonehearthEditor
             return mod.GetAliasFile(alias);
         }
 
-
         public ICollection<Module> GetAllModules()
         {
             return mModules.Values;

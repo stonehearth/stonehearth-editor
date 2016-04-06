@@ -97,7 +97,6 @@ namespace StonehearthEditor
             }
         }
 
-
         private void graphViewer_EdgeAdded(object sender, EventArgs e)
         {
             Edge edge = (Edge)sender;

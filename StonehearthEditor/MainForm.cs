@@ -8,7 +8,6 @@ using System.IO;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
-
 namespace StonehearthEditor
 {
     public interface IGraphOwner

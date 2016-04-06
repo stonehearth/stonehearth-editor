@@ -315,7 +315,6 @@ namespace StonehearthEditor
             File.Delete(nodePath);
             mGameMasterNodes.Remove(nodePath);
 
-
             return false;
         }
     }
