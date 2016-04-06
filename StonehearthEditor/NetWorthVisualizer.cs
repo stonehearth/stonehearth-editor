@@ -112,6 +112,7 @@ namespace StonehearthEditor
         private static int kMaxRows = 1000;
         private static float kMaxRecommendedMultiplier = 1.6f;
         private static float kMinRecommendedMultiplier = 0.9f;
+
         private void canvas_Paint(object sender, PaintEventArgs e)
         {
             Graphics graphics = e.Graphics;

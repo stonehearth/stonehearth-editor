@@ -15,6 +15,7 @@ namespace StonehearthEditor
         private string mRarity;
         private Dictionary<string, string> mEncounters;
         private List<GameMasterNode> mEncounterFiles;
+
         public override void LoadData(Dictionary<string, GameMasterNode> allNodes)
         {
             mEncounters = new Dictionary<string, string>();

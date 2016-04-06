@@ -13,6 +13,7 @@ namespace StonehearthEditor
     public abstract class NodeData
     {
         public GameMasterNode NodeFile;
+
         public abstract void LoadData(Dictionary<string, GameMasterNode> allNodes);
 
         public virtual void UpdateGraph(Graph graph)

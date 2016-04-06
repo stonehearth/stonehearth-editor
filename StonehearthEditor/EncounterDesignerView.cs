@@ -183,6 +183,7 @@ namespace StonehearthEditor
         }
 
         private string mSelectedNewScriptNode = null;
+
         private void addNewGameMasterNode_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
             ToolStripItem clickedItem = e.ClickedItem;
@@ -284,6 +285,7 @@ namespace StonehearthEditor
         {
             private GameMasterNode mNode;
             private IGraphOwner mViewer;
+
             public CloneDialogCallback(IGraphOwner viewer, GameMasterNode node)
             {
                 mViewer = viewer;

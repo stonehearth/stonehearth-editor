@@ -9,6 +9,7 @@ namespace StonehearthEditor
     {
         private static Dictionary<string, Image> sThumbnailCache = new Dictionary<string, Image>();
         private static int kDefaultSize = 40;
+
         public static Image GetThumbnail(string imageFile)
         {
             Image thumbnail;

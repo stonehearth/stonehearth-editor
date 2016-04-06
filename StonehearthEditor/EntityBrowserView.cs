@@ -503,6 +503,7 @@ namespace StonehearthEditor
         {
             private ListView mView;
             private EntityBrowserView mOwner;
+
             public FilterItemsCallback(EntityBrowserView owner, ListView listView)
             {
                 mView = listView;

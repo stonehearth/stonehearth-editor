@@ -16,6 +16,7 @@ namespace StonehearthEditor
         private Dictionary<string, Dictionary<string, ModuleFile>> mModuleFiles = new Dictionary<string, Dictionary<string, ModuleFile>>();
 
         private JObject mEnglishLocalizationJson;
+
         public Module(string modPath)
         {
             mPath = modPath;

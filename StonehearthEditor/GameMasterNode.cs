@@ -37,6 +37,7 @@ namespace StonehearthEditor
 
         private Dictionary<string, string> mEncounters = new Dictionary<string, string>();
         private GameMasterNodeType mNodeType = GameMasterNodeType.UNSET;
+
         public GameMasterNode(string module, string filePath)
         {
             mModule = module;

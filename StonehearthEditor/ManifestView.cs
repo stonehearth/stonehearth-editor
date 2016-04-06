@@ -23,6 +23,7 @@ namespace StonehearthEditor
         private Dictionary<string, string> mLastModuleLocations = new Dictionary<string, string>();
         private ErrorFileList mErrorFileListView;
         private const int kThumbnailSize = 20;
+
         public ManifestView()
         {
             InitializeComponent();
@@ -420,6 +421,7 @@ namespace StonehearthEditor
             private FileData mFileData;
             private ManifestView mViewer;
             private PreviewCloneAliasCallback mPreviewCallback;
+
             public CloneAliasCallback(ManifestView viewer, FileData file)
             {
                 mViewer = viewer;
@@ -470,6 +472,7 @@ namespace StonehearthEditor
             private ManifestView mViewer;
             private CloneObjectParameters mParameters;
             public HashSet<string> SavedUnwantedItems;
+
             public PreviewCloneAliasCallback(ManifestView viewer, FileData fileData, CloneObjectParameters parameters)
             {
                 mViewer = viewer;
@@ -986,6 +989,7 @@ namespace StonehearthEditor
             private ManifestView mOwner;
             private Module mModule;
             private string mFilePath;
+
             public NewAliasCallback(ManifestView owner, Module module, string filePath)
             {
                 mOwner = owner;

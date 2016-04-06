@@ -19,6 +19,7 @@ namespace StonehearthEditor
         private int mI18nTooltipLine = -1;
         private string mI18nLocKey = null;
         private IReloadable mOwner;
+
         public FilePreview(IReloadable owner, FileData fileData)
         {
             mFileData = fileData;
@@ -166,6 +167,7 @@ namespace StonehearthEditor
         private class AliasSelectCallback : AliasSelectionDialog.IDialogCallback
         {
             private RichTextBox mTextBox;
+
             public AliasSelectCallback(RichTextBox textbox)
             {
                 mTextBox = textbox;
@@ -199,6 +201,7 @@ namespace StonehearthEditor
         private class EditLocStringCallback : InputDialog.IDialogCallback
         {
             private string mLocKey;
+
             public EditLocStringCallback(string key)
             {
                 mLocKey = key;

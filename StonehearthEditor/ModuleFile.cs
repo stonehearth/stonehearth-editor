@@ -25,6 +25,7 @@ namespace StonehearthEditor
 
         // Needed because at the timer we load aliases, the referenced alias might not be loaded
         protected Dictionary<string, FileData> mReferencesCache = new Dictionary<string, FileData>();
+
         public ModuleFile(Module module, string alias, string filePath)
         {
             mModule = module;
@@ -261,6 +262,7 @@ namespace StonehearthEditor
         }
 
         private static int kWorkUnitsWorth = 2;
+
         private void RecommendNetWorth()
         {
             JsonFileData jsonFileData = FileData as JsonFileData;

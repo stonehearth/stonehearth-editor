@@ -312,6 +312,7 @@ namespace StonehearthEditor
         }
 
         private static Dictionary<string, int> kCombatTuning = new Dictionary<string, int>();
+
         private void FixupCombatData(string dataName)
         {
             JArray actions = mJson.SelectToken("entity_data." + dataName) as JArray;
@@ -360,6 +361,7 @@ namespace StonehearthEditor
         }
 
         private bool mHasAlteredExperience = false;
+
         private void AlterJobExperience()
         {
             JObject xpRewards = mJson.SelectToken("xp_rewards") as JObject;

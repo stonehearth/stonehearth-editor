@@ -10,12 +10,15 @@ namespace StonehearthEditor
         {
             // Returns true if we can close the dialog
             bool OnAccept(HashSet<string> unwantedItems);
+
             void onCancelled(HashSet<string> unwantedItems);
+
             HashSet<string> GetSavedUnwantedItems();
         }
 
         private IDialogCallback mCallback;
         private HashSet<string> mSet;
+
         public PreviewCloneDialog(string title, HashSet<string> set, IDialogCallback callback)
         {
             InitializeComponent();

@@ -16,6 +16,7 @@ namespace StonehearthEditor
         {
             // Returns true if we can close the dialog
             bool OnAccept(string inputMessage);
+
             void onCancelled();
         }
 

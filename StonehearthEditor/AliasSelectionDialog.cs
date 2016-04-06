@@ -16,6 +16,7 @@ namespace StonehearthEditor
       {
          // Returns true if we can close the dialog
          bool OnAccept(HashSet<string> aliases);
+
          void onCancelled();
       }
 

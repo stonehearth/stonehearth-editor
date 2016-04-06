@@ -325,6 +325,7 @@ namespace StonehearthEditor
         private class CustomJsonWriter : JsonTextWriter
         {
             private bool mWritingMinMax = false;
+
             public CustomJsonWriter(TextWriter textWriter)
                 : base(textWriter)
             {

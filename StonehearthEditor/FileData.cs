@@ -9,6 +9,7 @@ namespace StonehearthEditor
     public interface IModuleFileData
     {
         void SetModuleFile(ModuleFile moduleFile);
+
         ModuleFile GetModuleFile();
     }
 
@@ -22,8 +23,11 @@ namespace StonehearthEditor
         private string mErrors = null;
 
         public List<ModuleFile> LinkedAliases { get; } = new List<ModuleFile>();
+
         public Dictionary<string, FileData> LinkedFileData { get; } = new Dictionary<string, FileData>();
+
         public List<FileData> OpenedFiles { get; } = new List<FileData>();
+
         public List<FileData> RelatedFiles { get; } = new List<FileData>();
 
         public Dictionary<string, FileData> ReferencedByFileData { get; } = new Dictionary<string, FileData>();

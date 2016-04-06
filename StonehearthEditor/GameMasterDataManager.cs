@@ -10,6 +10,7 @@ namespace StonehearthEditor
     public class GameMasterDataManager
     {
         private static GameMasterDataManager sInstance = null;
+
         public static GameMasterDataManager GetInstance()
         {
             return sInstance;

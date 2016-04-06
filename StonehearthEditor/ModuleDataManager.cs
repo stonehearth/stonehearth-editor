@@ -9,6 +9,7 @@ namespace StonehearthEditor
     public class ModuleDataManager : IDisposable
     {
         private static ModuleDataManager sInstance = null;
+
         public static ModuleDataManager GetInstance()
         {
             return sInstance;
