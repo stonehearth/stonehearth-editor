@@ -1,11 +1,5 @@
-﻿using Microsoft.Msagl.Drawing;
-using Microsoft.Msagl.GraphViewerGdi;
-using StonehearthEditor.Properties;
+﻿using StonehearthEditor.Properties;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.IO;
-using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 namespace StonehearthEditor
