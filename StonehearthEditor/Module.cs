@@ -90,25 +90,6 @@ namespace StonehearthEditor
             }
         }
 
-        private void AddModuleFiles(string fileType)
-        {
-            JToken fileTypes = mManifestJson[fileType];
-            if (fileTypes != null)
-            {
-                Dictionary<string, ModuleFile> dictionary = new Dictionary<string, ModuleFile>();
-                mModuleFiles[fileType] = dictionary;
-                foreach (JToken item in fileTypes.Children())
-                {
-                    JProperty alias = item as JProperty;
-                    string name = alias.Name.Trim();
-                    string value = alias.Value.ToString().Trim();
-
-                    ModuleFile moduleFile = new ModuleFile(this, name, value);
-                    dictionary.Add(name, moduleFile);
-                }
-            }
-        }
-
         public void LoadFiles()
         {
             foreach (Dictionary<string, ModuleFile> dict in mModuleFiles.Values)
@@ -134,22 +115,6 @@ namespace StonehearthEditor
             }
 
             return returned;
-        }
-
-        private void Sort(JObject jObj)
-        {
-            List<JProperty> properties = new List<JProperty>(jObj.Properties());
-            foreach (var prop in properties)
-            {
-                prop.Remove();
-            }
-
-            properties.Sort((a, b) => a.Name.CompareTo(b.Name));
-
-            foreach (var prop in properties)
-            {
-                jObj.Add(prop);
-            }
         }
 
         public void AddToManifest(string alias, string path)
@@ -272,6 +237,41 @@ namespace StonehearthEditor
             }
 
             mModuleFiles.Clear();
+        }
+
+        private void AddModuleFiles(string fileType)
+        {
+            JToken fileTypes = mManifestJson[fileType];
+            if (fileTypes != null)
+            {
+                Dictionary<string, ModuleFile> dictionary = new Dictionary<string, ModuleFile>();
+                mModuleFiles[fileType] = dictionary;
+                foreach (JToken item in fileTypes.Children())
+                {
+                    JProperty alias = item as JProperty;
+                    string name = alias.Name.Trim();
+                    string value = alias.Value.ToString().Trim();
+
+                    ModuleFile moduleFile = new ModuleFile(this, name, value);
+                    dictionary.Add(name, moduleFile);
+                }
+            }
+        }
+
+        private void Sort(JObject jObj)
+        {
+            List<JProperty> properties = new List<JProperty>(jObj.Properties());
+            foreach (var prop in properties)
+            {
+                prop.Remove();
+            }
+
+            properties.Sort((a, b) => a.Name.CompareTo(b.Name));
+
+            foreach (var prop in properties)
+            {
+                jObj.Add(prop);
+            }
         }
     }
 }

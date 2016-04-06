@@ -460,10 +460,11 @@ namespace StonehearthEditor
 
         private class PreviewCloneAliasCallback : PreviewCloneDialog.IDialogCallback
         {
+            public HashSet<string> SavedUnwantedItems { get; set; }
+
             private FileData mFileData;
             private ManifestView mViewer;
             private CloneObjectParameters mParameters;
-            public HashSet<string> SavedUnwantedItems;
 
             public PreviewCloneAliasCallback(ManifestView viewer, FileData fileData, CloneObjectParameters parameters)
             {

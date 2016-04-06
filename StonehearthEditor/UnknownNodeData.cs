@@ -17,13 +17,13 @@ namespace StonehearthEditor
             throw new NotImplementedException();
         }
 
+        public override void LoadData(Dictionary<string, GameMasterNode> allNodes)
+        {
+        }
+
         protected override void UpdateOutEdges(Graph graph)
         {
             throw new NotImplementedException();
-        }
-
-        public override void LoadData(Dictionary<string, GameMasterNode> allNodes)
-        {
         }
     }
 }

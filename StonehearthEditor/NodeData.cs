@@ -12,7 +12,7 @@ namespace StonehearthEditor
 {
     public abstract class NodeData
     {
-        public GameMasterNode NodeFile;
+        public GameMasterNode NodeFile { get; set; }
 
         public abstract void LoadData(Dictionary<string, GameMasterNode> allNodes);
 
@@ -32,8 +32,6 @@ namespace StonehearthEditor
             graphNode.Attr.LabelMargin = 6;
         }
 
-        protected abstract void UpdateOutEdges(Graph graph);
-
         public virtual void GetRelatedNodes(HashSet<GameMasterNode> set)
         {
             set.Add(NodeFile);
@@ -49,6 +47,8 @@ namespace StonehearthEditor
         {
             return false;
         }
+
+        protected abstract void UpdateOutEdges(Graph graph);
 
         protected void MakeNodePrivate(Node node)
         {

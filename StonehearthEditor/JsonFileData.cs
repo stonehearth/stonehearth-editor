@@ -23,59 +23,21 @@ namespace StonehearthEditor
 
     public class JsonFileData : FileData, IModuleFileData
     {
+        public int RecommendedMaxNetWorth { get; set; } = -1;
+
+        public int RecommendedMinNetWorth { get; set; } = -1;
+
         private ModuleFile mOwner;
         private JSONTYPE mJsonType = JSONTYPE.NONE;
         private JObject mJson;
         private string mDirectory;
         private bool mSaveJsonAfterParse = false;
         private int mNetWorth = -1;
-        public int RecommendedMaxNetWorth = -1;
-        public int RecommendedMinNetWorth = -1;
 
         public JsonFileData(string path)
             : base(path)
         {
             mDirectory = JsonHelper.NormalizeSystemPath(System.IO.Path.GetDirectoryName(Path));
-        }
-
-        protected override void LoadInternal()
-        {
-            try
-            {
-                OpenedFiles.Add(this);
-                string jsonString = FlatFileData;
-                mJson = JObject.Parse(jsonString);
-                JToken typeObject = mJson["type"];
-                if (typeObject != null)
-                {
-                    string typeString = typeObject.ToString().Trim().ToUpper();
-                    foreach (JSONTYPE jsonType in Enum.GetValues(typeof(JSONTYPE)))
-                    {
-                        if (typeString.Equals(jsonType.ToString()))
-                        {
-                            mJsonType = jsonType;
-                        }
-                    }
-                }
-
-                ParseLinkedAliases(jsonString);
-                ParseLinkedFiles(jsonString);
-                ParseJsonSpecificData();
-            }
-            catch (Exception e)
-            {
-                AddError("Failed to load json file " + Path + ". Error: " + e.Message);
-            }
-        }
-
-        protected override void PostLoad()
-        {
-            if (mSaveJsonAfterParse)
-            {
-                TrySetFlatFileData(GetJsonFileString());
-                ////TrySaveFile();
-                mSaveJsonAfterParse = false;
-            }
         }
 
         public void AddMixin(string mixin)
@@ -125,6 +87,271 @@ namespace StonehearthEditor
                     }
                 }
             }
+        }
+
+        public string GetJsonFileString()
+        {
+            string jsonString = JsonHelper.GetFormattedJsonString(mJson);
+            if (jsonString == null)
+            {
+                Console.WriteLine("Could not convert {0} to json string", Path);
+            }
+
+            return jsonString != null ? jsonString : "INVALID JSON";
+        }
+
+        public override void AddError(string error)
+        {
+            base.AddError(error);
+            switch (mJsonType)
+            {
+                case JSONTYPE.ENCOUNTER:
+                    return;
+            }
+
+            Console.WriteLine(error);
+            ModuleDataManager.GetInstance().AddErrorFile(this);
+        }
+
+        public override bool HasErrors
+        {
+            get
+            {
+                if (base.HasErrors)
+                {
+                    return true;
+                }
+
+                foreach (FileData file in OpenedFiles)
+                {
+                    if (file.Errors != null)
+                    {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+        }
+
+        // Returns true if should show parent node
+        public override bool UpdateTreeNode(TreeNode node, string filter)
+        {
+            base.UpdateTreeNode(node, filter);
+            mTreeNode = node;
+            node.Tag = this;
+
+            if (!HasErrors)
+            {
+                node.SelectedImageIndex = (int)JsonType;
+                node.ImageIndex = (int)JsonType;
+            }
+
+            bool filterMatchesSelf = true;
+            ModuleFile owner = GetModuleFile();
+            if (!string.IsNullOrEmpty(filter) && owner != null && !owner.Name.Contains(filter))
+            {
+                filterMatchesSelf = false;
+            }
+
+            bool hasChildMatchingFilter = false;
+            if (JsonType == JSONTYPE.JOB)
+            {
+                if (OpenedFiles.Count > 1)
+                {
+                    FileData recipeJsonData = OpenedFiles[1];
+                    TreeNode recipes = new TreeNode(recipeJsonData.FileName);
+                    recipeJsonData.UpdateTreeNode(recipes, filter);
+
+                    foreach (KeyValuePair<string, FileData> recipe in recipeJsonData.LinkedFileData)
+                    {
+                        string recipePath = recipe.Key;
+                        string recipeName = System.IO.Path.GetFileNameWithoutExtension(recipePath);
+                        if (string.IsNullOrEmpty(filter) || recipeName.Contains(filter) || filterMatchesSelf)
+                        {
+                            TreeNode recipeNode = new TreeNode(recipeName);
+                            recipe.Value.UpdateTreeNode(recipeNode, filter);
+                            recipes.Nodes.Add(recipeNode);
+                            hasChildMatchingFilter = true;
+                        }
+                    }
+
+                    node.Nodes.Add(recipes);
+                }
+            }
+
+            if (!hasChildMatchingFilter && !filterMatchesSelf)
+            {
+                if (!filter.Contains("error") || !HasErrors)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        public override bool Clone(string newPath, CloneObjectParameters parameters, HashSet<string> alreadyCloned, bool execute)
+        {
+            if (JsonType == JSONTYPE.RECIPE)
+            {
+                string newNameToUse = parameters.TransformParameter(GetNameForCloning()).Replace("_recipe", "");
+                if (execute)
+                {
+                    JsonFileData recipesList = RelatedFiles[RelatedFiles.Count - 1] as JsonFileData;
+                    JObject json = recipesList.mJson;
+                    JToken foundParent = null;
+                    foreach (JToken token in json["craftable_recipes"].Children())
+                    {
+                        if (foundParent != null)
+                        {
+                            break;
+                        }
+
+                        foreach (JToken recipe in token.First["recipes"].Children())
+                        {
+                            if (recipe.Last.ToString().Contains(FileName))
+                            {
+                                foundParent = token.First["recipes"];
+                                break;
+                            }
+                        }
+                    }
+
+                    if (foundParent != null)
+                    {
+                        string recipeFileName = System.IO.Path.GetFileName(newPath);
+                        (foundParent as JObject).Add(newNameToUse, JObject.Parse("{\"recipe\": \"file(" + recipeFileName + ")\"}"));
+                        recipesList.TrySetFlatFileData(recipesList.GetJsonFileString());
+                        recipesList.TrySaveFile();
+                    }
+                }
+            }
+
+            return base.Clone(newPath, parameters, alreadyCloned, execute);
+        }
+
+        public override bool ShouldCloneDependency(string dependencyName, CloneObjectParameters parameters)
+        {
+            if (JsonType == JSONTYPE.RECIPE)
+            {
+                JToken produces = mJson["produces"];
+                if (produces != null)
+                {
+                    foreach (JToken child in produces.Children())
+                    {
+                        if (child["item"] != null && child["item"].ToString().Equals(dependencyName))
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            return base.ShouldCloneDependency(dependencyName, parameters);
+        }
+
+        public override string GetNameForCloning()
+        {
+            string fileName = FileName;
+            switch (JsonType)
+            {
+                case JSONTYPE.RECIPE:
+                    fileName = fileName.Replace("_recipe", "");
+                    break;
+                case JSONTYPE.JOB:
+                    fileName = fileName.Replace("_description", "");
+                    break;
+            }
+
+            return fileName;
+        }
+
+        public void SetModuleFile(ModuleFile moduleFile)
+        {
+            mOwner = moduleFile;
+        }
+
+        public ModuleFile GetModuleFile()
+        {
+            return mOwner;
+        }
+
+        public JSONTYPE JsonType
+        {
+            get { return mJsonType; }
+        }
+
+        public string Directory
+        {
+            get { return mDirectory; }
+        }
+
+        public JObject Json
+        {
+            get { return mJson; }
+        }
+
+        public int NetWorth
+        {
+            get { return mNetWorth; }
+        }
+
+        protected override void LoadInternal()
+        {
+            try
+            {
+                OpenedFiles.Add(this);
+                string jsonString = FlatFileData;
+                mJson = JObject.Parse(jsonString);
+                JToken typeObject = mJson["type"];
+                if (typeObject != null)
+                {
+                    string typeString = typeObject.ToString().Trim().ToUpper();
+                    foreach (JSONTYPE jsonType in Enum.GetValues(typeof(JSONTYPE)))
+                    {
+                        if (typeString.Equals(jsonType.ToString()))
+                        {
+                            mJsonType = jsonType;
+                        }
+                    }
+                }
+
+                ParseLinkedAliases(jsonString);
+                ParseLinkedFiles(jsonString);
+                ParseJsonSpecificData();
+            }
+            catch (Exception e)
+            {
+                AddError("Failed to load json file " + Path + ". Error: " + e.Message);
+            }
+        }
+
+        protected override void PostLoad()
+        {
+            if (mSaveJsonAfterParse)
+            {
+                TrySetFlatFileData(GetJsonFileString());
+                ////TrySaveFile();
+                mSaveJsonAfterParse = false;
+            }
+        }
+
+        protected override bool TryChangeFlatFileData(string newData, out string newFlatFileData)
+        {
+            try
+            {
+                JObject json = JObject.Parse(newData);
+                newFlatFileData = JsonHelper.GetFormattedJsonString(json);
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("Unable to change flat file data. Invalid Json: " + e.Message);
+                newFlatFileData = null;
+                return false;
+            }
+
+            return true;
         }
 
         private void CheckForNoNetWorth()
@@ -482,17 +709,6 @@ namespace StonehearthEditor
             }
         }
 
-        public string GetJsonFileString()
-        {
-            string jsonString = JsonHelper.GetFormattedJsonString(mJson);
-            if (jsonString == null)
-            {
-                Console.WriteLine("Could not convert {0} to json string", Path);
-            }
-
-            return jsonString != null ? jsonString : "INVALID JSON";
-        }
-
         private void ParseLinkedFiles(string jsonString)
         {
             string directory = Directory;
@@ -526,19 +742,6 @@ namespace StonehearthEditor
                     }
                 }
             }
-        }
-
-        public override void AddError(string error)
-        {
-            base.AddError(error);
-            switch (mJsonType)
-            {
-                case JSONTYPE.ENCOUNTER:
-                    return;
-            }
-
-            Console.WriteLine(error);
-            ModuleDataManager.GetInstance().AddErrorFile(this);
         }
 
         private FileData GetFileDataFactory(string path)
@@ -589,207 +792,6 @@ namespace StonehearthEditor
                 LinkedAliases.Add(linkedAlias);
                 linkedAlias.AddReference(GetAliasOrFlatName(), this);
             }
-        }
-
-        protected override bool TryChangeFlatFileData(string newData, out string newFlatFileData)
-        {
-            try
-            {
-                JObject json = JObject.Parse(newData);
-                newFlatFileData = JsonHelper.GetFormattedJsonString(json);
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show("Unable to change flat file data. Invalid Json: " + e.Message);
-                newFlatFileData = null;
-                return false;
-            }
-
-            return true;
-        }
-
-        public override bool HasErrors
-        {
-            get
-            {
-                if (base.HasErrors)
-                {
-                    return true;
-                }
-
-                foreach (FileData file in OpenedFiles)
-                {
-                    if (file.Errors != null)
-                    {
-                        return true;
-                    }
-                }
-
-                return false;
-            }
-        }
-
-        // Returns true if should show parent node
-        public override bool UpdateTreeNode(TreeNode node, string filter)
-        {
-            base.UpdateTreeNode(node, filter);
-            mTreeNode = node;
-            node.Tag = this;
-
-            if (!HasErrors)
-            {
-                node.SelectedImageIndex = (int)JsonType;
-                node.ImageIndex = (int)JsonType;
-            }
-
-            bool filterMatchesSelf = true;
-            ModuleFile owner = GetModuleFile();
-            if (!string.IsNullOrEmpty(filter) && owner != null && !owner.Name.Contains(filter))
-            {
-                filterMatchesSelf = false;
-            }
-
-            bool hasChildMatchingFilter = false;
-            if (JsonType == JSONTYPE.JOB)
-            {
-                if (OpenedFiles.Count > 1)
-                {
-                    FileData recipeJsonData = OpenedFiles[1];
-                    TreeNode recipes = new TreeNode(recipeJsonData.FileName);
-                    recipeJsonData.UpdateTreeNode(recipes, filter);
-
-                    foreach (KeyValuePair<string, FileData> recipe in recipeJsonData.LinkedFileData)
-                    {
-                        string recipePath = recipe.Key;
-                        string recipeName = System.IO.Path.GetFileNameWithoutExtension(recipePath);
-                        if (string.IsNullOrEmpty(filter) || recipeName.Contains(filter) || filterMatchesSelf)
-                        {
-                            TreeNode recipeNode = new TreeNode(recipeName);
-                            recipe.Value.UpdateTreeNode(recipeNode, filter);
-                            recipes.Nodes.Add(recipeNode);
-                            hasChildMatchingFilter = true;
-                        }
-                    }
-
-                    node.Nodes.Add(recipes);
-                }
-            }
-
-            if (!hasChildMatchingFilter && !filterMatchesSelf)
-            {
-                if (!filter.Contains("error") || !HasErrors)
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        public override bool Clone(string newPath, CloneObjectParameters parameters, HashSet<string> alreadyCloned, bool execute)
-        {
-            if (JsonType == JSONTYPE.RECIPE)
-            {
-                string newNameToUse = parameters.TransformParameter(GetNameForCloning()).Replace("_recipe", "");
-                if (execute)
-                {
-                    JsonFileData recipesList = RelatedFiles[RelatedFiles.Count - 1] as JsonFileData;
-                    JObject json = recipesList.mJson;
-                    JToken foundParent = null;
-                    foreach (JToken token in json["craftable_recipes"].Children())
-                    {
-                        if (foundParent != null)
-                        {
-                            break;
-                        }
-
-                        foreach (JToken recipe in token.First["recipes"].Children())
-                        {
-                            if (recipe.Last.ToString().Contains(FileName))
-                            {
-                                foundParent = token.First["recipes"];
-                                break;
-                            }
-                        }
-                    }
-
-                    if (foundParent != null)
-                    {
-                        string recipeFileName = System.IO.Path.GetFileName(newPath);
-                        (foundParent as JObject).Add(newNameToUse, JObject.Parse("{\"recipe\": \"file(" + recipeFileName + ")\"}"));
-                        recipesList.TrySetFlatFileData(recipesList.GetJsonFileString());
-                        recipesList.TrySaveFile();
-                    }
-                }
-            }
-
-            return base.Clone(newPath, parameters, alreadyCloned, execute);
-        }
-
-        public override bool ShouldCloneDependency(string dependencyName, CloneObjectParameters parameters)
-        {
-            if (JsonType == JSONTYPE.RECIPE)
-            {
-                JToken produces = mJson["produces"];
-                if (produces != null)
-                {
-                    foreach (JToken child in produces.Children())
-                    {
-                        if (child["item"] != null && child["item"].ToString().Equals(dependencyName))
-                        {
-                            return true;
-                        }
-                    }
-                }
-            }
-
-            return base.ShouldCloneDependency(dependencyName, parameters);
-        }
-
-        public override string GetNameForCloning()
-        {
-            string fileName = FileName;
-            switch (JsonType)
-            {
-                case JSONTYPE.RECIPE:
-                    fileName = fileName.Replace("_recipe", "");
-                    break;
-                case JSONTYPE.JOB:
-                    fileName = fileName.Replace("_description", "");
-                    break;
-            }
-
-            return fileName;
-        }
-
-        public void SetModuleFile(ModuleFile moduleFile)
-        {
-            mOwner = moduleFile;
-        }
-
-        public ModuleFile GetModuleFile()
-        {
-            return mOwner;
-        }
-
-        public JSONTYPE JsonType
-        {
-            get { return mJsonType; }
-        }
-
-        public string Directory
-        {
-            get { return mDirectory; }
-        }
-
-        public JObject Json
-        {
-            get { return mJson; }
-        }
-
-        public int NetWorth
-        {
-            get { return mNetWorth; }
         }
     }
 }

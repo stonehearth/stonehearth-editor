@@ -22,18 +22,20 @@ namespace StonehearthEditor
 
     public class GameMasterNode
     {
-        private static int kNodeIndex = 0;
         public static readonly Color kPurple = new Color(224, 210, 227);
         public static readonly Color kGreen = new Color(196, 243, 177);
+
+        public GameMasterNode Owner { get; set; }
+
+        public bool IsModified { get; set; }
+
+        private static int kNodeIndex = 0;
         private string mPath;
         private string mDirectory;
         private string mFileName;
         private JsonFileData mJsonFileData;
         private NodeData mNodeData;
-        public GameMasterNode Owner;
         private string mModule;
-
-        public bool IsModified = false;
 
         private Dictionary<string, string> mEncounters = new Dictionary<string, string>();
         private GameMasterNodeType mNodeType = GameMasterNodeType.UNSET;

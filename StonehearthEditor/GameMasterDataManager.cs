@@ -127,106 +127,6 @@ namespace StonehearthEditor
             }
         }
 
-        private void SearchForFileType(string directory, string fileType, List<string> luaFilesFound)
-        {
-            if (!Directory.Exists(directory))
-            {
-                return;
-            }
-
-            string[] directories = Directory.GetDirectories(directory);
-            if (directories == null)
-            {
-                return;
-            }
-
-            foreach (string d in directories)
-            {
-                string[] files = Directory.GetFiles(d, fileType);
-                if (files != null)
-                {
-                    foreach (string f in files)
-                    {
-                        string formatted = JsonHelper.NormalizeSystemPath(f);
-                        luaFilesFound.Add(formatted);
-                    }
-
-                    SearchForFileType(d, fileType, luaFilesFound);
-                }
-            }
-        }
-
-        private void ParseGenericEncounterScripts(string folderPath)
-        {
-            List<string> genericScriptFiles = new List<string>();
-            SearchForFileType(folderPath, "*.lua", genericScriptFiles);
-            foreach (string filepath in genericScriptFiles)
-            {
-                EncounterScriptFile file = new EncounterScriptFile(filepath);
-                file.Load();
-                mGenericScriptNodes.Add(file.Name, file);
-            }
-        }
-
-        private static Dictionary<string, int> kCollisions = new Dictionary<string, int>();
-
-        private void ParseEncounterScripts(string moduleName, string folderPath)
-        {
-            List<string> filePaths = new List<string>();
-            SearchForFileType(folderPath, "*.lua", filePaths);
-
-            foreach (string filepath in filePaths)
-            {
-                EncounterScriptFile file = new EncounterScriptFile(filepath);
-                file.Load();
-                string fileName = file.Name;
-
-                if (mCustomScriptNodes.ContainsKey(fileName))
-                {
-                    int numCollisions = 0;
-                    kCollisions.TryGetValue(fileName, out numCollisions);
-                    numCollisions++;
-                    kCollisions[fileName] = numCollisions;
-                    fileName = fileName + "(" + numCollisions + ")";
-                }
-
-                mCustomScriptNodes.Add(fileName, file);
-            }
-        }
-
-        private void ParseNodeGraph(string moduleName, string folderPath)
-        {
-            List<string> nodeFiles = new List<string>();
-            SearchForFileType(folderPath, "*.json", nodeFiles);
-            Dictionary<string, GameMasterNode> addedNodes = new Dictionary<string, GameMasterNode>();
-            foreach (string filepath in nodeFiles)
-            {
-                GameMasterNode file = new GameMasterNode(moduleName, filepath);
-                addedNodes.Add(file.Path, file);
-            }
-
-            foreach (GameMasterNode node in addedNodes.Values)
-            {
-                node.Load(addedNodes);
-            }
-
-            CampaignNodeData currentCampaignData = null;
-            foreach (GameMasterNode node in addedNodes.Values)
-            {
-                if (node.NodeType == GameMasterNodeType.CAMPAIGN)
-                {
-                    currentCampaignData = node.NodeData as CampaignNodeData;
-                    mCampaignNodes.Add(node);
-                }
-                else if (node.Owner == null)
-                {
-                    currentCampaignData.OrphanedNodes.Add(node);
-                }
-            }
-
-            mGameMasterNodes = mGameMasterNodes.Concat(addedNodes).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
-        }
-
         public void RefreshGraph(IGraphOwner graphOwner)
         {
             mGraph = new Graph();
@@ -333,6 +233,106 @@ namespace StonehearthEditor
             mGameMasterNodes.Remove(nodePath);
 
             return false;
+        }
+
+        private void SearchForFileType(string directory, string fileType, List<string> luaFilesFound)
+        {
+            if (!Directory.Exists(directory))
+            {
+                return;
+            }
+
+            string[] directories = Directory.GetDirectories(directory);
+            if (directories == null)
+            {
+                return;
+            }
+
+            foreach (string d in directories)
+            {
+                string[] files = Directory.GetFiles(d, fileType);
+                if (files != null)
+                {
+                    foreach (string f in files)
+                    {
+                        string formatted = JsonHelper.NormalizeSystemPath(f);
+                        luaFilesFound.Add(formatted);
+                    }
+
+                    SearchForFileType(d, fileType, luaFilesFound);
+                }
+            }
+        }
+
+        private void ParseGenericEncounterScripts(string folderPath)
+        {
+            List<string> genericScriptFiles = new List<string>();
+            SearchForFileType(folderPath, "*.lua", genericScriptFiles);
+            foreach (string filepath in genericScriptFiles)
+            {
+                EncounterScriptFile file = new EncounterScriptFile(filepath);
+                file.Load();
+                mGenericScriptNodes.Add(file.Name, file);
+            }
+        }
+
+        private static Dictionary<string, int> kCollisions = new Dictionary<string, int>();
+
+        private void ParseEncounterScripts(string moduleName, string folderPath)
+        {
+            List<string> filePaths = new List<string>();
+            SearchForFileType(folderPath, "*.lua", filePaths);
+
+            foreach (string filepath in filePaths)
+            {
+                EncounterScriptFile file = new EncounterScriptFile(filepath);
+                file.Load();
+                string fileName = file.Name;
+
+                if (mCustomScriptNodes.ContainsKey(fileName))
+                {
+                    int numCollisions = 0;
+                    kCollisions.TryGetValue(fileName, out numCollisions);
+                    numCollisions++;
+                    kCollisions[fileName] = numCollisions;
+                    fileName = fileName + "(" + numCollisions + ")";
+                }
+
+                mCustomScriptNodes.Add(fileName, file);
+            }
+        }
+
+        private void ParseNodeGraph(string moduleName, string folderPath)
+        {
+            List<string> nodeFiles = new List<string>();
+            SearchForFileType(folderPath, "*.json", nodeFiles);
+            Dictionary<string, GameMasterNode> addedNodes = new Dictionary<string, GameMasterNode>();
+            foreach (string filepath in nodeFiles)
+            {
+                GameMasterNode file = new GameMasterNode(moduleName, filepath);
+                addedNodes.Add(file.Path, file);
+            }
+
+            foreach (GameMasterNode node in addedNodes.Values)
+            {
+                node.Load(addedNodes);
+            }
+
+            CampaignNodeData currentCampaignData = null;
+            foreach (GameMasterNode node in addedNodes.Values)
+            {
+                if (node.NodeType == GameMasterNodeType.CAMPAIGN)
+                {
+                    currentCampaignData = node.NodeData as CampaignNodeData;
+                    mCampaignNodes.Add(node);
+                }
+                else if (node.Owner == null)
+                {
+                    currentCampaignData.OrphanedNodes.Add(node);
+                }
+            }
+
+            mGameMasterNodes = mGameMasterNodes.Concat(addedNodes).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
         }
     }
 }

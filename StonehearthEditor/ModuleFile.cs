@@ -14,6 +14,9 @@ namespace StonehearthEditor
 
     public class ModuleFile : IDisposable
     {
+        // Needed because at the time we load aliases, the referenced alias might not be loaded
+        protected Dictionary<string, FileData> mReferencesCache = new Dictionary<string, FileData>();
+
         private Module mModule;
         private string mAlias;
         private string mOriginalFilePath;
@@ -22,9 +25,6 @@ namespace StonehearthEditor
         private FileData mFileData = null;
         private FileType mType = FileType.UNKNOWN;
         private bool mIsFineVersion = false;
-
-        // Needed because at the timer we load aliases, the referenced alias might not be loaded
-        protected Dictionary<string, FileData> mReferencesCache = new Dictionary<string, FileData>();
 
         public ModuleFile(Module module, string alias, string filePath)
         {
@@ -49,18 +49,6 @@ namespace StonehearthEditor
         public bool IsFineVersion
         {
             get { return mIsFineVersion; }
-        }
-
-        private void DetermineFileType()
-        {
-            if (mRootFile.EndsWith(".lua"))
-            {
-                mType = FileType.LUA;
-            }
-            else if (mRootFile.EndsWith(".json"))
-            {
-                mType = FileType.JSON;
-            }
         }
 
         public void TryLoad()
@@ -99,38 +87,6 @@ namespace StonehearthEditor
             return FindFileData(FileData, path, 3);
         }
 
-        private FileData FindFileData(FileData start, string[] path, int startIndex)
-        {
-            if (startIndex >= path.Length || start == null)
-            {
-                return start;
-            }
-
-            string subfileName = path[startIndex];
-            FileData found = null;
-            foreach (FileData openedFile in start.OpenedFiles)
-            {
-                if (openedFile.FileName.Equals(subfileName))
-                {
-                    found = openedFile;
-                    break;
-                }
-            }
-
-            if (found == null)
-            {
-                foreach (FileData openedFile in start.RelatedFiles)
-                {
-                    if (openedFile.FileName.Equals(subfileName))
-                    {
-                        found = openedFile;
-                        break;
-                    }
-                }
-            }
-
-            return FindFileData(found, path, startIndex + 1);
-        }
 
         public TreeNode GetTreeNode(string filter)
         {
@@ -346,6 +302,51 @@ namespace StonehearthEditor
             }
         }
 
+        private void DetermineFileType()
+        {
+            if (mRootFile.EndsWith(".lua"))
+            {
+                mType = FileType.LUA;
+            }
+            else if (mRootFile.EndsWith(".json"))
+            {
+                mType = FileType.JSON;
+            }
+        }
+
+        private FileData FindFileData(FileData start, string[] path, int startIndex)
+        {
+            if (startIndex >= path.Length || start == null)
+            {
+                return start;
+            }
+
+            string subfileName = path[startIndex];
+            FileData found = null;
+            foreach (FileData openedFile in start.OpenedFiles)
+            {
+                if (openedFile.FileName.Equals(subfileName))
+                {
+                    found = openedFile;
+                    break;
+                }
+            }
+
+            if (found == null)
+            {
+                foreach (FileData openedFile in start.RelatedFiles)
+                {
+                    if (openedFile.FileName.Equals(subfileName))
+                    {
+                        found = openedFile;
+                        break;
+                    }
+                }
+            }
+
+            return FindFileData(found, path, startIndex + 1);
+        }
+
         private void FixupLootTables()
         {
             // Fixup loot tables
@@ -393,7 +394,9 @@ namespace StonehearthEditor
             }
         }
 
+#pragma warning disable SA1202 // Elements must be ordered by access
         public void Dispose()
+#pragma warning restore SA1202 // Elements must be ordered by access
         {
             mModule = null;
             mReferencesCache.Clear();

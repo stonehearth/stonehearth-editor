@@ -30,21 +30,6 @@ namespace StonehearthEditor
             LoadInternal();
         }
 
-        protected override void LoadInternal()
-        {
-            if (mIsQb)
-            {
-                // see if the qmo exists
-                string qmoPath = GetQmoPath();
-                if (System.IO.File.Exists(qmoPath))
-                {
-                    mHasQmo = true;
-                    QubicleFileData qmoFile = new QubicleFileData(qmoPath);
-                    LinkedFileData.Add(qmoPath, qmoFile);
-                }
-            }
-        }
-
         public void AddLinkingJsonFile(JsonFileData file)
         {
             RelatedFiles.Add(file);
@@ -76,11 +61,6 @@ namespace StonehearthEditor
             return true;
         }
 
-        private string GetQmoPath()
-        {
-            return mDirectory + "/" + FileName + ".qmo";
-        }
-
         public string GetOpenFilePath()
         {
             if (mHasQmo)
@@ -89,6 +69,26 @@ namespace StonehearthEditor
             }
 
             return Path;
+        }
+
+        protected override void LoadInternal()
+        {
+            if (mIsQb)
+            {
+                // see if the qmo exists
+                string qmoPath = GetQmoPath();
+                if (System.IO.File.Exists(qmoPath))
+                {
+                    mHasQmo = true;
+                    QubicleFileData qmoFile = new QubicleFileData(qmoPath);
+                    LinkedFileData.Add(qmoPath, qmoFile);
+                }
+            }
+        }
+
+        private string GetQmoPath()
+        {
+            return mDirectory + "/" + FileName + ".qmo";
         }
     }
 }

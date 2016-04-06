@@ -9,9 +9,9 @@ namespace StonehearthEditor
     public abstract class FileData : IDisposable
     {
         protected TreeNode mTreeNode;
-        private string mFlatFileData;
         protected bool mIsModified = false;
 
+        private string mFlatFileData;
         private bool isDisposing = false;
         private string mErrors = null;
 
@@ -125,30 +125,6 @@ namespace StonehearthEditor
             }
         }
 
-        protected Dictionary<string, FileData> GetDependencies()
-        {
-            Dictionary<string, FileData> dependencies = new Dictionary<string, FileData>();
-            foreach (ModuleFile dependency in LinkedAliases)
-            {
-                string alias = dependency.Module.Name + ":" + dependency.Name;
-                if (!dependencies.ContainsKey(alias))
-                {
-                    dependencies.Add(alias, dependency.FileData);
-                }
-            }
-
-            foreach (KeyValuePair<string, FileData> file in LinkedFileData)
-            {
-                string filePathWithoutBase = file.Key.Replace(ModuleDataManager.GetInstance().ModsDirectoryPath, "");
-                if (!dependencies.ContainsKey(filePathWithoutBase))
-                {
-                    dependencies.Add(filePathWithoutBase, file.Value);
-                }
-            }
-
-            return dependencies;
-        }
-
         public virtual void Load()
         {
             if (System.IO.File.Exists(Path))
@@ -174,41 +150,6 @@ namespace StonehearthEditor
             get { return mFlatFileData; }
         }
 
-        // custom load call
-        protected virtual void LoadInternal()
-        {
-        }
-
-        protected virtual void PostLoad()
-        {
-        }
-
-        protected virtual bool TryChangeFlatFileData(string newData, out string newFlatFileData)
-        {
-            newFlatFileData = newData;
-            return true;
-        }
-
-        protected FileData GetLinkedFileData(string path)
-        {
-            foreach (FileData data in OpenedFiles)
-            {
-                if (data.Path == path)
-                {
-                    return data;
-                }
-            }
-
-            foreach (FileData data in RelatedFiles)
-            {
-                if (data.Path == path)
-                {
-                    return data;
-                }
-            }
-
-            return null;
-        }
 
         public virtual bool ShouldCloneDependency(string dependencyName, CloneObjectParameters parameters)
         {
@@ -290,7 +231,69 @@ namespace StonehearthEditor
             return true;
         }
 
+        protected Dictionary<string, FileData> GetDependencies()
+        {
+            Dictionary<string, FileData> dependencies = new Dictionary<string, FileData>();
+            foreach (ModuleFile dependency in LinkedAliases)
+            {
+                string alias = dependency.Module.Name + ":" + dependency.Name;
+                if (!dependencies.ContainsKey(alias))
+                {
+                    dependencies.Add(alias, dependency.FileData);
+                }
+            }
+
+            foreach (KeyValuePair<string, FileData> file in LinkedFileData)
+            {
+                string filePathWithoutBase = file.Key.Replace(ModuleDataManager.GetInstance().ModsDirectoryPath, "");
+                if (!dependencies.ContainsKey(filePathWithoutBase))
+                {
+                    dependencies.Add(filePathWithoutBase, file.Value);
+                }
+            }
+
+            return dependencies;
+        }
+
+        // custom load call
+        protected virtual void LoadInternal()
+        {
+        }
+
+        protected virtual void PostLoad()
+        {
+        }
+
+        protected virtual bool TryChangeFlatFileData(string newData, out string newFlatFileData)
+        {
+            newFlatFileData = newData;
+            return true;
+        }
+
+        protected FileData GetLinkedFileData(string path)
+        {
+            foreach (FileData data in OpenedFiles)
+            {
+                if (data.Path == path)
+                {
+                    return data;
+                }
+            }
+
+            foreach (FileData data in RelatedFiles)
+            {
+                if (data.Path == path)
+                {
+                    return data;
+                }
+            }
+
+            return null;
+        }
+
+#pragma warning disable SA1202 // Elements must be ordered by access
         public void Dispose()
+#pragma warning restore SA1202 // Elements must be ordered by access
         {
             if (isDisposing)
             {

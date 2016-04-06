@@ -24,11 +24,6 @@ namespace StonehearthEditor
             return;
         }
 
-        protected override void LoadInternal()
-        {
-            return; // Do nothing
-        }
-
         public void AddLinkingJsonFile(JsonFileData file)
         {
             RelatedFiles.Add(file);
@@ -48,6 +43,11 @@ namespace StonehearthEditor
             }
 
             return true;
+        }
+
+        protected override void LoadInternal()
+        {
+            return; // Do nothing
         }
     }
 }

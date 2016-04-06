@@ -17,11 +17,6 @@ namespace StonehearthEditor
             throw new NotImplementedException();
         }
 
-        protected override void UpdateOutEdges(Graph graph)
-        {
-            throw new NotImplementedException();
-        }
-
         public override void LoadData(Dictionary<string, GameMasterNode> allNodes)
         {
         }
@@ -36,6 +31,11 @@ namespace StonehearthEditor
             {
                 FixupLoot("*.*.loot_drops");
             }
+        }
+
+        protected override void UpdateOutEdges(Graph graph)
+        {
+            throw new NotImplementedException();
         }
     }
 }

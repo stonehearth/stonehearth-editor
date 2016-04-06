@@ -37,21 +37,6 @@ namespace StonehearthEditor
             }
         }
 
-        protected override void UpdateOutEdges(Graph graph)
-        {
-            foreach (GameMasterNode file in mEncounterFiles)
-            {
-                if (file.NodeType == GameMasterNodeType.ENCOUNTER)
-                {
-                    EncounterNodeData nodeData = file.NodeData as EncounterNodeData;
-                    if (nodeData.IsStartNode)
-                    {
-                        graph.AddEdge(NodeFile.Id, file.Id);
-                    }
-                }
-            }
-        }
-
         public List<GameMasterNode> GetEncountersWithInEdge(string inEdgeName)
         {
             List<GameMasterNode> inEdges = new List<GameMasterNode>();
@@ -116,5 +101,21 @@ namespace StonehearthEditor
 
             return false;
         }
+
+        protected override void UpdateOutEdges(Graph graph)
+        {
+            foreach (GameMasterNode file in mEncounterFiles)
+            {
+                if (file.NodeType == GameMasterNodeType.ENCOUNTER)
+                {
+                    EncounterNodeData nodeData = file.NodeData as EncounterNodeData;
+                    if (nodeData.IsStartNode)
+                    {
+                        graph.AddEdge(NodeFile.Id, file.Id);
+                    }
+                }
+            }
+        }
+
     }
 }

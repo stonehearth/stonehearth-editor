@@ -334,18 +334,6 @@ namespace StonehearthEditor
             {
             }
 
-            protected override void WriteIndent()
-            {
-                if (mWritingMinMax)
-                {
-                    WriteIndentSpace();
-                }
-                else
-                {
-                    base.WriteIndent();
-                }
-            }
-
             public override void WriteEndObject()
             {
                 base.WriteEndObject();
@@ -369,6 +357,18 @@ namespace StonehearthEditor
             public override void WriteValue(object value)
             {
                 base.WriteValue(value);
+            }
+
+            protected override void WriteIndent()
+            {
+                if (mWritingMinMax)
+                {
+                    WriteIndentSpace();
+                }
+                else
+                {
+                    base.WriteIndent();
+                }
             }
         }
 

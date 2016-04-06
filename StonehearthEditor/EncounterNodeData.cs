@@ -33,46 +33,6 @@ namespace StonehearthEditor
             get { return mEncounterType; }
         }
 
-        private void AddOutEdgesRecursive(JToken outEdgeSpec, List<string> list)
-        {
-            if (!(outEdgeSpec is JValue))
-            {
-                string specType = outEdgeSpec["type"].ToString();
-                switch (specType)
-                {
-                    case "trigger_one":
-                    case "trigger_many":
-                        JToken outEdges = outEdgeSpec["out_edges"];
-                        IList<JToken> results = outEdges.ToList();
-                        foreach (JToken child in results)
-                        {
-                            AddOutEdgesRecursive(child, list);
-                        }
-
-                        break;
-                    case "weighted_edge":
-                        JToken outEdge = outEdgeSpec["out_edge"];
-                        AddOutEdgesRecursive(outEdge, list);
-                        break;
-                }
-            }
-            else
-            {
-                list.Add(outEdgeSpec.ToString());
-            }
-        }
-
-        private List<string> ParseOutEdges(JToken outEdgeSpec)
-        {
-            List<string> returned = new List<string>();
-            if (outEdgeSpec != null)
-            {
-                AddOutEdgesRecursive(outEdgeSpec, returned);
-            }
-
-            return returned;
-        }
-
         public override void PostLoadFixup()
         {
             string selector = null;
@@ -224,82 +184,6 @@ namespace StonehearthEditor
             }
         }
 
-        protected override void UpdateOutEdges(Graph graph)
-        {
-            GameMasterNode arcFile = NodeFile.Owner;
-            if (arcFile != null)
-            {
-                ArcNodeData arc = arcFile.NodeData as ArcNodeData;
-                foreach (string inEdgeName in mOutEdgeStrings)
-                {
-                    List<GameMasterNode> linkedEncounters = arc.GetEncountersWithInEdge(inEdgeName);
-                    if (linkedEncounters.Count == 1 && linkedEncounters[0].Name.Equals(inEdgeName))
-                    {
-                        if (mChoiceEdgeInfo.ContainsKey(inEdgeName))
-                        {
-                            foreach (string choice in mChoiceEdgeInfo[inEdgeName])
-                            {
-                                Node choiceNode = graph.AddNode(NodeFile.Id + "#" + choice);
-                                choiceNode.LabelText = '"' + choice + '"';
-                                MakeNodePrivate(choiceNode);
-                                graph.AddEdge(NodeFile.Id, choiceNode.Id);
-                                graph.AddEdge(choiceNode.Id, linkedEncounters[0].Id);
-                            }
-                        }
-                        else
-                        {
-                            graph.AddEdge(NodeFile.Id, linkedEncounters[0].Id);
-                        }
-                    }
-                    else
-                    {
-                        Node arcOutNode = graph.AddNode(arcFile.Id + "#" + inEdgeName);
-                        arcOutNode.LabelText = inEdgeName;
-                        MakeNodePrivate(arcOutNode);
-                        if (mChoiceEdgeInfo.ContainsKey(inEdgeName))
-                        {
-                            foreach (string choice in mChoiceEdgeInfo[inEdgeName])
-                            {
-                                Node choiceNode = graph.AddNode(NodeFile.Id + "#" + choice);
-                                choiceNode.LabelText = '"' + choice + '"';
-                                MakeNodePrivate(choiceNode);
-                                graph.AddEdge(NodeFile.Id, choiceNode.Id);
-                                graph.AddEdge(choiceNode.Id, arcOutNode.Id);
-                            }
-                        }
-                        else
-                        {
-                            graph.AddEdge(NodeFile.Id, arcOutNode.Id);
-                        }
-
-                        foreach (GameMasterNode linkedEncounter in linkedEncounters)
-                        {
-                            graph.AddEdge(arcOutNode.Id, linkedEncounter.Id);
-                        }
-                    }
-                }
-            }
-        }
-
-        // Returns list of out edges
-        private List<string> GetOutEdges()
-        {
-            List<string> outEdges = new List<string>();
-            GameMasterNode arcFile = NodeFile.Owner;
-            if (arcFile != null)
-            {
-                ArcNodeData arc = arcFile.NodeData as ArcNodeData;
-                foreach (string inEdgeName in mOutEdgeStrings)
-                {
-                    foreach (GameMasterNode linkedEncounter in arc.GetEncountersWithInEdge(inEdgeName))
-                    {
-                        outEdges.Add(linkedEncounter.Id);
-                    }
-                }
-            }
-
-            return outEdges;
-        }
 
         public override NodeData Clone(GameMasterNode nodeFile)
         {
@@ -382,6 +266,123 @@ namespace StonehearthEditor
 
             NodeFile.IsModified = true;
             return true;
+        }
+
+        protected override void UpdateOutEdges(Graph graph)
+        {
+            GameMasterNode arcFile = NodeFile.Owner;
+            if (arcFile != null)
+            {
+                ArcNodeData arc = arcFile.NodeData as ArcNodeData;
+                foreach (string inEdgeName in mOutEdgeStrings)
+                {
+                    List<GameMasterNode> linkedEncounters = arc.GetEncountersWithInEdge(inEdgeName);
+                    if (linkedEncounters.Count == 1 && linkedEncounters[0].Name.Equals(inEdgeName))
+                    {
+                        if (mChoiceEdgeInfo.ContainsKey(inEdgeName))
+                        {
+                            foreach (string choice in mChoiceEdgeInfo[inEdgeName])
+                            {
+                                Node choiceNode = graph.AddNode(NodeFile.Id + "#" + choice);
+                                choiceNode.LabelText = '"' + choice + '"';
+                                MakeNodePrivate(choiceNode);
+                                graph.AddEdge(NodeFile.Id, choiceNode.Id);
+                                graph.AddEdge(choiceNode.Id, linkedEncounters[0].Id);
+                            }
+                        }
+                        else
+                        {
+                            graph.AddEdge(NodeFile.Id, linkedEncounters[0].Id);
+                        }
+                    }
+                    else
+                    {
+                        Node arcOutNode = graph.AddNode(arcFile.Id + "#" + inEdgeName);
+                        arcOutNode.LabelText = inEdgeName;
+                        MakeNodePrivate(arcOutNode);
+                        if (mChoiceEdgeInfo.ContainsKey(inEdgeName))
+                        {
+                            foreach (string choice in mChoiceEdgeInfo[inEdgeName])
+                            {
+                                Node choiceNode = graph.AddNode(NodeFile.Id + "#" + choice);
+                                choiceNode.LabelText = '"' + choice + '"';
+                                MakeNodePrivate(choiceNode);
+                                graph.AddEdge(NodeFile.Id, choiceNode.Id);
+                                graph.AddEdge(choiceNode.Id, arcOutNode.Id);
+                            }
+                        }
+                        else
+                        {
+                            graph.AddEdge(NodeFile.Id, arcOutNode.Id);
+                        }
+
+                        foreach (GameMasterNode linkedEncounter in linkedEncounters)
+                        {
+                            graph.AddEdge(arcOutNode.Id, linkedEncounter.Id);
+                        }
+                    }
+                }
+            }
+        }
+
+        // Returns list of out edges
+        private List<string> GetOutEdges()
+        {
+            List<string> outEdges = new List<string>();
+            GameMasterNode arcFile = NodeFile.Owner;
+            if (arcFile != null)
+            {
+                ArcNodeData arc = arcFile.NodeData as ArcNodeData;
+                foreach (string inEdgeName in mOutEdgeStrings)
+                {
+                    foreach (GameMasterNode linkedEncounter in arc.GetEncountersWithInEdge(inEdgeName))
+                    {
+                        outEdges.Add(linkedEncounter.Id);
+                    }
+                }
+            }
+
+            return outEdges;
+        }
+
+        private void AddOutEdgesRecursive(JToken outEdgeSpec, List<string> list)
+        {
+            if (!(outEdgeSpec is JValue))
+            {
+                string specType = outEdgeSpec["type"].ToString();
+                switch (specType)
+                {
+                    case "trigger_one":
+                    case "trigger_many":
+                        JToken outEdges = outEdgeSpec["out_edges"];
+                        IList<JToken> results = outEdges.ToList();
+                        foreach (JToken child in results)
+                        {
+                            AddOutEdgesRecursive(child, list);
+                        }
+
+                        break;
+                    case "weighted_edge":
+                        JToken outEdge = outEdgeSpec["out_edge"];
+                        AddOutEdgesRecursive(outEdge, list);
+                        break;
+                }
+            }
+            else
+            {
+                list.Add(outEdgeSpec.ToString());
+            }
+        }
+
+        private List<string> ParseOutEdges(JToken outEdgeSpec)
+        {
+            List<string> returned = new List<string>();
+            if (outEdgeSpec != null)
+            {
+                AddOutEdgesRecursive(outEdgeSpec, returned);
+            }
+
+            return returned;
         }
     }
 }

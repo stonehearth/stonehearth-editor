@@ -12,12 +12,13 @@ namespace StonehearthEditor
 {
     public class CampaignNodeData : NodeData
     {
+        public List<GameMasterNode> OrphanedNodes { get; } = new List<GameMasterNode>();
+
         private string mRarity;
         private Dictionary<string, GameMasterNode> mArcTriggers;
         private Dictionary<string, GameMasterNode> mArcChallenges;
         private Dictionary<string, GameMasterNode> mArcClimaxes;
         private int mNumArcNodes = 0;
-        public List<GameMasterNode> OrphanedNodes = new List<GameMasterNode>();
 
         // Return a list of all the arcs in the campaign
         public IList<GameMasterNode> GetAllArcs()
@@ -45,24 +46,6 @@ namespace StonehearthEditor
             SetSelfAsOwner(triggers, mArcTriggers, allNodes);
             SetSelfAsOwner(challenges, mArcChallenges, allNodes);
             SetSelfAsOwner(climaxes, mArcClimaxes, allNodes);
-        }
-
-        private void SetSelfAsOwner(Dictionary<string, string> children, Dictionary<string, GameMasterNode> toUpdate, Dictionary<string, GameMasterNode> allNodes)
-        {
-            int lastIndexOfSlash = NodeFile.Path.LastIndexOf('/');
-            string nodeFilePathWithoutFileName = NodeFile.Path.Substring(0, lastIndexOfSlash);
-            foreach (KeyValuePair<string, string> child in children)
-            {
-                string absoluteFilePath = JsonHelper.GetFileFromFileJson(child.Value, nodeFilePathWithoutFileName);
-                GameMasterNode otherFile = null;
-                if (allNodes.TryGetValue(absoluteFilePath, out otherFile))
-                {
-                    // this is a proper edge
-                    otherFile.Owner = NodeFile;
-                    toUpdate.Add(child.Key, otherFile);
-                    mNumArcNodes++;
-                }
-            }
         }
 
         public override void UpdateGraphNode(Node graphNode)
@@ -117,6 +100,17 @@ namespace StonehearthEditor
             return new CampaignNodeData();
         }
 
+        public override bool AddOutEdge(GameMasterNode nodeFile)
+        {
+            if (nodeFile.NodeType == GameMasterNodeType.ARC)
+            {
+                mArcTriggers.Add(nodeFile.Name, nodeFile);
+                return true;
+            }
+
+            return false;
+        }
+
         protected override void UpdateOutEdges(Graph graph)
         {
             foreach (GameMasterNode node in mArcTriggers.Values)
@@ -156,15 +150,22 @@ namespace StonehearthEditor
             }
         }
 
-        public override bool AddOutEdge(GameMasterNode nodeFile)
+        private void SetSelfAsOwner(Dictionary<string, string> children, Dictionary<string, GameMasterNode> toUpdate, Dictionary<string, GameMasterNode> allNodes)
         {
-            if (nodeFile.NodeType == GameMasterNodeType.ARC)
+            int lastIndexOfSlash = NodeFile.Path.LastIndexOf('/');
+            string nodeFilePathWithoutFileName = NodeFile.Path.Substring(0, lastIndexOfSlash);
+            foreach (KeyValuePair<string, string> child in children)
             {
-                mArcTriggers.Add(nodeFile.Name, nodeFile);
-                return true;
+                string absoluteFilePath = JsonHelper.GetFileFromFileJson(child.Value, nodeFilePathWithoutFileName);
+                GameMasterNode otherFile = null;
+                if (allNodes.TryGetValue(absoluteFilePath, out otherFile))
+                {
+                    // this is a proper edge
+                    otherFile.Owner = NodeFile;
+                    toUpdate.Add(child.Key, otherFile);
+                    mNumArcNodes++;
+                }
             }
-
-            return false;
         }
     }
 }

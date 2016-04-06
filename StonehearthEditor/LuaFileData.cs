@@ -51,11 +51,6 @@ namespace StonehearthEditor
             return true;
         }
 
-        protected override void LoadInternal()
-        {
-            return; // Do nothing
-        }
-
         public override bool Clone(string newPath, CloneObjectParameters parameters, HashSet<string> alreadyCloned, bool execute)
         {
             return base.Clone(newPath, parameters, alreadyCloned, execute);
@@ -69,6 +64,11 @@ namespace StonehearthEditor
         public ModuleFile GetModuleFile()
         {
             return mOwner;
+        }
+
+        protected override void LoadInternal()
+        {
+            return; // Do nothing
         }
     }
 }
