@@ -1,6 +1,6 @@
-﻿using StonehearthEditor.Properties;
-using System;
+﻿using System;
 using System.Windows.Forms;
+using StonehearthEditor.Properties;
 
 namespace StonehearthEditor
 {

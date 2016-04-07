@@ -111,6 +111,7 @@
     </Compile>
     <Compile Include="FileData.cs" />
     <Compile Include="GameMasterNode.cs" />
+    <Compile Include="IGraphOwner.cs" />
     <Compile Include="IModuleFileData.cs" />
     <Compile Include="IReloadable.cs" />
     <Compile Include="ListViewItemComparer.cs" />

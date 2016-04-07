@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Data;
+using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 using Newtonsoft.Json.Linq;
@@ -101,6 +101,14 @@ namespace StonehearthEditor
                    + index.ToString()
                    + ". Exception: "
                    + e.Message);
+            }
+        }
+
+        private static void populateWithDefaultValue<T>(List<T> array, T value, int num)
+        {
+            for (int i = 0; i < num; i++)
+            {
+                array.Add(value);
             }
         }
 
@@ -293,14 +301,6 @@ namespace StonehearthEditor
             foreach (string attribute in attributesOfInterest)
             {
                 killableEntitiesListView.Columns.Add(attribute, attribute, -2);
-            }
-        }
-
-        private static void populateWithDefaultValue<T>(List<T> array, T value, int num)
-        {
-            for (int i = 0; i < num; i++)
-            {
-                array.Add(value);
             }
         }
 

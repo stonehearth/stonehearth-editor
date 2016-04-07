@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Text;
-using System.Windows.Forms;
-using System.Text.RegularExpressions;
-using Newtonsoft.Json.Linq;
 using System.Diagnostics;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Windows.Forms;
+using Newtonsoft.Json.Linq;
 
 namespace StonehearthEditor
 {

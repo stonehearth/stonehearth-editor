@@ -1,6 +1,6 @@
+using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using System;
 using Newtonsoft.Json.Linq;
 
 namespace StonehearthEditor

@@ -2,19 +2,19 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.IO;
 using System.Text;
 using System.Windows.Forms;
-using System.IO;
 using Newtonsoft.Json.Linq;
 
 namespace StonehearthEditor
 {
     public partial class ManifestView : UserControl, IReloadable
     {
+        private const int kThumbnailSize = 20;
         private FileData mSelectedFileData = null;
         private Dictionary<string, string> mLastModuleLocations = new Dictionary<string, string>();
         private ErrorFileList mErrorFileListView;
-        private const int kThumbnailSize = 20;
 
         public ManifestView()
         {

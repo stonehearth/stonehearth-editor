@@ -1,21 +1,22 @@
-﻿using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using Newtonsoft.Json.Linq;
 
 namespace StonehearthEditor
 {
     public partial class NetWorthVisualizer : Form
     {
+        private const float kMinZoom = 0.1f;
+        private const float kMaxZoom = 1.0f;
+
         private Dictionary<int, List<JsonFileData>> mNetWorthValues;
         private int mMaxNetWorth = 0;
         private int mItemCount = 0;
         private ManifestView mManifestView;
         private JsonFileData mHoveredFileData = null;
         private float mZoom = 1.0f;
-        private static float kMinZoom = 0.1f;
-        private static float kMaxZoom = 1.0f;
 
         public NetWorthVisualizer()
         {
