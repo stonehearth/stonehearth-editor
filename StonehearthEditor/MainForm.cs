@@ -128,7 +128,7 @@ namespace StonehearthEditor
 
                     if (this.checkModsFolder(ref newPath))
                     {
-                        kModsDirectoryPath = newPath;
+                        kModsDirectoryPath = JsonHelper.NormalizeSystemPath(newPath);
                         Properties.Settings.Default["ModsDirectory"] = kModsDirectoryPath;
                         Properties.Settings.Default.Save();
                         return;
