@@ -110,6 +110,7 @@
       <DependentUpon>ErrorFileList.cs</DependentUpon>
     </Compile>
     <Compile Include="FileData.cs" />
+    <Compile Include="FolderSelectDialog.cs" />
     <Compile Include="GameMasterNode.cs" />
     <Compile Include="IGraphOwner.cs" />
     <Compile Include="IModuleFileData.cs" />

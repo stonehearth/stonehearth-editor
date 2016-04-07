@@ -37,7 +37,6 @@ namespace StonehearthEditor
             this.entityBrowserTab = new System.Windows.Forms.TabPage();
             this.entityBrowserView = new StonehearthEditor.EntityBrowserView();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.modsFolderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
             this.mainFormMenu = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -126,11 +125,6 @@ namespace StonehearthEditor
             // 
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
             this.saveToolStripMenuItem.Size = new System.Drawing.Size(32, 19);
-            // 
-            // modsFolderBrowserDialog
-            // 
-            this.modsFolderBrowserDialog.Description = "Stonehearth Mods Root Directory";
-            this.modsFolderBrowserDialog.ShowNewFolderButton = false;
             // 
             // mainFormMenu
             // 
@@ -223,7 +217,6 @@ namespace StonehearthEditor
       private System.Windows.Forms.TabControl tabControl;
       private System.Windows.Forms.TabPage encounterTab;
       private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
-      private System.Windows.Forms.FolderBrowserDialog modsFolderBrowserDialog;
       private System.Windows.Forms.MenuStrip mainFormMenu;
       private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
       private System.Windows.Forms.ToolStripMenuItem saveAllToolStripMenuItem;

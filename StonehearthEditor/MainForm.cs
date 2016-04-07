@@ -112,7 +112,8 @@ namespace StonehearthEditor
         {
             var dialog = new FolderSelectDialog()
             {
-                DirectoryPath = kModsDirectoryPath ?? Environment.CurrentDirectory
+                DirectoryPath = kModsDirectoryPath ?? Environment.CurrentDirectory,
+                Title = "Stonehearth Mods Root Directory"
             };
 
             DialogResult result = DialogResult.Abort;
@@ -146,7 +147,7 @@ namespace StonehearthEditor
                 }
                 else
                 {
-                    if (MessageBox.Show("No mods directory selected. Try again?", "No directory selected.", MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.No)
+                    if (MessageBox.Show("No mods directory selected. Try again?", "No directory selected.", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
                         return;
                 }
             }
