@@ -24,6 +24,7 @@ namespace StonehearthEditor
             this.column = column;
             this.order = order;
         }
+
         public int Compare(object x, object y)
         {
             int returnVal = -1;

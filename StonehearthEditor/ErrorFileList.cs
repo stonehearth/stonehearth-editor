@@ -6,6 +6,7 @@ namespace StonehearthEditor
     public partial class ErrorFileList : Form
     {
         private ManifestView mOwner;
+
         public ErrorFileList(ManifestView owner)
         {
             mOwner = owner;

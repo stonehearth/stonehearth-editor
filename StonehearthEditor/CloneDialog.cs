@@ -1,11 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace StonehearthEditor
@@ -16,7 +9,8 @@ namespace StonehearthEditor
         {
             // Returns true if we can close the dialog
             bool OnAccept(CloneObjectParameters cloneParameters);
-            void onCancelled();
+
+            void OnCancelled();
         }
 
         private IDialogCallback mCallback;
@@ -29,19 +23,20 @@ namespace StonehearthEditor
             int index = clonedObjectName.IndexOf(':');
             if (index != -1 && clonedObjectName.Length > index)
             {
-                // Since user must specify a new alias, if alias doesn't contain 
-                //the file name (initialText), make a new row with the old alias name as text to replace
+                // Since user must specify a new alias, if alias doesn't contain
+                // the file name (initialText), make a new row with the old alias name as text to replace
                 string oldAlias = clonedObjectName.Substring(index + 1);
                 if (!oldAlias.Contains(initialText))
                 {
                     AddNewRow(oldAlias);
                 }
             }
+
             AddNewRow(initialText);
             AcceptButton = cloneButton;
 
             this.ActiveControl = parametersTable.GetControlFromPosition(1, 1);
-            //parametersTable.GetControlFromPosition(1, 1).Focus();
+            ////parametersTable.GetControlFromPosition(1, 1).Focus();
         }
 
         public void SetCallback(IDialogCallback callback)
@@ -67,6 +62,7 @@ namespace StonehearthEditor
                         parameters.AddStringReplacement(original.Text, replacement.Text);
                     }
                 }
+
                 bool isSuccess = mCallback.OnAccept(parameters);
                 if (isSuccess)
                 {
@@ -80,7 +76,7 @@ namespace StonehearthEditor
         {
             if (mCallback != null)
             {
-                mCallback.onCancelled();
+                mCallback.OnCancelled();
                 mCallback = null;
             }
         }

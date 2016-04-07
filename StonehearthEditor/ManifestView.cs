@@ -2,26 +2,20 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using System.IO;
+using System.Text;
+using System.Windows.Forms;
 using Newtonsoft.Json.Linq;
 
 namespace StonehearthEditor
 {
-    public interface IReloadable
-    {
-        void Reload();
-    }
     public partial class ManifestView : UserControl, IReloadable
     {
+        private const int kThumbnailSize = 20;
         private FileData mSelectedFileData = null;
         private Dictionary<string, string> mLastModuleLocations = new Dictionary<string, string>();
         private ErrorFileList mErrorFileListView;
-        private const int kThumbnailSize = 20;
+
         public ManifestView()
         {
             InitializeComponent();
@@ -53,11 +47,13 @@ namespace StonehearthEditor
             {
                 return;
             }
+
             IModuleFileData moduleFile = selectedFileData as IModuleFileData;
             if (moduleFile == null)
             {
                 return; // Don't know how to clone something not module file data
             }
+
             string name = moduleFile.GetModuleFile() != null ? moduleFile.GetModuleFile().FullAlias : selectedFileData.FileName;
             CloneAliasCallback callback = new CloneAliasCallback(this, selectedFileData);
             CloneDialog dialog = new CloneDialog(name, selectedFileData.GetNameForCloning());
@@ -85,6 +81,7 @@ namespace StonehearthEditor
                         {
                             qcFile = sr.ReadToEnd();
                         }
+
                         int folderIndex = qcFile.IndexOf("[Folder]");
                         string beforeFolder = "";
                         string afterFolder = string.Empty;
@@ -102,6 +99,7 @@ namespace StonehearthEditor
                         {
                             beforeFolder = qcFile;
                         }
+
                         StringBuilder newQcFile = new StringBuilder();
                         newQcFile.AppendLine(beforeFolder);
                         newQcFile.AppendLine("[Folder]");
@@ -121,6 +119,7 @@ namespace StonehearthEditor
                     }
                 }
             }
+
             System.Diagnostics.Process.Start(@filePath);
         }
 
@@ -132,6 +131,7 @@ namespace StonehearthEditor
                 {
                     return;
                 }
+
                 filePreviewTabs.TabPages.Clear();
                 openFileButtonPanel.Controls.Clear();
                 iconView.ImageLocation = "";
@@ -178,6 +178,7 @@ namespace StonehearthEditor
             {
                 treeView.SelectedNode = fileData.TreeNode;
             }
+
             List<string> addedOpenFiles = new List<string>();
             bool hasImage = false;
             foreach (FileData openedFile in fileData.OpenedFiles)
@@ -188,11 +189,13 @@ namespace StonehearthEditor
                 {
                     newTabPage.Text = newTabPage.Text + "*";
                 }
+
                 if (openedFile.HasErrors)
                 {
                     newTabPage.ImageIndex = 0;
                     newTabPage.ToolTipText = openedFile.Errors;
                 }
+
                 FilePreview filePreview = new FilePreview(this, openedFile);
                 filePreview.Dock = DockStyle.Fill;
                 newTabPage.Controls.Add(filePreview);
@@ -204,6 +207,7 @@ namespace StonehearthEditor
                     {
                         continue;
                     }
+
                     addedOpenFiles.Add(linkedFile.Key);
 
                     if (linkedFile.Value is QubicleFileData)
@@ -265,6 +269,7 @@ namespace StonehearthEditor
             {
                 searchBox.Text = "";
             }
+
             searchButton.PerformClick();
 
             if (Properties.Settings.Default.LastSelectedManifestPath != null)
@@ -290,6 +295,7 @@ namespace StonehearthEditor
                 Properties.Settings.Default.LastSelectedManifestPath = treeView.SelectedNode.FullPath;
                 Properties.Settings.Default.Save();
             }
+
             treeView.Focus();
         }
 
@@ -303,7 +309,7 @@ namespace StonehearthEditor
                 addIconicVersionToolStripMenuItem.Visible = CanAddEntityForm(file, "iconic");
                 addGhostToolStripMenuItem.Visible = !CanAddEntityForm(file, "iconic") && CanAddEntityForm(file, "ghost");
                 makeFineVersionToolStripMenuItem.Visible = CanAddFineVersion(file);
-                removeFromManifestToolStripMenuItem.Visible = (GetModuleFile(file) != null);
+                removeFromManifestToolStripMenuItem.Visible = GetModuleFile(file) != null;
                 aliasContextDuplicate.Visible = true;
                 copyFullAliasToolStripMenuItem.Visible = true;
                 addNewAliasToolStripMenuItem.Visible = false;
@@ -314,6 +320,7 @@ namespace StonehearthEditor
                 {
                     item.Visible = false;
                 }
+
                 addNewAliasToolStripMenuItem.Visible = true;
             }
         }
@@ -346,6 +353,7 @@ namespace StonehearthEditor
             // Always select the clicked node
             treeView.SelectedNode = treeView.GetNodeAt(e.X, e.Y);
         }
+
         private bool CanAddFineVersion(FileData file)
         {
             JsonFileData jsonFileData = file as JsonFileData;
@@ -353,16 +361,19 @@ namespace StonehearthEditor
             {
                 return false; // Don't know how to clone something not jsonFileData
             }
+
             ModuleFile moduleFile = jsonFileData.GetModuleFile();
             if (moduleFile == null || moduleFile.IsFineVersion || jsonFileData.JsonType != JSONTYPE.ENTITY)
             {
                 return false; // can only make fine version of a module file
             }
+
             string fineFullAlias = moduleFile.FullAlias + ":fine";
             if (ModuleDataManager.GetInstance().GetModuleFile(fineFullAlias) != null)
             {
                 return false; // fine already exists
             }
+
             return true;
         }
 
@@ -371,8 +382,9 @@ namespace StonehearthEditor
             IModuleFileData moduleFileData = file as IModuleFileData;
             if (moduleFileData == null)
             {
-                return null; //only module file data can have modulefiles
+                return null; // only module file data can have modulefiles
             }
+
             return moduleFileData.GetModuleFile();
         }
 
@@ -384,6 +396,7 @@ namespace StonehearthEditor
             {
                 return;
             }
+
             JsonFileData jsonFileData = selectedFileData as JsonFileData;
             ModuleFile moduleFile = jsonFileData.GetModuleFile();
             CloneObjectParameters parameters = new CloneObjectParameters();
@@ -394,17 +407,20 @@ namespace StonehearthEditor
             PreviewCloneDialog dialog = new PreviewCloneDialog("Creating " + moduleFile.ShortName + ":fine", dependencies, callback);
             dialog.ShowDialog();
         }
+
         private class CloneAliasCallback : CloneDialog.IDialogCallback
         {
             private FileData mFileData;
             private ManifestView mViewer;
             private PreviewCloneAliasCallback mPreviewCallback;
+
             public CloneAliasCallback(ManifestView viewer, FileData file)
             {
                 mViewer = viewer;
                 mFileData = file;
             }
-            public void onCancelled()
+
+            public void OnCancelled()
             {
                 // Do nothing. user cancelled
             }
@@ -419,11 +435,13 @@ namespace StonehearthEditor
                     MessageBox.Show("You must enter a name longer than 1 character for the clone!");
                     return false;
                 }
+
                 if (potentialNewNodeName.Equals(originalName))
                 {
                     MessageBox.Show("You must enter a new unique name for the clone!");
                     return false;
                 }
+
                 HashSet<string> dependencies = ModuleDataManager.GetInstance().PreviewCloneDependencies(mFileData, parameters);
 
                 HashSet<string> savedUnwantedItems = mPreviewCallback != null ? mPreviewCallback.SavedUnwantedItems : null;
@@ -435,16 +453,19 @@ namespace StonehearthEditor
                 {
                     return false;
                 }
+
                 return true;
             }
         }
 
         private class PreviewCloneAliasCallback : PreviewCloneDialog.IDialogCallback
         {
+            public HashSet<string> SavedUnwantedItems { get; set; }
+
             private FileData mFileData;
             private ManifestView mViewer;
             private CloneObjectParameters mParameters;
-            public HashSet<string> SavedUnwantedItems;
+
             public PreviewCloneAliasCallback(ManifestView viewer, FileData fileData, CloneObjectParameters parameters)
             {
                 mViewer = viewer;
@@ -452,7 +473,7 @@ namespace StonehearthEditor
                 mParameters = parameters;
             }
 
-            public void onCancelled(HashSet<string> unwantedItems)
+            public void OnCancelled(HashSet<string> unwantedItems)
             {
                 // Do nothing. user cancelled
                 SavedUnwantedItems = unwantedItems;
@@ -464,6 +485,7 @@ namespace StonehearthEditor
                 {
                     mViewer.Reload();
                 }
+
                 return true;
             }
 
@@ -480,6 +502,7 @@ namespace StonehearthEditor
             {
                 return;
             }
+
             string selectedItem = (string)listBox.SelectedItem;
             if (selectedItem.Contains(".png"))
             {
@@ -515,6 +538,7 @@ namespace StonehearthEditor
             {
                 return false;
             }
+
             foreach (FileData openedJsonFile in jsonFileData.OpenedFiles)
             {
                 if (openedJsonFile.Path.EndsWith("_" + formName + ".json"))
@@ -522,6 +546,7 @@ namespace StonehearthEditor
                     return false; // already have an iconic
                 }
             }
+
             return true;
         }
 
@@ -533,6 +558,7 @@ namespace StonehearthEditor
             {
                 return;
             }
+
             JsonFileData jsonFileData = selectedFileData as JsonFileData;
             string originalFileName = jsonFileData.FileName;
             string iconicFilePath = jsonFileData.Directory + "/" + originalFileName + "_iconic.json";
@@ -591,10 +617,12 @@ namespace StonehearthEditor
                         {
                             json["components"] = new JObject();
                         }
+
                         JObject entityForms = new JObject();
                         json["components"]["stonehearth:entity_forms"] = entityForms;
                         entityFormsComponent = entityForms;
                     }
+
                    (entityFormsComponent as JObject).Add("iconic_form", "file(" + originalFileName + "_iconic.json" + ")");
                     jsonFileData.TrySetFlatFileData(jsonFileData.GetJsonFileString());
                     jsonFileData.TrySaveFile();
@@ -606,6 +634,7 @@ namespace StonehearthEditor
                 MessageBox.Show("Unable to add iconic file because " + ee.Message);
                 return;
             }
+
             Reload();
         }
 
@@ -635,6 +664,7 @@ namespace StonehearthEditor
             {
                 return;
             }
+
             JsonFileData jsonFileData = selectedFileData as JsonFileData;
             string originalFileName = jsonFileData.FileName;
             string ghostFilePath = jsonFileData.Directory + "/" + originalFileName + "_ghost.json";
@@ -653,6 +683,7 @@ namespace StonehearthEditor
                         qbFilePath = data.Path;
                     }
                 }
+
                 JObject ghostComponents = new JObject();
                 ghostJson["components"] = ghostComponents;
 
@@ -691,10 +722,12 @@ namespace StonehearthEditor
                     {
                         json["components"] = new JObject();
                     }
+
                     JObject entityForms = new JObject();
                     json["components"]["stonehearth:entity_forms"] = entityForms;
                     entityFormsComponent = entityForms;
                 }
+
                 JToken mixins = json["mixins"];
                 if (mixins == null)
                 {
@@ -702,15 +735,17 @@ namespace StonehearthEditor
                 }
                 else
                 {
-                    JArray mixinsArray = (mixins as JArray);
+                    JArray mixinsArray = mixins as JArray;
                     if (mixinsArray == null)
                     {
                         mixinsArray = new JArray();
                         json["mixins"] = mixinsArray;
                         mixinsArray.Add(mixins.ToString());
                     }
+
                     mixinsArray.Add("file(" + originalFileName + "_ghost.json" + ")");
                 }
+
                (entityFormsComponent as JObject).Add("ghost_form", "file(" + originalFileName + "_ghost.json" + ")");
                 jsonFileData.TrySetFlatFileData(jsonFileData.GetJsonFileString());
                 jsonFileData.TrySaveFile();
@@ -721,6 +756,7 @@ namespace StonehearthEditor
                 MessageBox.Show("Unable to add iconic file because " + ee.Message);
                 return;
             }
+
             Reload();
         }
 
@@ -730,12 +766,14 @@ namespace StonehearthEditor
             {
                 return;
             }
+
             ListBox listBox = sender as ListBox;
             string selectedItem = (string)listBox.SelectedItem;
             if (selectedItem == null)
             {
                 return;
             }
+
             if (selectedItem.Contains(":"))
             {
                 // item is a alias item. we should navigate there.
@@ -759,6 +797,7 @@ namespace StonehearthEditor
                         break;
                     }
                 }
+
                 if (!foundFile)
                 {
                     FileData data;
@@ -767,6 +806,7 @@ namespace StonehearthEditor
                     {
                         hasFileData = true;
                     }
+
                     string fullPath = ModuleDataManager.GetInstance().ModsDirectoryPath + selectedItem;
                     if (!hasFileData && mSelectedFileData.LinkedFileData.TryGetValue(fullPath, out data))
                     {
@@ -796,6 +836,7 @@ namespace StonehearthEditor
                     return; // okay to edit aliases
                 }
             }
+
             e.CancelEdit = true;
         }
 
@@ -852,6 +893,7 @@ namespace StonehearthEditor
             {
                 selectedNode = selectedNode.Parent;
             }
+
             string moduleName = selectedNode.Text;
 
             Module selectedMod = ModuleDataManager.GetInstance().GetMod(moduleName);
@@ -866,6 +908,7 @@ namespace StonehearthEditor
                 {
                     initialDirectory = System.IO.Path.GetFullPath(initialDirectory);
                 }
+
                 selectJsonFileDialog.InitialDirectory = initialDirectory;
                 selectJsonFileDialog.Tag = selectedMod;
                 selectJsonFileDialog.ShowDialog(this);
@@ -879,6 +922,7 @@ namespace StonehearthEditor
             {
                 return;
             }
+
             filePath = JsonHelper.NormalizeSystemPath(filePath);
             Module selectedMod = selectJsonFileDialog.Tag as Module;
             if (!filePath.Contains(selectedMod.Path))
@@ -886,6 +930,7 @@ namespace StonehearthEditor
                 MessageBox.Show("The file must be under the directory " + selectedMod.Path);
                 return;
             }
+
             mLastModuleLocations[selectedMod.Name] = filePath;
             string shortPath = filePath.Replace(selectedMod.Path + "/", "");
             string[] pathSplit = shortPath.Split('/');
@@ -923,7 +968,6 @@ namespace StonehearthEditor
                         nameWithoutExtension = nameWithoutExtension.Substring(0, nameWithoutExtension.Length - 7);
                         samplePath = samplePath + ':' + nameWithoutExtension;
                     }
-
                 }
             }
 
@@ -938,13 +982,15 @@ namespace StonehearthEditor
             private ManifestView mOwner;
             private Module mModule;
             private string mFilePath;
+
             public NewAliasCallback(ManifestView owner, Module module, string filePath)
             {
                 mOwner = owner;
                 mModule = module;
                 mFilePath = filePath;
             }
-            public void onCancelled()
+
+            public void OnCancelled()
             {
                 // Do nothing. user cancelled
             }
@@ -958,11 +1004,13 @@ namespace StonehearthEditor
                     MessageBox.Show("You must enter a name longer than 1 character for the new alias!");
                     return false;
                 }
+
                 if (mModule.GetAliasFile(newAliasName) != null)
                 {
                     MessageBox.Show("An alias already exists with that name!");
                     return false;
                 }
+
                 mModule.AddToManifest(newAliasName, "file(" + mFilePath + ")");
                 mModule.WriteManifestToFile();
                 mOwner.Reload();

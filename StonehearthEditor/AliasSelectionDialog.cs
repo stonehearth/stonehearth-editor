@@ -1,22 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace StonehearthEditor
 {
-   public partial class AliasSelectionDialog : Form
+    public partial class AliasSelectionDialog : Form
    {
       public interface IDialogCallback
       {
          // Returns true if we can close the dialog
          bool OnAccept(HashSet<string> aliases);
-         void onCancelled();
+
+         void OnCancelled();
       }
 
       private HashSet<string> mAllAliases = new HashSet<string>();
@@ -28,11 +23,12 @@ namespace StonehearthEditor
          mCallback = callback;
          foreach (Module mod in ModuleDataManager.GetInstance().GetAllModules())
          {
-            foreach(ModuleFile alias in mod.GetAliases())
+            foreach (ModuleFile alias in mod.GetAliases())
             {
                mAllAliases.Add(alias.FullAlias);
             }
          }
+
          SetFilter(null);
       }
 
@@ -40,7 +36,7 @@ namespace StonehearthEditor
       {
          bool isEmpty = string.IsNullOrWhiteSpace(filter);
          listBox.Items.Clear();
-         foreach(string alias in mAllAliases)
+         foreach (string alias in mAllAliases)
          {
             if (isEmpty || alias.Contains(filter))
             {
@@ -59,11 +55,12 @@ namespace StonehearthEditor
          if (mCallback != null)
          {
             HashSet<string> selected = new HashSet<string>();
-            foreach(object obj in listBox.SelectedItems)
+            foreach (object obj in listBox.SelectedItems)
             {
                string alias = (string)obj;
                selected.Add(alias);
             }
+
             bool isSuccess = mCallback.OnAccept(selected);
             if (isSuccess)
             {
@@ -77,7 +74,7 @@ namespace StonehearthEditor
       {
          if (mCallback != null)
          {
-            mCallback.onCancelled();
+            mCallback.OnCancelled();
             mCallback = null;
          }
       }

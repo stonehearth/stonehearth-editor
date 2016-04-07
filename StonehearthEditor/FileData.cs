@@ -6,51 +6,53 @@ using System.Windows.Forms;
 
 namespace StonehearthEditor
 {
-    public interface IModuleFileData
-    {
-        void SetModuleFile(ModuleFile moduleFile);
-        ModuleFile GetModuleFile();
-    }
     public abstract class FileData : IDisposable
     {
-        protected TreeNode mTreeNode;
-        private string mFlatFileData;
-        protected bool mIsModified = false;
+        protected TreeNode mTreeNode { get; set; }
 
-        protected string mPath;
+        protected bool mIsModified { get; set; }
+
+        private string mFlatFileData;
         private bool isDisposing = false;
         private string mErrors = null;
-        protected List<ModuleFile> mLinkedAliases = new List<ModuleFile>();
-        protected Dictionary<string, FileData> mLinkedFileData = new Dictionary<string, FileData>();
-        protected List<FileData> mOpenedFiles = new List<FileData>();
-        protected List<FileData> mRelatedFiles = new List<FileData>();
-        protected Dictionary<string, FileData> mReferencedByFileData = new Dictionary<string, FileData>();
 
-        public List<ModuleFile> LinkedAliases { get { return mLinkedAliases; } }
-        public Dictionary<string, FileData> LinkedFileData { get { return mLinkedFileData; } }
-        public List<FileData> OpenedFiles { get { return mOpenedFiles; } }
-        public List<FileData> RelatedFiles { get { return mRelatedFiles; } }
+        public List<ModuleFile> LinkedAliases { get; } = new List<ModuleFile>();
 
-        public Dictionary<string, FileData> ReferencedByFileData { get { return mReferencedByFileData; } }
+        public Dictionary<string, FileData> LinkedFileData { get; } = new Dictionary<string, FileData>();
+
+        public List<FileData> OpenedFiles { get; } = new List<FileData>();
+
+        public List<FileData> RelatedFiles { get; } = new List<FileData>();
+
+        public Dictionary<string, FileData> ReferencedByFileData { get; } = new Dictionary<string, FileData>();
+
+        protected FileData(string path)
+        {
+            this.Path = path;
+        }
+
         public TreeNode TreeNode
         {
             get { return mTreeNode; }
         }
 
-        public string Path { get { return mPath; } }
+        public string Path { get; }
 
         public string FileName
         {
             get { return System.IO.Path.GetFileNameWithoutExtension(Path); }
         }
+
         public bool IsModified
         {
             get { return mIsModified; }
         }
+
         public virtual string Errors
         {
             get { return mErrors; }
         }
+
         public virtual bool HasErrors
         {
             get { return mErrors != null; }
@@ -69,8 +71,10 @@ namespace StonehearthEditor
                 node.ImageIndex = 0;
                 node.ToolTipText = Errors;
             }
+
             return true;
         }
+
         public bool TrySetFlatFileData(string newData)
         {
             string newFlatFileData;
@@ -80,8 +84,10 @@ namespace StonehearthEditor
                 mIsModified = true;
                 return true;
             }
+
             return false;
         }
+
         public void TrySaveFile()
         {
             if (mIsModified)
@@ -92,6 +98,7 @@ namespace StonehearthEditor
                     {
                         wr.Write(FlatFileData);
                     }
+
                     mIsModified = false;
                 }
                 catch (Exception e)
@@ -100,6 +107,7 @@ namespace StonehearthEditor
                 }
             }
         }
+
         public void FillDependencyListItems(ListBox listView)
         {
             listView.Items.Clear();
@@ -116,28 +124,6 @@ namespace StonehearthEditor
             {
                 listView.Items.Add(reference);
             }
-        }
-
-        protected Dictionary<string, FileData> GetDependencies()
-        {
-            Dictionary<string, FileData> dependencies = new Dictionary<string, FileData>();
-            foreach (ModuleFile dependency in LinkedAliases)
-            {
-                string alias = dependency.Module.Name + ":" + dependency.Name;
-                if (!dependencies.ContainsKey(alias))
-                {
-                    dependencies.Add(alias, dependency.FileData);
-                }
-            }
-            foreach (KeyValuePair<string, FileData> file in LinkedFileData)
-            {
-                string filePathWithoutBase = file.Key.Replace(ModuleDataManager.GetInstance().ModsDirectoryPath, "");
-                if (!dependencies.ContainsKey(filePathWithoutBase))
-                {
-                    dependencies.Add(filePathWithoutBase, file.Value);
-                }
-            }
-            return dependencies;
         }
 
         public virtual void Load()
@@ -159,38 +145,10 @@ namespace StonehearthEditor
 
             PostLoad();
         }
+
         public string FlatFileData
         {
             get { return mFlatFileData; }
-        }
-
-        // custom load call
-        protected virtual void LoadInternal() { }
-
-        protected virtual void PostLoad() { }
-
-        protected virtual bool TryChangeFlatFileData(string newData, out string newFlatFileData)
-        {
-            newFlatFileData = newData;
-            return true;
-        }
-        protected FileData GetLinkedFileData(string path)
-        {
-            foreach (FileData data in OpenedFiles)
-            {
-                if (data.Path == path)
-                {
-                    return data;
-                }
-            }
-            foreach (FileData data in RelatedFiles)
-            {
-                if (data.Path == path)
-                {
-                    return data;
-                }
-            }
-            return null;
         }
 
         public virtual bool ShouldCloneDependency(string dependencyName, CloneObjectParameters parameters)
@@ -209,7 +167,7 @@ namespace StonehearthEditor
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="newPath"></param>
         /// <param name="oldName"></param>
@@ -219,13 +177,14 @@ namespace StonehearthEditor
         /// <returns></returns>
         public virtual bool Clone(string newPath, CloneObjectParameters parameters, HashSet<string> alreadyCloned, bool execute)
         {
-            //Ensure directory exists
+            // Ensure directory exists
             string directory = System.IO.Path.GetDirectoryName(newPath);
             alreadyCloned.Add(newPath);
             if (execute)
             {
                 System.IO.Directory.CreateDirectory(directory);
             }
+
             // Figure out what dependency files need to exist
             foreach (KeyValuePair<string, FileData> dependencyKV in GetDependencies())
             {
@@ -268,39 +227,107 @@ namespace StonehearthEditor
                     wr.Write(newFlatFile);
                 }
             }
+
             return true;
         }
 
+        protected Dictionary<string, FileData> GetDependencies()
+        {
+            Dictionary<string, FileData> dependencies = new Dictionary<string, FileData>();
+            foreach (ModuleFile dependency in LinkedAliases)
+            {
+                string alias = dependency.Module.Name + ":" + dependency.Name;
+                if (!dependencies.ContainsKey(alias))
+                {
+                    dependencies.Add(alias, dependency.FileData);
+                }
+            }
+
+            foreach (KeyValuePair<string, FileData> file in LinkedFileData)
+            {
+                string filePathWithoutBase = file.Key.Replace(ModuleDataManager.GetInstance().ModsDirectoryPath, "");
+                if (!dependencies.ContainsKey(filePathWithoutBase))
+                {
+                    dependencies.Add(filePathWithoutBase, file.Value);
+                }
+            }
+
+            return dependencies;
+        }
+
+        // custom load call
+        protected virtual void LoadInternal()
+        {
+        }
+
+        protected virtual void PostLoad()
+        {
+        }
+
+        protected virtual bool TryChangeFlatFileData(string newData, out string newFlatFileData)
+        {
+            newFlatFileData = newData;
+            return true;
+        }
+
+        protected FileData GetLinkedFileData(string path)
+        {
+            foreach (FileData data in OpenedFiles)
+            {
+                if (data.Path == path)
+                {
+                    return data;
+                }
+            }
+
+            foreach (FileData data in RelatedFiles)
+            {
+                if (data.Path == path)
+                {
+                    return data;
+                }
+            }
+
+            return null;
+        }
+
+#pragma warning disable SA1202 // Elements must be ordered by access
         public void Dispose()
+#pragma warning restore SA1202 // Elements must be ordered by access
         {
             if (isDisposing)
             {
                 return;
             }
+
             isDisposing = true;
-            foreach (ModuleFile alias in mLinkedAliases)
+            foreach (ModuleFile alias in LinkedAliases)
             {
                 alias.Dispose();
             }
-            mLinkedAliases.Clear();
 
-            foreach (FileData opened in mOpenedFiles)
+            LinkedAliases.Clear();
+
+            foreach (FileData opened in OpenedFiles)
             {
                 opened.Dispose();
             }
-            mOpenedFiles.Clear();
 
-            foreach (FileData related in mRelatedFiles)
+            OpenedFiles.Clear();
+
+            foreach (FileData related in RelatedFiles)
             {
                 related.Dispose();
             }
-            mRelatedFiles.Clear();
 
-            foreach (FileData referenced in mReferencedByFileData.Values)
+            RelatedFiles.Clear();
+
+            foreach (FileData referenced in ReferencedByFileData.Values)
             {
                 referenced.Dispose();
             }
-            mReferencedByFileData.Clear();
+
+            ReferencedByFileData.Clear();
         }
     }
 }

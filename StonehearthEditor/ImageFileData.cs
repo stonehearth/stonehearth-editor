@@ -3,13 +3,13 @@ using System.Windows.Forms;
 
 namespace StonehearthEditor
 {
-    class ImageFileData : FileData
+    internal class ImageFileData : FileData
     {
         private string mDirectory;
 
         public ImageFileData(string path)
+            : base(path)
         {
-            mPath = path;
             mDirectory = JsonHelper.NormalizeSystemPath(System.IO.Path.GetDirectoryName(Path));
         }
 
@@ -17,19 +17,18 @@ namespace StonehearthEditor
         {
             return false; // Qubicle files
         }
+
         public override void Load()
         {
             // do not actually load the binary
             return;
         }
-        protected override void LoadInternal()
-        {
-            return; // Do nothing
-        }
+
         public void AddLinkingJsonFile(JsonFileData file)
         {
-            mRelatedFiles.Add(file);
+            RelatedFiles.Add(file);
         }
+
         public override bool Clone(string newPath, CloneObjectParameters parameters, HashSet<string> alreadyCloned, bool execute)
         {
             // Just pure file copy
@@ -42,7 +41,13 @@ namespace StonehearthEditor
                     System.IO.File.Copy(Path, newPath);
                 }
             }
+
             return true;
+        }
+
+        protected override void LoadInternal()
+        {
+            return; // Do nothing
         }
     }
 }

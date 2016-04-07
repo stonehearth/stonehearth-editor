@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections;
-using System.ComponentModel;
-using System.Drawing;
 using System.Data;
+using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using Newtonsoft.Json.Linq;
 
@@ -15,21 +11,24 @@ namespace StonehearthEditor
     public partial class EntityBrowserView : UserControl, IReloadable
     {
         private int sortColumn = -1;
-        Dictionary<string, JsonFileData> netWorthJsonFiles;
-        Dictionary<string, JsonFileData> weaponsJsonFiles;
-        Dictionary<string, JsonFileData> defenseJsonFiles;
-        Dictionary<string, JsonFileData> killableEntitiesJsonFiles;
-        Dictionary<string, string> modNames;
-        Dictionary<string, string> netWorthImagePaths;
-        Dictionary<string, string> weaponsImagePaths;
-        Dictionary<string, string> defenseImagePaths;
+        private Dictionary<string, JsonFileData> netWorthJsonFiles;
+        private Dictionary<string, JsonFileData> weaponsJsonFiles;
+        private Dictionary<string, JsonFileData> defenseJsonFiles;
+        private Dictionary<string, JsonFileData> killableEntitiesJsonFiles;
+        private Dictionary<string, string> modNames;
+        private Dictionary<string, string> netWorthImagePaths;
+        private Dictionary<string, string> weaponsImagePaths;
+        private Dictionary<string, string> defenseImagePaths;
 
-        private string[] attributesOfInterest = new string[] { "max_health",
-                                                             "speed",
-                                                             "menace",
-                                                             "courage",
-                                                             "muscle",
-                                                             "exp_reward" };
+        private string[] attributesOfInterest = new string[]
+        {
+            "max_health",
+            "speed",
+            "menace",
+            "courage",
+            "muscle",
+            "exp_reward"
+        };
 
         public EntityBrowserView()
         {
@@ -105,10 +104,18 @@ namespace StonehearthEditor
             }
         }
 
+        private static void populateWithDefaultValue<T>(List<T> array, T value, int num)
+        {
+            for (int i = 0; i < num; i++)
+            {
+                array.Add(value);
+            }
+        }
+
         private void InitializeNetWorthItemsView()
         {
             netWorthImagePaths = new Dictionary<string, string>();
-            Object[] data = ModuleDataManager.GetInstance().FilterJsonByTerm(netWorthListView, "entity_data.stonehearth:net_worth");
+            object[] data = ModuleDataManager.GetInstance().FilterJsonByTerm(netWorthListView, "entity_data.stonehearth:net_worth");
             netWorthJsonFiles = (Dictionary<string, JsonFileData>)data[0];
             modNames = (Dictionary<string, string>)data[1];
             ImageList imageList = new ImageList();
@@ -139,8 +146,10 @@ namespace StonehearthEditor
                             item.ToolTipText = "WARNING: Category specified in more than one place and are not identical";
                             break;
                         }
+
                         category = categoryToken.ToString();
                     }
+
                     if (materialToken != null)
                     {
                         if (material != "" && material != materialToken.ToString())
@@ -149,6 +158,7 @@ namespace StonehearthEditor
                             item.ToolTipText = "WARNING: Material specified in more than one place and are not identical";
                             break;
                         }
+
                         material = materialToken.ToString();
                     }
                 }
@@ -162,13 +172,14 @@ namespace StonehearthEditor
 
                 netWorthListView.Items.Add(item);
             }
+
             netWorthListView.SmallImageList = imageList;
         }
 
         private void InitializeWeaponsView()
         {
             weaponsImagePaths = new Dictionary<string, string>();
-            Object[] data = ModuleDataManager.GetInstance().FilterJsonByTerm(netWorthListView, "entity_data.stonehearth:combat:weapon_data");
+            object[] data = ModuleDataManager.GetInstance().FilterJsonByTerm(netWorthListView, "entity_data.stonehearth:combat:weapon_data");
             weaponsJsonFiles = (Dictionary<string, JsonFileData>)data[0];
             Dictionary<string, string> modNames = (Dictionary<string, string>)data[1];
             ImageList imageList = new ImageList();
@@ -184,7 +195,7 @@ namespace StonehearthEditor
                 string baseDamage = token == null ? "" : token.ToString();
                 item.SubItems.Add(baseDamage);
                 JToken iLevelToken = json.SelectToken("components.stonehearth:equipment_piece.ilevel");
-                string iLevel = iLevelToken == null ? "none" : iLevelToken.ToString(); //TODO: if none found, insert ilevel into json with value 0
+                string iLevel = iLevelToken == null ? "none" : iLevelToken.ToString(); // TODO: if none found, insert ilevel into json with value 0
                 item.SubItems.Add(iLevel);
                 JToken meleeAttackAnim = json.SelectToken("entity_data.stonehearth:combat:melee_attacks.[0].name");
                 if (meleeAttackAnim == null || meleeAttackAnim.ToString().Contains("1h"))
@@ -195,6 +206,7 @@ namespace StonehearthEditor
                 {
                     item.SubItems.Add("2h");
                 }
+
                 JToken rolesToken = json.SelectToken("components.stonehearth:equipment_piece.roles");
                 string roles = rolesToken == null ? "none" : rolesToken.ToString();
                 item.SubItems.Add(roles);
@@ -206,13 +218,14 @@ namespace StonehearthEditor
 
                 weaponsListView.Items.Add(item);
             }
+
             weaponsListView.SmallImageList = imageList;
         }
 
         private void InitializeDefenseItemsListView()
         {
             defenseImagePaths = new Dictionary<string, string>();
-            Object[] data = ModuleDataManager.GetInstance().FilterJsonByTerm(defenseItemsListView, "entity_data.stonehearth:combat:armor_data");
+            object[] data = ModuleDataManager.GetInstance().FilterJsonByTerm(defenseItemsListView, "entity_data.stonehearth:combat:armor_data");
             defenseJsonFiles = (Dictionary<string, JsonFileData>)data[0];
             Dictionary<string, string> modNames = (Dictionary<string, string>)data[1];
             ImageList imageList = new ImageList();
@@ -237,6 +250,7 @@ namespace StonehearthEditor
 
                 defenseItemsListView.Items.Add(item);
             }
+
             defenseItemsListView.SmallImageList = imageList;
         }
 
@@ -245,7 +259,7 @@ namespace StonehearthEditor
         {
             InitializeKillableEntitiesColumns();
 
-            Object[] data = ModuleDataManager.GetInstance().FilterJsonByTerm(killableEntitiesListView, "components.stonehearth:attributes");
+            object[] data = ModuleDataManager.GetInstance().FilterJsonByTerm(killableEntitiesListView, "components.stonehearth:attributes");
             killableEntitiesJsonFiles = (Dictionary<string, JsonFileData>)data[0];
 
             foreach (KeyValuePair<string, JsonFileData> entry in killableEntitiesJsonFiles)
@@ -254,9 +268,10 @@ namespace StonehearthEditor
                 JObject json = jsonFileData.Json;
                 ListViewItem item = new ListViewItem(entry.Key);
                 List<ListViewItem.ListViewSubItem> subItems = new List<ListViewItem.ListViewSubItem>();
-                populateWithDefaultValue<ListViewItem.ListViewSubItem>(subItems,
-                                                                       new ListViewItem.ListViewSubItem(),
-                                                                       killableEntitiesListView.Columns.Count);
+                populateWithDefaultValue<ListViewItem.ListViewSubItem>(
+                    subItems,
+                    new ListViewItem.ListViewSubItem(),
+                    killableEntitiesListView.Columns.Count);
                 JObject jAttributes = (JObject)json.SelectToken("components.stonehearth:attributes");
 
                 foreach (JProperty attribute in jAttributes.Properties())
@@ -266,6 +281,7 @@ namespace StonehearthEditor
                     {
                         continue;
                     }
+
                     JToken jValue = attribute.Value.SelectToken("value");
                     if (jValue != null)
                     {
@@ -274,6 +290,7 @@ namespace StonehearthEditor
                         subItems.Insert(i - 1, new ListViewItem.ListViewSubItem(item, jValue.ToString()));
                     }
                 }
+
                 item.SubItems.AddRange(subItems.ToArray());
                 killableEntitiesListView.Items.Add(item);
             }
@@ -287,20 +304,13 @@ namespace StonehearthEditor
             }
         }
 
-        private static void populateWithDefaultValue<T>(List<T> array, T value, int num)
-        {
-            for (int i = 0; i < num; i++)
-            {
-                array.Add(value);
-            }
-        }
-
-        private void addImages(JsonFileData jsonFileData,
-                               Dictionary<string, string> imgPaths,
-                               ImageList imgList,
-                               ListViewItem listItem,
-                               KeyValuePair<string, JsonFileData> jsonEntry,
-                               ref int index)
+        private void addImages(
+            JsonFileData jsonFileData,
+            Dictionary<string, string> imgPaths,
+            ImageList imgList,
+            ListViewItem listItem,
+            KeyValuePair<string, JsonFileData> jsonEntry,
+            ref int index)
         {
             foreach (FileData openedFile in jsonFileData.OpenedFiles)
             {
@@ -308,6 +318,7 @@ namespace StonehearthEditor
                 {
                     continue;
                 }
+
                 foreach (KeyValuePair<string, FileData> linkedFile in openedFile.LinkedFileData)
                 {
                     if (linkedFile.Value is ImageFileData)
@@ -340,12 +351,13 @@ namespace StonehearthEditor
         {
             onColumnClick(defenseItemsListView, e);
         }
+
         private void killableEntitiesListView_ColumnClick(object sender, ColumnClickEventArgs e)
         {
             onColumnClick(killableEntitiesListView, e);
         }
 
-        private void netWorthListView_ItemSelectionChanged(Object sender, ListViewItemSelectionChangedEventArgs e)
+        private void netWorthListView_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
         {
             if (e.IsSelected)
             {
@@ -377,10 +389,11 @@ namespace StonehearthEditor
             }
         }
 
-        private void updateOnItemSelection(Dictionary<string,
-                                           JsonFileData> categoryJsonFiles,
-                                           Dictionary<string, string> imgPaths,
-                                           string alias)
+        private void updateOnItemSelection(
+            Dictionary<string,
+            JsonFileData> categoryJsonFiles,
+            Dictionary<string, string> imgPaths,
+            string alias)
         {
             filePreviewTabs.TabPages.Clear();
             iconView.ImageLocation = "";
@@ -397,11 +410,13 @@ namespace StonehearthEditor
                     {
                         newTabPage.Text = newTabPage.Text + "*";
                     }
+
                     if (openedFile.HasErrors)
                     {
                         newTabPage.ImageIndex = 0;
                         newTabPage.ToolTipText = openedFile.Errors;
                     }
+
                     FilePreview filePreview = new FilePreview(this, openedFile);
                     filePreview.Dock = DockStyle.Fill;
                     newTabPage.Controls.Add(filePreview);
@@ -420,7 +435,6 @@ namespace StonehearthEditor
             lv.ListViewItemSorter = new ListViewItemComparer(e.Column);
             lv.Sort();
 
-
             if (e.Column != sortColumn)
             {
                 sortColumn = e.Column;
@@ -435,27 +449,27 @@ namespace StonehearthEditor
             }
 
             lv.Sort();
-            lv.ListViewItemSorter = new ListViewItemComparer(e.Column,
-                                                              lv.Sorting);
+            lv.ListViewItemSorter = new ListViewItemComparer(e.Column, lv.Sorting);
         }
 
         public static Dictionary<TKey, TValue> MergeDictionaries<TKey, TValue>(IEnumerable<Dictionary<TKey, TValue>> dictionaries)
         {
             var result = new Dictionary<TKey, TValue>();
             foreach (var dict in dictionaries)
+            {
                 foreach (var x in dict)
                     result[x.Key] = x.Value;
+            }
+
             return result;
         }
 
         private void netWorthListView_KeyDown(object sender, KeyEventArgs e)
         {
-
         }
 
         private void EntityBrowserView_Load(object sender, EventArgs e)
         {
-
         }
 
         private void filterListViewButton_Click(object sender, EventArgs e)
@@ -469,6 +483,7 @@ namespace StonehearthEditor
                     break;
                 }
             }
+
             if (listView != null)
             {
                 InputDialog dialog = new InputDialog("Filter By", "(Separate search terms with a comma) Filter items containing text:", "", "Filter");
@@ -487,12 +502,14 @@ namespace StonehearthEditor
         {
             private ListView mView;
             private EntityBrowserView mOwner;
+
             public FilterItemsCallback(EntityBrowserView owner, ListView listView)
             {
                 mView = listView;
                 mOwner = owner;
             }
-            public void onCancelled()
+
+            public void OnCancelled()
             {
                 // Do nothing. user cancelled
             }
@@ -503,6 +520,7 @@ namespace StonehearthEditor
                 {
                     return false;
                 }
+
                 mView.BeginUpdate();
                 mOwner.Reload();
 
@@ -521,12 +539,14 @@ namespace StonehearthEditor
                                 containsFilterTerm = true;
                             }
                         }
+
                         if (!containsFilterTerm)
                         {
                             mView.Items.Remove(item);
                         }
                     }
                 }
+
                 mView.EndUpdate();
                 return true;
             }
@@ -538,6 +558,7 @@ namespace StonehearthEditor
                 {
                     result = result && input.Contains(s);
                 }
+
                 return result;
             }
         }

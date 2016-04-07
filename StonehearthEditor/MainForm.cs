@@ -1,24 +1,14 @@
-﻿using Microsoft.Msagl.Drawing;
-using Microsoft.Msagl.GraphViewerGdi;
-using StonehearthEditor.Properties;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System;
 using System.IO;
-using System.Text.RegularExpressions;
+using System.Linq;
 using System.Windows.Forms;
-
+using StonehearthEditor.Properties;
 
 namespace StonehearthEditor
 {
-    public interface IGraphOwner
-    {
-        void SetGraph(Microsoft.Msagl.Drawing.Graph graph);
-    }
-
     public partial class MainForm : Form
     {
-        public static string kModsDirectoryPath;
+        public static string kModsDirectoryPath { get; set; }
 
         private NetWorthVisualizer mNetWorthVisualizer;
 
@@ -29,6 +19,7 @@ namespace StonehearthEditor
                 path = path.Trim();
                 kModsDirectoryPath = JsonHelper.NormalizeSystemPath(path);
             }
+
             InitializeComponent();
         }
 
@@ -38,6 +29,7 @@ namespace StonehearthEditor
             {
                 chooseModDirectory();
             }
+
             LoadModFiles();
             int initialTab = (int)Properties.Settings.Default["InitialTab"];
             tabControl.SelectedIndex = initialTab;
@@ -57,14 +49,14 @@ namespace StonehearthEditor
 
         private void tabControl_Selected(object sender, TabControlEventArgs e)
         {
-            //e.TabPageIndex;
+            // e.TabPageIndex;
             Properties.Settings.Default["InitialTab"] = e.TabPageIndex;
             Properties.Settings.Default.Save();
         }
 
         private void saveAllToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            //TODO yshan: revisit this
+            // TODO yshan: revisit this
             GameMasterDataManager.GetInstance().SaveModifiedFiles();
         }
 
@@ -98,6 +90,7 @@ namespace StonehearthEditor
             {
                 Settings.Default.MainFormSize = this.RestoreBounds.Size;
             }
+
             Properties.Settings.Default.Save();
         }
 
@@ -108,36 +101,82 @@ namespace StonehearthEditor
                 mNetWorthVisualizer.UpdateNetWorthData();
                 return;
             }
+
             mNetWorthVisualizer = new NetWorthVisualizer();
             mNetWorthVisualizer.SetManifestView(manifestView);
-            //mNetWorthVisualizer.UpdateNetWorthData();
+            ////mNetWorthVisualizer.UpdateNetWorthData();
             mNetWorthVisualizer.Show(this);
         }
 
         private void chooseModDirectory()
         {
-            DialogResult result = modsFolderBrowserDialog.ShowDialog();
-
-            if (result == DialogResult.OK)
+            var dialog = new FolderSelectDialog()
             {
-                string newPath = modsFolderBrowserDialog.SelectedPath;
-                if (!string.IsNullOrWhiteSpace(newPath))
+                DirectoryPath = kModsDirectoryPath ?? Environment.CurrentDirectory,
+                Title = "Stonehearth Mods Root Directory"
+            };
+
+            DialogResult result = DialogResult.Abort;
+
+            do
+            {
+                result = dialog.ShowDialog();
+
+                if (result == DialogResult.OK)
                 {
-                    kModsDirectoryPath = JsonHelper.NormalizeSystemPath(modsFolderBrowserDialog.SelectedPath);
-                    Properties.Settings.Default["ModsDirectory"] = kModsDirectoryPath;
-                    Properties.Settings.Default.Save();
+                    string newPath = dialog.DirectoryPath;
+
+                    if (this.checkModsFolder(ref newPath))
+                    {
+                        kModsDirectoryPath = JsonHelper.NormalizeSystemPath(newPath);
+                        Properties.Settings.Default["ModsDirectory"] = kModsDirectoryPath;
+                        Properties.Settings.Default.Save();
+                        return;
+                    }
+                    else if (Directory.Exists(newPath))
+                    {
+                        // If the directory does exist, but doesn't seem to be valid, make it a user chocie
+                        if (MessageBox.Show("The chosen directory does not appear to be a valid mods directory. Choose it anyway?", "Possibly invalid mods directory", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.Yes)
+                            return;
+                    }
+                    else
+                    {
+                        if (MessageBox.Show("Invalid mods directory chosen. Try again?", "Invalid directory", MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.No)
+                            return;
+                    }
                 }
                 else
                 {
-                    MessageBox.Show("invalid mods directory");
-                    return;
+                    if (MessageBox.Show("No mods directory selected. Try again?", "No directory selected.", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
+                        return;
                 }
             }
-            else
+            while (true); // repeat until we've got a proper directory or the user aborts
+        }
+
+        /// <summary>
+        /// Checks if a folder is likely to be a valid mod folder.
+        /// </summary>
+        /// <param name="modsFolder">Full path to the folder that is to be checked.</param>
+        /// <returns><c>true</c> if the folder is likely a valid mods folder, <c>false</c> otherwise.</returns>
+        private bool checkModsFolder(ref string modsFolder)
+        {
+            if (!Directory.Exists(modsFolder))
+                return false;
+
+            // If there is at least one directory that contains a manifest.json, it's probably a valid directory
+            if (Directory.EnumerateDirectories(modsFolder).Any(subDir => File.Exists(Path.Combine(subDir, "manifest.json"))))
+                return true;
+
+            // Maybe they've selected the SH root folder..?
+            var subDirectory = Path.Combine(modsFolder, "mods");
+            if (Directory.Exists(subDirectory) && this.checkModsFolder(ref subDirectory))
             {
-                MessageBox.Show("invalid mods directory");
-                return;
+                modsFolder = subDirectory;
+                return true;
             }
+
+            return false;
         }
 
         private void changeModDirectoryToolStripMenuItem_Click(object sender, EventArgs e)

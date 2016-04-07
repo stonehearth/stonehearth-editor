@@ -10,12 +10,15 @@ namespace StonehearthEditor
         {
             // Returns true if we can close the dialog
             bool OnAccept(HashSet<string> unwantedItems);
-            void onCancelled(HashSet<string> unwantedItems);
+
+            void OnCancelled(HashSet<string> unwantedItems);
+
             HashSet<string> GetSavedUnwantedItems();
         }
 
         private IDialogCallback mCallback;
         private HashSet<string> mSet;
+
         public PreviewCloneDialog(string title, HashSet<string> set, IDialogCallback callback)
         {
             InitializeComponent();
@@ -29,6 +32,7 @@ namespace StonehearthEditor
                 bool isChecked = unwantedItems != null ? !unwantedItems.Contains(item) : true;
                 dependenciesListBox.Items.Add(item, isChecked);
             }
+
             mCallback = callback;
         }
 
@@ -39,6 +43,7 @@ namespace StonehearthEditor
             {
                 unwantedItems.Remove(item.ToString());
             }
+
             return unwantedItems;
         }
 
@@ -60,7 +65,7 @@ namespace StonehearthEditor
         {
             if (mCallback != null)
             {
-                mCallback.onCancelled(GetUnwantedItems());
+                mCallback.OnCancelled(GetUnwantedItems());
                 mCallback = null;
             }
         }
@@ -69,7 +74,7 @@ namespace StonehearthEditor
         {
             if (mCallback != null)
             {
-                mCallback.onCancelled(GetUnwantedItems());
+                mCallback.OnCancelled(GetUnwantedItems());
                 mCallback = null;
             }
         }

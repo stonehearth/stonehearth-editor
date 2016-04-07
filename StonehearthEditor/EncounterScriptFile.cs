@@ -1,5 +1,5 @@
-﻿using System.Text;
-using System.IO;
+﻿using System.IO;
+using System.Text;
 
 namespace StonehearthEditor
 {
@@ -36,11 +36,13 @@ namespace StonehearthEditor
                         {
                             sb.AppendLine(line);
                         }
+
                         if (line.StartsWith("<StonehearthEditor>"))
                         {
                             started = true;
                         }
                     }
+
                     mDefaultJson = sb.ToString();
                 }
             }

@@ -1,11 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace StonehearthEditor
@@ -16,7 +9,8 @@ namespace StonehearthEditor
         {
             // Returns true if we can close the dialog
             bool OnAccept(string inputMessage);
-            void onCancelled();
+
+            void OnCancelled();
         }
 
         private IDialogCallback mCallback;
@@ -53,7 +47,7 @@ namespace StonehearthEditor
         {
             if (mCallback != null)
             {
-                mCallback.onCancelled();
+                mCallback.OnCancelled();
                 mCallback = null;
             }
         }

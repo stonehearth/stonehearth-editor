@@ -4,14 +4,14 @@ using System.Windows.Forms;
 
 namespace StonehearthEditor
 {
-    class LuaFileData : FileData, IModuleFileData
+    internal class LuaFileData : FileData, IModuleFileData
     {
         private string mDirectory;
         private ModuleFile mOwner;
 
         public LuaFileData(string path)
+            : base(path)
         {
-            mPath = path;
             mDirectory = JsonHelper.NormalizeSystemPath(System.IO.Path.GetDirectoryName(Path));
         }
 
@@ -33,11 +33,13 @@ namespace StonehearthEditor
             {
                 filterMatchesSelf = false;
             }
+
             if (!HasErrors)
             {
                 node.SelectedImageIndex = 1;
                 node.ImageIndex = 1;
             }
+
             if (!filterMatchesSelf)
             {
                 if (!filter.Contains("error") || !HasErrors)
@@ -45,12 +47,8 @@ namespace StonehearthEditor
                     return false;
                 }
             }
-            return true;
-        }
 
-        protected override void LoadInternal()
-        {
-            return; // Do nothing
+            return true;
         }
 
         public override bool Clone(string newPath, CloneObjectParameters parameters, HashSet<string> alreadyCloned, bool execute)
@@ -66,6 +64,11 @@ namespace StonehearthEditor
         public ModuleFile GetModuleFile()
         {
             return mOwner;
+        }
+
+        protected override void LoadInternal()
+        {
+            return; // Do nothing
         }
     }
 }

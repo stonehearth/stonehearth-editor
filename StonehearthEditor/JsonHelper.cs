@@ -1,11 +1,11 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml.Linq;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace StonehearthEditor
 {
@@ -13,12 +13,13 @@ namespace StonehearthEditor
     {
         public static string GetJsonStringValue(XElement root, string elementName)
         {
-            string returned = String.Empty;
+            string returned = string.Empty;
             XElement selectedElement = root.Element(elementName);
             if (selectedElement != null && selectedElement.Value != null)
             {
                 returned = selectedElement.Value.Trim();
             }
+
             return returned;
         }
 
@@ -40,6 +41,7 @@ namespace StonehearthEditor
                     returned.Add(selectedElement.Value);
                 }
             }
+
             return returned;
         }
 
@@ -62,6 +64,7 @@ namespace StonehearthEditor
                     returned.Add(selectedElement.ToString());
                 }
             }
+
             return returned;
         }
 
@@ -79,13 +82,16 @@ namespace StonehearthEditor
                     {
                         name = element.Attribute("item").Value;
                     }
+
                     name = name.Trim();
                     value = value.Trim();
                     returned.Add(name, value);
                 }
             }
+
             return returned;
         }
+
         public static Dictionary<string, string> GetJsonStringDictionary(JToken root, string elementName)
         {
             Dictionary<string, string> returned = new Dictionary<string, string>();
@@ -111,18 +117,24 @@ namespace StonehearthEditor
         }
 
         // This function from http://stackoverflow.com/questions/275689/how-to-get-relative-path-from-absolute-path
-        public static String MakeRelativePath(String fromPath, String toPath)
+        public static string MakeRelativePath(string fromPath, string toPath)
         {
-            if (String.IsNullOrEmpty(fromPath)) throw new ArgumentNullException("fromPath");
-            if (String.IsNullOrEmpty(toPath)) throw new ArgumentNullException("toPath");
+            if (string.IsNullOrEmpty(fromPath))
+                throw new ArgumentNullException("fromPath");
+            if (string.IsNullOrEmpty(toPath))
+                throw new ArgumentNullException("toPath");
 
             Uri fromUri = new Uri(fromPath);
             Uri toUri = new Uri(toPath);
 
-            if (fromUri.Scheme != toUri.Scheme) { return toPath; } // path can't be made relative.
+            if (fromUri.Scheme != toUri.Scheme)
+            {
+                // path can't be made relative.
+                return toPath;
+            }
 
             Uri relativeUri = fromUri.MakeRelativeUri(toUri);
-            String relativePath = Uri.UnescapeDataString(relativeUri.ToString());
+            string relativePath = Uri.UnescapeDataString(relativeUri.ToString());
 
             if (toUri.Scheme.ToUpperInvariant() == "FILE")
             {
@@ -135,7 +147,7 @@ namespace StonehearthEditor
         public static string GetFileFromFileJson(string fileJson, string parentPath)
         {
             parentPath = JsonHelper.NormalizeSystemPath(parentPath);
-            string fullPath = String.Empty;
+            string fullPath = string.Empty;
             bool startedWithFile = false;
             if (fileJson.StartsWith("file("))
             {
@@ -161,6 +173,7 @@ namespace StonehearthEditor
                     fullPath = fullPath.Substring(index + 3);
                     index = fullPath.IndexOf("../");
                 }
+
                 splitParentPath = parentPath.Split(delimeter, parentPathCount);
                 splitParentPath[splitParentPath.Length - 1] = "";
                 parentPath = string.Join("/", splitParentPath);
@@ -171,6 +184,7 @@ namespace StonehearthEditor
                 string folderName = fullPath.Substring(fullPath.LastIndexOf('/') + 1);
                 fullPath = fullPath + "/" + folderName + ".json";
             }
+
             if (fullPath.StartsWith("/"))
             {
                 if (startedWithFile)
@@ -181,6 +195,7 @@ namespace StonehearthEditor
                     {
                         mod = mod.Substring(0, firstSlash);
                     }
+
                     fullPath = ModuleDataManager.GetInstance().ModsDirectoryPath + '/' + mod + fullPath;
                 }
                 else
@@ -192,6 +207,7 @@ namespace StonehearthEditor
             {
                 fullPath = parentPath + "/" + fullPath;
             }
+
             return fullPath;
         }
 
@@ -200,13 +216,14 @@ namespace StonehearthEditor
             string normalized = path.Replace(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
             if (normalized.Length > 1 && normalized[1] == ':')
             {
-                normalized = Char.ToUpperInvariant(normalized[0]) + normalized.Substring(1);
+                normalized = char.ToUpperInvariant(normalized[0]) + normalized.Substring(1);
             }
+
             return normalized;
         }
 
         // Word Wrap code taken from http://www.softcircuits.com/Blog/post/2010/01/10/Implementing-Word-Wrap-in-C.aspx
-        public const string _newline = "\r\n";
+        private const string kNewline = "\r\n";
 
         public static string WordWrap(string the_string, int width)
         {
@@ -221,12 +238,12 @@ namespace StonehearthEditor
             for (pos = 0; pos < the_string.Length; pos = next)
             {
                 // Find end of line
-                int eol = the_string.IndexOf(_newline, pos);
+                int eol = the_string.IndexOf(kNewline, pos);
 
                 if (eol == -1)
                     next = eol = the_string.Length;
                 else
-                    next = eol + _newline.Length;
+                    next = eol + kNewline.Length;
 
                 // Copy this line of text, breaking into smaller lines as needed
                 if (eol > pos)
@@ -239,17 +256,20 @@ namespace StonehearthEditor
                             len = BreakLine(the_string, pos, width);
 
                         sb.Append(the_string, pos, len);
-                        sb.Append(_newline);
+                        sb.Append(kNewline);
 
                         // Trim whitespace following break
                         pos += len;
 
-                        while (pos < eol && Char.IsWhiteSpace(the_string[pos]))
+                        while (pos < eol && char.IsWhiteSpace(the_string[pos]))
                             pos++;
-
-                    } while (eol > pos);
+                    }
+                    while (eol > pos);
                 }
-                else sb.Append(_newline); // Empty line
+                else
+                {
+                    sb.Append(kNewline); // Empty line
+                }
             }
 
             return sb.ToString();
@@ -267,13 +287,14 @@ namespace StonehearthEditor
         {
             // Find last whitespace in line
             int i = max - 1;
-            while (i >= 0 && !Char.IsWhiteSpace(text[pos + i]))
+            while (i >= 0 && !char.IsWhiteSpace(text[pos + i]))
                 i--;
             if (i < 0)
                 return max; // No whitespace found; break at maximum length
                             // Find start of whitespace
-            while (i >= 0 && Char.IsWhiteSpace(text[pos + i]))
+            while (i >= 0 && char.IsWhiteSpace(text[pos + i]))
                 i--;
+
             // Return length of text before whitespace
             return i + 1;
         }
@@ -293,33 +314,24 @@ namespace StonehearthEditor
                     jsonSeralizer.NullValueHandling = NullValueHandling.Ignore;
                     jsonSeralizer.Serialize(jsonTextWriter, json);
                 }
+
                 return stringWriter.ToString();
             }
             catch (Exception e)
             {
                 Console.WriteLine("Could not convert json to string because of exception " + e.Message);
             }
+
             return null;
         }
 
         private class CustomJsonWriter : JsonTextWriter
         {
             private bool mWritingMinMax = false;
-            public CustomJsonWriter(TextWriter textWriter) :
-               base(textWriter)
-            {
-            }
 
-            protected override void WriteIndent()
+            public CustomJsonWriter(TextWriter textWriter)
+                : base(textWriter)
             {
-                if (mWritingMinMax)
-                {
-                    base.WriteIndentSpace();
-                }
-                else
-                {
-                    base.WriteIndent();
-                }
             }
 
             public override void WriteEndObject()
@@ -338,11 +350,25 @@ namespace StonehearthEditor
                 {
                     mWritingMinMax = false;
                 }
+
                 base.WritePropertyName(name);
             }
+
             public override void WriteValue(object value)
             {
                 base.WriteValue(value);
+            }
+
+            protected override void WriteIndent()
+            {
+                if (mWritingMinMax)
+                {
+                    WriteIndentSpace();
+                }
+                else
+                {
+                    base.WriteIndent();
+                }
             }
         }
 
@@ -364,6 +390,7 @@ namespace StonehearthEditor
                     {
                         always.Add("num_rolls", lootDrops["num_rolls"]);
                     }
+
                     foreach (JToken itemToken in lootDrops["items"].Children())
                     {
                         JObject item = itemToken as JObject;
@@ -383,9 +410,11 @@ namespace StonehearthEditor
                                 index++;
                                 uriTest = shortUri + index;
                             }
+
                             items.Add(uriTest, item);
                         }
                     }
+
                     always.Add("items", items);
                     entries.Add("default", always);
                     newLootDrops.Add("entries", entries);
@@ -393,6 +422,7 @@ namespace StonehearthEditor
                     modified = true;
                 }
             }
+
             return modified;
         }
     }

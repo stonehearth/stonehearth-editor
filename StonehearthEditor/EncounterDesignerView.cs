@@ -1,15 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using Microsoft.Msagl.GraphViewerGdi;
 using Microsoft.Msagl.Drawing;
-using System.Text.RegularExpressions;
+using Microsoft.Msagl.GraphViewerGdi;
 
 namespace StonehearthEditor
 {
@@ -19,7 +12,8 @@ namespace StonehearthEditor
 
         private GameMasterNode mSelectedNode = null;
         private Timer refreshGraphTimer = null;
-        private double mPreviousMouseX, mPreviousMouseY;
+        private double mPreviousMouseX;
+        private double mPreviousMouseY;
         private FilePreview mNodePreview = null;
 
         public EncounterDesignerView()
@@ -41,6 +35,7 @@ namespace StonehearthEditor
                     addNewGameMasterNode.DropDownItems.Add(scriptFile.Name);
                 }
             }
+
             encounterTreeView.Nodes.Clear();
             GameMasterDataManager.GetInstance().FillEncounterNodeTree(encounterTreeView);
         }
@@ -74,7 +69,6 @@ namespace StonehearthEditor
                 copyGameMasterNode.Enabled = true;
                 openEncounterFileButton.Visible = true;
                 deleteNodeToolStripMenuItem.Visible = true;
-
             }
             else
             {
@@ -95,7 +89,6 @@ namespace StonehearthEditor
                 deleteNodeToolStripMenuItem.Visible = false;
             }
         }
-
 
         private void graphViewer_EdgeAdded(object sender, EventArgs e)
         {
@@ -131,7 +124,7 @@ namespace StonehearthEditor
 
         private void graphViewer_EdgeRemoved(object sender, EventArgs e)
         {
-            //TODO yshan: replace this
+            // TODO yshan: replace this
             Console.WriteLine("edge removed!");
         }
 
@@ -172,7 +165,6 @@ namespace StonehearthEditor
 
         private void graphViewer_MouseUp(object sender, MouseEventArgs e)
         {
-
         }
 
         private void nodeInfoJsonPreview_Leave(object sender, EventArgs e)
@@ -184,6 +176,7 @@ namespace StonehearthEditor
         }
 
         private string mSelectedNewScriptNode = null;
+
         private void addNewGameMasterNode_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
             ToolStripItem clickedItem = e.ClickedItem;
@@ -194,6 +187,7 @@ namespace StonehearthEditor
                 saveNewEncounterNodeDialog.ShowDialog(this);
             }
         }
+
         private void saveNewEncounterNodeDialog_FileOk(object sender, CancelEventArgs e)
         {
             string filePath = saveNewEncounterNodeDialog.FileName;
@@ -201,6 +195,7 @@ namespace StonehearthEditor
             {
                 return;
             }
+
             filePath = JsonHelper.NormalizeSystemPath(filePath);
             GameMasterNode existingNode = GameMasterDataManager.GetInstance().GetGameMasterNode(filePath);
             if (existingNode != null)
@@ -208,6 +203,7 @@ namespace StonehearthEditor
                 MessageBox.Show("Cannot override an existing node. Either edit that node or create a new name.");
                 return;
             }
+
             GameMasterDataManager.GetInstance().AddNewGenericScriptNode(this, mSelectedNewScriptNode, filePath);
         }
 
@@ -243,7 +239,6 @@ namespace StonehearthEditor
 
         private void nodeInfoSubType_Click(object sender, EventArgs e)
         {
-
         }
 
         private void encounterTreeView_AfterSelect(object sender, TreeViewEventArgs e)
@@ -257,7 +252,6 @@ namespace StonehearthEditor
 
         private void toolstripSaveButton_Click(object sender, EventArgs e)
         {
-
         }
 
         private void copyGameMasterNode_Click(object sender, EventArgs e)
@@ -284,12 +278,14 @@ namespace StonehearthEditor
         {
             private GameMasterNode mNode;
             private IGraphOwner mViewer;
+
             public CloneDialogCallback(IGraphOwner viewer, GameMasterNode node)
             {
                 mViewer = viewer;
                 mNode = node;
             }
-            public void onCancelled()
+
+            public void OnCancelled()
             {
                 // Do nothing. user cancelled
             }
@@ -303,11 +299,13 @@ namespace StonehearthEditor
                     MessageBox.Show("You must enter a name longer than 1 character for the clone!");
                     return false;
                 }
+
                 if (potentialNewNodeName.Equals(mNode.Name))
                 {
                     MessageBox.Show("You must enter a new unique name for the clone!");
                     return false;
                 }
+
                 GameMasterDataManager.GetInstance().CloneNode(mViewer, mNode, potentialNewNodeName);
                 return true;
             }

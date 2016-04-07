@@ -3,15 +3,15 @@ using System.Windows.Forms;
 
 namespace StonehearthEditor
 {
-    class QubicleFileData : FileData
+    internal class QubicleFileData : FileData
     {
         private string mDirectory;
         private bool mIsQb = true;
         private bool mHasQmo = false;
 
         public QubicleFileData(string path)
+            : base(path)
         {
-            mPath = path;
             mDirectory = JsonHelper.NormalizeSystemPath(System.IO.Path.GetDirectoryName(Path));
             if (System.IO.Path.GetExtension(path).Equals(".qmo"))
             {
@@ -23,28 +23,16 @@ namespace StonehearthEditor
         {
             return false; // Qubicle files
         }
+
         public override void Load()
         {
             // do not actually load the binary
             LoadInternal();
         }
-        protected override void LoadInternal()
-        {
-            if (mIsQb)
-            {
-                // see if the qmo exists
-                string qmoPath = GetQmoPath();
-                if (System.IO.File.Exists(qmoPath))
-                {
-                    mHasQmo = true;
-                    QubicleFileData qmoFile = new QubicleFileData(qmoPath);
-                    mLinkedFileData.Add(qmoPath, qmoFile);
-                }
-            }
-        }
+
         public void AddLinkingJsonFile(JsonFileData file)
         {
-            mRelatedFiles.Add(file);
+            RelatedFiles.Add(file);
         }
 
         public override bool Clone(string newPath, CloneObjectParameters parameters, HashSet<string> alreadyCloned, bool execute)
@@ -58,22 +46,19 @@ namespace StonehearthEditor
                     System.IO.File.Copy(Path, newPath);
                 }
             }
+
             string qmoPath = GetQmoPath();
-            if (mIsQb && mLinkedFileData.ContainsKey(qmoPath))
+            if (mIsQb && LinkedFileData.ContainsKey(qmoPath))
             {
                 string newQmoPath = newPath.Replace(".qb", ".qmo");
                 if (!alreadyCloned.Contains(newQmoPath))
                 {
                     alreadyCloned.Add(newQmoPath);
-                    mLinkedFileData[qmoPath].Clone(newQmoPath, parameters, alreadyCloned, execute);
+                    LinkedFileData[qmoPath].Clone(newQmoPath, parameters, alreadyCloned, execute);
                 }
             }
-            return true;
-        }
 
-        private string GetQmoPath()
-        {
-            return mDirectory + "/" + FileName + ".qmo";
+            return true;
         }
 
         public string GetOpenFilePath()
@@ -82,7 +67,28 @@ namespace StonehearthEditor
             {
                 return GetQmoPath();
             }
-            return mPath;
+
+            return Path;
+        }
+
+        protected override void LoadInternal()
+        {
+            if (mIsQb)
+            {
+                // see if the qmo exists
+                string qmoPath = GetQmoPath();
+                if (System.IO.File.Exists(qmoPath))
+                {
+                    mHasQmo = true;
+                    QubicleFileData qmoFile = new QubicleFileData(qmoPath);
+                    LinkedFileData.Add(qmoPath, qmoFile);
+                }
+            }
+        }
+
+        private string GetQmoPath()
+        {
+            return mDirectory + "/" + FileName + ".qmo";
         }
     }
 }

@@ -1,20 +1,22 @@
-﻿using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
+using Newtonsoft.Json.Linq;
 
 namespace StonehearthEditor
 {
     public class ModuleDataManager : IDisposable
     {
         private static ModuleDataManager sInstance = null;
+
         public static ModuleDataManager GetInstance()
         {
             return sInstance;
         }
+
         private string mModsDirectoryPath;
-        private Dictionary<String, Module> mModules = new Dictionary<String, Module>();
+        private Dictionary<string, Module> mModules = new Dictionary<string, Module>();
 
         private HashSet<FileData> mFilesWithErrors = new HashSet<FileData>();
         private Dictionary<string, int> mAverageMaterialCost = new Dictionary<string, int>();
@@ -26,6 +28,7 @@ namespace StonehearthEditor
                 sInstance.Dispose();
                 sInstance = null;
             }
+
             mModsDirectoryPath = JsonHelper.NormalizeSystemPath(modsDirectoryPath);
             sInstance = this;
         }
@@ -61,6 +64,7 @@ namespace StonehearthEditor
             {
                 return;
             }
+
             foreach (string modPath in modFolders)
             {
                 string formatted = JsonHelper.NormalizeSystemPath(modPath);
@@ -82,7 +86,7 @@ namespace StonehearthEditor
 
         public void FilterAliasTree(TreeView treeView, string searchTerm)
         {
-            treeView.BeginUpdate(); //blocks repainting tree till all objects loaded
+            treeView.BeginUpdate(); // blocks repainting tree till all objects loaded
 
             // filter
             treeView.Nodes.Clear();
@@ -96,14 +100,15 @@ namespace StonehearthEditor
                     filteredNodes.Add(node);
                 }
             }
+
             treeView.Nodes.AddRange(filteredNodes.ToArray());
 
-            //enables redrawing tree after all objects have been added
+            // enables redrawing tree after all objects have been added
             treeView.EndUpdate();
         }
 
         // Returns an Object array with a map from alias to jsonfiledata and alias to modname
-        public Object[] FilterJsonByTerm(ListView listView, string filterTerm)
+        public object[] FilterJsonByTerm(ListView listView, string filterTerm)
         {
             Dictionary<string, JsonFileData> aliasJsonMap = new Dictionary<string, JsonFileData>();
             Dictionary<string, string> aliasModNameMap = new Dictionary<string, string>();
@@ -119,7 +124,8 @@ namespace StonehearthEditor
                     }
                 }
             }
-            return new Object[] { aliasJsonMap, aliasModNameMap };
+
+            return new object[] { aliasJsonMap, aliasModNameMap };
         }
 
         public FileData GetSelectedFileData(TreeNode selected)
@@ -129,6 +135,7 @@ namespace StonehearthEditor
                 string fullPath = selected.FullPath;
                 return GetSelectedFileData(fullPath);
             }
+
             return null;
         }
 
@@ -138,11 +145,13 @@ namespace StonehearthEditor
             {
                 return false;
             }
+
             string[] path = selected.FullPath.Split('\\');
             if (path.Length != 2)
             {
                 return false;
             }
+
             return true;
         }
 
@@ -153,12 +162,14 @@ namespace StonehearthEditor
             {
                 return null;
             }
+
             Module module = mModules[path[0]];
             ModuleFile file = module.GetModuleFile(path[1], path[2]);
             if (file != null)
             {
                 return file.GetFileData(path);
             }
+
             return null;
         }
 
@@ -172,9 +183,9 @@ namespace StonehearthEditor
             {
                 return null;
             }
+
             return mod.GetAliasFile(alias);
         }
-
 
         public ICollection<Module> GetAllModules()
         {
@@ -187,6 +198,7 @@ namespace StonehearthEditor
             {
                 return null;
             }
+
             return mModules[modName];
         }
 
@@ -199,6 +211,7 @@ namespace StonehearthEditor
                 modName = split[0];
                 key = split[1];
             }
+
             Module mod = GetMod(modName);
             if (mod != null)
             {
@@ -208,6 +221,7 @@ namespace StonehearthEditor
                     return token.ToString();
                 }
             }
+
             return key;
         }
 
@@ -220,6 +234,7 @@ namespace StonehearthEditor
                 modName = split[0];
                 key = split[1];
             }
+
             Module mod = GetMod(modName);
             if (mod != null)
             {
@@ -229,8 +244,10 @@ namespace StonehearthEditor
                     return true;
                 }
             }
+
             return false;
         }
+
         // Call to clone an alias. top level. nested clone calls should call the module directly.
         public bool ExecuteClone(ModuleFile module, CloneObjectParameters parameters, HashSet<string> unwantedItems)
         {
@@ -244,6 +261,7 @@ namespace StonehearthEditor
             {
                 return ExecuteClone(owningFile, parameters, unwantedItems);
             }
+
             string newPath = parameters.TransformParameter(file.Path);
             return file.Clone(newPath, parameters, unwantedItems, true);
         }
@@ -254,6 +272,7 @@ namespace StonehearthEditor
             module.Clone(cloneParameters, alreadyCloned, false);
             return alreadyCloned;
         }
+
         public HashSet<string> PreviewCloneDependencies(FileData file, CloneObjectParameters cloneParameters)
         {
             ModuleFile owningFile = (file as IModuleFileData).GetModuleFile();
@@ -261,6 +280,7 @@ namespace StonehearthEditor
             {
                 return PreviewCloneDependencies(owningFile, cloneParameters);
             }
+
             HashSet<string> alreadyCloned = new HashSet<string>();
             string newPath = cloneParameters.TransformParameter(file.Path);
 
@@ -274,6 +294,7 @@ namespace StonehearthEditor
             {
                 return mAverageMaterialCost[material];
             }
+
             int sumCost = 0;
             int numItems = 0;
             string[] split = material.Split(' ');
@@ -286,11 +307,13 @@ namespace StonehearthEditor
                     {
                         continue;
                     }
+
                     int netWorth = data.NetWorth;
                     if (netWorth <= 0)
                     {
                         continue;
                     }
+
                     JToken tags = data.Json.SelectToken("components.stonehearth:material.tags");
                     if (tags != null)
                     {
@@ -306,6 +329,7 @@ namespace StonehearthEditor
                                 break;
                             }
                         }
+
                         if (isMaterial)
                         {
                             numItems++;
@@ -331,6 +355,7 @@ namespace StonehearthEditor
             {
                 module.Dispose();
             }
+
             mModules.Clear();
             mFilesWithErrors.Clear();
             mAverageMaterialCost.Clear();

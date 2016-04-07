@@ -9,6 +9,7 @@ namespace StonehearthEditor
     {
         private static Dictionary<string, Image> sThumbnailCache = new Dictionary<string, Image>();
         private static int kDefaultSize = 40;
+
         public static Image GetThumbnail(string imageFile)
         {
             Image thumbnail;
@@ -26,10 +27,12 @@ namespace StonehearthEditor
                     catch (Exception e)
                     {
                         MessageBox.Show("Error reading image file: " + imageFile + ". Error: " + e.Message + ". Is the image the proper format?");
+
                         // Not an image?
                     }
                 }
             }
+
             return thumbnail;
         }
 
@@ -39,6 +42,7 @@ namespace StonehearthEditor
             {
                 img.Dispose();
             }
+
             sThumbnailCache.Clear();
         }
     }

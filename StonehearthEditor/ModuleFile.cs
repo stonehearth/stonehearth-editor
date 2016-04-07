@@ -1,6 +1,6 @@
+using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using System;
 using Newtonsoft.Json.Linq;
 
 namespace StonehearthEditor
@@ -10,9 +10,13 @@ namespace StonehearthEditor
         UNKNOWN = 0,
         LUA = 1,
         JSON = 2,
-    };
+    }
+
     public class ModuleFile : IDisposable
     {
+        // Needed because at the time we load aliases, the referenced alias might not be loaded
+        protected Dictionary<string, FileData> mReferencesCache { get; set; } = new Dictionary<string, FileData>();
+
         private Module mModule;
         private string mAlias;
         private string mOriginalFilePath;
@@ -21,8 +25,7 @@ namespace StonehearthEditor
         private FileData mFileData = null;
         private FileType mType = FileType.UNKNOWN;
         private bool mIsFineVersion = false;
-        // Needed because at the timer we load aliases, the referenced alias might not be loaded
-        protected Dictionary<string, FileData> mReferencesCache = new Dictionary<string, FileData>();
+
         public ModuleFile(Module module, string alias, string filePath)
         {
             mModule = module;
@@ -39,6 +42,7 @@ namespace StonehearthEditor
                 mShortName = oneBefore;
                 mIsFineVersion = true;
             }
+
             DetermineFileType();
         }
 
@@ -47,25 +51,14 @@ namespace StonehearthEditor
             get { return mIsFineVersion; }
         }
 
-        private void DetermineFileType()
-        {
-            if (mRootFile.EndsWith(".lua"))
-            {
-                mType = FileType.LUA;
-            }
-            else if (mRootFile.EndsWith(".json"))
-            {
-                mType = FileType.JSON;
-            }
-        }
-
         public void TryLoad()
         {
             IModuleFileData fileData = null;
-            if (mType == FileType.JSON) // only load Json
+
+            // only load Json
+            if (mType == FileType.JSON)
             {
                 fileData = new JsonFileData(ResolvedPath);
-
             }
             else if (mType == FileType.LUA)
             {
@@ -90,38 +83,8 @@ namespace StonehearthEditor
             {
                 return this.FileData;
             }
+
             return FindFileData(FileData, path, 3);
-        }
-
-        private FileData FindFileData(FileData start, string[] path, int startIndex)
-        {
-            if (startIndex >= path.Length || start == null)
-            {
-                return start;
-            }
-            string subfileName = path[startIndex];
-            FileData found = null;
-            foreach (FileData openedFile in start.OpenedFiles)
-            {
-                if (openedFile.FileName.Equals(subfileName))
-                {
-                    found = openedFile;
-                    break;
-                }
-            }
-            if (found == null)
-            {
-                foreach (FileData openedFile in start.RelatedFiles)
-                {
-                    if (openedFile.FileName.Equals(subfileName))
-                    {
-                        found = openedFile;
-                        break;
-                    }
-                }
-            }
-
-            return FindFileData(found, path, startIndex + 1);
         }
 
         public TreeNode GetTreeNode(string filter)
@@ -135,6 +98,7 @@ namespace StonehearthEditor
                     return treeNode;
                 }
             }
+
             return null;
         }
 
@@ -142,6 +106,7 @@ namespace StonehearthEditor
         {
             get { return mAlias; }
         }
+
         public Module Module
         {
             get { return mModule; }
@@ -151,10 +116,12 @@ namespace StonehearthEditor
         {
             get { return mType; }
         }
+
         public FileData FileData
         {
             get { return mFileData; }
         }
+
         public string FlatFileData
         {
             get { return mFileData.FlatFileData; }
@@ -178,11 +145,13 @@ namespace StonehearthEditor
                 // MessageBox.Show("The alias " + newAlias + " already exists in manifest.json");
                 return false;
             }
+
             string newPath = parameters.TransformParameter(ResolvedPath);
             if (!FileData.Clone(newPath, parameters, alreadyCloned, execute))
             {
                 return false;
             }
+
             alreadyCloned.Add(mModule.Name + ':' + newAlias);
             if (execute)
             {
@@ -200,19 +169,22 @@ namespace StonehearthEditor
             {
                 return true;
             }
+
             return false;
         }
 
         public JsonFileData GetJsonFileDataByTerm(string filterTerm)
         {
             JsonFileData jsonFileData = FileData as JsonFileData;
-            if (jsonFileData == null) return null;
+            if (jsonFileData == null)
+                return null;
             JObject json = jsonFileData.Json;
             if (json != null)
             {
                 JToken token = json.SelectToken(filterTerm);
                 return token == null ? null : jsonFileData;
             }
+
             return null;
         }
 
@@ -220,6 +192,7 @@ namespace StonehearthEditor
         {
             get { return mShortName; }
         }
+
         public string FullAlias
         {
             get { return mModule.Name + ':' + mAlias; }
@@ -244,6 +217,7 @@ namespace StonehearthEditor
         }
 
         private static int kWorkUnitsWorth = 2;
+
         private void RecommendNetWorth()
         {
             JsonFileData jsonFileData = FileData as JsonFileData;
@@ -251,6 +225,7 @@ namespace StonehearthEditor
             {
                 return;
             }
+
             foreach (FileData reference in jsonFileData.ReferencedByFileData.Values)
             {
                 JsonFileData refJson = reference as JsonFileData;
@@ -265,6 +240,7 @@ namespace StonehearthEditor
                         {
                             productCount++;
                         }
+
                         JToken fine = product["fine"];
                         if (fine != null && fine.ToString().Equals(FullAlias))
                         {
@@ -278,6 +254,7 @@ namespace StonehearthEditor
                     }
 
                     int totalCost = 0;
+
                     // If we are created by a recipe, look at the ingredients for the recipe to calculate net worth of all ingredients ...
                     JArray ingredients = refJson.Json["ingredients"] as JArray;
                     if (ingredients != null)
@@ -292,6 +269,7 @@ namespace StonehearthEditor
                                 string materialString = material.ToString();
                                 costPer = ModuleDataManager.GetInstance().GetAverageMaterialCost(materialString);
                             }
+
                             JToken uri = ingredient["uri"];
                             if (uri != null)
                             {
@@ -303,21 +281,69 @@ namespace StonehearthEditor
                                     costPer = (file.FileData as JsonFileData).NetWorth;
                                 }
                             }
+
                             int count = int.Parse(ingredient["count"].ToString());
-                            totalCost = totalCost + costPer * count;
+                            totalCost = totalCost + (costPer * count);
                         }
                     }
+
                     jsonFileData.RecommendedMinNetWorth = totalCost / productCount;
 
                     JToken workUnits = refJson.Json["work_units"];
                     if (workUnits != null)
                     {
                         int units = int.Parse(workUnits.ToString());
-                        totalCost = totalCost + units * kWorkUnitsWorth;
+                        totalCost = totalCost + (units * kWorkUnitsWorth);
                     }
+
                     jsonFileData.RecommendedMaxNetWorth = totalCost / productCount;
                 }
             }
+        }
+
+        private void DetermineFileType()
+        {
+            if (mRootFile.EndsWith(".lua"))
+            {
+                mType = FileType.LUA;
+            }
+            else if (mRootFile.EndsWith(".json"))
+            {
+                mType = FileType.JSON;
+            }
+        }
+
+        private FileData FindFileData(FileData start, string[] path, int startIndex)
+        {
+            if (startIndex >= path.Length || start == null)
+            {
+                return start;
+            }
+
+            string subfileName = path[startIndex];
+            FileData found = null;
+            foreach (FileData openedFile in start.OpenedFiles)
+            {
+                if (openedFile.FileName.Equals(subfileName))
+                {
+                    found = openedFile;
+                    break;
+                }
+            }
+
+            if (found == null)
+            {
+                foreach (FileData openedFile in start.RelatedFiles)
+                {
+                    if (openedFile.FileName.Equals(subfileName))
+                    {
+                        found = openedFile;
+                        break;
+                    }
+                }
+            }
+
+            return FindFileData(found, path, startIndex + 1);
         }
 
         private void FixupLootTables()
@@ -350,6 +376,7 @@ namespace StonehearthEditor
                             }
                         }
                     }
+
                     JToken destroyedLootTable = jsonFileData.Json.SelectToken("entity_data.stonehearth:destroyed_loot_table");
                     if (destroyedLootTable != null)
                     {
@@ -366,7 +393,9 @@ namespace StonehearthEditor
             }
         }
 
+#pragma warning disable SA1202 // Elements must be ordered by access
         public void Dispose()
+#pragma warning restore SA1202 // Elements must be ordered by access
         {
             mModule = null;
             mReferencesCache.Clear();

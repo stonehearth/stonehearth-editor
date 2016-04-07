@@ -11,6 +11,7 @@ namespace StonehearthEditor
         {
             mStringReplacements[original] = replacement;
         }
+
         public void AddAliasReplacement(string original, string replacement)
         {
             mAliasReplacements[original] = replacement;
@@ -23,6 +24,7 @@ namespace StonehearthEditor
             {
                 newString = newString.Replace(replacement.Key, replacement.Value);
             }
+
             return newString;
         }
 
@@ -33,6 +35,7 @@ namespace StonehearthEditor
             {
                 newString = newString.Replace(replacement.Key, replacement.Value);
             }
+
             return newString;
         }
 
@@ -45,6 +48,7 @@ namespace StonehearthEditor
                     return true;
                 }
             }
+
             foreach (string originalName in mAliasReplacements.Keys)
             {
                 if (dependencyName.Contains(originalName))
@@ -52,6 +56,7 @@ namespace StonehearthEditor
                     return true;
                 }
             }
+
             return false;
         }
     }
