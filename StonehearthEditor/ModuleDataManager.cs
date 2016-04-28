@@ -128,6 +128,26 @@ namespace StonehearthEditor
             return new object[] { aliasJsonMap, aliasModNameMap };
         }
 
+        public object[] GetJsonsOfType(ListView listView, JSONTYPE jsonType)
+        {
+            Dictionary<string, JsonFileData> aliasJsonMap = new Dictionary<string, JsonFileData>();
+            Dictionary<string, string> aliasModNameMap = new Dictionary<string, string>();
+            foreach (Module module in mModules.Values)
+            {
+                foreach (ModuleFile moduleFile in module.GetAliases())
+                {
+                    JsonFileData data = moduleFile.FileData as JsonFileData;
+                    if (data != null && data.JsonType == jsonType)
+                    {
+                        aliasJsonMap.Add(moduleFile.Name, data);
+                        aliasModNameMap.Add(moduleFile.Name, module.Name);
+                    }
+                }
+            }
+
+            return new object[] { aliasJsonMap, aliasModNameMap };
+        }
+
         public FileData GetSelectedFileData(TreeNode selected)
         {
             if (selected != null)

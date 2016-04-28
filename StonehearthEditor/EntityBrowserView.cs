@@ -26,8 +26,10 @@ namespace StonehearthEditor
             "speed",
             "menace",
             "courage",
+            "additive_armor_modifier",
             "muscle",
-            "exp_reward"
+            "exp_reward",
+            "estimated_difficulty"
         };
 
         public EntityBrowserView()
@@ -259,7 +261,7 @@ namespace StonehearthEditor
         {
             InitializeKillableEntitiesColumns();
 
-            object[] data = ModuleDataManager.GetInstance().FilterJsonByTerm(killableEntitiesListView, "components.stonehearth:attributes");
+            object[] data = ModuleDataManager.GetInstance().GetJsonsOfType(killableEntitiesListView, JSONTYPE.MONSTER_TUNING);
             killableEntitiesJsonFiles = (Dictionary<string, JsonFileData>)data[0];
 
             foreach (KeyValuePair<string, JsonFileData> entry in killableEntitiesJsonFiles)
@@ -272,32 +274,43 @@ namespace StonehearthEditor
                     subItems,
                     new ListViewItem.ListViewSubItem(),
                     killableEntitiesListView.Columns.Count);
-                JObject jAttributes = (JObject)json.SelectToken("components.stonehearth:attributes");
+                JToken estimatedDifficulty = json["estimated_difficulty"];
+                if (estimatedDifficulty != null) {
+                    JObject jAttributes = json.SelectToken("attributes") as JObject;
 
-                foreach (JProperty attribute in jAttributes.Properties())
-                {
-                    string attributeName = attribute.Name;
-                    if (killableEntitiesListView.Columns.IndexOfKey(attributeName) == -1)
+                    if (jAttributes != null)
                     {
-                        continue;
+                        foreach (JProperty attribute in jAttributes.Properties())
+                        {
+                            string attributeName = attribute.Name;
+                            if (killableEntitiesListView.Columns.IndexOfKey(attributeName) == -1)
+                            {
+                                continue;
+                            }
+
+                            JValue jValue = attribute.Value as JValue;
+                            if (jValue != null)
+                            {
+                                int i = killableEntitiesListView.Columns.IndexOfKey(attributeName);
+                                subItems[i-1] = new ListViewItem.ListViewSubItem(item, jValue.ToString());
+                            }
+                        }
                     }
 
-                    JToken jValue = attribute.Value.SelectToken("value");
-                    if (jValue != null)
-                    {
-                        int i = killableEntitiesListView.Columns.IndexOfKey(attributeName);
-                        subItems.RemoveAt(i - 1);
-                        subItems.Insert(i - 1, new ListViewItem.ListViewSubItem(item, jValue.ToString()));
-                    }
+                    int estimatedDifficultyIndex = killableEntitiesListView.Columns.IndexOfKey("estimated_difficulty");
+                    subItems[estimatedDifficultyIndex-1] = new ListViewItem.ListViewSubItem(item, estimatedDifficulty.ToString());
+
+                    item.SubItems.AddRange(subItems.ToArray());
+                    killableEntitiesListView.Items.Add(item);
                 }
-
-                item.SubItems.AddRange(subItems.ToArray());
-                killableEntitiesListView.Items.Add(item);
             }
         }
 
         private void InitializeKillableEntitiesColumns()
         {
+            killableEntitiesListView.Columns.Clear();
+            killableEntitiesListView.Items.Clear();
+            killableEntitiesListView.Columns.Add("alias", "alias", -2);
             foreach (string attribute in attributesOfInterest)
             {
                 killableEntitiesListView.Columns.Add(attribute, attribute, -2);
