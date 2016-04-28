@@ -19,6 +19,7 @@ namespace StonehearthEditor
         ANIMATION = 8,
         ENCOUNTER = 9,
         JOB = 10,
+        MONSTER_TUNING = 11,
     }
 
     public class JsonFileData : FileData, IModuleFileData
@@ -518,7 +519,13 @@ namespace StonehearthEditor
                             }
                         }
                     }
-
+                    break;
+                case JSONTYPE.MONSTER_TUNING:
+                    JToken experience = mJson.SelectToken("attributes.exp_reward");
+                    if (experience != null)
+                    {
+                        //Console.WriteLine(GetAliasOrFlatName() + "\t" + experience.ToString());
+                    }
                     break;
             }
 
