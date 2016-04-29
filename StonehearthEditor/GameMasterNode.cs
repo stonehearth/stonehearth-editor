@@ -239,7 +239,7 @@ namespace StonehearthEditor
                 newNodeData.NodeFile = newNode;
                 newNode.mNodeData = newNodeData;
                 newNode.mNodeType = NodeType;
-
+                newNode.mJsonFileData = new JsonFileData(newNode.Path);
                 newNode.mJsonFileData.TrySetFlatFileData(Json.ToString());
                 return newNode;
             }

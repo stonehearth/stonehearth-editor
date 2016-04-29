@@ -3,6 +3,8 @@ using System.ComponentModel;
 using System.Windows.Forms;
 using Microsoft.Msagl.Drawing;
 using Microsoft.Msagl.GraphViewerGdi;
+using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
 
 namespace StonehearthEditor
 {
@@ -69,6 +71,7 @@ namespace StonehearthEditor
                 copyGameMasterNode.Enabled = true;
                 openEncounterFileButton.Visible = true;
                 deleteNodeToolStripMenuItem.Visible = true;
+                PopulateFileDetails(node);
             }
             else
             {
@@ -87,6 +90,119 @@ namespace StonehearthEditor
                 copyGameMasterNode.Enabled = false;
                 openEncounterFileButton.Visible = false;
                 deleteNodeToolStripMenuItem.Visible = false;
+                PopulateFileDetails(null);
+            }
+        }
+
+        private static string[] kAttributesOfInterest = new string[]
+        {
+            "max_health",
+            "speed",
+            "menace",
+            "courage",
+            "additive_armor_modifier",
+            "muscle",
+            "exp_reward"
+        };
+
+        private void PopulateFileDetails(GameMasterNode node)
+        {
+            fileDetailsListBox.Items.Clear();
+            if (node == null)
+            {
+                // remove details
+                return;
+            }
+
+            Dictionary<string, float> stats = new Dictionary<string, float>();
+
+            if (node.NodeType == GameMasterNodeType.ENCOUNTER)
+            {
+                EncounterNodeData encounterData = node.NodeData as EncounterNodeData;
+                if (encounterData.EncounterType == "create_mission")
+                {
+                    JToken members = node.Json.SelectToken("create_mission_info.mission.members");
+                    int maxEnemies = 0;
+                    float totalWeaponBaseDamage = 0;
+
+                    Dictionary<string, float> allStats = new Dictionary<string, float>();
+                    foreach (string attribute in kAttributesOfInterest)
+                    {
+                        allStats[attribute] = 0;
+                    }
+
+                    if (members != null)
+                    {
+                        foreach (JToken member in members.Children())
+                        {
+                            // grab name, max number of members, and tuning
+                            JProperty memberProperty = member as JProperty;
+                            if (memberProperty != null)
+                            {
+                                JValue jMax = memberProperty.Value.SelectToken("from_population.max") as JValue;
+                                int max = 0;
+                                if (jMax != null)
+                                {
+                                    max = jMax.Value<int>();
+                                    maxEnemies = maxEnemies + max;
+                                }
+
+                                JValue tuning = memberProperty.Value.SelectToken("tuning") as JValue;
+                                if (tuning != null)
+                                {
+                                    string alias = tuning.ToString();
+                                    ModuleFile tuningFile = ModuleDataManager.GetInstance().GetModuleFile(alias);
+                                    if (tuningFile != null)
+                                    {
+                                        JsonFileData jsonFileData = tuningFile.FileData as JsonFileData;
+                                        if (jsonFileData != null)
+                                        {
+                                            foreach (string attribute in kAttributesOfInterest)
+                                            {
+                                                JValue jAttribute = jsonFileData.Json.SelectToken("attributes." + attribute) as JValue;
+                                                if (jAttribute != null)
+                                                {
+                                                    allStats[attribute] = allStats[attribute] + (max * jAttribute.Value<int>());
+                                                }
+                                            }
+
+                                            JArray weapon = jsonFileData.Json.SelectToken("equipment.weapon") as JArray;
+                                            if (weapon != null)
+                                            {
+                                                foreach (JValue weaponAlias in weapon.Children())
+                                                {
+                                                    ModuleFile weaponModuleFile = ModuleDataManager.GetInstance().GetModuleFile(weaponAlias.ToString());
+                                                    if (weaponModuleFile != null)
+                                                    {
+                                                        JToken baseDamage = (weaponModuleFile.FileData as JsonFileData).Json.SelectToken("entity_data.stonehearth:combat:weapon_data.base_damage");
+                                                        if (baseDamage != null)
+                                                        {
+                                                            totalWeaponBaseDamage = totalWeaponBaseDamage + (max * baseDamage.Value<int>());
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    fileDetailsListBox.Items.Add("max enemies : " + maxEnemies);
+                    fileDetailsListBox.Items.Add("total weapon damage : " + totalWeaponBaseDamage);
+                    foreach (string attribute in kAttributesOfInterest)
+                    {
+                        fileDetailsListBox.Items.Add("total " + attribute + " : " + allStats[attribute]);
+                    }
+
+                    fileDetailsListBox.Items.Add("average weapon damage : " + totalWeaponBaseDamage / maxEnemies);
+
+                    foreach (string attribute in kAttributesOfInterest)
+                    {
+                        fileDetailsListBox.Items.Add("average " + attribute + " : " + allStats[attribute] / maxEnemies);
+                    }
+                }
             }
         }
 
