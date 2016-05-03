@@ -19,6 +19,8 @@ namespace StonehearthEditor
         private Dictionary<string, Module> mModules = new Dictionary<string, Module>();
 
         private HashSet<FileData> mFilesWithErrors = new HashSet<FileData>();
+        public HashSet<FileData> ModifiedFiles { get; } = new HashSet<FileData>();
+
         private Dictionary<string, int> mAverageMaterialCost = new Dictionary<string, int>();
 
         public ModuleDataManager(string modsDirectoryPath)
@@ -49,6 +51,15 @@ namespace StonehearthEditor
         public void AddErrorFile(FileData fileWithError)
         {
             mFilesWithErrors.Add(fileWithError);
+        }
+
+        public void SaveModifiedFiles()
+        {
+            foreach (FileData fileData in ModifiedFiles)
+            {
+                fileData.TrySaveFile();
+            }
+            ModifiedFiles.Clear();
         }
 
         public HashSet<FileData> GetErrorFiles()

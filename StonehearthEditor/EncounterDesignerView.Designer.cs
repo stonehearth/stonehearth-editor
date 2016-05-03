@@ -41,6 +41,9 @@
             this.graphViewer = new Microsoft.Msagl.GraphViewerGdi.GViewer();
             this.encounterRightSideFilePath = new System.Windows.Forms.TextBox();
             this.nodePreviewPanel = new System.Windows.Forms.Panel();
+            this.fileDetailStats = new System.Windows.Forms.Panel();
+            this.fileDetailsListBox = new System.Windows.Forms.ListBox();
+            this.nodePreview = new System.Windows.Forms.Panel();
             this.nodeInfoPanel = new System.Windows.Forms.Panel();
             this.openEncounterFileButton = new System.Windows.Forms.Button();
             this.nodeInfoSubType = new System.Windows.Forms.Label();
@@ -50,9 +53,6 @@
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.toolstripSaveButton = new System.Windows.Forms.ToolStripButton();
             this.encounterTreeView = new System.Windows.Forms.TreeView();
-            this.nodePreview = new System.Windows.Forms.Panel();
-            this.fileDetailStats = new System.Windows.Forms.Panel();
-            this.fileDetailsListBox = new System.Windows.Forms.ListBox();
             this.encounterGraphContextMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -60,9 +60,9 @@
             this.splitContainer1.SuspendLayout();
             this.encounterTabRightSide.SuspendLayout();
             this.nodePreviewPanel.SuspendLayout();
+            this.fileDetailStats.SuspendLayout();
             this.nodeInfoPanel.SuspendLayout();
             this.toolStrip1.SuspendLayout();
-            this.fileDetailStats.SuspendLayout();
             this.SuspendLayout();
             // 
             // encounterGraphContextMenu
@@ -206,6 +206,33 @@
             this.nodePreviewPanel.Size = new System.Drawing.Size(875, 118);
             this.nodePreviewPanel.TabIndex = 5;
             // 
+            // fileDetailStats
+            // 
+            this.fileDetailStats.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.fileDetailStats.Controls.Add(this.fileDetailsListBox);
+            this.fileDetailStats.Dock = System.Windows.Forms.DockStyle.Right;
+            this.fileDetailStats.Location = new System.Drawing.Point(675, 0);
+            this.fileDetailStats.Name = "fileDetailStats";
+            this.fileDetailStats.Size = new System.Drawing.Size(200, 118);
+            this.fileDetailStats.TabIndex = 1;
+            // 
+            // fileDetailsListBox
+            // 
+            this.fileDetailsListBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.fileDetailsListBox.FormattingEnabled = true;
+            this.fileDetailsListBox.Location = new System.Drawing.Point(0, 0);
+            this.fileDetailsListBox.Name = "fileDetailsListBox";
+            this.fileDetailsListBox.Size = new System.Drawing.Size(198, 116);
+            this.fileDetailsListBox.TabIndex = 0;
+            // 
+            // nodePreview
+            // 
+            this.nodePreview.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.nodePreview.Location = new System.Drawing.Point(0, 0);
+            this.nodePreview.Name = "nodePreview";
+            this.nodePreview.Size = new System.Drawing.Size(875, 118);
+            this.nodePreview.TabIndex = 0;
+            // 
             // nodeInfoPanel
             // 
             this.nodeInfoPanel.BackColor = System.Drawing.Color.Silver;
@@ -299,33 +326,6 @@
             this.encounterTreeView.TabIndex = 6;
             this.encounterTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.encounterTreeView_AfterSelect);
             // 
-            // nodePreview
-            // 
-            this.nodePreview.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.nodePreview.Location = new System.Drawing.Point(0, 0);
-            this.nodePreview.Name = "nodePreview";
-            this.nodePreview.Size = new System.Drawing.Size(875, 118);
-            this.nodePreview.TabIndex = 0;
-            // 
-            // fileDetailStats
-            // 
-            this.fileDetailStats.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.fileDetailStats.Controls.Add(this.fileDetailsListBox);
-            this.fileDetailStats.Dock = System.Windows.Forms.DockStyle.Right;
-            this.fileDetailStats.Location = new System.Drawing.Point(675, 0);
-            this.fileDetailStats.Name = "fileDetailStats";
-            this.fileDetailStats.Size = new System.Drawing.Size(200, 118);
-            this.fileDetailStats.TabIndex = 1;
-            // 
-            // fileDetailsListBox
-            // 
-            this.fileDetailsListBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.fileDetailsListBox.FormattingEnabled = true;
-            this.fileDetailsListBox.Location = new System.Drawing.Point(0, 0);
-            this.fileDetailsListBox.Name = "fileDetailsListBox";
-            this.fileDetailsListBox.Size = new System.Drawing.Size(198, 116);
-            this.fileDetailsListBox.TabIndex = 0;
-            // 
             // EncounterDesignerView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -343,11 +343,11 @@
             this.encounterTabRightSide.ResumeLayout(false);
             this.encounterTabRightSide.PerformLayout();
             this.nodePreviewPanel.ResumeLayout(false);
+            this.fileDetailStats.ResumeLayout(false);
             this.nodeInfoPanel.ResumeLayout(false);
             this.nodeInfoPanel.PerformLayout();
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
-            this.fileDetailStats.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 

@@ -419,7 +419,7 @@ namespace StonehearthEditor
                 {
                     TabPage newTabPage = new TabPage();
                     newTabPage.Text = openedFile.FileName;
-                    if (openedFile.IsModified)
+                    if (ModuleDataManager.GetInstance().ModifiedFiles.Contains(openedFile))
                     {
                         newTabPage.Text = newTabPage.Text + "*";
                     }

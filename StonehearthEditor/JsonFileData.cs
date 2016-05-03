@@ -110,7 +110,6 @@ namespace StonehearthEditor
                     return;
             }
 
-            Console.WriteLine(error);
             ModuleDataManager.GetInstance().AddErrorFile(this);
         }
 
@@ -333,7 +332,7 @@ namespace StonehearthEditor
             if (mSaveJsonAfterParse)
             {
                 TrySetFlatFileData(GetJsonFileString());
-                ////TrySaveFile();
+                //TrySaveFile();
                 mSaveJsonAfterParse = false;
             }
         }
@@ -383,6 +382,23 @@ namespace StonehearthEditor
                 if (!string.IsNullOrEmpty(netWorthString))
                 {
                     mNetWorth = int.Parse(netWorthString);
+                    /*
+                    if (!mSaveJsonAfterParse)
+                    {
+                        JToken materialToken = mJson.SelectToken("components.stonehearth:material");
+                        if (materialToken != null && !materialToken["tags"].ToString().Contains("food"))
+                        {
+                            int newNetWorth = mNetWorth / 2;
+                            if (newNetWorth <= 0 && mNetWorth > 0)
+                            {
+                                newNetWorth = mNetWorth;
+                            }
+                            mNetWorth = newNetWorth;
+                            netWorthData["value_in_gold"] = mNetWorth;
+                            ModuleDataManager.GetInstance().ModifiedFiles.Add(this);
+                            mSaveJsonAfterParse = true;
+                        }
+                    }*/
                 }
             }
         }
