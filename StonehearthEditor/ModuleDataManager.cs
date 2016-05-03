@@ -19,7 +19,7 @@ namespace StonehearthEditor
         private Dictionary<string, Module> mModules = new Dictionary<string, Module>();
 
         private HashSet<FileData> mFilesWithErrors = new HashSet<FileData>();
-        public HashSet<FileData> ModifiedFiles { get; } = new HashSet<FileData>();
+        private HashSet<FileData> mModifiedFiles = new HashSet<FileData>();
 
         private Dictionary<string, int> mAverageMaterialCost = new Dictionary<string, int>();
 
@@ -55,7 +55,8 @@ namespace StonehearthEditor
 
         public void SaveModifiedFiles()
         {
-            foreach (FileData fileData in ModifiedFiles)
+            HashSet<FileData> copy = new HashSet<FileData>(ModifiedFiles);
+            foreach (FileData fileData in copy)
             {
                 fileData.TrySaveFile();
             }
@@ -378,6 +379,13 @@ namespace StonehearthEditor
             }
 
             return 0;
+        }
+
+        // ModifiedFiles is way too large, and most files are getting re-saved without any changes
+        // Leave getter here so we can breakpoint
+        public HashSet<FileData> ModifiedFiles
+        {
+            get { return mModifiedFiles; }
         }
 
         public void Dispose()
