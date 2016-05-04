@@ -22,14 +22,14 @@ namespace StonehearthEditor
 
         private string[] attributesOfInterest = new string[]
         {
+            "difficulty",
             "max_health",
             "speed",
             "menace",
             "courage",
             "additive_armor_modifier",
             "muscle",
-            "exp_reward",
-            "estimated_difficulty"
+            "exp_reward"
         };
 
         public EntityBrowserView()
@@ -82,8 +82,10 @@ namespace StonehearthEditor
                     InitializeDefenseItemsListView();
                     break;
                 case 3:
+                    killableEntitiesListView.BeginUpdate();
                     killableEntitiesListView.Items.Clear();
                     InitializeKillableEntitiesListView();
+                    killableEntitiesListView.EndUpdate();
                     break;
                 default:
                     throw new IndexOutOfRangeException("Selected tab index does not match InitializeTab indices!");
@@ -275,34 +277,39 @@ namespace StonehearthEditor
                     new ListViewItem.ListViewSubItem(),
                     killableEntitiesListView.Columns.Count);
                 JToken estimatedDifficulty = json["estimated_difficulty"];
-                if (estimatedDifficulty != null) {
-                    JObject jAttributes = json.SelectToken("attributes") as JObject;
+                JObject jAttributes = json.SelectToken("attributes") as JObject;
 
-                    if (jAttributes != null)
+                if (jAttributes != null)
+                {
+                    foreach (JProperty attribute in jAttributes.Properties())
                     {
-                        foreach (JProperty attribute in jAttributes.Properties())
+                        string attributeName = attribute.Name;
+                        if (killableEntitiesListView.Columns.IndexOfKey(attributeName) == -1)
                         {
-                            string attributeName = attribute.Name;
-                            if (killableEntitiesListView.Columns.IndexOfKey(attributeName) == -1)
-                            {
-                                continue;
-                            }
+                            continue;
+                        }
 
-                            JValue jValue = attribute.Value as JValue;
-                            if (jValue != null)
-                            {
-                                int i = killableEntitiesListView.Columns.IndexOfKey(attributeName);
-                                subItems[i-1] = new ListViewItem.ListViewSubItem(item, jValue.ToString());
-                            }
+                        JValue jValue = attribute.Value as JValue;
+                        if (jValue != null)
+                        {
+                            int i = killableEntitiesListView.Columns.IndexOfKey(attributeName);
+                            subItems[i - 1] = new ListViewItem.ListViewSubItem(item, jValue.ToString());
                         }
                     }
 
-                    int estimatedDifficultyIndex = killableEntitiesListView.Columns.IndexOfKey("estimated_difficulty");
-                    subItems[estimatedDifficultyIndex-1] = new ListViewItem.ListViewSubItem(item, estimatedDifficulty.ToString());
+                    int estimatedDifficultyIndex = killableEntitiesListView.Columns.IndexOfKey("difficulty");
+                    if (estimatedDifficulty != null)
+                    {
+                        subItems[estimatedDifficultyIndex - 1] = new ListViewItem.ListViewSubItem(item, estimatedDifficulty.ToString());
+                    }
 
                     item.SubItems.AddRange(subItems.ToArray());
                     killableEntitiesListView.Items.Add(item);
                 }
+
+                // Make sure to resize column after adding all the items, otherwise when reloading the column size won't be updated
+                int index = killableEntitiesListView.Columns.IndexOfKey("alias");
+                killableEntitiesListView.AutoResizeColumn(index, ColumnHeaderAutoResizeStyle.ColumnContent);
             }
         }
 
