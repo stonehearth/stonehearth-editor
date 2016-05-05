@@ -416,8 +416,7 @@ namespace StonehearthEditor
         }
 
         private void updateOnItemSelection(
-            Dictionary<string,
-            JsonFileData> categoryJsonFiles,
+            Dictionary<string, JsonFileData> categoryJsonFiles,
             Dictionary<string, string> imgPaths,
             string alias)
         {
@@ -466,16 +465,16 @@ namespace StonehearthEditor
             Dictionary<string, double> attrWeights = new Dictionary<string, double>()
             {
                 { "max_health", 1 },
-                { "speed", 0 },
+                { "speed", 0.5 },
                 { "menace", 0.5 },
                 { "courage", 0.5 },
                 { "additive_armor_modifier", 10 },
-                { "muscle", 5 },
+                { "muscle", 3 },
                 { "exp_reward", 0 }
             };
 
-            int weaponWeight = 5;
-            int equationDivisor = 400;
+            int weaponWeight = 15;
+            int equationDivisor = 450;
 
             float totalWeaponBaseDamage = 0;
             int numWeapons = 0;
@@ -487,8 +486,21 @@ namespace StonehearthEditor
                 foreach (KeyValuePair<string, double> entry in attrWeights)
                 {
                     string attribute = entry.Key;
-                    JValue jAttribute = fileData.Json.SelectToken("attributes." + attribute) as JValue;
-                    if (jAttribute != null)
+
+                    JToken jToken = fileData.Json.SelectToken("attributes." + attribute);
+                    JValue jAttribute = jToken as JValue;
+
+                    if (jToken != null && jAttribute == null)
+                    {
+                        // Add calculations for scaled attributes, which have a base and max value
+                        JValue baseValue = jToken["base"] as JValue;
+                        JValue maxValue = jToken["max"] as JValue;
+                        if (baseValue != null && maxValue != null)
+                        {
+                            estimatedDifficulty += ((2 * baseValue.Value<double>()) + maxValue.Value<double>()) / 4;
+                        }
+                    }
+                    else if (jAttribute != null)
                     {
                         estimatedDifficulty += jAttribute.Value<double>() * entry.Value;
                     }
@@ -514,13 +526,15 @@ namespace StonehearthEditor
                             }
                         }
                     }
+
                     float avgWeaponDmg = totalWeaponBaseDamage / numWeapons;
                     fileDetailsListBox.Items.Add("average weapon damage : " + avgWeaponDmg);
                     estimatedDifficulty += avgWeaponDmg * weaponWeight;
                 }
+
                 fileDetailsListBox.Items.Add(" ");
                 fileDetailsListBox.Items.Add("flat difficulty value : " + estimatedDifficulty);
-                fileDetailsListBox.Items.Add("estimated difficulty : " + Math.Round(estimatedDifficulty / equationDivisor));
+                fileDetailsListBox.Items.Add("estimated difficulty : " + Math.Round(estimatedDifficulty / equationDivisor, 3));
             }
         }
 
