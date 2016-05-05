@@ -41,9 +41,10 @@
             this.graphViewer = new Microsoft.Msagl.GraphViewerGdi.GViewer();
             this.encounterRightSideFilePath = new System.Windows.Forms.TextBox();
             this.nodePreviewPanel = new System.Windows.Forms.Panel();
+            this.splitContainer2 = new System.Windows.Forms.SplitContainer();
+            this.nodePreview = new System.Windows.Forms.Panel();
             this.fileDetailStats = new System.Windows.Forms.Panel();
             this.fileDetailsListBox = new System.Windows.Forms.ListBox();
-            this.nodePreview = new System.Windows.Forms.Panel();
             this.nodeInfoPanel = new System.Windows.Forms.Panel();
             this.openEncounterFileButton = new System.Windows.Forms.Button();
             this.nodeInfoSubType = new System.Windows.Forms.Label();
@@ -53,7 +54,6 @@
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.toolstripSaveButton = new System.Windows.Forms.ToolStripButton();
             this.encounterTreeView = new System.Windows.Forms.TreeView();
-            this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.encounterGraphContextMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -61,13 +61,13 @@
             this.splitContainer1.SuspendLayout();
             this.encounterTabRightSide.SuspendLayout();
             this.nodePreviewPanel.SuspendLayout();
-            this.fileDetailStats.SuspendLayout();
-            this.nodeInfoPanel.SuspendLayout();
-            this.toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
             this.splitContainer2.Panel1.SuspendLayout();
             this.splitContainer2.Panel2.SuspendLayout();
             this.splitContainer2.SuspendLayout();
+            this.fileDetailStats.SuspendLayout();
+            this.nodeInfoPanel.SuspendLayout();
+            this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // encounterGraphContextMenu
@@ -210,6 +210,31 @@
             this.nodePreviewPanel.Size = new System.Drawing.Size(875, 118);
             this.nodePreviewPanel.TabIndex = 5;
             // 
+            // splitContainer2
+            // 
+            this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer2.Location = new System.Drawing.Point(0, 0);
+            this.splitContainer2.Name = "splitContainer2";
+            // 
+            // splitContainer2.Panel1
+            // 
+            this.splitContainer2.Panel1.Controls.Add(this.nodePreview);
+            // 
+            // splitContainer2.Panel2
+            // 
+            this.splitContainer2.Panel2.Controls.Add(this.fileDetailStats);
+            this.splitContainer2.Size = new System.Drawing.Size(875, 118);
+            this.splitContainer2.SplitterDistance = 646;
+            this.splitContainer2.TabIndex = 0;
+            // 
+            // nodePreview
+            // 
+            this.nodePreview.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.nodePreview.Location = new System.Drawing.Point(0, 0);
+            this.nodePreview.Name = "nodePreview";
+            this.nodePreview.Size = new System.Drawing.Size(646, 118);
+            this.nodePreview.TabIndex = 0;
+            // 
             // fileDetailStats
             // 
             this.fileDetailStats.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
@@ -228,14 +253,6 @@
             this.fileDetailsListBox.Name = "fileDetailsListBox";
             this.fileDetailsListBox.Size = new System.Drawing.Size(223, 116);
             this.fileDetailsListBox.TabIndex = 0;
-            // 
-            // nodePreview
-            // 
-            this.nodePreview.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.nodePreview.Location = new System.Drawing.Point(0, 0);
-            this.nodePreview.Name = "nodePreview";
-            this.nodePreview.Size = new System.Drawing.Size(646, 118);
-            this.nodePreview.TabIndex = 0;
             // 
             // nodeInfoPanel
             // 
@@ -330,23 +347,6 @@
             this.encounterTreeView.TabIndex = 6;
             this.encounterTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.encounterTreeView_AfterSelect);
             // 
-            // splitContainer2
-            // 
-            this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer2.Location = new System.Drawing.Point(0, 0);
-            this.splitContainer2.Name = "splitContainer2";
-            // 
-            // splitContainer2.Panel1
-            // 
-            this.splitContainer2.Panel1.Controls.Add(this.nodePreview);
-            // 
-            // splitContainer2.Panel2
-            // 
-            this.splitContainer2.Panel2.Controls.Add(this.fileDetailStats);
-            this.splitContainer2.Size = new System.Drawing.Size(875, 118);
-            this.splitContainer2.SplitterDistance = 646;
-            this.splitContainer2.TabIndex = 0;
-            // 
             // EncounterDesignerView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -364,15 +364,15 @@
             this.encounterTabRightSide.ResumeLayout(false);
             this.encounterTabRightSide.PerformLayout();
             this.nodePreviewPanel.ResumeLayout(false);
+            this.splitContainer2.Panel1.ResumeLayout(false);
+            this.splitContainer2.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
+            this.splitContainer2.ResumeLayout(false);
             this.fileDetailStats.ResumeLayout(false);
             this.nodeInfoPanel.ResumeLayout(false);
             this.nodeInfoPanel.PerformLayout();
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
-            this.splitContainer2.Panel1.ResumeLayout(false);
-            this.splitContainer2.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
-            this.splitContainer2.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 

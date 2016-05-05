@@ -24,11 +24,11 @@ namespace StonehearthEditor
         {
             "difficulty",
             "max_health",
-            "speed",
+            "muscle",
             "menace",
             "courage",
+            "speed",
             "additive_armor_modifier",
-            "muscle",
             "exp_reward"
         };
 
@@ -398,6 +398,12 @@ namespace StonehearthEditor
             if (e.IsSelected)
             {
                 this.updateOnItemSelection(killableEntitiesJsonFiles, null, e.Item.Text);
+                JsonFileData json;
+                killableEntitiesJsonFiles.TryGetValue(e.Item.Text, out json);
+                if (json != null)
+                {
+                    PopulateFileDetails(json);
+                }
             }
         }
 
@@ -447,6 +453,74 @@ namespace StonehearthEditor
                         iconView.ImageLocation = path;
                     }
                 }
+            }
+        }
+
+        private void PopulateFileDetails(JsonFileData fileData)
+        {
+            fileDetailsListBox.Items.Clear();
+
+            // Stats with (adjustable) weights for difficulty equation to give a rough calculation of difficulty
+            // Can help us see if our manual difficulty estimates (in monster tuning files) are off
+            // estimatedDifficulty = 1*max_heath + 0*speed + 10*additive_armor_modifier + 5*weapon_dmg ...
+            Dictionary<string, double> attrWeights = new Dictionary<string, double>()
+            {
+                { "max_health", 1 },
+                { "speed", 0 },
+                { "menace", 0.5 },
+                { "courage", 0.5 },
+                { "additive_armor_modifier", 10 },
+                { "muscle", 5 },
+                { "exp_reward", 0 }
+            };
+
+            int weaponWeight = 5;
+            int equationDivisor = 400;
+
+            float totalWeaponBaseDamage = 0;
+            int numWeapons = 0;
+            double estimatedDifficulty = 0;
+
+            JToken attributes = fileData.Json.SelectToken("attributes");
+            if (attributes != null)
+            {
+                foreach (KeyValuePair<string, double> entry in attrWeights)
+                {
+                    string attribute = entry.Key;
+                    JValue jAttribute = fileData.Json.SelectToken("attributes." + attribute) as JValue;
+                    if (jAttribute != null)
+                    {
+                        estimatedDifficulty += jAttribute.Value<double>() * entry.Value;
+                    }
+                }
+
+                JArray weapon = fileData.Json.SelectToken("equipment.weapon") as JArray;
+                if (weapon != null)
+                {
+                    foreach (JValue weaponAlias in weapon.Children())
+                    {
+                        string weaponString = weaponAlias.ToString();
+                        ModuleFile weaponModuleFile = ModuleDataManager.GetInstance().GetModuleFile(weaponString);
+                        if (weaponModuleFile != null)
+                        {
+                            JToken baseDamage = (weaponModuleFile.FileData as JsonFileData).Json.SelectToken("entity_data.stonehearth:combat:weapon_data.base_damage");
+                            if (baseDamage != null)
+                            {
+                                int dmg = baseDamage.Value<int>();
+                                string weaponShortName = weaponString.Split(':').Last<string>();
+                                fileDetailsListBox.Items.Add(weaponShortName + " damage : " + dmg);
+                                totalWeaponBaseDamage = totalWeaponBaseDamage + dmg;
+                                numWeapons += 1;
+                            }
+                        }
+                    }
+                    float avgWeaponDmg = totalWeaponBaseDamage / numWeapons;
+                    fileDetailsListBox.Items.Add("average weapon damage : " + avgWeaponDmg);
+                    estimatedDifficulty += avgWeaponDmg * weaponWeight;
+                }
+                fileDetailsListBox.Items.Add(" ");
+                fileDetailsListBox.Items.Add("flat difficulty value : " + estimatedDifficulty);
+                fileDetailsListBox.Items.Add("estimated difficulty : " + Math.Round(estimatedDifficulty / equationDivisor));
             }
         }
 
