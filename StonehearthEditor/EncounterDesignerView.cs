@@ -60,12 +60,12 @@ namespace StonehearthEditor
 
                 if (mNodePreview != null)
                 {
-                    nodePreview.Controls.Remove(mNodePreview);
+                    splitContainer2.Panel1.Controls.Remove(mNodePreview);
                 }
 
                 mNodePreview = new FilePreview(this, node.FileData);
                 mNodePreview.Dock = DockStyle.Fill;
-                nodePreview.Controls.Add(mNodePreview);
+                splitContainer2.Panel1.Controls.Add(mNodePreview);
 
                 copyGameMasterNode.Text = "Clone " + node.Name;
                 copyGameMasterNode.Enabled = true;
@@ -83,7 +83,7 @@ namespace StonehearthEditor
                 nodePath.Text = string.Empty;
                 if (mNodePreview != null)
                 {
-                    nodePreview.Controls.Remove(mNodePreview);
+                    splitContainer2.Panel1.Controls.Remove(mNodePreview);
                 }
 
                 copyGameMasterNode.Text = "Clone Node";
