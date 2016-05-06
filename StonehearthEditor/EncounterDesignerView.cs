@@ -119,9 +119,20 @@ namespace StonehearthEditor
             if (node.NodeType == GameMasterNodeType.ENCOUNTER)
             {
                 EncounterNodeData encounterData = node.NodeData as EncounterNodeData;
-                if (encounterData.EncounterType == "create_mission")
+                if (encounterData.EncounterType == "create_mission" || encounterData.EncounterType == "city_raid")
                 {
                     JToken members = node.Json.SelectToken("create_mission_info.mission.members");
+
+                    if (members == null)
+                    {
+                        JToken missions = node.Json.SelectToken("city_raid_info.missions");
+                        foreach (JProperty content in missions.Children())
+                        {
+                            // Only gets stats for the first mission of city raids
+                            members = content.Value["members"];
+                        }
+                    }
+
                     int maxEnemies = 0;
                     float totalWeaponBaseDamage = 0;
 
