@@ -46,12 +46,12 @@
             this.nodePath = new System.Windows.Forms.Label();
             this.nodeInfoType = new System.Windows.Forms.Label();
             this.nodeInfoName = new System.Windows.Forms.Label();
-            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
-            this.toolstripSaveButton = new System.Windows.Forms.ToolStripButton();
-            this.encounterTreeView = new System.Windows.Forms.TreeView();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.fileDetailStats = new System.Windows.Forms.Panel();
             this.fileDetailsListBox = new System.Windows.Forms.ListBox();
+            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+            this.toolstripSaveButton = new System.Windows.Forms.ToolStripButton();
+            this.encounterTreeView = new System.Windows.Forms.TreeView();
             this.encounterGraphContextMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -59,11 +59,11 @@
             this.splitContainer1.SuspendLayout();
             this.encounterTabRightSide.SuspendLayout();
             this.nodeInfoPanel.SuspendLayout();
-            this.toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
             this.splitContainer2.Panel2.SuspendLayout();
             this.splitContainer2.SuspendLayout();
             this.fileDetailStats.SuspendLayout();
+            this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // encounterGraphContextMenu
@@ -120,8 +120,8 @@
             // 
             // splitContainer1.Panel2
             // 
-            this.splitContainer1.Panel2.Controls.Add(this.nodeInfoPanel);
             this.splitContainer1.Panel2.Controls.Add(this.splitContainer2);
+            this.splitContainer1.Panel2.Controls.Add(this.nodeInfoPanel);
             this.splitContainer1.Size = new System.Drawing.Size(875, 473);
             this.splitContainer1.SplitterDistance = global::StonehearthEditor.Properties.Settings.Default.EncounterDesignerViewTreeSplitterDistance;
             this.splitContainer1.TabIndex = 4;
@@ -256,6 +256,42 @@
             this.nodeInfoName.TabIndex = 0;
             this.nodeInfoName.Text = "Select a Node";
             // 
+            // splitContainer2
+            // 
+            this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer2.Location = new System.Drawing.Point(0, 30);
+            this.splitContainer2.Name = "splitContainer2";
+            // 
+            // splitContainer2.Panel1
+            // 
+            this.splitContainer2.Panel1.AutoScroll = true;
+            // 
+            // splitContainer2.Panel2
+            // 
+            this.splitContainer2.Panel2.Controls.Add(this.fileDetailStats);
+            this.splitContainer2.Size = new System.Drawing.Size(875, 118);
+            this.splitContainer2.SplitterDistance = 646;
+            this.splitContainer2.TabIndex = 0;
+            // 
+            // fileDetailStats
+            // 
+            this.fileDetailStats.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.fileDetailStats.Controls.Add(this.fileDetailsListBox);
+            this.fileDetailStats.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.fileDetailStats.Location = new System.Drawing.Point(0, 0);
+            this.fileDetailStats.Name = "fileDetailStats";
+            this.fileDetailStats.Size = new System.Drawing.Size(225, 118);
+            this.fileDetailStats.TabIndex = 1;
+            // 
+            // fileDetailsListBox
+            // 
+            this.fileDetailsListBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.fileDetailsListBox.FormattingEnabled = true;
+            this.fileDetailsListBox.Location = new System.Drawing.Point(0, 0);
+            this.fileDetailsListBox.Name = "fileDetailsListBox";
+            this.fileDetailsListBox.Size = new System.Drawing.Size(223, 116);
+            this.fileDetailsListBox.TabIndex = 0;
+            // 
             // toolStrip1
             // 
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -288,42 +324,6 @@
             this.encounterTreeView.TabIndex = 6;
             this.encounterTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.encounterTreeView_AfterSelect);
             // 
-            // splitContainer2
-            // 
-            this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer2.Location = new System.Drawing.Point(0, 0);
-            this.splitContainer2.Name = "splitContainer2";
-            // 
-            // splitContainer2.Panel1
-            // 
-            this.splitContainer2.Panel1.AutoScroll = true;
-            // 
-            // splitContainer2.Panel2
-            // 
-            this.splitContainer2.Panel2.Controls.Add(this.fileDetailStats);
-            this.splitContainer2.Size = new System.Drawing.Size(875, 148);
-            this.splitContainer2.SplitterDistance = 646;
-            this.splitContainer2.TabIndex = 0;
-            // 
-            // fileDetailStats
-            // 
-            this.fileDetailStats.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.fileDetailStats.Controls.Add(this.fileDetailsListBox);
-            this.fileDetailStats.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.fileDetailStats.Location = new System.Drawing.Point(0, 0);
-            this.fileDetailStats.Name = "fileDetailStats";
-            this.fileDetailStats.Size = new System.Drawing.Size(225, 148);
-            this.fileDetailStats.TabIndex = 1;
-            // 
-            // fileDetailsListBox
-            // 
-            this.fileDetailsListBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.fileDetailsListBox.FormattingEnabled = true;
-            this.fileDetailsListBox.Location = new System.Drawing.Point(0, 0);
-            this.fileDetailsListBox.Name = "fileDetailsListBox";
-            this.fileDetailsListBox.Size = new System.Drawing.Size(223, 146);
-            this.fileDetailsListBox.TabIndex = 0;
-            // 
             // EncounterDesignerView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -342,12 +342,12 @@
             this.encounterTabRightSide.PerformLayout();
             this.nodeInfoPanel.ResumeLayout(false);
             this.nodeInfoPanel.PerformLayout();
-            this.toolStrip1.ResumeLayout(false);
-            this.toolStrip1.PerformLayout();
             this.splitContainer2.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
             this.splitContainer2.ResumeLayout(false);
             this.fileDetailStats.ResumeLayout(false);
+            this.toolStrip1.ResumeLayout(false);
+            this.toolStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
