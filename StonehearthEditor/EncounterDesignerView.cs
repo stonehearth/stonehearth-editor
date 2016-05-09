@@ -402,7 +402,11 @@ namespace StonehearthEditor
             GameMasterDataManager.GetInstance().ClearModifiedFlags();
             GameMasterDataManager.GetInstance().RefreshGraph(this);
             encounterTreeView.Refresh();
-            mNodePreview.Refresh();
+            if (mNodePreview != null)
+            {
+                // This can be null.
+                mNodePreview.Refresh();
+            }
             Initialize();
         }
 
