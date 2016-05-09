@@ -399,6 +399,11 @@ namespace StonehearthEditor
         public void Reload()
         {
             // Reload the encounter designer.
+            GameMasterDataManager.GetInstance().ClearModifiedFlags();
+            GameMasterDataManager.GetInstance().RefreshGraph(this);
+            encounterTreeView.Refresh();
+            mNodePreview.Refresh();
+            Initialize();
         }
 
         private class CloneDialogCallback : InputDialog.IDialogCallback

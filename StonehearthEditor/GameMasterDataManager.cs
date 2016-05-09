@@ -127,6 +127,14 @@ namespace StonehearthEditor
             }
         }
 
+        public void ClearModifiedFlags()
+        {
+            foreach (GameMasterNode node in mGameMasterNodes.Values)
+            {
+                node.IsModified = false;
+            }
+        }
+
         public void RefreshGraph(IGraphOwner graphOwner)
         {
             mGraph = new Graph();
