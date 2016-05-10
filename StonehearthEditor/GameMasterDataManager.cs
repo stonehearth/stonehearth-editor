@@ -160,9 +160,9 @@ namespace StonehearthEditor
                         node.NodeData.UpdateGraph(mGraph);
                     }
                 }
-            }
 
-            graphOwner.SetGraph(mGraph);
+                graphOwner.SetGraph(mGraph);
+            }
         }
 
         public void FillEncounterNodeTree(TreeView treeView)
