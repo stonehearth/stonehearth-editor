@@ -12,6 +12,7 @@ namespace StonehearthEditor
 {
    public partial class EffectsEditorView : UserControl, IReloadable
     {
+      private Dictionary<string, FileData[]> mFileDataMap = new Dictionary<string, FileData[]>();
       public EffectsEditorView()
       {
          InitializeComponent();
@@ -19,46 +20,20 @@ namespace StonehearthEditor
 
       public void Initialize()
       {
-         effectsEditorListView.View = View.Details;
-         effectsEditorListView.GridLines = true;
-         effectsEditorListView.FullRowSelect = true;
-         effectsEditorListView.ShowItemToolTips = true;
-
          new ModuleDataManager(MainForm.kModsDirectoryPath);
          ModuleDataManager.GetInstance().Load();
-         ModuleDataManager.GetInstance().LoadEffectsList(effectsEditorListView);
+         ModuleDataManager.GetInstance().LoadEffectsList(effectsEditorTreeView);
       }
 
       public void Reload()
       {
+         ModuleDataManager.GetInstance().LoadEffectsList(effectsEditorTreeView);
+         filePreviewTabs.TabPages.Clear();
       }
 
       private void effectsOpenFileButton_Click(object sender, EventArgs e)
       {
-         //TreeNode selectedNode = treeView.SelectedNode;
-         //if (selectedNode.Parent != null)
-         //{
-         //   selectedNode = selectedNode.Parent;
-         //}
-         //string moduleName = selectedNode.Text;
-
-         //Module selectedMod = ModuleDataManager.GetInstance().GetMod(moduleName);
-         //if (selectedMod != null)
-         //{
-         //   string initialDirectory;
-         //   if (!mLastModuleLocations.TryGetValue(moduleName, out initialDirectory))
-         //   {
-         //      initialDirectory = System.IO.Path.GetFullPath(selectedMod.Path);
-         //   }
-         //   else
-         //   {
-         //      initialDirectory = System.IO.Path.GetFullPath(initialDirectory);
-         //   }
-         //   selectJsonFileDialog.InitialDirectory = initialDirectory;
-         //   selectJsonFileDialog.Tag = selectedMod;
-         //   selectJsonFileDialog.ShowDialog(this);
-         //}
-
+         openEffectsFileDialog.InitialDirectory = MainForm.kModsDirectoryPath;
          openEffectsFileDialog.ShowDialog(this);
       }
 
@@ -69,29 +44,71 @@ namespace StonehearthEditor
          {
             return;
          }
-         JsonFileData json = new JsonFileData(filePath);
-         if (json != null)
+         LoadFilePreview(filePath);
+      }
+
+      // Loads file preview from single FileData
+      private void FillFilePreview(FileData fileData)
+      {
+         TabPage newTabPage = new TabPage();
+         newTabPage.Text = fileData.FileName;
+         //if (fileData.IsModified)
+         //{
+         //   newTabPage.Text = newTabPage.Text + "*";
+         //}
+         if (fileData.HasErrors)
          {
-            json.Load();
-            foreach (FileData openedFile in json.OpenedFiles)
+            newTabPage.ImageIndex = 0;
+            newTabPage.ToolTipText = fileData.Errors;
+         }
+         FilePreview filePreview = new FilePreview(this, fileData);
+         filePreview.Dock = DockStyle.Fill;
+         newTabPage.Controls.Add(filePreview);
+         filePreviewTabs.TabPages.Add(newTabPage);
+      }
+
+      // Load file preview from file path
+      private void LoadFilePreview(string filePath)
+      {
+         filePreviewTabs.TabPages.Clear();
+
+         FileData[] fileData = {};
+         mFileDataMap.TryGetValue(filePath, out fileData);
+         if (fileData == null)
+         {
+            JsonFileData json = new JsonFileData(filePath);
+            if (json != null)
             {
-               TabPage newTabPage = new TabPage();
-               newTabPage.Text = openedFile.FileName;
-               //if (openedFile.IsModified)
-               //{
-               //   newTabPage.Text = newTabPage.Text + "*";
-               //}
-               if (openedFile.HasErrors)
-               {
-                  newTabPage.ImageIndex = 0;
-                  newTabPage.ToolTipText = openedFile.Errors;
-               }
-               FilePreview filePreview = new FilePreview(this, openedFile);
-               filePreview.Dock = DockStyle.Fill;
-               newTabPage.Controls.Add(filePreview);
-               filePreviewTabs.TabPages.Add(newTabPage);
+               json.Load();
+               fileData = json.OpenedFiles.ToArray();
+               mFileDataMap[filePath] = fileData;
             }
          }
+
+         foreach (FileData openedFile in fileData)
+         {
+            FillFilePreview(openedFile);
+         }
+      }
+
+      private void effectsEditorTreeView_MouseClick(object sender, MouseEventArgs e)
+      {
+         effectsEditorTreeView.SelectedNode = effectsEditorTreeView.GetNodeAt(e.X, e.Y);
+      }
+
+      private void effectsEditorTreeView_AfterSelect(object sender, TreeViewEventArgs e)
+      {
+         Object fullPath = effectsEditorTreeView.SelectedNode.Tag;
+         if (fullPath != null)
+         {
+            LoadFilePreview(fullPath.ToString());
+         }
+         else
+         {
+            // If no file data found, just clear file preview
+            filePreviewTabs.TabPages.Clear();
+         }
+         effectsEditorTreeView.Focus();
       }
    }
 }

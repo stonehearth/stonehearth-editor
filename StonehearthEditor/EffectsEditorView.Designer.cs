@@ -30,7 +30,7 @@
       {
          System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(EffectsEditorView));
          this.effectsSplitContainer = new System.Windows.Forms.SplitContainer();
-         this.effectsEditorListView = new System.Windows.Forms.ListView();
+         this.effectsEditorTreeView = new System.Windows.Forms.TreeView();
          this.effectsSplitContainer2 = new System.Windows.Forms.SplitContainer();
          this.filePreviewTabs = new System.Windows.Forms.TabControl();
          this.editOptionsListView = new System.Windows.Forms.ListView();
@@ -57,7 +57,7 @@
          // 
          // effectsSplitContainer.Panel1
          // 
-         this.effectsSplitContainer.Panel1.Controls.Add(this.effectsEditorListView);
+         this.effectsSplitContainer.Panel1.Controls.Add(this.effectsEditorTreeView);
          // 
          // effectsSplitContainer.Panel2
          // 
@@ -66,14 +66,18 @@
          this.effectsSplitContainer.SplitterDistance = 218;
          this.effectsSplitContainer.TabIndex = 1;
          // 
-         // effectsEditorListView
+         // effectsEditorTreeView
          // 
-         this.effectsEditorListView.Dock = System.Windows.Forms.DockStyle.Fill;
-         this.effectsEditorListView.Location = new System.Drawing.Point(0, 0);
-         this.effectsEditorListView.Name = "effectsEditorListView";
-         this.effectsEditorListView.Size = new System.Drawing.Size(218, 548);
-         this.effectsEditorListView.TabIndex = 0;
-         this.effectsEditorListView.UseCompatibleStateImageBehavior = false;
+         this.effectsEditorTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
+         this.effectsEditorTreeView.FullRowSelect = true;
+         this.effectsEditorTreeView.HideSelection = false;
+         this.effectsEditorTreeView.Location = new System.Drawing.Point(0, 0);
+         this.effectsEditorTreeView.Name = "effectsEditorTreeView";
+         this.effectsEditorTreeView.PathSeparator = "/";
+         this.effectsEditorTreeView.Size = new System.Drawing.Size(218, 548);
+         this.effectsEditorTreeView.TabIndex = 0;
+         this.effectsEditorTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.effectsEditorTreeView_AfterSelect);
+         this.effectsEditorTreeView.MouseClick += new System.Windows.Forms.MouseEventHandler(this.effectsEditorTreeView_MouseClick);
          // 
          // effectsSplitContainer2
          // 
@@ -176,7 +180,6 @@
       #endregion
 
       private System.Windows.Forms.SplitContainer effectsSplitContainer;
-      private System.Windows.Forms.ListView effectsEditorListView;
       private System.Windows.Forms.SplitContainer effectsSplitContainer2;
       private System.Windows.Forms.ListView editOptionsListView;
       private System.Windows.Forms.TabControl filePreviewTabs;
@@ -184,5 +187,6 @@
       private System.Windows.Forms.ToolStripButton newFileButton;
       private System.Windows.Forms.ToolStripButton effectsOpenFileButton;
       private System.Windows.Forms.OpenFileDialog openEffectsFileDialog;
+      private System.Windows.Forms.TreeView effectsEditorTreeView;
    }
 }

@@ -119,28 +119,62 @@ namespace StonehearthEditor
             treeView.EndUpdate();
         }
 
-      public void LoadEffectsList(ListView listView)
+      public void LoadEffectsList(TreeView treeView)
       {
-         listView.BeginUpdate();
-         listView.Items.Clear();
+         treeView.BeginUpdate();
+         treeView.Nodes.Clear();
 
-         List<ListViewItem> effects = new List<ListViewItem>();
+         List<TreeNode> effects = new List<TreeNode>();
          foreach (Module module in mModules.Values)
          {
-            TreeNode treeNode = module.FilterAliasTree("effects");
-            if (treeNode != null)
+            TreeNode node = module.FilterAliasTree("effects");
+            if (node != null)
             {
-               ListViewItem node = new ListViewItem(treeNode.Text);
-               if (node != null)
+               effects.Add(node);
+            }
+         }
+
+         // get effects from files
+         string[] modFolders = Directory.GetDirectories(mModsDirectoryPath);
+         if (modFolders == null)
+         {
+            return;
+         }
+
+         foreach (string modPath in modFolders)
+         {
+            string formatted = JsonHelper.NormalizeSystemPath(modPath);
+            string effectsDirectoryPath = formatted + "/data/effects";
+            if (Directory.Exists(effectsDirectoryPath))
+            {
+               foreach (string effectsFolder in Directory.EnumerateDirectories(effectsDirectoryPath))
                {
-                  effects.Add(node);
+                  string[] effectFiles = Directory.GetFiles(effectsFolder);
+                  formatted = JsonHelper.NormalizeSystemPath(effectsFolder);
+                  string folderName = formatted.Substring(formatted.LastIndexOf('/') + 1);
+                  TreeNode root = new TreeNode(folderName);
+                  root.ExpandAll();
+
+                  // TODO: recursively search through files to get nested files
+                  foreach (string file in effectFiles)
+                  {
+                     formatted = JsonHelper.NormalizeSystemPath(file);
+                     string fileName = formatted.Substring(formatted.LastIndexOf('/') + 1);
+                     TreeNode subRoot = new TreeNode(fileName);
+                     subRoot.Tag = formatted;
+                     if (root.Tag == null)
+                     {
+                        root.Tag = formatted;
+                     }
+                     root.Nodes.Add(subRoot);
+                  }
+                  effects.Add(root);
                }
             }
          }
 
-         listView.Items.AddRange(effects.ToArray());
-
-         listView.EndUpdate();
+         treeView.Nodes.AddRange(effects.ToArray());
+         treeView.EndUpdate();
       }
 
         // Returns an Object array with a map from alias to jsonfiledata and alias to modname
@@ -181,7 +215,7 @@ namespace StonehearthEditor
                 }
             }
 
-            return new object[] { aliasJsonMap, aliasModNameMap };
+            return new Object[] { aliasJsonMap, aliasModNameMap };
         }
 
         public FileData GetSelectedFileData(TreeNode selected)
