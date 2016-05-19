@@ -30,6 +30,10 @@
       {
          System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(EffectsEditorView));
          this.effectsSplitContainer = new System.Windows.Forms.SplitContainer();
+         this.treeViewTabControl = new System.Windows.Forms.TabControl();
+         this.cubemittersTreeViewTab = new System.Windows.Forms.TabPage();
+         this.cubemittersTreeView = new System.Windows.Forms.TreeView();
+         this.effectsTreeViewTab = new System.Windows.Forms.TabPage();
          this.effectsEditorTreeView = new System.Windows.Forms.TreeView();
          this.effectsSplitContainer2 = new System.Windows.Forms.SplitContainer();
          this.filePreviewTabs = new System.Windows.Forms.TabControl();
@@ -42,6 +46,9 @@
          this.effectsSplitContainer.Panel1.SuspendLayout();
          this.effectsSplitContainer.Panel2.SuspendLayout();
          this.effectsSplitContainer.SuspendLayout();
+         this.treeViewTabControl.SuspendLayout();
+         this.cubemittersTreeViewTab.SuspendLayout();
+         this.effectsTreeViewTab.SuspendLayout();
          ((System.ComponentModel.ISupportInitialize)(this.effectsSplitContainer2)).BeginInit();
          this.effectsSplitContainer2.Panel1.SuspendLayout();
          this.effectsSplitContainer2.Panel2.SuspendLayout();
@@ -57,7 +64,7 @@
          // 
          // effectsSplitContainer.Panel1
          // 
-         this.effectsSplitContainer.Panel1.Controls.Add(this.effectsEditorTreeView);
+         this.effectsSplitContainer.Panel1.Controls.Add(this.treeViewTabControl);
          // 
          // effectsSplitContainer.Panel2
          // 
@@ -66,15 +73,60 @@
          this.effectsSplitContainer.SplitterDistance = 218;
          this.effectsSplitContainer.TabIndex = 1;
          // 
+         // treeViewTabControl
+         // 
+         this.treeViewTabControl.Controls.Add(this.cubemittersTreeViewTab);
+         this.treeViewTabControl.Controls.Add(this.effectsTreeViewTab);
+         this.treeViewTabControl.Dock = System.Windows.Forms.DockStyle.Fill;
+         this.treeViewTabControl.Location = new System.Drawing.Point(0, 0);
+         this.treeViewTabControl.Name = "treeViewTabControl";
+         this.treeViewTabControl.SelectedIndex = 0;
+         this.treeViewTabControl.Size = new System.Drawing.Size(218, 548);
+         this.treeViewTabControl.TabIndex = 0;
+         // 
+         // cubemittersTreeViewTab
+         // 
+         this.cubemittersTreeViewTab.Controls.Add(this.cubemittersTreeView);
+         this.cubemittersTreeViewTab.Location = new System.Drawing.Point(4, 22);
+         this.cubemittersTreeViewTab.Name = "cubemittersTreeViewTab";
+         this.cubemittersTreeViewTab.Padding = new System.Windows.Forms.Padding(3);
+         this.cubemittersTreeViewTab.Size = new System.Drawing.Size(210, 522);
+         this.cubemittersTreeViewTab.TabIndex = 1;
+         this.cubemittersTreeViewTab.Text = "Cubemitters";
+         this.cubemittersTreeViewTab.UseVisualStyleBackColor = true;
+         // 
+         // cubemittersTreeView
+         // 
+         this.cubemittersTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
+         this.cubemittersTreeView.FullRowSelect = true;
+         this.cubemittersTreeView.Location = new System.Drawing.Point(3, 3);
+         this.cubemittersTreeView.Name = "cubemittersTreeView";
+         this.cubemittersTreeView.PathSeparator = "/";
+         this.cubemittersTreeView.Size = new System.Drawing.Size(204, 516);
+         this.cubemittersTreeView.TabIndex = 1;
+         this.cubemittersTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.cubemittersTreeView_AfterSelect);
+         this.cubemittersTreeView.MouseClick += new System.Windows.Forms.MouseEventHandler(this.cubemittersTreeView_MouseClick);
+         // 
+         // effectsTreeViewTab
+         // 
+         this.effectsTreeViewTab.Controls.Add(this.effectsEditorTreeView);
+         this.effectsTreeViewTab.Location = new System.Drawing.Point(4, 22);
+         this.effectsTreeViewTab.Name = "effectsTreeViewTab";
+         this.effectsTreeViewTab.Padding = new System.Windows.Forms.Padding(3);
+         this.effectsTreeViewTab.Size = new System.Drawing.Size(210, 522);
+         this.effectsTreeViewTab.TabIndex = 0;
+         this.effectsTreeViewTab.Text = "Effects";
+         this.effectsTreeViewTab.UseVisualStyleBackColor = true;
+         // 
          // effectsEditorTreeView
          // 
          this.effectsEditorTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
          this.effectsEditorTreeView.FullRowSelect = true;
          this.effectsEditorTreeView.HideSelection = false;
-         this.effectsEditorTreeView.Location = new System.Drawing.Point(0, 0);
+         this.effectsEditorTreeView.Location = new System.Drawing.Point(3, 3);
          this.effectsEditorTreeView.Name = "effectsEditorTreeView";
          this.effectsEditorTreeView.PathSeparator = "/";
-         this.effectsEditorTreeView.Size = new System.Drawing.Size(218, 548);
+         this.effectsEditorTreeView.Size = new System.Drawing.Size(204, 516);
          this.effectsEditorTreeView.TabIndex = 0;
          this.effectsEditorTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.effectsEditorTreeView_AfterSelect);
          this.effectsEditorTreeView.MouseClick += new System.Windows.Forms.MouseEventHandler(this.effectsEditorTreeView_MouseClick);
@@ -166,6 +218,9 @@
          this.effectsSplitContainer.Panel2.ResumeLayout(false);
          ((System.ComponentModel.ISupportInitialize)(this.effectsSplitContainer)).EndInit();
          this.effectsSplitContainer.ResumeLayout(false);
+         this.treeViewTabControl.ResumeLayout(false);
+         this.cubemittersTreeViewTab.ResumeLayout(false);
+         this.effectsTreeViewTab.ResumeLayout(false);
          this.effectsSplitContainer2.Panel1.ResumeLayout(false);
          this.effectsSplitContainer2.Panel2.ResumeLayout(false);
          ((System.ComponentModel.ISupportInitialize)(this.effectsSplitContainer2)).EndInit();
@@ -188,5 +243,9 @@
       private System.Windows.Forms.ToolStripButton effectsOpenFileButton;
       private System.Windows.Forms.OpenFileDialog openEffectsFileDialog;
       private System.Windows.Forms.TreeView effectsEditorTreeView;
+      private System.Windows.Forms.TabControl treeViewTabControl;
+      private System.Windows.Forms.TabPage cubemittersTreeViewTab;
+      private System.Windows.Forms.TreeView cubemittersTreeView;
+      private System.Windows.Forms.TabPage effectsTreeViewTab;
    }
 }

@@ -23,12 +23,16 @@ namespace StonehearthEditor
          new ModuleDataManager(MainForm.kModsDirectoryPath);
          ModuleDataManager.GetInstance().Load();
          ModuleDataManager.GetInstance().LoadEffectsList(effectsEditorTreeView);
+         ModuleDataManager.GetInstance().LoadCubemittersList(cubemittersTreeView);
       }
 
       public void Reload()
       {
-         ModuleDataManager.GetInstance().LoadEffectsList(effectsEditorTreeView);
          filePreviewTabs.TabPages.Clear();
+         effectsEditorTreeView.Nodes.Clear();
+         cubemittersTreeView.Nodes.Clear();
+         ModuleDataManager.GetInstance().LoadEffectsList(effectsEditorTreeView);
+         ModuleDataManager.GetInstance().LoadCubemittersList(cubemittersTreeView);
       }
 
       private void effectsOpenFileButton_Click(object sender, EventArgs e)
@@ -109,6 +113,26 @@ namespace StonehearthEditor
             filePreviewTabs.TabPages.Clear();
          }
          effectsEditorTreeView.Focus();
+      }
+
+      private void cubemittersTreeView_MouseClick(object sender, MouseEventArgs e)
+      {
+         cubemittersTreeView.SelectedNode = cubemittersTreeView.GetNodeAt(e.X, e.Y);
+      }
+
+      private void cubemittersTreeView_AfterSelect(object sender, TreeViewEventArgs e)
+      {
+         Object fullPath = cubemittersTreeView.SelectedNode.Tag;
+         if (fullPath != null)
+         {
+            LoadFilePreview(fullPath.ToString());
+         }
+         else
+         {
+            // If no file data found, just clear file preview
+            filePreviewTabs.TabPages.Clear();
+         }
+         cubemittersTreeView.Focus();
       }
    }
 }

@@ -125,77 +125,119 @@ namespace StonehearthEditor
          treeView.Nodes.Clear();
 
          List<TreeNode> effects = new List<TreeNode>();
+
+         AddTreeNodesByAlias(effects, "effects");
+         AddTreeNodesByFolder(effects, "/data/effects");
+
+         treeView.Nodes.AddRange(effects.ToArray());
+         treeView.EndUpdate();
+      }
+
+      public void LoadCubemittersList(TreeView treeView)
+      {
+         treeView.BeginUpdate();
+         treeView.Nodes.Clear();
+
+         List<TreeNode> cubemitters = new List<TreeNode>();
+
+         AddTreeNodesByAlias(cubemitters, "cubemitters");
+         AddTreeNodesByFolder(cubemitters, "/data/horde/particles");
+
+         treeView.Nodes.AddRange(cubemitters.ToArray());
+         treeView.EndUpdate();
+      }
+
+      // Add tree nodes for aliases that contain the filter term
+      private void AddTreeNodesByAlias(List<TreeNode> treeNodes, string filterTerm)
+      {
          foreach (Module module in mModules.Values)
          {
-            TreeNode node = module.FilterAliasTree("effects");
+            TreeNode node = module.FilterAliasTree(filterTerm);
             if (node != null)
             {
-               effects.Add(node);
+               treeNodes.Add(node);
             }
          }
+      }
 
-         // get effects from files
+      // Add tree nodes in the specified folder (inside mods folder)
+      private void AddTreeNodesByFolder(List<TreeNode> treeNodes, string folderName)
+      {
          string[] modFolders = Directory.GetDirectories(mModsDirectoryPath);
          if (modFolders == null)
          {
             return;
          }
 
+         // check all the mod folders
          foreach (string modPath in modFolders)
          {
-            string formatted = JsonHelper.NormalizeSystemPath(modPath);
-            string effectsDirectoryPath = formatted + "/data/effects";
-            if (Directory.Exists(effectsDirectoryPath))
+            string searchDirectoryPath = JsonHelper.NormalizeSystemPath(modPath) + folderName;
+            if (Directory.Exists(searchDirectoryPath))
             {
-               foreach (string effectsFolder in Directory.EnumerateDirectories(effectsDirectoryPath))
+               // check all the folders
+               foreach (string folderPath in Directory.EnumerateDirectories(searchDirectoryPath))
                {
-                  string[] effectFiles = Directory.GetFiles(effectsFolder);
-                  formatted = JsonHelper.NormalizeSystemPath(effectsFolder);
-                  string folderName = formatted.Substring(formatted.LastIndexOf('/') + 1);
-                  TreeNode root = new TreeNode(folderName);
+                  string rootFolderName = JsonHelper.GetLastStringInPath(folderPath);
+                  TreeNode root = new TreeNode(rootFolderName);
                   root.ExpandAll();
+                  // Append tree nodes from nested folders and files
+                  AppendTreeNodes(root, folderPath);
+                  treeNodes.Add(root);
+               }
+            }
+         }
+      }
 
-                  // TODO: recursively search through files to get nested files
-                  foreach (string file in effectFiles)
-                  {
-                     formatted = JsonHelper.NormalizeSystemPath(file);
-                     string fileName = formatted.Substring(formatted.LastIndexOf('/') + 1);
-                     TreeNode subRoot = new TreeNode(fileName);
-                     subRoot.Tag = formatted;
-                     if (root.Tag == null)
-                     {
-                        root.Tag = formatted;
-                     }
-                     root.Nodes.Add(subRoot);
-                  }
-                  effects.Add(root);
+      // Adds all files and directories in path to tree node root
+      private void AppendTreeNodes(TreeNode root, string rootPath)
+      {
+         string[] filePaths = Directory.GetFiles(rootPath);
+         string[] folderPaths = Directory.GetDirectories(rootPath);
+
+         if (filePaths != null)
+         {
+            foreach (string filePath in filePaths)
+            {
+               if (root.Tag == null)
+               {
+                  root.Tag = JsonHelper.NormalizeSystemPath(filePath);
+               }
+               TreeNode node = new TreeNode(JsonHelper.GetLastStringInPath(filePath));
+               node.Tag = JsonHelper.NormalizeSystemPath(filePath);
+               root.Nodes.Add(node);
+            }
+         }
+         if (folderPaths != null)
+         {
+            foreach (string folderPath in folderPaths)
+            {
+               TreeNode subRoot = new TreeNode(JsonHelper.GetLastStringInPath(folderPath));
+               subRoot.Tag = JsonHelper.NormalizeSystemPath(folderPath);
+               AppendTreeNodes(subRoot, folderPath);
+            }
+         }
+      }
+
+      // Returns an Object array with a map from alias to jsonfiledata and alias to modname
+      public Object[] FilterJsonByTerm(ListView listView, string filterTerm)
+      {
+         Dictionary<string, JsonFileData> aliasJsonMap = new Dictionary<string, JsonFileData>();
+         Dictionary<string, string> aliasModNameMap = new Dictionary<string, string>();
+         foreach (Module module in mModules.Values)
+         {
+            foreach (ModuleFile moduleFile in module.GetAliases())
+            {
+               JsonFileData data = moduleFile.GetJsonFileDataByTerm(filterTerm);
+               if (data != null)
+               {
+                  aliasJsonMap.Add(moduleFile.Name, data);
+                  aliasModNameMap.Add(moduleFile.Name, module.Name);
                }
             }
          }
 
-         treeView.Nodes.AddRange(effects.ToArray());
-         treeView.EndUpdate();
-      }
-
-        // Returns an Object array with a map from alias to jsonfiledata and alias to modname
-        public object[] FilterJsonByTerm(ListView listView, string filterTerm)
-        {
-            Dictionary<string, JsonFileData> aliasJsonMap = new Dictionary<string, JsonFileData>();
-            Dictionary<string, string> aliasModNameMap = new Dictionary<string, string>();
-            foreach (Module module in mModules.Values)
-            {
-                foreach (ModuleFile moduleFile in module.GetAliases())
-                {
-                    JsonFileData data = moduleFile.GetJsonFileDataByTerm(filterTerm);
-                    if (data != null)
-                    {
-                        aliasJsonMap.Add(moduleFile.Name, data);
-                        aliasModNameMap.Add(moduleFile.Name, module.Name);
-                    }
-                }
-            }
-
-            return new object[] { aliasJsonMap, aliasModNameMap };
+         return new object[] { aliasJsonMap, aliasModNameMap };
         }
 
         public object[] GetJsonsOfType(ListView listView, JSONTYPE jsonType)

@@ -222,6 +222,21 @@ namespace StonehearthEditor
             return normalized;
         }
 
+      // Get last directory/file name in a path string
+      public static string GetLastStringInPath(string path)
+      {
+         if (path != null && 
+             path.Contains(Path.DirectorySeparatorChar) ||
+             path.Contains(Path.AltDirectorySeparatorChar))
+         {
+            string formatted = JsonHelper.NormalizeSystemPath(path);
+            string[] dirs = formatted.Split(Path.AltDirectorySeparatorChar);
+            path = dirs.Last<string>();
+         }
+
+         return path;
+      }
+
         // Word Wrap code taken from http://www.softcircuits.com/Blog/post/2010/01/10/Implementing-Word-Wrap-in-C.aspx
         private const string kNewline = "\r\n";
 
