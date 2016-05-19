@@ -28,6 +28,7 @@
       /// </summary>
       private void InitializeComponent()
       {
+         this.components = new System.ComponentModel.Container();
          System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(EffectsEditorView));
          this.effectsSplitContainer = new System.Windows.Forms.SplitContainer();
          this.treeViewTabControl = new System.Windows.Forms.TabControl();
@@ -42,6 +43,8 @@
          this.newFileButton = new System.Windows.Forms.ToolStripButton();
          this.effectsOpenFileButton = new System.Windows.Forms.ToolStripButton();
          this.openEffectsFileDialog = new System.Windows.Forms.OpenFileDialog();
+         this.cloneToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+         this.effectsEditorContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
          ((System.ComponentModel.ISupportInitialize)(this.effectsSplitContainer)).BeginInit();
          this.effectsSplitContainer.Panel1.SuspendLayout();
          this.effectsSplitContainer.Panel2.SuspendLayout();
@@ -54,6 +57,7 @@
          this.effectsSplitContainer2.Panel2.SuspendLayout();
          this.effectsSplitContainer2.SuspendLayout();
          this.effectsToolStrip.SuspendLayout();
+         this.effectsEditorContextMenuStrip.SuspendLayout();
          this.SuspendLayout();
          // 
          // effectsSplitContainer
@@ -187,6 +191,7 @@
          this.newFileButton.Size = new System.Drawing.Size(105, 22);
          this.newFileButton.Text = "+ New Effects File";
          this.newFileButton.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
+         this.newFileButton.ToolTipText = "Not yet implemented!";
          // 
          // effectsOpenFileButton
          // 
@@ -205,6 +210,20 @@
          this.openEffectsFileDialog.FileName = "openEffectsFileDialog";
          this.openEffectsFileDialog.Filter = "JSON Files|*.json|Lua Files|*.lua";
          this.openEffectsFileDialog.FileOk += new System.ComponentModel.CancelEventHandler(this.openEffectsFileDialog_FileOk);
+         // 
+         // cloneToolStripMenuItem
+         // 
+         this.cloneToolStripMenuItem.Name = "cloneToolStripMenuItem";
+         this.cloneToolStripMenuItem.Size = new System.Drawing.Size(105, 22);
+         this.cloneToolStripMenuItem.Text = "Clone";
+         this.cloneToolStripMenuItem.Click += new System.EventHandler(this.cloneToolStripMenuItem_Click);
+         // 
+         // effectsEditorContextMenuStrip
+         // 
+         this.effectsEditorContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.cloneToolStripMenuItem});
+         this.effectsEditorContextMenuStrip.Name = "effectsEditorContextMenuStrip";
+         this.effectsEditorContextMenuStrip.Size = new System.Drawing.Size(106, 26);
          // 
          // EffectsEditorView
          // 
@@ -227,6 +246,7 @@
          this.effectsSplitContainer2.ResumeLayout(false);
          this.effectsToolStrip.ResumeLayout(false);
          this.effectsToolStrip.PerformLayout();
+         this.effectsEditorContextMenuStrip.ResumeLayout(false);
          this.ResumeLayout(false);
          this.PerformLayout();
 
@@ -247,5 +267,7 @@
       private System.Windows.Forms.TabPage cubemittersTreeViewTab;
       private System.Windows.Forms.TreeView cubemittersTreeView;
       private System.Windows.Forms.TabPage effectsTreeViewTab;
+      private System.Windows.Forms.ToolStripMenuItem cloneToolStripMenuItem;
+      private System.Windows.Forms.ContextMenuStrip effectsEditorContextMenuStrip;
    }
 }
