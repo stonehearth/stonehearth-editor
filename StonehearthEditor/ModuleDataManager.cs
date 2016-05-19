@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
@@ -118,6 +118,30 @@ namespace StonehearthEditor
             // enables redrawing tree after all objects have been added
             treeView.EndUpdate();
         }
+
+      public void LoadEffectsList(ListView listView)
+      {
+         listView.BeginUpdate();
+         listView.Items.Clear();
+
+         List<ListViewItem> effects = new List<ListViewItem>();
+         foreach (Module module in mModules.Values)
+         {
+            TreeNode treeNode = module.FilterAliasTree("effects");
+            if (treeNode != null)
+            {
+               ListViewItem node = new ListViewItem(treeNode.Text);
+               if (node != null)
+               {
+                  effects.Add(node);
+               }
+            }
+         }
+
+         listView.Items.AddRange(effects.ToArray());
+
+         listView.EndUpdate();
+      }
 
         // Returns an Object array with a map from alias to jsonfiledata and alias to modname
         public object[] FilterJsonByTerm(ListView listView, string filterTerm)
