@@ -96,6 +96,12 @@
       <DependentUpon>CloneDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="CloneObjectParameters.cs" />
+    <Compile Include="EffectsEditorView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="EffectsEditorView.Designer.cs">
+      <DependentUpon>EffectsEditorView.cs</DependentUpon>
+    </Compile>
     <Compile Include="EncounterDesignerView.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -178,6 +184,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="CloneDialog.resx">
       <DependentUpon>CloneDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EffectsEditorView.resx">
+      <DependentUpon>EffectsEditorView.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="EncounterDesignerView.resx">
       <DependentUpon>EncounterDesignerView.cs</DependentUpon>

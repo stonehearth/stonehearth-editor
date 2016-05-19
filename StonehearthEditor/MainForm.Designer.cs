@@ -36,6 +36,7 @@ namespace StonehearthEditor
             this.encounterDesignerView = new StonehearthEditor.EncounterDesignerView();
             this.entityBrowserTab = new System.Windows.Forms.TabPage();
             this.entityBrowserView = new StonehearthEditor.EntityBrowserView();
+            this.effectsEditorTab = new System.Windows.Forms.TabPage();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mainFormMenu = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -44,11 +45,13 @@ namespace StonehearthEditor
             this.changeModDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.netWorthVisualizerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.effectsEditorView = new StonehearthEditor.EffectsEditorView();
             this.tabControl.SuspendLayout();
             this.manifestTab.SuspendLayout();
             this.encounterTab.SuspendLayout();
             this.entityBrowserTab.SuspendLayout();
             this.mainFormMenu.SuspendLayout();
+            this.effectsEditorTab.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabControl
@@ -56,6 +59,7 @@ namespace StonehearthEditor
             this.tabControl.Controls.Add(this.manifestTab);
             this.tabControl.Controls.Add(this.encounterTab);
             this.tabControl.Controls.Add(this.entityBrowserTab);
+            this.tabControl.Controls.Add(this.effectsEditorTab);
             this.tabControl.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl.Location = new System.Drawing.Point(0, 24);
             this.tabControl.Name = "tabControl";
@@ -120,6 +124,17 @@ namespace StonehearthEditor
             this.entityBrowserView.Name = "entityBrowserView";
             this.entityBrowserView.Size = new System.Drawing.Size(1109, 549);
             this.entityBrowserView.TabIndex = 0;
+            //
+            // effectsEditorTab
+            // 
+            this.effectsEditorTab.Controls.Add(this.effectsEditorView);
+            this.effectsEditorTab.Location = new System.Drawing.Point(4, 22);
+            this.effectsEditorTab.Name = "effectsEditorTab";
+            this.effectsEditorTab.Padding = new System.Windows.Forms.Padding(3);
+            this.effectsEditorTab.Size = new System.Drawing.Size(1115, 555);
+            this.effectsEditorTab.TabIndex = 3;
+            this.effectsEditorTab.Text = "Effects Editor";
+            this.effectsEditorTab.UseVisualStyleBackColor = true;
             // 
             // saveToolStripMenuItem
             // 
@@ -186,6 +201,13 @@ namespace StonehearthEditor
             this.netWorthVisualizerToolStripMenuItem.Text = "Net Worth Visualizer";
             this.netWorthVisualizerToolStripMenuItem.Click += new System.EventHandler(this.netWorthVisualizerToolStripMenuItem_Click);
             // 
+            // effectsEditorView
+            // 
+            this.effectsEditorView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.effectsEditorView.Location = new System.Drawing.Point(3, 3);
+            this.effectsEditorView.Name = "effectsEditorView";
+            this.effectsEditorView.Size = new System.Drawing.Size(1109, 549);
+            this.effectsEditorView.TabIndex = 0;
             // MainForm
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
@@ -208,6 +230,7 @@ namespace StonehearthEditor
             this.entityBrowserTab.ResumeLayout(false);
             this.mainFormMenu.ResumeLayout(false);
             this.mainFormMenu.PerformLayout();
+            this.effectsEditorTab.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -229,5 +252,7 @@ namespace StonehearthEditor
       private System.Windows.Forms.TabPage entityBrowserTab;
       private System.Windows.Forms.ToolStripMenuItem viewToolStripMenuItem;
       private System.Windows.Forms.ToolStripMenuItem netWorthVisualizerToolStripMenuItem;
-   }
+      private System.Windows.Forms.TabPage effectsEditorTab;
+      private EffectsEditorView effectsEditorView;
+    }
 }
