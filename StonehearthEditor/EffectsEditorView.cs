@@ -16,10 +16,15 @@ namespace StonehearthEditor
         private Dictionary<string, FileData[]> mFileDataMap = new Dictionary<string, FileData[]>();
         private TreeNode mSelectedNode = null;
         private string mNewFilePath = null;
+        private EffectsChromeBrowser mEffectsChromeBrowser;
 
         public EffectsEditorView()
         {
             InitializeComponent();
+
+            // Initialize cef
+            mEffectsChromeBrowser = EffectsChromeBrowser.GetInstance();
+            mEffectsChromeBrowser.InitBrowser(this.effectsBrowserPanel);
         }
 
         public void Initialize()
@@ -361,6 +366,11 @@ namespace StonehearthEditor
         {
             MessageBox.Show("Info: Right click an effect in the list to clone an effect. \n" +
                             "Warning: Cloning aliases not yet supported. \n");
+        }
+
+        private void cefDevToolsButton_Click(object sender, EventArgs e)
+        {
+            mEffectsChromeBrowser.ShowDevTools();
         }
     }
 }

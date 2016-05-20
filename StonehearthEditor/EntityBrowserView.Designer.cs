@@ -1,33 +1,33 @@
 ﻿namespace StonehearthEditor
 {
-   partial class EntityBrowserView
-   {
-      /// <summary> 
-      /// Required designer variable.
-      /// </summary>
-      private System.ComponentModel.IContainer components = null;
+    partial class EntityBrowserView
+    {
+        /// <summary> 
+        /// Required designer variable.
+        /// </summary>
+        private System.ComponentModel.IContainer components = null;
 
-      /// <summary> 
-      /// Clean up any resources being used.
-      /// </summary>
-      /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-      protected override void Dispose(bool disposing)
-      {
-         if (disposing && (components != null))
-         {
-            components.Dispose();
-         }
-         base.Dispose(disposing);
-      }
+        /// <summary> 
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
 
-      #region Component Designer generated code
+        #region Component Designer generated code
 
-      /// <summary> 
-      /// Required method for Designer support - do not modify 
-      /// the contents of this method with the code editor.
-      /// </summary>
-      private void InitializeComponent()
-      {
+        /// <summary> 
+        /// Required method for Designer support - do not modify 
+        /// the contents of this method with the code editor.
+        /// </summary>
+        private void InitializeComponent()
+        {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(EntityBrowserView));
             this.netWorthListView = new System.Windows.Forms.ListView();
             this.item = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -439,42 +439,42 @@
             this.entityBrowserSplitContainer3.ResumeLayout(false);
             this.ResumeLayout(false);
 
-      }
+        }
 
-      #endregion
+        #endregion
 
-      private System.Windows.Forms.ListView netWorthListView;
-      private System.Windows.Forms.ColumnHeader item;
-      private System.Windows.Forms.ColumnHeader value;
-      private System.Windows.Forms.TabControl filePreviewTabs;
-      private System.Windows.Forms.PictureBox iconView;
-      private System.Windows.Forms.ColumnHeader category;
-      private System.Windows.Forms.ColumnHeader modName;
-      private System.Windows.Forms.TabControl entityBrowserTabControl;
-      private System.Windows.Forms.TabPage netWorthItemsTab;
-      private System.Windows.Forms.TabPage weaponsTab;
-      private System.Windows.Forms.ListView weaponsListView;
-      private System.Windows.Forms.ColumnHeader weaponAlias;
-      private System.Windows.Forms.ColumnHeader baseDamage;
-      private System.Windows.Forms.ColumnHeader mod;
-      private System.Windows.Forms.TabPage defenseItemsTab;
-      private System.Windows.Forms.ListView defenseItemsListView;
-      private System.Windows.Forms.ColumnHeader defenseItemAlias;
-      private System.Windows.Forms.ColumnHeader damageReduction;
-      private System.Windows.Forms.ColumnHeader defenseItemModName;
-      private System.Windows.Forms.TabPage killableEntitiesTab;
-      private System.Windows.Forms.ListView killableEntitiesListView;
-      private System.Windows.Forms.ColumnHeader killableEntity;
-      private System.Windows.Forms.ColumnHeader weaponILevel;
-      private System.Windows.Forms.ColumnHeader defenseItemILevel;
-      private System.Windows.Forms.SplitContainer entityBrowserSplitContainer1;
-      private System.Windows.Forms.SplitContainer entityBrowserSplitContainer2;
-      private System.Windows.Forms.ColumnHeader materialTags;
-      private System.Windows.Forms.ColumnHeader handedness;
-      private System.Windows.Forms.ColumnHeader roles;
-      private System.Windows.Forms.ToolStrip entityBrowserToolStrip;
-      private System.Windows.Forms.ToolStripButton filterListViewButton;
-      private System.Windows.Forms.ToolStripButton reloadToolStripItem;
+        private System.Windows.Forms.ListView netWorthListView;
+        private System.Windows.Forms.ColumnHeader item;
+        private System.Windows.Forms.ColumnHeader value;
+        private System.Windows.Forms.TabControl filePreviewTabs;
+        private System.Windows.Forms.PictureBox iconView;
+        private System.Windows.Forms.ColumnHeader category;
+        private System.Windows.Forms.ColumnHeader modName;
+        private System.Windows.Forms.TabControl entityBrowserTabControl;
+        private System.Windows.Forms.TabPage netWorthItemsTab;
+        private System.Windows.Forms.TabPage weaponsTab;
+        private System.Windows.Forms.ListView weaponsListView;
+        private System.Windows.Forms.ColumnHeader weaponAlias;
+        private System.Windows.Forms.ColumnHeader baseDamage;
+        private System.Windows.Forms.ColumnHeader mod;
+        private System.Windows.Forms.TabPage defenseItemsTab;
+        private System.Windows.Forms.ListView defenseItemsListView;
+        private System.Windows.Forms.ColumnHeader defenseItemAlias;
+        private System.Windows.Forms.ColumnHeader damageReduction;
+        private System.Windows.Forms.ColumnHeader defenseItemModName;
+        private System.Windows.Forms.TabPage killableEntitiesTab;
+        private System.Windows.Forms.ListView killableEntitiesListView;
+        private System.Windows.Forms.ColumnHeader killableEntity;
+        private System.Windows.Forms.ColumnHeader weaponILevel;
+        private System.Windows.Forms.ColumnHeader defenseItemILevel;
+        private System.Windows.Forms.SplitContainer entityBrowserSplitContainer1;
+        private System.Windows.Forms.SplitContainer entityBrowserSplitContainer2;
+        private System.Windows.Forms.ColumnHeader materialTags;
+        private System.Windows.Forms.ColumnHeader handedness;
+        private System.Windows.Forms.ColumnHeader roles;
+        private System.Windows.Forms.ToolStrip entityBrowserToolStrip;
+        private System.Windows.Forms.ToolStripButton filterListViewButton;
+        private System.Windows.Forms.ToolStripButton reloadToolStripItem;
         private System.Windows.Forms.SplitContainer entityBrowserSplitContainer3;
         private System.Windows.Forms.ListBox fileDetailsListBox;
     }
