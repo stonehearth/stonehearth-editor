@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using StonehearthEditor.Effects;
 
 namespace StonehearthEditor
 {
@@ -35,53 +36,52 @@ namespace StonehearthEditor
             ModuleDataManager.GetInstance().LoadCubemittersList(cubemittersTreeView);
         }
 
-      private IEnumerable<TreeNode> GetAllNodes(TreeView treeView)
-      {
-         Stack<TreeNode> toProcess = new Stack<TreeNode>();
-         foreach (TreeNode node in treeView.Nodes)
-         {
-            toProcess.Push(node);
-         }
-
-         while (toProcess.Count > 0)
-         {
-            TreeNode node = toProcess.Pop();
-            yield return node;
-            foreach (TreeNode child in node.Nodes)
+        private IEnumerable<TreeNode> GetAllNodes(TreeView treeView)
+        {
+            Stack<TreeNode> toProcess = new Stack<TreeNode>();
+            foreach (TreeNode node in treeView.Nodes)
             {
-               toProcess.Push(child);
+                toProcess.Push(node);
             }
-         }
-      }
 
-      public void Reload()
-      {
-         //filePreviewTabs.TabPages.Clear();
-         effectsEditorTreeView.Nodes.Clear();
-         cubemittersTreeView.Nodes.Clear();
-         ModuleDataManager.GetInstance().LoadEffectsList(effectsEditorTreeView);
-         ModuleDataManager.GetInstance().LoadCubemittersList(cubemittersTreeView);
-
-         TreeView treeView = GetTreeView(treeViewTabControl.SelectedIndex);
-         // If we are making a new file, select it in the treeview
-         if (mNewFilePath != null)
-         {
-            TreeNode[] matchingNodes = GetAllNodes(treeView)
-                                               .Where(r => r.Tag != null && r.Tag.ToString() == mNewFilePath)
-                                               .ToArray();
-            if (matchingNodes.Length > 0)
+            while (toProcess.Count > 0)
             {
-               treeView.SelectedNode = matchingNodes.First();
-               mSelectedNode = treeView.SelectedNode;
-               mNewFilePath = null;
+                TreeNode node = toProcess.Pop();
+                yield return node;
+                foreach (TreeNode child in node.Nodes)
+                {
+                    toProcess.Push(child);
+                }
             }
-         }
-         else if(mSelectedNode != null)
-         {
-            treeView.SelectedNode = mSelectedNode;
-         }
+        }
 
+        public void Reload()
+        {
+            // filePreviewTabs.TabPages.Clear();
+            effectsEditorTreeView.Nodes.Clear();
+            cubemittersTreeView.Nodes.Clear();
+            ModuleDataManager.GetInstance().LoadEffectsList(effectsEditorTreeView);
+            ModuleDataManager.GetInstance().LoadCubemittersList(cubemittersTreeView);
 
+            TreeView treeView = GetTreeView(treeViewTabControl.SelectedIndex);
+
+            // If we are making a new file, select it in the treeview
+            if (mNewFilePath != null)
+            {
+                TreeNode[] matchingNodes = GetAllNodes(treeView)
+                                                   .Where(r => r.Tag != null && r.Tag.ToString() == mNewFilePath)
+                                                   .ToArray();
+                if (matchingNodes.Length > 0)
+                {
+                    treeView.SelectedNode = matchingNodes.First();
+                    mSelectedNode = treeView.SelectedNode;
+                    mNewFilePath = null;
+                }
+            }
+            else if (mSelectedNode != null)
+            {
+                treeView.SelectedNode = mSelectedNode;
+            }
         }
 
         private void effectsOpenFileButton_Click(object sender, EventArgs e)
@@ -202,6 +202,7 @@ namespace StonehearthEditor
             {
                 // If no file data found, just clear file preview
                 filePreviewTabs.TabPages.Clear();
+                return;
             }
 
             cubemittersTreeView.Focus();
@@ -264,11 +265,13 @@ namespace StonehearthEditor
                     MessageBox.Show("You must enter a name longer than 1 character for the clone!");
                     return false;
                 }
+
                 if (potentialNewNodeName.Equals(originalName))
                 {
                     MessageBox.Show("You must enter a new unique name for the clone!");
                     return false;
                 }
+
                 HashSet<string> dependencies = ModuleDataManager.GetInstance().PreviewCloneDependencies(mFileData, parameters);
                 HashSet<string> savedUnwantedItems = mPreviewCallback != null ? mPreviewCallback.GetSavedUnwantedItems() : null;
                 mPreviewCallback = new PreviewCloneFileCallback(mViewer, mFileData, parameters);
@@ -279,6 +282,7 @@ namespace StonehearthEditor
                 {
                     return false;
                 }
+
                 return true;
             }
         }
@@ -308,10 +312,11 @@ namespace StonehearthEditor
             {
                 if (ModuleDataManager.GetInstance().ExecuteClone(mFileData, mParameters, unwantedItems))
                 {
-               newFilePath = mParameters.TransformParameter(mFileData.Path);
-               mViewer.SetNewFilePath(newFilePath);
+                    newFilePath = mParameters.TransformParameter(mFileData.Path);
+                    mViewer.SetNewFilePath(newFilePath);
                     mViewer.Reload();
                 }
+
                 return true;
             }
 
@@ -371,6 +376,19 @@ namespace StonehearthEditor
         private void cefDevToolsButton_Click(object sender, EventArgs e)
         {
             mEffectsChromeBrowser.ShowDevTools();
+        }
+
+        // TODO: Implement these in cef
+        private void effectsBuilderView_PreviewRequested(object sender, EventArgs e)
+        {
+            // TODO
+        }
+
+        private void effectsBuilderView_SaveRequested(object sender, EventArgs e)
+        {
+            // string json = effectsBuilderView.GetJsonString();
+            // var desktop = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            // File.WriteAllText(Path.Combine(desktop, "a.txt"), json);
         }
     }
 }
