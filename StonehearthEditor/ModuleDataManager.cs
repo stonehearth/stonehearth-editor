@@ -178,7 +178,7 @@ namespace StonehearthEditor
                // check all the folders
                foreach (string folderPath in Directory.EnumerateDirectories(searchDirectoryPath))
                {
-                  string rootFolderName = JsonHelper.GetLastStringInPath(folderPath);
+                  string rootFolderName = System.IO.Path.GetFileName(folderPath);
                   TreeNode root = new TreeNode(rootFolderName);
                   root.ExpandAll();
                   // Append tree nodes from nested folders and files
@@ -203,7 +203,7 @@ namespace StonehearthEditor
                {
                   root.Tag = JsonHelper.NormalizeSystemPath(filePath);
                }
-               TreeNode node = new TreeNode(JsonHelper.GetLastStringInPath(filePath));
+               TreeNode node = new TreeNode(System.IO.Path.GetFileName(filePath));
                node.Tag = JsonHelper.NormalizeSystemPath(filePath);
                root.Nodes.Add(node);
             }
@@ -212,7 +212,7 @@ namespace StonehearthEditor
          {
             foreach (string folderPath in folderPaths)
             {
-               TreeNode subRoot = new TreeNode(JsonHelper.GetLastStringInPath(folderPath));
+               TreeNode subRoot = new TreeNode(System.IO.Path.GetFileName(folderPath));
                subRoot.Tag = JsonHelper.NormalizeSystemPath(folderPath);
                AppendTreeNodes(subRoot, folderPath);
             }

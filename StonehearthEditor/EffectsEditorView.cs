@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Drawing;
 using System.Data;
+using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,7 +13,9 @@ namespace StonehearthEditor
 {
     public partial class EffectsEditorView : UserControl, IReloadable
     {
+        private static TreeNode mSelectedNode = null;
         private Dictionary<string, FileData[]> mFileDataMap = new Dictionary<string, FileData[]>();
+
         public EffectsEditorView()
         {
             InitializeComponent();
@@ -48,6 +51,7 @@ namespace StonehearthEditor
             {
                 return;
             }
+
             LoadFilePreview(filePath);
         }
 
@@ -56,15 +60,17 @@ namespace StonehearthEditor
         {
             TabPage newTabPage = new TabPage();
             newTabPage.Text = fileData.FileName;
-            //if (fileData.IsModified)
-            //{
+
+            // if (fileData.IsModified)
+            // {
             //   newTabPage.Text = newTabPage.Text + "*";
-            //}
+            // }
             if (fileData.HasErrors)
             {
                 newTabPage.ImageIndex = 0;
                 newTabPage.ToolTipText = fileData.Errors;
             }
+
             FilePreview filePreview = new FilePreview(this, fileData);
             filePreview.Dock = DockStyle.Fill;
             newTabPage.Controls.Add(filePreview);
@@ -97,12 +103,13 @@ namespace StonehearthEditor
                     mFileDataMap[filePath] = fileData;
                 }
             }
+
             return fileData;
         }
 
         private void effectsEditorTreeView_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            Object fullPath = effectsEditorTreeView.SelectedNode.Tag;
+            object fullPath = effectsEditorTreeView.SelectedNode.Tag;
             if (fullPath != null)
             {
                 LoadFilePreview(fullPath.ToString());
@@ -112,18 +119,21 @@ namespace StonehearthEditor
                 // If no file data found, just clear file preview
                 filePreviewTabs.TabPages.Clear();
             }
+
             effectsEditorTreeView.Focus();
         }
 
         private void effectsEditorTreeView_MouseClick(object sender, MouseEventArgs e)
         {
             effectsEditorTreeView.SelectedNode = effectsEditorTreeView.GetNodeAt(e.X, e.Y);
+            mSelectedNode = effectsEditorTreeView.SelectedNode;
             CheckShowContextMenu(effectsEditorTreeView, e);
         }
 
         private void cubemittersTreeView_MouseClick(object sender, MouseEventArgs e)
         {
             cubemittersTreeView.SelectedNode = cubemittersTreeView.GetNodeAt(e.X, e.Y);
+            mSelectedNode = cubemittersTreeView.SelectedNode;
             CheckShowContextMenu(cubemittersTreeView, e);
         }
 
@@ -137,7 +147,7 @@ namespace StonehearthEditor
 
         private void cubemittersTreeView_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            Object fullPath = cubemittersTreeView.SelectedNode.Tag;
+            object fullPath = cubemittersTreeView.SelectedNode.Tag;
             if (fullPath != null)
             {
                 LoadFilePreview(fullPath.ToString());
@@ -147,6 +157,7 @@ namespace StonehearthEditor
                 // If no file data found, just clear file preview
                 filePreviewTabs.TabPages.Clear();
             }
+
             cubemittersTreeView.Focus();
         }
 
@@ -156,6 +167,7 @@ namespace StonehearthEditor
             {
                 return cubemittersTreeView;
             }
+
             return effectsEditorTreeView;
         }
 
@@ -165,6 +177,12 @@ namespace StonehearthEditor
             TreeNode selectedNode = treeView.SelectedNode;
             string filePath = selectedNode.Tag != null ? selectedNode.Tag.ToString() : null;
 
+            if (filePath == null)
+            {
+                MessageBox.Show("Invalid effect file!");
+                return;
+            }
+
             FileData selectedFileData = GetFileDataFromPath(filePath).First<FileData>();
             CloneEffectFileCallback callback = new CloneEffectFileCallback(this, selectedFileData);
             CloneDialog dialog = new CloneDialog(selectedFileData.FileName, selectedFileData.GetNameForCloning());
@@ -172,16 +190,19 @@ namespace StonehearthEditor
             dialog.ShowDialog();
         }
 
+        // TODO: Refactor dialog/callback code so this isn't copy pasted from manifest view classes
         private class CloneEffectFileCallback : CloneDialog.IDialogCallback
         {
             private FileData mFileData;
             private EffectsEditorView mViewer;
             private PreviewCloneFileCallback mPreviewCallback;
+
             public CloneEffectFileCallback(EffectsEditorView viewer, FileData file)
             {
                 mViewer = viewer;
                 mFileData = file;
             }
+
             public void OnCancelled()
             {
                 // Do nothing. user cancelled
@@ -249,10 +270,41 @@ namespace StonehearthEditor
             {
                 return savedUnwantedItems;
             }
+
             public void SetUnwantedItems(HashSet<string> items)
             {
                 savedUnwantedItems = items;
             }
+        }
+
+        public void newFileButton_Click(object sender, EventArgs e)
+        {
+            if (mSelectedNode != null)
+            {
+                string path = mSelectedNode.Tag != null ? JsonHelper.NormalizeSystemPath(mSelectedNode.Tag.ToString()) : null;
+                if (path != null)
+                {
+                    saveEffectsFileDialog.InitialDirectory = System.IO.Path.GetDirectoryName(path);
+                }
+            }
+            else
+            {
+                saveEffectsFileDialog.InitialDirectory = System.IO.Path.GetFullPath(ModuleDataManager.GetInstance().ModsDirectoryPath);
+            }
+
+            saveEffectsFileDialog.ShowDialog();
+            saveEffectsFileDialog.RestoreDirectory = true;
+        }
+
+        private void saveEffectsFileDialog_FileOk(object sender, CancelEventArgs e)
+        {
+            string directory = System.IO.Path.GetFullPath(saveEffectsFileDialog.FileName);
+            using (StreamWriter wr = new StreamWriter(directory, false, new UTF8Encoding(false)))
+            {
+                wr.Write("{\n\n}");
+            }
+
+            Reload();
         }
     }
 }
