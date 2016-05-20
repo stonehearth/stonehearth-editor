@@ -13,10 +13,9 @@ namespace StonehearthEditor
 {
     public class EffectsChromeBrowser
     {
-        private static EffectsChromeBrowser sInstance = null;
         private static readonly string myPath = Application.StartupPath;
-        private static readonly string htmlResources = Path.Combine(myPath, "htmlResources");
-        private static readonly string htmlPages = Path.Combine(htmlResources, "html");
+        private static readonly string myPages = Path.Combine(myPath, "pages");
+        private static EffectsChromeBrowser sInstance = null;
         private ChromiumWebBrowser mChromeBrowser;
 
         public static EffectsChromeBrowser GetInstance()
@@ -37,7 +36,8 @@ namespace StonehearthEditor
         {
             CefSettings cSettings = new CefSettings();
             Cef.Initialize(cSettings);
-            mChromeBrowser = new ChromiumWebBrowser(GetPagePath("cubemitter.html"));
+            // Open main page
+            mChromeBrowser = new ChromiumWebBrowser(GetPagePath("main.html"));
             mChromeBrowser.Dock = DockStyle.Fill;
             panel.Controls.Add(mChromeBrowser);
         }
@@ -60,7 +60,7 @@ namespace StonehearthEditor
 
         private string GetPagePath(string pageName)
         {
-            return Path.Combine(htmlPages, pageName);
+            return Path.Combine(myPages, pageName);
         }
 
         private void SwitchPage(string pageName)
