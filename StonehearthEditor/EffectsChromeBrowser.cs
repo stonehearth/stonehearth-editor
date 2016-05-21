@@ -39,8 +39,8 @@ namespace StonehearthEditor
 
             // Open main page
             mChromeBrowser = new ChromiumWebBrowser(GetPagePath("main.html"));
-            mChromeBrowser.Dock = DockStyle.Fill;
             panel.Controls.Add(mChromeBrowser);
+            mChromeBrowser.Dock = DockStyle.Fill;
 
             // Test javascript
             mChromeBrowser.RegisterJsObject("eventHandler", new Effects.EffectsEventHandler());

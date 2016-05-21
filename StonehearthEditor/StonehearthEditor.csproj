@@ -324,29 +324,31 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <None Include="styles\bootstrap-theme.css.map">
+    <None Include="App_Readme\Handlebarsjs_LICENSE" />
+    <None Include="App_Readme\Handlebarsjs_README.md" />
+    <None Include="pages\styles\bootstrap-theme.css.map">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="styles\bootstrap-theme.min.css.map">
+    <None Include="pages\styles\bootstrap-theme.min.css.map">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="styles\bootstrap.css.map">
+    <None Include="pages\styles\bootstrap.css.map">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="styles\bootstrap.min.css.map">
+    <None Include="pages\styles\bootstrap.min.css.map">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="defaultJson\defaultIconic.json" />
-    <None Include="fonts\glyphicons-halflings-regular.eot">
+    <None Include="pages\fonts\glyphicons-halflings-regular.eot">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="fonts\glyphicons-halflings-regular.ttf">
+    <None Include="pages\fonts\glyphicons-halflings-regular.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="fonts\glyphicons-halflings-regular.woff">
+    <None Include="pages\fonts\glyphicons-halflings-regular.woff">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="fonts\glyphicons-halflings-regular.woff2">
+    <None Include="pages\fonts\glyphicons-halflings-regular.woff2">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
@@ -359,9 +361,11 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <None Include="scripts\jquery-1.9.1.min.map">
+    <None Include="pages\scripts\jquery-1.9.1.min.map">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="pages\scripts\ember-data.js.map" />
+    <None Include="pages\scripts\jquery-2.1.1.min.map" />
     <None Include="scripts\loc_fields.json" />
     <None Include="StonehearthEditor.ruleset" />
   </ItemGroup>
@@ -399,41 +403,60 @@
     <Content Include="pages\main.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="styles\bootstrap-theme.css">
+    <Content Include="pages\styles\bootstrap-theme.css">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="styles\bootstrap-theme.min.css">
+    <Content Include="pages\styles\bootstrap-theme.min.css">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="styles\bootstrap.css">
+    <Content Include="pages\styles\bootstrap.css">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="styles\bootstrap.min.css">
+    <Content Include="pages\styles\bootstrap.min.css">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="fonts\glyphicons-halflings-regular.svg">
+    <Content Include="pages\fonts\glyphicons-halflings-regular.svg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="pages\main.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="scripts\bootstrap.js">
+    <Content Include="pages\scripts\bootstrap.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="scripts\bootstrap.min.js">
+    <Content Include="pages\scripts\bootstrap.min.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="scripts\check_loc_keys.py" />
+    <Content Include="pages\scripts\ember-data.js" />
+    <Content Include="pages\scripts\ember-data.min.js" />
+    <Content Include="pages\scripts\ember-data.prod.js" />
+    <Content Include="pages\scripts\ember-template-compiler.js" />
+    <Content Include="pages\scripts\ember.debug.js" />
+    <Content Include="pages\scripts\ember.js" />
+    <Content Include="pages\scripts\ember.min.js" />
+    <Content Include="pages\scripts\ember.prod.js" />
     <Content Include="scripts\generate_loc_keys.py" />
-    <Content Include="scripts\jquery-1.9.1.intellisense.js">
+    <Content Include="pages\scripts\jquery-1.9.1.intellisense.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="scripts\jquery-1.9.1.js">
+    <Content Include="pages\scripts\jquery-1.9.1.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="scripts\jquery-1.9.1.min.js">
+    <Content Include="pages\scripts\jquery-1.9.1.min.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="pages\scripts\handlebars.amd.js" />
+    <Content Include="pages\scripts\handlebars.amd.min.js" />
+    <Content Include="pages\scripts\handlebars.js" />
+    <Content Include="pages\scripts\handlebars.min.js" />
+    <Content Include="pages\scripts\handlebars.runtime.amd.js" />
+    <Content Include="pages\scripts\handlebars.runtime.amd.min.js" />
+    <Content Include="pages\scripts\handlebars.runtime.js" />
+    <Content Include="pages\scripts\handlebars.runtime.min.js" />
+    <Content Include="pages\scripts\jquery-2.1.1.intellisense.js" />
+    <Content Include="pages\scripts\jquery-2.1.1.js" />
+    <Content Include="pages\scripts\jquery-2.1.1.min.js" />
     <Content Include="scripts\json_selector.py" />
   </ItemGroup>
   <ItemGroup>
