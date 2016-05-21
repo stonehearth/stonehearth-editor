@@ -24,6 +24,11 @@ namespace StonehearthEditor.Effects
 
         public event EventHandler PreviewRequested;
 
+        public void testCallFromJavaScript(string arg)
+        {
+            MessageBox.Show("This is a message in .NET that was called with the value: " + arg);
+        }
+
         public void ReloadEditor(JToken json, Property property)
         {
             this.property = property;

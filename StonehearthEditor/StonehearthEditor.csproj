@@ -177,6 +177,7 @@
     <Compile Include="Effects\Complex.cs" />
     <Compile Include="Effects\Dimension.cs" />
     <Compile Include="Effects\EffectKinds.cs" />
+    <Compile Include="Effects\EffectsEventHandler.cs" />
     <Compile Include="Effects\Int.cs" />
     <Compile Include="Effects\Origin.cs" />
     <Compile Include="Effects\Parameter.cs" />
@@ -395,6 +396,9 @@
     <None Include="images\action_add_16xSM.png" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="pages\main.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="styles\bootstrap-theme.css">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

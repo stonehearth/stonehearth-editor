@@ -24,6 +24,7 @@
         </p>
 
         <button class="btn btn-primary" id="buttonOne">Save Form Values</button>
+        <button class="btn btn-primary" id="buttonTwo">Button Two</button>
 
         <br />
         <br />
@@ -75,6 +76,10 @@
     <script src="../scripts/jquery-1.9.1.min.js"></script>
     <script src="../scripts/bootstrap.min.js"></script>
 
+    <!-- Effect Scripts -->
+    
+    <script src="main.js"></script>
+
     <script>
 
     function isEmpty(str)
@@ -112,11 +117,6 @@
       }
 
       formEntryHandler.saveCredentials(name, email);
-    });
-
-    $('#buttonTwo').on('click', function (e)
-    {
-
     });
 
     $('#buttonThree').on('click', function (e)

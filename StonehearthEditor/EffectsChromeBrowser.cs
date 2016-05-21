@@ -36,10 +36,14 @@ namespace StonehearthEditor
         {
             CefSettings cSettings = new CefSettings();
             Cef.Initialize(cSettings);
+
             // Open main page
             mChromeBrowser = new ChromiumWebBrowser(GetPagePath("main.html"));
             mChromeBrowser.Dock = DockStyle.Fill;
             panel.Controls.Add(mChromeBrowser);
+
+            // Test javascript
+            mChromeBrowser.RegisterJsObject("eventHandler", new Effects.EffectsEventHandler());
         }
 
         public void LoadGameTest()
