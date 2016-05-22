@@ -9,12 +9,13 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using StonehearthEditor.Effects;
+using Newtonsoft.Json.Linq;
 
 namespace StonehearthEditor
 {
     public partial class EffectsEditorView : UserControl, IReloadable
     {
-        private Dictionary<string, FileData[]> mFileDataMap = new Dictionary<string, FileData[]>();
+        private Dictionary<string, FileData> mFileDataMap = new Dictionary<string, FileData>();
         private TreeNode mSelectedNode = null;
         private string mNewFilePath = null;
         private EffectsChromeBrowser mEffectsChromeBrowser;
@@ -127,17 +128,15 @@ namespace StonehearthEditor
         private void LoadFilePreview(string filePath)
         {
             filePreviewTabs.TabPages.Clear();
-            FileData[] fileData = GetFileDataFromPath(filePath);
+            FileData fileData = GetFileDataFromPath(filePath);
 
-            foreach (FileData openedFile in fileData)
-            {
-                FillFilePreview(openedFile);
-            }
+            FillFilePreview(fileData);
+
         }
 
-        private FileData[] GetFileDataFromPath(string filePath)
+        private FileData GetFileDataFromPath(string filePath)
         {
-            FileData[] fileData = { };
+            FileData fileData;
             mFileDataMap.TryGetValue(filePath, out fileData);
             if (fileData == null)
             {
@@ -145,7 +144,7 @@ namespace StonehearthEditor
                 if (json != null)
                 {
                     json.Load();
-                    fileData = json.OpenedFiles.ToArray();
+                    fileData = json.OpenedFiles.First<FileData>();
                     mFileDataMap[filePath] = fileData;
                 }
             }
@@ -197,6 +196,22 @@ namespace StonehearthEditor
             if (fullPath != null)
             {
                 LoadFilePreview(fullPath.ToString());
+                FileData fileData = GetFileDataFromPath(fullPath.ToString());
+                string jsonString = fileData.FlatFileData;
+                JObject json = null;
+                try
+                {
+                    json = JObject.Parse(jsonString);
+                }
+                catch
+                {
+                    // TODO: Check if file is an xml and handle that
+                    MessageBox.Show("invalid json");
+                    filePreviewTabs.TabPages.Clear();
+                    return;
+                }
+
+                mEffectsChromeBrowser.LoadFromJson(json);
             }
             else
             {
@@ -230,7 +245,7 @@ namespace StonehearthEditor
                 return;
             }
 
-            FileData selectedFileData = GetFileDataFromPath(filePath).First<FileData>();
+            FileData selectedFileData = GetFileDataFromPath(filePath);
             CloneEffectFileCallback callback = new CloneEffectFileCallback(this, selectedFileData);
             CloneDialog dialog = new CloneDialog(selectedFileData.FileName, selectedFileData.GetNameForCloning());
             dialog.SetCallback(callback);

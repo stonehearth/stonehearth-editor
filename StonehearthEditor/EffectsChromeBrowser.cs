@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using CefSharp;
 using CefSharp.WinForms;
+using Newtonsoft.Json.Linq;
+using StonehearthEditor.Effects;
 
 namespace StonehearthEditor
 {
@@ -16,7 +18,9 @@ namespace StonehearthEditor
         private static readonly string myPath = Application.StartupPath;
         private static readonly string myPages = Path.Combine(myPath, "pages");
         private static EffectsChromeBrowser sInstance = null;
+        private bool isFrameLoaded = false;
         private ChromiumWebBrowser mChromeBrowser;
+        private EffectsJsObject mEffectsJsObject;
 
         public static EffectsChromeBrowser GetInstance()
         {
@@ -28,8 +32,8 @@ namespace StonehearthEditor
             return sInstance;
         }
 
-        public EffectsChromeBrowser()
-        {
+        private EffectsChromeBrowser()
+       {
         }
 
         public void InitBrowser(Panel panel)
@@ -42,8 +46,50 @@ namespace StonehearthEditor
             panel.Controls.Add(mChromeBrowser);
             mChromeBrowser.Dock = DockStyle.Fill;
 
+            ExposeObjects();
+        }
+
+        private void ExposeObjects()
+        {
             // Test javascript
             mChromeBrowser.RegisterJsObject("eventHandler", new Effects.EffectsEventHandler());
+
+            mEffectsJsObject = new EffectsJsObject();
+            mChromeBrowser.RegisterJsObject("effectsJsObject", mEffectsJsObject);
+        }
+
+        public void LoadFromJson(JObject jObject)
+        {
+            // TODO: check if file is a cubemitter vs animated light
+            Property cubemitter = EffectKinds.Cubemitter;
+            PropertyValue value = cubemitter.FromJson(jObject);
+            UpdatePropertyValue(cubemitter, value);
+        }
+
+        public void UpdatePropertyValue(Property property, PropertyValue propertyValue)
+        {
+            mEffectsJsObject.property = property;
+            mEffectsJsObject.propertyValue = propertyValue;
+        }
+
+        public void RunScript(string script)
+        {
+            if (!isFrameLoaded)
+            {
+                mChromeBrowser.FrameLoadEnd += (sender, args) =>
+                {
+                    // Wait for the MainFrame to finish loading
+                    if (args.Frame.IsMain)
+                    {
+                        isFrameLoaded = true;
+                        args.Frame.ExecuteJavaScriptAsync(script);
+                    }
+                };
+            }
+            else
+            {
+                mChromeBrowser.ExecuteScriptAsync(script);
+            }
         }
 
         public void LoadGameTest()
@@ -73,24 +119,3 @@ namespace StonehearthEditor
         }
     }
 }
-
-//string exeLocation, args;
-
-//OpenFileDialog fileDialog = new OpenFileDialog();
-//fileDialog.Title = "Open Stonehearth.exe";
-//fileDialog.DefaultExt = ".exe";
-//if (fileDialog.ShowDialog() == DialogResult.OK)
-//{
-//    exeLocation = fileDialog.FileName;
-//}
-
-//FolderBrowserDialog folderDialog = new FolderBrowserDialog();
-//folderDialog.Description = "Set working directory (location so stonehearth_data)";
-//if (folderDialog.ShowDialog() == DialogResult.OK)
-//{
-//    args = folderDialog.SelectedPath;
-//}
-// TODO: Use these file paths instead of hardcoded paths
-
-// Launch game with effect test runninig
-// TODO: Download mod test folder with effect test if it does not exist in mods folder

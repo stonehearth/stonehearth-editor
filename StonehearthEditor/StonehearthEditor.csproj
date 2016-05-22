@@ -178,6 +178,7 @@
     <Compile Include="Effects\Dimension.cs" />
     <Compile Include="Effects\EffectKinds.cs" />
     <Compile Include="Effects\EffectsEventHandler.cs" />
+    <Compile Include="Effects\EffectsJsObject.cs" />
     <Compile Include="Effects\Int.cs" />
     <Compile Include="Effects\Origin.cs" />
     <Compile Include="Effects\Parameter.cs" />
@@ -361,11 +362,15 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <None Include="pages\scripts\jquery-1.9.1.min.map">
+    <None Include="pages\scripts\libs\jquery-1.9.1.min.map">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="pages\scripts\ember-data.js.map" />
-    <None Include="pages\scripts\jquery-2.1.1.min.map" />
+    <None Include="pages\scripts\libs\ember-data.js.map">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="pages\scripts\libs\jquery-2.1.1.min.map">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="scripts\loc_fields.json" />
     <None Include="StonehearthEditor.ruleset" />
   </ItemGroup>
@@ -400,7 +405,16 @@
     <None Include="images\action_add_16xSM.png" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="pages\main.js">
+    <Content Include="pages\scripts\effect-property.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="pages\scripts\root\main.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="pages\scripts\root\routes.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="pages\scripts\string-property.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="pages\styles\bootstrap-theme.css">
@@ -421,42 +435,80 @@
     <Content Include="pages\main.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="pages\scripts\bootstrap.js">
+    <Content Include="pages\scripts\libs\bootstrap.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="pages\scripts\bootstrap.min.js">
+    <Content Include="pages\scripts\libs\bootstrap.min.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="scripts\check_loc_keys.py" />
-    <Content Include="pages\scripts\ember-data.js" />
-    <Content Include="pages\scripts\ember-data.min.js" />
-    <Content Include="pages\scripts\ember-data.prod.js" />
-    <Content Include="pages\scripts\ember-template-compiler.js" />
-    <Content Include="pages\scripts\ember.debug.js" />
-    <Content Include="pages\scripts\ember.js" />
-    <Content Include="pages\scripts\ember.min.js" />
-    <Content Include="pages\scripts\ember.prod.js" />
+    <Content Include="pages\scripts\libs\ember-data.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="pages\scripts\libs\ember-data.min.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="pages\scripts\libs\ember-data.prod.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="pages\scripts\libs\ember-template-compiler.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="pages\scripts\libs\ember.debug.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="pages\scripts\libs\ember.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="pages\scripts\libs\ember.min.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="pages\scripts\libs\ember.prod.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="scripts\generate_loc_keys.py" />
-    <Content Include="pages\scripts\jquery-1.9.1.intellisense.js">
+    <Content Include="pages\scripts\libs\jquery-1.9.1.intellisense.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="pages\scripts\jquery-1.9.1.js">
+    <Content Include="pages\scripts\libs\jquery-1.9.1.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="pages\scripts\jquery-1.9.1.min.js">
+    <Content Include="pages\scripts\libs\jquery-1.9.1.min.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="pages\scripts\handlebars.amd.js" />
-    <Content Include="pages\scripts\handlebars.amd.min.js" />
-    <Content Include="pages\scripts\handlebars.js" />
-    <Content Include="pages\scripts\handlebars.min.js" />
-    <Content Include="pages\scripts\handlebars.runtime.amd.js" />
-    <Content Include="pages\scripts\handlebars.runtime.amd.min.js" />
-    <Content Include="pages\scripts\handlebars.runtime.js" />
-    <Content Include="pages\scripts\handlebars.runtime.min.js" />
-    <Content Include="pages\scripts\jquery-2.1.1.intellisense.js" />
-    <Content Include="pages\scripts\jquery-2.1.1.js" />
-    <Content Include="pages\scripts\jquery-2.1.1.min.js" />
+    <Content Include="pages\scripts\libs\handlebars.amd.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="pages\scripts\libs\handlebars.amd.min.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="pages\scripts\libs\handlebars.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="pages\scripts\libs\handlebars.min.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="pages\scripts\libs\handlebars.runtime.amd.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="pages\scripts\libs\handlebars.runtime.amd.min.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="pages\scripts\libs\handlebars.runtime.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="pages\scripts\libs\handlebars.runtime.min.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="pages\scripts\libs\jquery-2.1.1.intellisense.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="pages\scripts\libs\jquery-2.1.1.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="pages\scripts\libs\jquery-2.1.1.min.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="scripts\json_selector.py" />
   </ItemGroup>
   <ItemGroup>

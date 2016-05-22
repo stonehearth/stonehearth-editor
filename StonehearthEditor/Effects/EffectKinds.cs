@@ -10,7 +10,7 @@ namespace StonehearthEditor.Effects
 {
     public static class EffectKinds
     {
-        public static readonly Property CubeEmitter = new ComplexProperty(null, false,
+        public static readonly Property Cubemitter = new ComplexProperty(null, false,
            new StringProperty("name"),
            new IntProperty("duration"),
            new ComplexProperty("particle", false,
