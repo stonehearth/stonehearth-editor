@@ -211,7 +211,7 @@ namespace StonehearthEditor
                     return;
                 }
 
-                mEffectsChromeBrowser.LoadFromJson(json);
+                mEffectsChromeBrowser.LoadFromJson("cubeEmitter", jsonString);
             }
             else
             {
@@ -404,6 +404,11 @@ namespace StonehearthEditor
             // string json = effectsBuilderView.GetJsonString();
             // var desktop = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
             // File.WriteAllText(Path.Combine(desktop, "a.txt"), json);
+        }
+
+        private void toolStripButton1_Click(object sender, EventArgs e)
+        {
+            mEffectsChromeBrowser.Refresh();
         }
     }
 }

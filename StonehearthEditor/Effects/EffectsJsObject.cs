@@ -8,8 +8,8 @@ namespace StonehearthEditor.Effects
 {
     class EffectsJsObject
     {
-        public Property property { get; set; }
+        public string EffectKind { get; set; }
 
-        public PropertyValue propertyValue { get; set; }
+        public string Json { get; set; }
     }
 }

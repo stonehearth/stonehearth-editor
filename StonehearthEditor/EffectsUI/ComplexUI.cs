@@ -1,14 +1,11 @@
 ﻿using StonehearthEditor.Effects;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace StonehearthEditor.EffectsUI
 {
-   public sealed class ComplexUI : TableLayoutPanel
+    public sealed class ComplexUI : TableLayoutPanel
    {
       private readonly ComplexProperty property;
       private readonly ComplexPropertyValue value;

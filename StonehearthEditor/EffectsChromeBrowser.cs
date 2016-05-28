@@ -33,7 +33,7 @@ namespace StonehearthEditor
         }
 
         private EffectsChromeBrowser()
-       {
+        {
         }
 
         public void InitBrowser(Panel panel)
@@ -43,37 +43,44 @@ namespace StonehearthEditor
 
             // Open main page
             mChromeBrowser = new ChromiumWebBrowser(GetPagePath("main.html"));
+            mChromeBrowser.LoadError += MChromeBrowser_LoadError;
             panel.Controls.Add(mChromeBrowser);
             mChromeBrowser.Dock = DockStyle.Fill;
 
             ExposeObjects();
         }
 
+        private void MChromeBrowser_LoadError(object sender, LoadErrorEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
         private void ExposeObjects()
         {
             // Test javascript
-            mChromeBrowser.RegisterJsObject("eventHandler", new Effects.EffectsEventHandler());
+            //mChromeBrowser.RegisterJsObject("eventHandler", new Effects.EffectsEventHandler());
 
-            mEffectsJsObject = new EffectsJsObject();
-            mChromeBrowser.RegisterJsObject("effectsJsObject", mEffectsJsObject);
+            //mEffectsJsObject = new EffectsJsObject();
+            //mChromeBrowser.RegisterJsObject("effectsJsObject", mEffectsJsObject);
         }
 
-        public void LoadFromJson(JObject jObject)
-        {
-            // TODO: check if file is a cubemitter vs animated light
-            Property cubemitter = EffectKinds.Cubemitter;
-            PropertyValue value = cubemitter.FromJson(jObject);
-            UpdatePropertyValue(cubemitter, value);
-        }
+        private string effectKind;
+        private string json;
 
-        public void UpdatePropertyValue(Property property, PropertyValue propertyValue)
+        public void LoadFromJson(string effectKind, string json)
         {
-            mEffectsJsObject.property = property;
-            mEffectsJsObject.propertyValue = propertyValue;
+            this.effectKind = effectKind;
+            this.json = json;
+            this.Refresh();
+            //mEffectsJsObject.EffectKind = effectKind;
+            //mEffectsJsObject.Json = json;
         }
 
         public void RunScript(string script)
         {
+            mChromeBrowser.EvaluateScriptAsync(script).Wait();
+            return;
+
             if (!isFrameLoaded)
             {
                 mChromeBrowser.FrameLoadEnd += (sender, args) =>
@@ -82,13 +89,13 @@ namespace StonehearthEditor
                     if (args.Frame.IsMain)
                     {
                         isFrameLoaded = true;
-                        args.Frame.ExecuteJavaScriptAsync(script);
+                        args.Frame.EvaluateScriptAsync(script).Wait();
                     }
                 };
             }
             else
             {
-                mChromeBrowser.ExecuteScriptAsync(script);
+                mChromeBrowser.EvaluateScriptAsync(script).Wait();
             }
         }
 
@@ -116,6 +123,58 @@ namespace StonehearthEditor
         private void SwitchPage(string pageName)
         {
             mChromeBrowser.Load(GetPagePath(pageName));
+        }
+        public class RenderProcessMessageHandler : IRenderProcessMessageHandler
+        {
+            // Wait for the underlying `Javascript Context` to be created, this is only called for the main frame.
+            // If the page has no javascript, no context will be created.
+            void IRenderProcessMessageHandler.OnContextCreated(IWebBrowser browserControl, IBrowser browser, IFrame frame)
+            {
+                const string script = "document.addEventListener('DOMContentLoaded', function(){ alert('DomLoaded'); });";
+
+                frame.ExecuteJavaScriptAsync(
+                        string.Format(
+                            @"
+                       document.addEventListener('DOMContentLoaded', function() {{
+                            CsApi.effectKind = ""{0}"";
+                            CsApi.json = {1};
+                            CsApi.onSelectionChanged();
+                        }});
+                    ",
+                            effectKind,
+                            json));
+            }
+
+            public void OnFocusedNodeChanged(IWebBrowser browserControl, IBrowser browser, IFrame frame, IDomNode node)
+            {
+            }
+
+            private string effectKind;
+            private string json;
+
+            public RenderProcessMessageHandler(string effectKind, string json)
+            {
+                this.effectKind = effectKind;
+                this.json = json;
+            }
+        }
+
+        public void Refresh()
+        {
+            // HAX HAX HAX !!!
+            if (Directory.Exists(@"..\..\..\pages"))
+            {
+                Directory.Delete("pages", true);
+                Process proc = new Process();
+                proc.StartInfo.UseShellExecute = false;
+                proc.StartInfo.CreateNoWindow = true;
+                proc.StartInfo.FileName = @"C:\WINDOWS\system32\xcopy.exe";
+                proc.StartInfo.Arguments = @"..\..\..\pages pages /E /I";
+                proc.Start();
+                proc.WaitForExit();
+            }
+            mChromeBrowser.RenderProcessMessageHandler = new RenderProcessMessageHandler(effectKind, json);
+            mChromeBrowser.Reload(true);
         }
     }
 }
