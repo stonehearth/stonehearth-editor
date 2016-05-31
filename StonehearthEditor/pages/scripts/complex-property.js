@@ -1,12 +1,10 @@
 ﻿ComplexProperty = EffectProperty.extend({
+    componentName: 'complex-property',
     children: null, // list of EffectProperty
     optional: null, // bool
     extra: null, // dictionary of extra fields
-    _isMissing: null, // bool
-    isMissing: Ember.computed('_isMissing', function () {
-        return this.get('_isMissing');
-    }),
-    isValid: Ember.computed('children', function () {
+    isMissing: null, // bool, set internally
+    isValid: Ember.computed('children', 'children.@each.isValid', function () {
         var children = this.get('children');
         for (var i = 0; i < children.length; i++) {
             if (children[i].get('isMissing')) {
@@ -38,7 +36,7 @@
         Utils.assert(Utils.isUndefinedOrTypeOf('object', json));
         var children = this.get('children');
         var isMissing = json === undefined;
-        this.set('_isMissing', isMissing);
+        this.set('isMissing', isMissing);
         if (isMissing) {
             for (var i = 0; i < children.length; i++) {
                 children[i].fromJson(undefined);
@@ -61,5 +59,8 @@
             }
         }
         this.set('extra', extra);
-    }
+    },
+    isRoot: Ember.computed('name', function () {
+        return this.get('name') === null;
+    }),
 });

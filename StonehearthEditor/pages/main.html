@@ -15,26 +15,100 @@
     <script src="scripts/root/main.js"></script>
     <script src="scripts/root/routes.js"></script>
 
+    <style>
+        .inline-property-label {
+            display: inline-block;
+            width: 100px;
+        }
+    </style>
+
     <script src="scripts/effect-property.js"></script>
     <script src="scripts/string-property.js"></script>
     <script src="scripts/complex-property.js"></script>
     <script type="text/x-handlebars" data-template-name="index">
-        index
-        {{#effect-property model=model.effectModel }}
-            foo
-        {{/effect-property }}
-        end index
+        Validity {{ model.effectModel.isValid }}
+        {{ component model.effectModel.componentName model=model.effectModel }}
     </script>
-    <script type="text/x-handlebars" data-template-name="string-property-template">
-        a string property template
+    <script type="text/x-handlebars" data-template-name="components/warning-icon">
+        <!-- TODO make tooltip work -->
+        <span style="display: inline-block; width: 18px; height: 18px; background-color: red; visibility: {{ if message 'visible' 'hidden' }}; " title="{{ message }}"></span>
     </script>
-    <script type="text/x-handlebars" data-template-name="complex-property-template">
-        a complex property template
+    <script type="text/x-handlebars" data-template-name="components/string-property">
+        <span class="inline-property-label">{{ model.name }}</span>
+        {{ input type='text' value=model.value }}
+    </script>
+    <script type="text/x-handlebars" data-template-name="components/int-property">
+        <span class="inline-property-label">{{ model.name }}</span>
+        {{ input type='text' value=model.value }}
+        {{ warning-icon message=model.invalidValueMessage }}
+    </script>
+    <script type="text/x-handlebars" data-template-name="components/complex-property">
+        {{#block-property model=model }}
+            {{#each model.children as |property| }}
+                {{ component property.componentName model=property }}
+            {{/each }}
+        {{/block-property }}
+    </script>
+    <script type="text/x-handlebars" data-template-name="components/origin-property">
+        {{#block-property model=model }}
+            <table>
+                <tr>
+                    <td>Surface</td>
+                    <td>
+                        <select onchange={{action (mut model.surface) value="target.value"}}>
+                            {{#each surfaceOptions as |surfaceChoice| }}
+                                <option 
+                                    value={{ surfaceChoice }}
+                                    selected={{ eq model.surface surfaceChoice }}>
+                                    {{surfaceChoice}}
+                                </option>
+                            {{/each }}
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Value 1</td>
+                    <td>
+                        {{ input type="text" value=model.value1 }}
+                        {{ warning-icon message=model.invalidValue1Message }}
+                    </td>
+                </tr>
+                <tr>
+                    <td>Value 2</td>
+                    <td>
+                        {{ input type="text" value=model.value2 }}
+                        {{ warning-icon message=model.invalidValue2Message }}
+                    </td>
+                </tr>
+            </table>
+        {{/block-property }}
+    </script>
+    <script type="text/x-handlebars" data-template-name="components/block-property">
+        {{#if model.isRoot }}
+        {{ else }}
+        {{ model.name }}
+        {{# if model.optional }}
+        <button {{ action 'toggleMissing' }}>{{ if model.isMissing 'Add' 'Del' }}</button>
+        {{/if }}
+        <br />
+        {{/if }}
+        {{#if model.isMissing }}
+        {{ else }}
+            <div style="{{ if model.isRoot '' 'margin-left: 30px' }}">
+                {{ yield }}
+            </div>
+        {{/if }}
     </script>
     <script type="text/x-handlebars" data-template-name="application">
         <div>
             {{outlet}}
         </div>
+    </script>
+
+    <script type="text/x-handlebars" data-template-name="components/parameter-property">
+        {{#block-property model=model }}
+            hello world
+        {{/block-property }}
     </script>
 </head>
 <body>

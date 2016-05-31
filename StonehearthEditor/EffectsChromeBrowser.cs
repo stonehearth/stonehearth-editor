@@ -39,6 +39,7 @@ namespace StonehearthEditor
         public void InitBrowser(Panel panel)
         {
             CefSettings cSettings = new CefSettings();
+            cSettings.RemoteDebuggingPort = 8088;
             Cef.Initialize(cSettings);
 
             // Open main page
