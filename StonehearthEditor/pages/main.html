@@ -55,12 +55,12 @@
                 <tr>
                     <td>Surface</td>
                     <td>
-                        <select onchange={{action (mut model.surface) value="target.value"}}>
+                        <select onchange={{ action (mut model.surface) value="target.value" }}>
                             {{#each surfaceOptions as |surfaceChoice| }}
                                 <option 
                                     value={{ surfaceChoice }}
                                     selected={{ eq model.surface surfaceChoice }}>
-                                    {{surfaceChoice}}
+                                    {{ surfaceChoice }}
                                 </option>
                             {{/each }}
                         </select>
@@ -104,10 +104,52 @@
             {{outlet}}
         </div>
     </script>
+    <script type="text/x-handlebars" data-template-name="components/dummy-parameter">
+        hello world!
+    </script>
+    <script type="text/x-handlebars" data-template-name="components/constant-scalar-parameter">
+        Value
+        {{ input type="text" value=model.value }}
+        {{ warning-icon message=model.invalidValueMessage }}
+    </script>
+    <script type="text/x-handlebars" data-template-name="components/constant-rgba-parameter">
+        R
+        {{ input type="text" value=model.rValue }}
+        {{ warning-icon message=model.invalidRValueMessage }}
+        <br/>
+        G
+        {{ input type="text" value=model.gValue }}
+        {{ warning-icon message=model.invalidGValueMessage }}
+        <br />
+        B
+        {{ input type="text" value=model.bValue }}
+        {{ warning-icon message=model.invalidBValueMessage }}
+        <br />
+        A
+        {{ input type="text" value=model.aValue }}
+        {{ warning-icon message=model.invalidAValueMessage }}
+    </script>
+    <script type="text/x-handlebars" data-template-name="components/random-between-scalar-parameter">
+        Min
+        {{ input type="text" value=model.minValue }}
+        {{ warning-icon message=model.invalidMinValueMessage }}
+        <br />
+        Max
+        {{ input type="text" value=model.maxValue }}
+        {{ warning-icon message=model.invalidMaxValueMessage }}
+    </script>
 
     <script type="text/x-handlebars" data-template-name="components/parameter-property">
         {{#block-property model=model }}
-            hello world
+            <select onchange={{ action (mut model.kind) value="target.value" }}>
+                {{#each model.kindOptionNames as |kindChoice| }}
+                <option value={{ kindChoice }}
+                        selected={{ eq model.kind kindChoice }}>
+                    {{ kindChoice }}
+                </option>
+                {{/each }}
+            </select>
+            {{ component model.parameter.componentName model=model.parameter }}
         {{/block-property }}
     </script>
 </head>

@@ -13,9 +13,8 @@ Utils = {
         }
     },
     isNumber: function (s) {
-        return !isNaN(s);
+        return typeof s === 'string' && s.length > 0 && !isNaN(s);
     },
-
 };
 
 EffectKinds = {
