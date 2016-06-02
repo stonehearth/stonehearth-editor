@@ -131,8 +131,8 @@ namespace StonehearthEditor
                     JsonFileData data = moduleFile.GetJsonFileDataByTerm(filterTerm);
                     if (data != null)
                     {
-                        aliasJsonMap.Add(moduleFile.Name, data);
-                        aliasModNameMap.Add(moduleFile.Name, module.Name);
+                        aliasJsonMap.Add(moduleFile.FullAlias, data);
+                        aliasModNameMap.Add(moduleFile.FullAlias, module.Name);
                     }
                 }
             }
@@ -151,8 +151,8 @@ namespace StonehearthEditor
                     JsonFileData data = moduleFile.FileData as JsonFileData;
                     if (data != null && data.JsonType == jsonType)
                     {
-                        aliasJsonMap.Add(moduleFile.Name, data);
-                        aliasModNameMap.Add(moduleFile.Name, module.Name);
+                        aliasJsonMap.Add(moduleFile.FullAlias, data);
+                        aliasModNameMap.Add(moduleFile.FullAlias, module.Name);
                     }
                 }
             }
