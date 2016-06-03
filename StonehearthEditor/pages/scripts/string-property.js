@@ -103,20 +103,6 @@ ParameterKind = Ember.Object.extend({
     },
 });
 
-DummyParameterKind = ParameterKind.extend({
-    componentName: 'dummy-parameter',
-    rawJson: null,
-    fromJson: function (json) {
-        this.set('rawJson', json);
-    },
-    toJson: function (json) {
-        return this.get('rawJson');
-    },
-    isValid: function () {
-        return true;
-    },
-});
-
 ConstantScalarParameterKind = ParameterKind.extend({
     componentName: 'constant-scalar-parameter',
     value: null,
@@ -227,15 +213,16 @@ RandomBetweenScalarParameterKind = ParameterKind.extend({
 Point = Ember.Object.extend({
     time: null,
     value: null,
+
     isValid: Ember.computed('time', 'value', function () {
         return Utils.isNumber(this.time) && Utils.isNumber(this.value);
     }),
-    invalidValueMessage: Ember.computed('time', 'value', function () {
+    invalidMessage: Ember.computed('time', 'value', function () {
         if (!Utils.isNumber(this.time)) {
-            return "Invalid time";
+            return "Invalid time.";
         }
         if (!Utils.isNumber(this.value)) {
-            return "Invalid value";
+            return "Invalid value.";
         }
 
         return null;
@@ -251,8 +238,11 @@ Point = Ember.Object.extend({
 
 Curve = Ember.Object.extend({
     points: null,
+    _onInit: function () {
+        this.set('points', Ember.A());
+    }.on('init'),
     fromJson: function (json) {
-        var points = [];
+        var points = Ember.A();
         for (var i = 0; i < json.length; i++) {
             var point = Point.create({});
             point.fromJson(json[i]);
@@ -267,17 +257,99 @@ Curve = Ember.Object.extend({
         }
         return ret;
     },
-    isValid: Ember.computed('', function () {
-        // XXX
-    })
+    errorMap: Ember.computed('points.@each.time', 'points.@each.value', function () {
+        // Returns index -> error message, -1 means overall
+        var ret = {};
+        function addError(index, message) {
+            if (index in ret) {
+                ret[index] += " " + message;
+            } else {
+                ret[index] = message;
+            }
+        }
+
+        var points = this.get('points');
+        if (points === null) {
+            return {};
+        }
+        if (points.length < 2) {
+            addError(-1, "Need at least two points in curve.");
+        }
+        for (var i = 0; i < points.length; i++) {
+            var pointMessage = points[i].get('invalidMessage');
+            if (pointMessage) {
+                addError(i, pointMessage);
+            }
+        }
+
+        if (points.length > 0) {
+            if (Number(points[0].time) !== 0) {
+                addError(0, "First point must have time=0.");
+            }
+        }
+        for (var i = 0; i < points.length - 1; i++) {
+            if (Number(points[i].time) >= Number(points[i + 1].time)) {
+                addError(i + 1, "Time must be greater than last point's time.");
+            }
+        }
+
+        return ret;
+    }),
+    isValid: Ember.computed('errorMap', function () {
+        return Object.keys(this.get('errorMap')).length === 0;
+    }),
+});
+
+CurveScalarParameterKind = ParameterKind.extend({
+    componentName: 'curve-scalar-parameter',
+    curve: null,
+    _onInit: function () {
+        this.set('curve', Curve.create({}));
+    }.on('init'),
+    fromJson: function (json) {
+        var curve = Curve.create({});
+        curve.fromJson(json);
+        this.set('curve', curve);
+    },
+    toJson: function () {
+        return this.curve.toJson();
+    },
+    isValid: Ember.computed('curve.isValid', function () {
+        return this.get('curve.isValid');
+    }),
+});
+
+RandomBetweenCurvesScalarParameterKind = ParameterKind.extend({
+    componentName: 'random-between-curves-scalar-parameter',
+    curve1: null,
+    curve2: null,
+    _onInit: function () {
+        this.set('curve1', Curve.create({}));
+        this.set('curve2', Curve.create({}));
+    }.on('init'),
+    fromJson: function (json) {
+        var curve1 = Curve.create({});
+        curve1.fromJson(json[0]);
+        this.set('curve1', curve1);
+
+        var curve2 = Curve.create({});
+        curve2.fromJson(json[1]);
+        this.set('curve2', curve2);
+    },
+    toJson: function () {
+        return [this.curve1.toJson(), this.curve2.toJson()];
+    },
+    isValid: Ember.computed('curve1.isValid', 'curve2.isValid', function () {
+        return this.curve1.get('isValid') && this.curve2.get('isValid');
+    }),
 });
 
 ParameterKindRegistry = {
     _options: [
         { kind: 'CONSTANT', dimension: 'rgba', timeVarying: false, type: ConstantRgbaParameterKind, },
         { kind: 'CONSTANT', dimension: 'scalar', timeVarying: false, type: ConstantScalarParameterKind, },
-        { kind: 'CURVE', dimension: 'scalar', timeVarying: true, type: DummyParameterKind, },
-        { kind: 'RANDOM_BETWEEN_CURVES', dimension: 'scalar', timeVarying: true, type: DummyParameterKind, },
+        { kind: 'CURVE', dimension: 'scalar', timeVarying: true, type: CurveScalarParameterKind, },
+        { kind: 'RANDOM_BETWEEN_CURVES', dimension: 'scalar', timeVarying: true, type: RandomBetweenCurvesScalarParameterKind, },
         { kind: 'RANDOM_BETWEEN', dimension: 'scalar', timeVarying: false, type: RandomBetweenScalarParameterKind, },
     ],
 
@@ -332,12 +404,14 @@ ParameterProperty = EffectProperty.extend({
     },
     fromJson: function (json) {
         Utils.assert(Utils.isUndefinedOrTypeOf("object", json));
-        if (json === undefined) {
+        var isMissing = json === undefined;
+        this.set('isMissing', isMissing);
+        if (isMissing) {
+            this.set('kind', 'CONSTANT');
             return;
         }
         var kind = json['kind'];
         this.set('kind', kind);
-        //this.set('parameter', ParameterKindRegistry.get(kind, this.dimension));
         this.parameter.fromJson(json['values']);
     },
     _kindObserver: Ember.observer('kind', function (sender, key, value, rev) {

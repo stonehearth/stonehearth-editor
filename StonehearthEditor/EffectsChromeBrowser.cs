@@ -44,6 +44,8 @@ namespace StonehearthEditor
 
             // Open main page
             mChromeBrowser = new ChromiumWebBrowser(GetPagePath("main.html"));
+            mEffectsJsObject = new EffectsJsObject();
+            mChromeBrowser.RegisterJsObject("EffectsJsObject", mEffectsJsObject);
             mChromeBrowser.LoadError += MChromeBrowser_LoadError;
             panel.Controls.Add(mChromeBrowser);
             mChromeBrowser.Dock = DockStyle.Fill;

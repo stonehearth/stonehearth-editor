@@ -242,6 +242,35 @@ App.EqHelper = function (a) {
     return a[0] === a[1];
 };
 
+App.TostrHelper = function (a) {
+    return a[0].toString();
+};
+
 App.WarningIconComponent = Ember.Component.extend({
     tagName: 'span',
+});
+
+App.CurveXComponent = Ember.Component.extend({
+    actions: {
+        add: function () {
+            this.model.points.pushObject(Point.create({}));
+        },
+        addAbove: function (index) {
+            this.model.points.insertAt(index, Point.create({}));
+        },
+        delete: function (index) {
+            this.model.points.removeAt(index);
+        },
+    },
+});
+
+App.IndexController = Ember.Controller.extend({
+    actions: {
+        preview: function () {
+            EffectsJsObject.preview(this.get('model.effectModel').toJson());
+        },
+        save: function () {
+            EffectsJsObject.save(this.get('model.effectModel').toJson());
+        },
+    },
 });

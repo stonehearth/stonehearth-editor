@@ -11,5 +11,15 @@ namespace StonehearthEditor.Effects
         public string EffectKind { get; set; }
 
         public string Json { get; set; }
+
+        public void Save(object obj)
+        {
+
+        }
+
+        public void Preview(object obj)
+        {
+            obj.ToString();
+        }
     }
 }

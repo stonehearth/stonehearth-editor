@@ -23,7 +23,7 @@
         var children = this.get('children');
         for (var i = 0; i < children.length; i++) {
             var child = children[i];
-            if (!child.isMissing()) {
+            if (!child.get('isMissing')) {
                 parent[child.get('name')] = child.toJson();
             }
         }

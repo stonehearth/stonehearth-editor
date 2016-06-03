@@ -20,18 +20,30 @@
             display: inline-block;
             width: 100px;
         }
+        .warning-icon {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            background-color: red;
+        }
     </style>
 
     <script src="scripts/effect-property.js"></script>
     <script src="scripts/string-property.js"></script>
     <script src="scripts/complex-property.js"></script>
     <script type="text/x-handlebars" data-template-name="index">
+        <button {{ action "preview" }}>Preview</button>
+        <button {{ action "save" }}>Save</button>
         Validity {{ model.effectModel.isValid }}
         {{ component model.effectModel.componentName model=model.effectModel }}
     </script>
     <script type="text/x-handlebars" data-template-name="components/warning-icon">
-        <!-- TODO make tooltip work -->
-        <span style="display: inline-block; width: 18px; height: 18px; background-color: red; visibility: {{ if message 'visible' 'hidden' }}; " title="{{ message }}"></span>
+        <!-- TODO put message into a tooltip instead -->
+        <span
+              class="warning-icon"
+              style="visibility: {{ if message 'visible' 'hidden' }}; "
+              title="{{ message }}"></span>
+        {{ message }}
     </script>
     <script type="text/x-handlebars" data-template-name="components/string-property">
         <span class="inline-property-label">{{ model.name }}</span>
@@ -137,6 +149,45 @@
         Max
         {{ input type="text" value=model.maxValue }}
         {{ warning-icon message=model.invalidMaxValueMessage }}
+    </script>
+    <script type="text/x-handlebars" data-template-name="components/curve-scalar-parameter">
+        {{ curve-x model=model.curve }}
+    </script>
+    <script type="text/x-handlebars" data-template-name="components/random-between-curves-scalar-parameter">
+        <div>Curve 1</div>
+        {{ curve-x model=model.curve1 }}
+        <div>Curve 2</div>
+        {{ curve-x model=model.curve2 }}
+    </script>
+    <script type="text/x-handlebars" data-template-name="components/curve-x">
+        <table>
+            <thead>
+                <tr>
+                    <td></td>
+                    <td>Time</td>
+                    <td>Value</td>
+                    <td>{{ warning-icon message=model.errorMap.[-1] }}</td>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each model.points as |point index| }}
+                    <tr>
+                        <td>
+                            <button {{ action 'addAbove' index }}>Add Above</button>
+                            <button {{ action 'delete' index }}>Delete</button>
+                        </td>
+                        <td>{{ input type="text" value=point.time }}</td>
+                        <td>{{ input type="text" value=point.value }}</td>
+                        <td>{{ warning-icon message=(get model.errorMap (tostr index)) }}</td>
+                    </tr>
+                {{/each }}
+                <tr>
+                    <td>
+                        <button {{ action 'add' }}>Add</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
     </script>
 
     <script type="text/x-handlebars" data-template-name="components/parameter-property">
