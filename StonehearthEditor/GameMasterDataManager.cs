@@ -225,6 +225,8 @@ namespace StonehearthEditor
                 newNode.Owner = mCurrentGraphRoot;
             }
 
+            newNode.IsModified = true;
+            newNode.SaveIfNecessary();
             RefreshGraph(owner);
             return true;
         }

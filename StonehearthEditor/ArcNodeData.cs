@@ -78,6 +78,7 @@ namespace StonehearthEditor
             mEncounterFiles.Add(encounterNodeFile);
             NodeFile.Json["encounters"][encounterNodeFile.Name] = filePath;
             NodeFile.IsModified = true;
+            NodeFile.SaveIfNecessary();
         }
 
         public override bool AddOutEdge(GameMasterNode nodeFile)
