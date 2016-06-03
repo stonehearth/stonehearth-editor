@@ -130,20 +130,25 @@ namespace StonehearthEditor
                         {
                             string parentName = (nodeData.Parent as JProperty).Name;
                             string translatedParentName = ModuleDataManager.GetInstance().LocalizeString(parentName);
-                            List<string> outEdges = JsonHelper.GetJsonStringArray(nodeData, "out_edge");
-                            foreach (string outEdge in outEdges)
+                            JToken outEdgeSpec = nodeData["out_edge"];
+                            if (outEdgeSpec != null)
                             {
-                                List<string> list;
-                                if (!mChoiceEdgeInfo.TryGetValue(outEdge, out list))
+                                List<string> outEdges = new List<string>();
+                                AddOutEdgesRecursive(nodeData["out_edge"], outEdges);
+                                foreach(string outEdge in outEdges)
                                 {
-                                    list = new List<string>();
-                                }
+                                    List<string> list;
+                                    if (!mChoiceEdgeInfo.TryGetValue(outEdge, out list))
+                                    {
+                                        list = new List<string>();
+                                    }
 
-                                list.Add(translatedParentName);
-                                mChoiceEdgeInfo[outEdge] = list;
-                                if (!mOutEdgeStrings.Contains(outEdge))
-                                {
-                                    mOutEdgeStrings.Add(outEdge);
+                                    list.Add(translatedParentName);
+                                    mChoiceEdgeInfo[outEdge] = list;
+                                    if (!mOutEdgeStrings.Contains(outEdge))
+                                    {
+                                        mOutEdgeStrings.Add(outEdge);
+                                    }
                                 }
                             }
                         }
