@@ -77,6 +77,7 @@ namespace StonehearthEditor
 
         private void InitializeNetWorthItemsView()
         {
+            netWorthListView.BeginUpdate();
             netWorthListView.Items.Clear();
             netWorthImagePaths = new Dictionary<string, string>();
             object[] data = ModuleDataManager.GetInstance().FilterJsonByTerm(netWorthListView, "entity_data.stonehearth:net_worth");
@@ -138,10 +139,12 @@ namespace StonehearthEditor
             }
 
             netWorthListView.SmallImageList = imageList;
+            netWorthListView.EndUpdate();
         }
 
         private void InitializeWeaponsView()
         {
+            weaponsListView.BeginUpdate();
             weaponsListView.Items.Clear();
             weaponsImagePaths = new Dictionary<string, string>();
             object[] data = ModuleDataManager.GetInstance().FilterJsonByTerm(netWorthListView, "entity_data.stonehearth:combat:weapon_data");
@@ -185,10 +188,12 @@ namespace StonehearthEditor
             }
 
             weaponsListView.SmallImageList = imageList;
+            weaponsListView.EndUpdate();
         }
 
         private void InitializeDefenseItemsListView()
         {
+            defenseItemsListView.BeginUpdate();
             defenseItemsListView.Items.Clear();
             defenseImagePaths = new Dictionary<string, string>();
             object[] data = ModuleDataManager.GetInstance().FilterJsonByTerm(defenseItemsListView, "entity_data.stonehearth:combat:armor_data");
@@ -218,6 +223,7 @@ namespace StonehearthEditor
             }
 
             defenseItemsListView.SmallImageList = imageList;
+            defenseItemsListView.EndUpdate();
         }
 
         // Not really killable entities per se. More like stuff with attributes.
