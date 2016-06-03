@@ -20,6 +20,7 @@ namespace StonehearthEditor
         ENCOUNTER = 9,
         JOB = 10,
         MONSTER_TUNING = 11,
+        MIXIN = 12,
     }
 
     public class JsonFileData : FileData, IModuleFileData
