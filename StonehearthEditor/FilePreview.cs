@@ -186,7 +186,7 @@ namespace StonehearthEditor
                     aliasInsert.Append('"' + alias + '"');
                 }
 
-                mTextBox.SelectionLength = 1;
+                mTextBox.SelectionLength = 0;
                 mTextBox.SelectedText = aliasInsert.ToString();
                 return true;
             }
