@@ -39,6 +39,7 @@ namespace StonehearthEditor
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mainFormMenu = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.newModToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.reloadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.changeModDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -140,12 +141,22 @@ namespace StonehearthEditor
             // fileToolStripMenuItem
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.newModToolStripMenuItem,
             this.saveAllToolStripMenuItem,
             this.reloadToolStripMenuItem,
             this.changeModDirectoryToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.fileToolStripMenuItem.Text = "File";
+            // 
+            // newModToolStripMenuItem
+            // 
+            this.newModToolStripMenuItem.Name = "newModToolStripMenuItem";
+            this.newModToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+N";
+            this.newModToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
+            this.newModToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
+            this.newModToolStripMenuItem.Text = "New Mod";
+            this.newModToolStripMenuItem.Click += new System.EventHandler(this.newModToolStripMenuItem_Click);
             // 
             // saveAllToolStripMenuItem
             // 
@@ -229,5 +240,6 @@ namespace StonehearthEditor
       private System.Windows.Forms.TabPage entityBrowserTab;
       private System.Windows.Forms.ToolStripMenuItem viewToolStripMenuItem;
       private System.Windows.Forms.ToolStripMenuItem netWorthVisualizerToolStripMenuItem;
-   }
+        private System.Windows.Forms.ToolStripMenuItem newModToolStripMenuItem;
+    }
 }

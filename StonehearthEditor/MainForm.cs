@@ -3,6 +3,10 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using StonehearthEditor.Properties;
+using System.Text.RegularExpressions;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System.Text;
 
 namespace StonehearthEditor
 {
@@ -183,6 +187,101 @@ namespace StonehearthEditor
         private void changeModDirectoryToolStripMenuItem_Click(object sender, EventArgs e)
         {
             chooseModDirectory();
+        }
+
+        private void createNewMod()
+        {
+            NewModCallback callback = new NewModCallback(this.manifestView);
+            InputDialog dialog = new InputDialog("Create New Mod", "Type the name of your mod (lowercase only, no spaces):", "my_test_mod", "Create!");
+            dialog.SetCallback(callback);
+            dialog.ShowDialog();
+        }
+
+        private void newModToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            createNewMod();
+        }
+
+        private class NewModCallback : InputDialog.IDialogCallback
+        {
+            private ManifestView mOwner;
+            private string manifestTemplate = System.Text.Encoding.UTF8.GetString(StonehearthEditor.Properties.Resources.defaultManifest);
+            private string modsDirectoryPath = ModuleDataManager.GetInstance().ModsDirectoryPath;
+
+            public NewModCallback(ManifestView owner)
+            {
+                mOwner = owner;
+            }
+
+            public void OnCancelled()
+            {
+                // Do nothing. user cancelled
+            }
+
+            public bool OnAccept(string inputMessage)
+            {
+                if (checkNewModName(inputMessage) && manifestTemplate != null)
+                {
+                    string newModPath = modsDirectoryPath + "/" + inputMessage;
+                    string newManifestPath = newModPath + "/manifest.json";
+                    string newLocalesPath = newModPath + "/locales/en.json";
+
+                    Directory.CreateDirectory(newModPath + "/locales");
+
+                    using (StreamWriter wr = new StreamWriter(newManifestPath, false, new UTF8Encoding(false)))
+                    {
+                        using (JsonTextWriter jsonTextWriter = new JsonTextWriter(wr))
+                        {
+                            jsonTextWriter.Formatting = Newtonsoft.Json.Formatting.Indented;
+                            jsonTextWriter.Indentation = 3;
+                            jsonTextWriter.IndentChar = ' ';
+
+                            JsonSerializer jsonSerializer = new JsonSerializer();
+                            jsonSerializer.Serialize(jsonTextWriter, JObject.Parse(manifestTemplate));
+                        }
+                    }
+
+                    using (StreamWriter wr = new StreamWriter(newLocalesPath, false, new UTF8Encoding(false)))
+                    {
+                        using (JsonTextWriter jsonTextWriter = new JsonTextWriter(wr))
+                        {
+                            jsonTextWriter.Formatting = Newtonsoft.Json.Formatting.Indented;
+                            jsonTextWriter.Indentation = 3;
+                            jsonTextWriter.IndentChar = ' ';
+
+                            JsonSerializer jsonSerializer = new JsonSerializer();
+                            jsonSerializer.Serialize(jsonTextWriter, new JObject());
+                        }
+                    }
+
+                    // Need a way to autoselect the new mod treeItem after reload, to focus on it
+                    mOwner.Reload();
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            private bool checkNewModName(string modName)
+            {
+                bool isValid = true;
+
+                if (ModuleDataManager.GetInstance().GetMod(modName) != null)
+                {
+                    MessageBox.Show("Mod already exists in your mods folder!");
+                    isValid = false;
+                }
+
+                if (!Regex.IsMatch(modName, "^[a-z0-9_]*$"))
+                {
+                    MessageBox.Show("Mod name can only contain lowercase characters, numbers and underscore.");
+                    isValid = false;
+                }
+
+                return isValid;
+            }
         }
     }
 }
