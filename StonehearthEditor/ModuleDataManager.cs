@@ -224,6 +224,19 @@ namespace StonehearthEditor
             return mModules.Values;
         }
 
+        public string[] GetAllModuleNames()
+        {
+            List<string> tempList = new List<string>();
+
+            foreach (Module module in mModules.Values)
+            {
+                tempList.Add(module.Name);
+            }
+
+            string[] modNames = tempList.ToArray();
+            return modNames;
+        }
+
         public Module GetMod(string modName)
         {
             if (!mModules.ContainsKey(modName))
@@ -314,7 +327,7 @@ namespace StonehearthEditor
             }
 
             HashSet<string> alreadyCloned = new HashSet<string>();
-            string newPath = cloneParameters.TransformParameter(file.Path);
+            string newPath = cloneParameters.TransformParameter(file.Path).Replace(owningFile.Module.Name, cloneParameters.TargetModule);
 
             file.Clone(newPath, cloneParameters, alreadyCloned, false);
             return alreadyCloned;
