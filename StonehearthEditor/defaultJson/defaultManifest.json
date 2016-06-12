@@ -1,0 +1,17 @@
+{
+   "info" : {
+      "name": "TestMod",
+      "version": 2
+   },
+   "default_locale" : "en",
+   "aliases" : {      
+   },
+   "mixintos" : {
+   },
+   "overrides" : {
+   },
+   "components" : {
+   },
+   "controllers" : {
+   }
+}

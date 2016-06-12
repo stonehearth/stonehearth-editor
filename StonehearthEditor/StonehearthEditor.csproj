@@ -218,6 +218,7 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <None Include="defaultJson\defaultIconic.json" />
+    <None Include="defaultJson\defaultManifest.json" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
