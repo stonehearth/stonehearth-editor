@@ -6,6 +6,28 @@ namespace StonehearthEditor
     {
         private Dictionary<string, string> mStringReplacements = new Dictionary<string, string>();
         private Dictionary<string, string> mAliasReplacements = new Dictionary<string, string>();
+        private string mSourceModuleName = "";
+        private string mTargetModuleName = "";
+
+        public string TargetModule
+        {
+            get { return mTargetModuleName; }
+        }
+
+        public string SourceModule
+        {
+            get { return mSourceModuleName; }
+        }
+
+        public void SetTargetModule(string name)
+        {
+            mTargetModuleName = name;
+        }
+
+        public void SetSourceModule(string name)
+        {
+            mSourceModuleName = name;
+        }
 
         public void AddStringReplacement(string original, string replacement)
         {
