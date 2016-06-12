@@ -19,6 +19,8 @@ namespace StonehearthEditor
         ANIMATION = 8,
         ENCOUNTER = 9,
         JOB = 10,
+        MONSTER_TUNING = 11,
+        MIXIN = 12,
     }
 
     public class JsonFileData : FileData, IModuleFileData
@@ -109,7 +111,6 @@ namespace StonehearthEditor
                     return;
             }
 
-            Console.WriteLine(error);
             ModuleDataManager.GetInstance().AddErrorFile(this);
         }
 
@@ -332,7 +333,7 @@ namespace StonehearthEditor
             if (mSaveJsonAfterParse)
             {
                 TrySetFlatFileData(GetJsonFileString());
-                ////TrySaveFile();
+                //TrySaveFile();
                 mSaveJsonAfterParse = false;
             }
         }
@@ -382,6 +383,23 @@ namespace StonehearthEditor
                 if (!string.IsNullOrEmpty(netWorthString))
                 {
                     mNetWorth = int.Parse(netWorthString);
+                    /*
+                    if (!mSaveJsonAfterParse)
+                    {
+                        JToken materialToken = mJson.SelectToken("components.stonehearth:material");
+                        if (materialToken != null && !materialToken["tags"].ToString().Contains("food"))
+                        {
+                            int newNetWorth = mNetWorth / 2;
+                            if (newNetWorth <= 0 && mNetWorth > 0)
+                            {
+                                newNetWorth = mNetWorth;
+                            }
+                            mNetWorth = newNetWorth;
+                            netWorthData["value_in_gold"] = mNetWorth;
+                            ModuleDataManager.GetInstance().ModifiedFiles.Add(this);
+                            mSaveJsonAfterParse = true;
+                        }
+                    }*/
                 }
             }
         }
@@ -518,7 +536,13 @@ namespace StonehearthEditor
                             }
                         }
                     }
-
+                    break;
+                case JSONTYPE.MONSTER_TUNING:
+                    JToken experience = mJson.SelectToken("attributes.exp_reward");
+                    if (experience != null)
+                    {
+                        //Console.WriteLine(GetAliasOrFlatName() + "\t" + experience.ToString());
+                    }
                     break;
             }
 

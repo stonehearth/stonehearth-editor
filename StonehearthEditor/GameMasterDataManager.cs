@@ -127,6 +127,14 @@ namespace StonehearthEditor
             }
         }
 
+        public void ClearModifiedFlags()
+        {
+            foreach (GameMasterNode node in mGameMasterNodes.Values)
+            {
+                node.IsModified = false;
+            }
+        }
+
         public void RefreshGraph(IGraphOwner graphOwner)
         {
             mGraph = new Graph();
@@ -152,9 +160,9 @@ namespace StonehearthEditor
                         node.NodeData.UpdateGraph(mGraph);
                     }
                 }
-            }
 
-            graphOwner.SetGraph(mGraph);
+                graphOwner.SetGraph(mGraph);
+            }
         }
 
         public void FillEncounterNodeTree(TreeView treeView)
@@ -217,6 +225,8 @@ namespace StonehearthEditor
                 newNode.Owner = mCurrentGraphRoot;
             }
 
+            newNode.IsModified = true;
+            newNode.SaveIfNecessary();
             RefreshGraph(owner);
             return true;
         }

@@ -19,6 +19,8 @@ namespace StonehearthEditor
         private Dictionary<string, Module> mModules = new Dictionary<string, Module>();
 
         private HashSet<FileData> mFilesWithErrors = new HashSet<FileData>();
+        private HashSet<FileData> mModifiedFiles = new HashSet<FileData>();
+
         private Dictionary<string, int> mAverageMaterialCost = new Dictionary<string, int>();
 
         public ModuleDataManager(string modsDirectoryPath)
@@ -49,6 +51,16 @@ namespace StonehearthEditor
         public void AddErrorFile(FileData fileWithError)
         {
             mFilesWithErrors.Add(fileWithError);
+        }
+
+        public void SaveModifiedFiles()
+        {
+            HashSet<FileData> copy = new HashSet<FileData>(ModifiedFiles);
+            foreach (FileData fileData in copy)
+            {
+                fileData.TrySaveFile();
+            }
+            ModifiedFiles.Clear();
         }
 
         public HashSet<FileData> GetErrorFiles()
@@ -119,8 +131,28 @@ namespace StonehearthEditor
                     JsonFileData data = moduleFile.GetJsonFileDataByTerm(filterTerm);
                     if (data != null)
                     {
-                        aliasJsonMap.Add(moduleFile.Name, data);
-                        aliasModNameMap.Add(moduleFile.Name, module.Name);
+                        aliasJsonMap.Add(moduleFile.FullAlias, data);
+                        aliasModNameMap.Add(moduleFile.FullAlias, module.Name);
+                    }
+                }
+            }
+
+            return new object[] { aliasJsonMap, aliasModNameMap };
+        }
+
+        public object[] GetJsonsOfType(ListView listView, JSONTYPE jsonType)
+        {
+            Dictionary<string, JsonFileData> aliasJsonMap = new Dictionary<string, JsonFileData>();
+            Dictionary<string, string> aliasModNameMap = new Dictionary<string, string>();
+            foreach (Module module in mModules.Values)
+            {
+                foreach (ModuleFile moduleFile in module.GetAliases())
+                {
+                    JsonFileData data = moduleFile.FileData as JsonFileData;
+                    if (data != null && data.JsonType == jsonType)
+                    {
+                        aliasJsonMap.Add(moduleFile.FullAlias, data);
+                        aliasModNameMap.Add(moduleFile.FullAlias, module.Name);
                     }
                 }
             }
@@ -347,6 +379,13 @@ namespace StonehearthEditor
             }
 
             return 0;
+        }
+
+        // ModifiedFiles is way too large, and most files are getting re-saved without any changes
+        // Leave getter here so we can breakpoint
+        public HashSet<FileData> ModifiedFiles
+        {
+            get { return mModifiedFiles; }
         }
 
         public void Dispose()

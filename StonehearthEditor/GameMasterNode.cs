@@ -213,6 +213,7 @@ namespace StonehearthEditor
         {
             if (IsModified)
             {
+                bool success = true;
                 try
                 {
                     using (StreamWriter wr = new StreamWriter(mPath, false, new UTF8Encoding(false)))
@@ -223,7 +224,14 @@ namespace StonehearthEditor
                 }
                 catch (Exception e)
                 {
+                    success = false;
                     Console.WriteLine("Could not write to file " + mPath + " because of exception: " + e.Message);
+                }
+
+                if (success)
+                {
+                    // If successfully written, clear is modified flag since there are no more changes to save
+                    IsModified = false;
                 }
             }
         }
@@ -239,7 +247,7 @@ namespace StonehearthEditor
                 newNodeData.NodeFile = newNode;
                 newNode.mNodeData = newNodeData;
                 newNode.mNodeType = NodeType;
-
+                newNode.mJsonFileData = new JsonFileData(newNode.Path);
                 newNode.mJsonFileData.TrySetFlatFileData(Json.ToString());
                 return newNode;
             }

@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Forms;
 using Microsoft.Msagl.Drawing;
 using Microsoft.Msagl.GraphViewerGdi;
+using Newtonsoft.Json.Linq;
 
 namespace StonehearthEditor
 {
@@ -58,17 +60,18 @@ namespace StonehearthEditor
 
                 if (mNodePreview != null)
                 {
-                    nodePreview.Controls.Remove(mNodePreview);
+                    splitContainer2.Panel1.Controls.Remove(mNodePreview);
                 }
 
                 mNodePreview = new FilePreview(this, node.FileData);
                 mNodePreview.Dock = DockStyle.Fill;
-                nodePreview.Controls.Add(mNodePreview);
+                splitContainer2.Panel1.Controls.Add(mNodePreview);
 
                 copyGameMasterNode.Text = "Clone " + node.Name;
                 copyGameMasterNode.Enabled = true;
                 openEncounterFileButton.Visible = true;
                 deleteNodeToolStripMenuItem.Visible = true;
+                PopulateFileDetails(node);
             }
             else
             {
@@ -80,13 +83,137 @@ namespace StonehearthEditor
                 nodePath.Text = string.Empty;
                 if (mNodePreview != null)
                 {
-                    nodePreview.Controls.Remove(mNodePreview);
+                    splitContainer2.Panel1.Controls.Remove(mNodePreview);
                 }
 
                 copyGameMasterNode.Text = "Clone Node";
                 copyGameMasterNode.Enabled = false;
                 openEncounterFileButton.Visible = false;
                 deleteNodeToolStripMenuItem.Visible = false;
+                PopulateFileDetails(null);
+            }
+        }
+
+        private static string[] kAttributesOfInterest = new string[]
+        {
+            "max_health",
+            "speed",
+            "menace",
+            "courage",
+            "additive_armor_modifier",
+            "muscle",
+            "exp_reward"
+        };
+
+        private void PopulateFileDetails(GameMasterNode node)
+        {
+            fileDetailsListBox.Items.Clear();
+            if (node == null)
+            {
+                // remove details
+                return;
+            }
+
+            Dictionary<string, float> stats = new Dictionary<string, float>();
+
+            if (node.NodeType == GameMasterNodeType.ENCOUNTER)
+            {
+                EncounterNodeData encounterData = node.NodeData as EncounterNodeData;
+                if (encounterData.EncounterType == "create_mission" || encounterData.EncounterType == "city_raid")
+                {
+                    JToken members = node.Json.SelectToken("create_mission_info.mission.members");
+
+                    if (members == null)
+                    {
+                        JToken missions = node.Json.SelectToken("city_raid_info.missions");
+                        foreach (JProperty content in missions.Children())
+                        {
+                            // Only gets stats for the first mission of city raids
+                            members = content.Value["members"];
+                        }
+                    }
+
+                    int maxEnemies = 0;
+                    float totalWeaponBaseDamage = 0;
+
+                    Dictionary<string, float> allStats = new Dictionary<string, float>();
+                    foreach (string attribute in kAttributesOfInterest)
+                    {
+                        allStats[attribute] = 0;
+                    }
+
+                    if (members != null)
+                    {
+                        foreach (JToken member in members.Children())
+                        {
+                            // grab name, max number of members, and tuning
+                            JProperty memberProperty = member as JProperty;
+                            if (memberProperty != null)
+                            {
+                                JValue jMax = memberProperty.Value.SelectToken("from_population.max") as JValue;
+                                int max = 0;
+                                if (jMax != null)
+                                {
+                                    max = jMax.Value<int>();
+                                    maxEnemies = maxEnemies + max;
+                                }
+
+                                JValue tuning = memberProperty.Value.SelectToken("tuning") as JValue;
+                                if (tuning != null)
+                                {
+                                    string alias = tuning.ToString();
+                                    ModuleFile tuningFile = ModuleDataManager.GetInstance().GetModuleFile(alias);
+                                    if (tuningFile != null)
+                                    {
+                                        JsonFileData jsonFileData = tuningFile.FileData as JsonFileData;
+                                        if (jsonFileData != null)
+                                        {
+                                            foreach (string attribute in kAttributesOfInterest)
+                                            {
+                                                JValue jAttribute = jsonFileData.Json.SelectToken("attributes." + attribute) as JValue;
+                                                if (jAttribute != null)
+                                                {
+                                                    allStats[attribute] = allStats[attribute] + (max * jAttribute.Value<int>());
+                                                }
+                                            }
+
+                                            JArray weapon = jsonFileData.Json.SelectToken("equipment.weapon") as JArray;
+                                            if (weapon != null)
+                                            {
+                                                foreach (JValue weaponAlias in weapon.Children())
+                                                {
+                                                    ModuleFile weaponModuleFile = ModuleDataManager.GetInstance().GetModuleFile(weaponAlias.ToString());
+                                                    if (weaponModuleFile != null)
+                                                    {
+                                                        JToken baseDamage = (weaponModuleFile.FileData as JsonFileData).Json.SelectToken("entity_data.stonehearth:combat:weapon_data.base_damage");
+                                                        if (baseDamage != null)
+                                                        {
+                                                            totalWeaponBaseDamage = totalWeaponBaseDamage + (max * baseDamage.Value<int>());
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    fileDetailsListBox.Items.Add("max enemies : " + maxEnemies);
+                    fileDetailsListBox.Items.Add("total weapon damage : " + totalWeaponBaseDamage);
+                    foreach (string attribute in kAttributesOfInterest)
+                    {
+                        fileDetailsListBox.Items.Add("total " + attribute + " : " + allStats[attribute]);
+                    }
+
+                    fileDetailsListBox.Items.Add("average weapon damage : " + totalWeaponBaseDamage / maxEnemies);
+
+                    foreach (string attribute in kAttributesOfInterest)
+                    {
+                        fileDetailsListBox.Items.Add("average " + attribute + " : " + allStats[attribute] / maxEnemies);
+                    }
+                }
             }
         }
 
@@ -272,6 +399,15 @@ namespace StonehearthEditor
         public void Reload()
         {
             // Reload the encounter designer.
+            GameMasterDataManager.GetInstance().ClearModifiedFlags();
+            GameMasterDataManager.GetInstance().RefreshGraph(this);
+            encounterTreeView.Refresh();
+            if (mNodePreview != null)
+            {
+                // This can be null.
+                mNodePreview.Refresh();
+            }
+            Initialize();
         }
 
         private class CloneDialogCallback : InputDialog.IDialogCallback

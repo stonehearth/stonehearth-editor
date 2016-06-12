@@ -10,8 +10,6 @@ namespace StonehearthEditor
     {
         protected TreeNode mTreeNode { get; set; }
 
-        protected bool mIsModified { get; set; }
-
         private string mFlatFileData;
         private bool isDisposing = false;
         private string mErrors = null;
@@ -41,11 +39,6 @@ namespace StonehearthEditor
         public string FileName
         {
             get { return System.IO.Path.GetFileNameWithoutExtension(Path); }
-        }
-
-        public bool IsModified
-        {
-            get { return mIsModified; }
         }
 
         public virtual string Errors
@@ -81,7 +74,7 @@ namespace StonehearthEditor
             if (TryChangeFlatFileData(newData, out newFlatFileData))
             {
                 mFlatFileData = newFlatFileData;
-                mIsModified = true;
+                ModuleDataManager.GetInstance().ModifiedFiles.Add(this);
                 return true;
             }
 
@@ -90,7 +83,7 @@ namespace StonehearthEditor
 
         public void TrySaveFile()
         {
-            if (mIsModified)
+            if (ModuleDataManager.GetInstance().ModifiedFiles.Contains(this))
             {
                 try
                 {
@@ -99,7 +92,7 @@ namespace StonehearthEditor
                         wr.Write(FlatFileData);
                     }
 
-                    mIsModified = false;
+                    ModuleDataManager.GetInstance().ModifiedFiles.Remove(this);
                 }
                 catch (Exception e)
                 {

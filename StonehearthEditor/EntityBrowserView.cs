@@ -22,11 +22,13 @@ namespace StonehearthEditor
 
         private string[] attributesOfInterest = new string[]
         {
+            "difficulty",
             "max_health",
-            "speed",
+            "muscle",
             "menace",
             "courage",
-            "muscle",
+            "speed",
+            "additive_armor_modifier",
             "exp_reward"
         };
 
@@ -37,9 +39,6 @@ namespace StonehearthEditor
 
         public void Initialize()
         {
-            new ModuleDataManager(MainForm.kModsDirectoryPath);
-            ModuleDataManager.GetInstance().Load();
-
             netWorthListView.View = View.Details;
             netWorthListView.GridLines = true;
             netWorthListView.FullRowSelect = true;
@@ -63,45 +62,9 @@ namespace StonehearthEditor
             InitializeKillableEntitiesListView();
         }
 
-        public void InitializeTab(int index)
-        {
-            switch (index)
-            {
-                case 0:
-                    netWorthListView.Items.Clear();
-                    InitializeNetWorthItemsView();
-                    break;
-                case 1:
-                    weaponsListView.Items.Clear();
-                    InitializeWeaponsView();
-                    break;
-                case 2:
-                    defenseItemsListView.Items.Clear();
-                    InitializeDefenseItemsListView();
-                    break;
-                case 3:
-                    killableEntitiesListView.Items.Clear();
-                    InitializeKillableEntitiesListView();
-                    break;
-                default:
-                    throw new IndexOutOfRangeException("Selected tab index does not match InitializeTab indices!");
-            }
-        }
-
         public void Reload()
         {
-            int index = this.entityBrowserTabControl.SelectedIndex;
-            try
-            {
-                InitializeTab(index);
-            }
-            catch (IndexOutOfRangeException e)
-            {
-                Console.WriteLine("Could not reload tab with index "
-                   + index.ToString()
-                   + ". Exception: "
-                   + e.Message);
-            }
+            Initialize();
         }
 
         private static void populateWithDefaultValue<T>(List<T> array, T value, int num)
@@ -114,6 +77,8 @@ namespace StonehearthEditor
 
         private void InitializeNetWorthItemsView()
         {
+            netWorthListView.BeginUpdate();
+            netWorthListView.Items.Clear();
             netWorthImagePaths = new Dictionary<string, string>();
             object[] data = ModuleDataManager.GetInstance().FilterJsonByTerm(netWorthListView, "entity_data.stonehearth:net_worth");
             netWorthJsonFiles = (Dictionary<string, JsonFileData>)data[0];
@@ -174,10 +139,13 @@ namespace StonehearthEditor
             }
 
             netWorthListView.SmallImageList = imageList;
+            netWorthListView.EndUpdate();
         }
 
         private void InitializeWeaponsView()
         {
+            weaponsListView.BeginUpdate();
+            weaponsListView.Items.Clear();
             weaponsImagePaths = new Dictionary<string, string>();
             object[] data = ModuleDataManager.GetInstance().FilterJsonByTerm(netWorthListView, "entity_data.stonehearth:combat:weapon_data");
             weaponsJsonFiles = (Dictionary<string, JsonFileData>)data[0];
@@ -220,10 +188,13 @@ namespace StonehearthEditor
             }
 
             weaponsListView.SmallImageList = imageList;
+            weaponsListView.EndUpdate();
         }
 
         private void InitializeDefenseItemsListView()
         {
+            defenseItemsListView.BeginUpdate();
+            defenseItemsListView.Items.Clear();
             defenseImagePaths = new Dictionary<string, string>();
             object[] data = ModuleDataManager.GetInstance().FilterJsonByTerm(defenseItemsListView, "entity_data.stonehearth:combat:armor_data");
             defenseJsonFiles = (Dictionary<string, JsonFileData>)data[0];
@@ -252,14 +223,17 @@ namespace StonehearthEditor
             }
 
             defenseItemsListView.SmallImageList = imageList;
+            defenseItemsListView.EndUpdate();
         }
 
         // Not really killable entities per se. More like stuff with attributes.
         private void InitializeKillableEntitiesListView()
         {
+            killableEntitiesListView.BeginUpdate();
+            killableEntitiesListView.Items.Clear();
             InitializeKillableEntitiesColumns();
 
-            object[] data = ModuleDataManager.GetInstance().FilterJsonByTerm(killableEntitiesListView, "components.stonehearth:attributes");
+            object[] data = ModuleDataManager.GetInstance().GetJsonsOfType(killableEntitiesListView, JSONTYPE.MONSTER_TUNING);
             killableEntitiesJsonFiles = (Dictionary<string, JsonFileData>)data[0];
 
             foreach (KeyValuePair<string, JsonFileData> entry in killableEntitiesJsonFiles)
@@ -272,32 +246,49 @@ namespace StonehearthEditor
                     subItems,
                     new ListViewItem.ListViewSubItem(),
                     killableEntitiesListView.Columns.Count);
-                JObject jAttributes = (JObject)json.SelectToken("components.stonehearth:attributes");
+                JToken estimatedDifficulty = json["estimated_difficulty"];
+                JObject jAttributes = json.SelectToken("attributes") as JObject;
 
-                foreach (JProperty attribute in jAttributes.Properties())
+                if (jAttributes != null)
                 {
-                    string attributeName = attribute.Name;
-                    if (killableEntitiesListView.Columns.IndexOfKey(attributeName) == -1)
+                    foreach (JProperty attribute in jAttributes.Properties())
                     {
-                        continue;
+                        string attributeName = attribute.Name;
+                        if (killableEntitiesListView.Columns.IndexOfKey(attributeName) == -1)
+                        {
+                            continue;
+                        }
+
+                        JValue jValue = attribute.Value as JValue;
+                        if (jValue != null)
+                        {
+                            int i = killableEntitiesListView.Columns.IndexOfKey(attributeName);
+                            subItems[i - 1] = new ListViewItem.ListViewSubItem(item, jValue.ToString());
+                        }
                     }
 
-                    JToken jValue = attribute.Value.SelectToken("value");
-                    if (jValue != null)
+                    int estimatedDifficultyIndex = killableEntitiesListView.Columns.IndexOfKey("difficulty");
+                    if (estimatedDifficulty != null)
                     {
-                        int i = killableEntitiesListView.Columns.IndexOfKey(attributeName);
-                        subItems.RemoveAt(i - 1);
-                        subItems.Insert(i - 1, new ListViewItem.ListViewSubItem(item, jValue.ToString()));
+                        subItems[estimatedDifficultyIndex - 1] = new ListViewItem.ListViewSubItem(item, estimatedDifficulty.ToString());
                     }
+
+                    item.SubItems.AddRange(subItems.ToArray());
+                    killableEntitiesListView.Items.Add(item);
                 }
 
-                item.SubItems.AddRange(subItems.ToArray());
-                killableEntitiesListView.Items.Add(item);
+                // Make sure to resize column after adding all the items, otherwise when reloading the column size won't be updated
+                int index = killableEntitiesListView.Columns.IndexOfKey("alias");
+                killableEntitiesListView.AutoResizeColumn(index, ColumnHeaderAutoResizeStyle.ColumnContent);
             }
+            killableEntitiesListView.EndUpdate();
         }
 
         private void InitializeKillableEntitiesColumns()
         {
+            killableEntitiesListView.Columns.Clear();
+            killableEntitiesListView.Items.Clear();
+            killableEntitiesListView.Columns.Add("alias", "alias", -2);
             foreach (string attribute in attributesOfInterest)
             {
                 killableEntitiesListView.Columns.Add(attribute, attribute, -2);
@@ -378,6 +369,12 @@ namespace StonehearthEditor
             if (e.IsSelected)
             {
                 this.updateOnItemSelection(killableEntitiesJsonFiles, null, e.Item.Text);
+                JsonFileData json;
+                killableEntitiesJsonFiles.TryGetValue(e.Item.Text, out json);
+                if (json != null)
+                {
+                    PopulateFileDetails(json);
+                }
             }
         }
 
@@ -390,8 +387,7 @@ namespace StonehearthEditor
         }
 
         private void updateOnItemSelection(
-            Dictionary<string,
-            JsonFileData> categoryJsonFiles,
+            Dictionary<string, JsonFileData> categoryJsonFiles,
             Dictionary<string, string> imgPaths,
             string alias)
         {
@@ -406,7 +402,7 @@ namespace StonehearthEditor
                 {
                     TabPage newTabPage = new TabPage();
                     newTabPage.Text = openedFile.FileName;
-                    if (openedFile.IsModified)
+                    if (ModuleDataManager.GetInstance().ModifiedFiles.Contains(openedFile))
                     {
                         newTabPage.Text = newTabPage.Text + "*";
                     }
@@ -427,6 +423,89 @@ namespace StonehearthEditor
                         iconView.ImageLocation = path;
                     }
                 }
+            }
+        }
+
+        private void PopulateFileDetails(JsonFileData fileData)
+        {
+            fileDetailsListBox.Items.Clear();
+
+            // Stats with (adjustable) weights for difficulty equation to give a rough calculation of difficulty
+            // Can help us see if our manual difficulty estimates (in monster tuning files) are off
+            // estimatedDifficulty = 1*max_heath + 0*speed + 10*additive_armor_modifier + 5*weapon_dmg ...
+            Dictionary<string, double> attrWeights = new Dictionary<string, double>()
+            {
+                { "max_health", 1 },
+                { "speed", 0.5 },
+                { "menace", 0.5 },
+                { "courage", 0.5 },
+                { "additive_armor_modifier", 10 },
+                { "muscle", 3 },
+                { "exp_reward", 0 }
+            };
+
+            int weaponWeight = 15;
+            int equationDivisor = 450;
+
+            float totalWeaponBaseDamage = 0;
+            int numWeapons = 0;
+            double estimatedDifficulty = 0;
+
+            JToken attributes = fileData.Json.SelectToken("attributes");
+            if (attributes != null)
+            {
+                foreach (KeyValuePair<string, double> entry in attrWeights)
+                {
+                    string attribute = entry.Key;
+
+                    JToken jToken = fileData.Json.SelectToken("attributes." + attribute);
+                    JValue jAttribute = jToken as JValue;
+
+                    if (jToken != null && jAttribute == null)
+                    {
+                        // Add calculations for scaled attributes, which have a base and max value
+                        JValue baseValue = jToken["base"] as JValue;
+                        JValue maxValue = jToken["max"] as JValue;
+                        if (baseValue != null && maxValue != null)
+                        {
+                            estimatedDifficulty += ((2 * baseValue.Value<double>()) + maxValue.Value<double>()) / 4;
+                        }
+                    }
+                    else if (jAttribute != null)
+                    {
+                        estimatedDifficulty += jAttribute.Value<double>() * entry.Value;
+                    }
+                }
+
+                JArray weapon = fileData.Json.SelectToken("equipment.weapon") as JArray;
+                if (weapon != null)
+                {
+                    foreach (JValue weaponAlias in weapon.Children())
+                    {
+                        string weaponString = weaponAlias.ToString();
+                        ModuleFile weaponModuleFile = ModuleDataManager.GetInstance().GetModuleFile(weaponString);
+                        if (weaponModuleFile != null)
+                        {
+                            JToken baseDamage = (weaponModuleFile.FileData as JsonFileData).Json.SelectToken("entity_data.stonehearth:combat:weapon_data.base_damage");
+                            if (baseDamage != null)
+                            {
+                                int dmg = baseDamage.Value<int>();
+                                string weaponShortName = weaponString.Split(':').Last<string>();
+                                fileDetailsListBox.Items.Add(weaponShortName + " damage : " + dmg);
+                                totalWeaponBaseDamage = totalWeaponBaseDamage + dmg;
+                                numWeapons += 1;
+                            }
+                        }
+                    }
+
+                    float avgWeaponDmg = totalWeaponBaseDamage / numWeapons;
+                    fileDetailsListBox.Items.Add("average weapon damage : " + avgWeaponDmg);
+                    estimatedDifficulty += avgWeaponDmg * weaponWeight;
+                }
+
+                fileDetailsListBox.Items.Add(" ");
+                fileDetailsListBox.Items.Add("flat difficulty value : " + estimatedDifficulty);
+                fileDetailsListBox.Items.Add("estimated difficulty : " + Math.Round(estimatedDifficulty / equationDivisor, 3));
             }
         }
 

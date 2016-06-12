@@ -56,8 +56,8 @@ namespace StonehearthEditor
 
         private void saveAllToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            // TODO yshan: revisit this
             GameMasterDataManager.GetInstance().SaveModifiedFiles();
+            ModuleDataManager.GetInstance().SaveModifiedFiles();
         }
 
         private void reloadToolStripMenuItem_Click(object sender, EventArgs e)
@@ -69,6 +69,7 @@ namespace StonehearthEditor
         {
             manifestView.Reload();
             entityBrowserView.Reload();
+            encounterDesignerView.Reload();
             if (mNetWorthVisualizer != null && !mNetWorthVisualizer.IsDisposed)
             {
                 mNetWorthVisualizer.UpdateNetWorthData();
