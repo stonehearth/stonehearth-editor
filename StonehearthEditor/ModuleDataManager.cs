@@ -22,6 +22,7 @@ namespace StonehearthEditor
         private HashSet<FileData> mModifiedFiles = new HashSet<FileData>();
 
         private Dictionary<string, int> mAverageMaterialCost = new Dictionary<string, int>();
+        public HashSet<string> StockpileFilters = new HashSet<string>();
 
         public ModuleDataManager(string modsDirectoryPath)
         {

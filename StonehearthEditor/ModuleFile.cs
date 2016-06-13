@@ -70,6 +70,15 @@ namespace StonehearthEditor
                 fileData.SetModuleFile(this);
                 mFileData = fileData as FileData;
                 mFileData.Load();
+
+                if (mAlias == "ui:stockpile:filters")
+                {
+                    foreach (JToken filter in (mFileData as JsonFileData).Json.SelectTokens("stockpile.*.categories.*.filter"))
+                    {
+                        ModuleDataManager.GetInstance().StockpileFilters.Add(filter.ToString());
+                    }
+                }
+
                 foreach (KeyValuePair<string, FileData> data in mReferencesCache)
                 {
                     mFileData.ReferencedByFileData[data.Key] = data.Value;
@@ -214,6 +223,7 @@ namespace StonehearthEditor
         {
             FixupLootTables();
             RecommendNetWorth();
+            CheckForStockpileFilter();
         }
 
         private static int kWorkUnitsWorth = 2;
@@ -344,6 +354,36 @@ namespace StonehearthEditor
             }
 
             return FindFileData(found, path, startIndex + 1);
+        }
+
+        private void CheckForStockpileFilter()
+        {
+            JsonFileData jsonFileData = mFileData as JsonFileData;
+            if (jsonFileData != null)
+            {
+                if (jsonFileData.JsonType == JSONTYPE.ENTITY && jsonFileData.NetWorth > 0)
+                {
+                    JToken materialToken = jsonFileData.Json.SelectToken("components.stonehearth:material.tags");
+                    if (materialToken != null)
+                    {
+                        string tokens = materialToken.ToString();
+                        bool hasValidStockpileFilter = false;
+                        foreach (string stockpileFilter in ModuleDataManager.GetInstance().StockpileFilters)
+                        {
+                            if (tokens.Contains(stockpileFilter))
+                            {
+                                hasValidStockpileFilter = true;
+                                break;
+                            }
+                        }
+                        if (!hasValidStockpileFilter)
+                        {
+                            jsonFileData.AddError("Does not have a valid stockpile filter tag!");
+                        }
+                    }
+
+                }
+            }
         }
 
         private void FixupLootTables()
