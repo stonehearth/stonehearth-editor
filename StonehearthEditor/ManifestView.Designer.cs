@@ -156,6 +156,7 @@
             this.manifestImageList.Images.SetKeyName(9, "encounter.png");
             this.manifestImageList.Images.SetKeyName(10, "job.png");
             this.manifestImageList.Images.SetKeyName(11, "monster_tuning.png");
+            this.manifestImageList.Images.SetKeyName(12, "mixin.png");
             // 
             // splitContainer2
             // 

@@ -39,9 +39,6 @@ namespace StonehearthEditor
 
         public void Initialize()
         {
-            new ModuleDataManager(MainForm.kModsDirectoryPath);
-            ModuleDataManager.GetInstance().Load();
-
             netWorthListView.View = View.Details;
             netWorthListView.GridLines = true;
             netWorthListView.FullRowSelect = true;
@@ -65,47 +62,9 @@ namespace StonehearthEditor
             InitializeKillableEntitiesListView();
         }
 
-        public void InitializeTab(int index)
-        {
-            switch (index)
-            {
-                case 0:
-                    netWorthListView.Items.Clear();
-                    InitializeNetWorthItemsView();
-                    break;
-                case 1:
-                    weaponsListView.Items.Clear();
-                    InitializeWeaponsView();
-                    break;
-                case 2:
-                    defenseItemsListView.Items.Clear();
-                    InitializeDefenseItemsListView();
-                    break;
-                case 3:
-                    killableEntitiesListView.BeginUpdate();
-                    killableEntitiesListView.Items.Clear();
-                    InitializeKillableEntitiesListView();
-                    killableEntitiesListView.EndUpdate();
-                    break;
-                default:
-                    throw new IndexOutOfRangeException("Selected tab index does not match InitializeTab indices!");
-            }
-        }
-
         public void Reload()
         {
-            int index = this.entityBrowserTabControl.SelectedIndex;
-            try
-            {
-                InitializeTab(index);
-            }
-            catch (IndexOutOfRangeException e)
-            {
-                Console.WriteLine("Could not reload tab with index "
-                   + index.ToString()
-                   + ". Exception: "
-                   + e.Message);
-            }
+            Initialize();
         }
 
         private static void populateWithDefaultValue<T>(List<T> array, T value, int num)
@@ -118,6 +77,8 @@ namespace StonehearthEditor
 
         private void InitializeNetWorthItemsView()
         {
+            netWorthListView.BeginUpdate();
+            netWorthListView.Items.Clear();
             netWorthImagePaths = new Dictionary<string, string>();
             object[] data = ModuleDataManager.GetInstance().FilterJsonByTerm(netWorthListView, "entity_data.stonehearth:net_worth");
             netWorthJsonFiles = (Dictionary<string, JsonFileData>)data[0];
@@ -178,10 +139,13 @@ namespace StonehearthEditor
             }
 
             netWorthListView.SmallImageList = imageList;
+            netWorthListView.EndUpdate();
         }
 
         private void InitializeWeaponsView()
         {
+            weaponsListView.BeginUpdate();
+            weaponsListView.Items.Clear();
             weaponsImagePaths = new Dictionary<string, string>();
             object[] data = ModuleDataManager.GetInstance().FilterJsonByTerm(netWorthListView, "entity_data.stonehearth:combat:weapon_data");
             weaponsJsonFiles = (Dictionary<string, JsonFileData>)data[0];
@@ -224,10 +188,13 @@ namespace StonehearthEditor
             }
 
             weaponsListView.SmallImageList = imageList;
+            weaponsListView.EndUpdate();
         }
 
         private void InitializeDefenseItemsListView()
         {
+            defenseItemsListView.BeginUpdate();
+            defenseItemsListView.Items.Clear();
             defenseImagePaths = new Dictionary<string, string>();
             object[] data = ModuleDataManager.GetInstance().FilterJsonByTerm(defenseItemsListView, "entity_data.stonehearth:combat:armor_data");
             defenseJsonFiles = (Dictionary<string, JsonFileData>)data[0];
@@ -256,11 +223,14 @@ namespace StonehearthEditor
             }
 
             defenseItemsListView.SmallImageList = imageList;
+            defenseItemsListView.EndUpdate();
         }
 
         // Not really killable entities per se. More like stuff with attributes.
         private void InitializeKillableEntitiesListView()
         {
+            killableEntitiesListView.BeginUpdate();
+            killableEntitiesListView.Items.Clear();
             InitializeKillableEntitiesColumns();
 
             object[] data = ModuleDataManager.GetInstance().GetJsonsOfType(killableEntitiesListView, JSONTYPE.MONSTER_TUNING);
@@ -311,6 +281,7 @@ namespace StonehearthEditor
                 int index = killableEntitiesListView.Columns.IndexOfKey("alias");
                 killableEntitiesListView.AutoResizeColumn(index, ColumnHeaderAutoResizeStyle.ColumnContent);
             }
+            killableEntitiesListView.EndUpdate();
         }
 
         private void InitializeKillableEntitiesColumns()

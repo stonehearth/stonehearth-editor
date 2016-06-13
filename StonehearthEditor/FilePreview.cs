@@ -78,13 +78,15 @@ namespace StonehearthEditor
             }
 
             mFileData.TrySaveFile();
+            // rescroll to correct location
+            int caretPosition = textBox.SelectionStart;
+            textBox.Text = mFileData.FlatFileData;
+            textBox.SelectionStart = caretPosition;
+            textBox.ScrollToCaret();
+
             TabPage parentControl = Parent as TabPage;
             if (parentControl != null)
             {
-                int caretPosition = textBox.SelectionStart;
-                textBox.Text = mFileData.FlatFileData;
-                textBox.SelectionStart = caretPosition;
-                textBox.ScrollToCaret();
                 parentControl.Text = mFileData.FileName;
             }
         }
