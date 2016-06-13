@@ -33,14 +33,17 @@ EffectKinds = {
 
                 ComplexProperty.create({
                     name: "particle",
+                    componentName: "encompassing-group-property",
                     optional: false,
                     children: Ember.A([
                         ComplexProperty.create({
                             name: 'lifetime',
+                            componentName: "sub-group-property",
                             optional: true,
                             children: Ember.A([
                                 ParameterProperty.create({
                                     name: 'start',
+                                    componentName: "level3-parameter-property",
                                     dimension: 'scalar',
                                     timeVarying: false,
                                     optional: true,
@@ -49,16 +52,19 @@ EffectKinds = {
                         }),
                         ComplexProperty.create({
                             name: 'speed',
+                            componentName: "sub-group-property",
                             optional: true,
                             children: Ember.A([
                                 ParameterProperty.create({
                                     name: 'start',
+                                    componentName: "level3-parameter-property",
                                     dimension: 'scalar',
                                     timeVarying: false,
                                     optional: true,
                                 }),
                                 ParameterProperty.create({
                                     name: 'over_lifetime',
+                                    componentName: "level3-parameter-property",
                                     dimension: 'scalar',
                                     timeVarying: true,
                                     optional: true,
@@ -67,22 +73,26 @@ EffectKinds = {
                         }),
                         ComplexProperty.create({
                             name: 'acceleration',
+                            componentName: "sub-group-property",
                             optional: true,
                             children: Ember.A([
                                 ParameterProperty.create({
                                     name: 'over_lifetime_x',
+                                    componentName: "level3-parameter-property",
                                     dimension: 'scalar',
                                     timeVarying: true,
                                     optional: true,
                                 }),
                                 ParameterProperty.create({
                                     name: 'over_lifetime_y',
+                                    componentName: "level3-parameter-property",
                                     dimension: 'scalar',
                                     timeVarying: true,
                                     optional: true,
                                 }),
                                 ParameterProperty.create({
                                     name: 'over_lifetime_z',
+                                    componentName: "level3-parameter-property",
                                     dimension: 'scalar',
                                     timeVarying: true,
                                     optional: true,
@@ -91,34 +101,40 @@ EffectKinds = {
                         }),
                         ComplexProperty.create({
                             name: 'color',
+                            componentName: "sub-group-property",
                             optional: true,
                             children: Ember.A([
                                 ParameterProperty.create({
                                     name: 'start',
+                                    componentName: "level3-parameter-property",
                                     dimension: 'rgba',
                                     timeVarying: false,
                                     optional: true,
                                 }),
                                 ParameterProperty.create({
                                     name: 'over_lifetime_a',
+                                    componentName: "level3-parameter-property",
                                     dimension: 'scalar',
                                     timeVarying: true,
                                     optional: true,
                                 }),
                                 ParameterProperty.create({
                                     name: 'over_lifetime_r',
+                                    componentName: "level3-parameter-property",
                                     dimension: 'scalar',
                                     timeVarying: true,
                                     optional: true,
                                 }),
                                 ParameterProperty.create({
                                     name: 'over_lifetime_g',
+                                    componentName: "level3-parameter-property",
                                     dimension: 'scalar',
                                     timeVarying: true,
                                     optional: true,
                                 }),
                                 ParameterProperty.create({
                                     name: 'over_lifetime_b',
+                                    componentName: "level3-parameter-property",
                                     dimension: 'scalar',
                                     timeVarying: true,
                                     optional: true,
@@ -127,16 +143,19 @@ EffectKinds = {
                         }),
                         ComplexProperty.create({
                             name: 'scale',
+                            componentName: "sub-group-property",
                             optional: true,
                             children: Ember.A([
                                 ParameterProperty.create({
                                     name: 'start',
+                                    componentName: "level3-parameter-property",
                                     dimension: 'scalar',
                                     timeVarying: false,
                                     optional: true,
                                 }),
                                 ParameterProperty.create({
                                     name: 'over_lifetime',
+                                    componentName: "level3-parameter-property",
                                     dimension: 'scalar',
                                     timeVarying: true,
                                     optional: true,
@@ -145,22 +164,26 @@ EffectKinds = {
                         }),
                         ComplexProperty.create({
                             name: 'rotation',
+                            componentName: "sub-group-property",
                             optional: true,
                             children: Ember.A([
                                 ParameterProperty.create({
                                     name: 'over_lifetime_x',
+                                    componentName: "level3-parameter-property",
                                     dimension: 'scalar',
                                     timeVarying: true,
                                     optional: true,
                                 }),
                                 ParameterProperty.create({
                                     name: 'over_lifetime_y',
+                                    componentName: "level3-parameter-property",
                                     dimension: 'scalar',
                                     timeVarying: true,
                                     optional: true,
                                 }),
                                 ParameterProperty.create({
                                     name: 'over_lifetime_z',
+                                    componentName: "level3-parameter-property",
                                     dimension: 'scalar',
                                     timeVarying: true,
                                     optional: true,
@@ -169,22 +192,26 @@ EffectKinds = {
                         }),
                         ComplexProperty.create({
                             name: 'velocity',
+                            componentName: "sub-group-property",
                             optional: true,
                             children: Ember.A([
                                 ParameterProperty.create({
                                     name: 'over_lifetime_x',
+                                    componentName: "level3-parameter-property",
                                     dimension: 'scalar',
                                     timeVarying: true,
                                     optional: true,
                                 }),
                                 ParameterProperty.create({
                                     name: 'over_lifetime_y',
+                                    componentName: "level3-parameter-property",
                                     dimension: 'scalar',
                                     timeVarying: true,
                                     optional: true,
                                 }),
                                 ParameterProperty.create({
                                     name: 'over_lifetime_z',
+                                    componentName: "level3-parameter-property",
                                     dimension: 'scalar',
                                     timeVarying: true,
                                     optional: true,
@@ -196,16 +223,19 @@ EffectKinds = {
 
                 ComplexProperty.create({
                     name: "emission",
+                    componentName: "encompassing-group-property",
                     optional: false,
                     children: Ember.A([
                         ParameterProperty.create({
                             name: 'rate',
+                            componentName: "level2-parameter-property",
                             dimension: 'scalar',
                             timeVarying: false,
                             optional: false,
                         }),
                         ParameterProperty.create({
                             name: 'angle',
+                            componentName: "level2-parameter-property",
                             dimension: 'scalar',
                             timeVarying: false,
                             optional: false,
@@ -231,6 +261,33 @@ App.OriginPropertyComponent = Ember.Component.extend({
 });
 
 App.BlockPropertyComponent = Ember.Component.extend({
+    actions: {
+        toggleMissing: function () {
+            this.set('model.isMissing', !this.get('model.isMissing'));
+        },
+    },
+});
+
+App.SubGroupPropertyComponent = Ember.Component.extend({
+    classNames: ['sub-group-property'],
+    actions: {
+        toggleMissing: function () {
+            this.set('model.isMissing', !this.get('model.isMissing'));
+        },
+    },
+});
+
+App.Level3ParameterPropertyComponent = Ember.Component.extend({
+    classNames: ['level3-parameter-property'],
+    actions: {
+        toggleMissing: function () {
+            this.set('model.isMissing', !this.get('model.isMissing'));
+        },
+    },
+});
+
+App.Level2ParameterPropertyComponent = Ember.Component.extend({
+    classNames: ['level2-parameter-property'],
     actions: {
         toggleMissing: function () {
             this.set('model.isMissing', !this.get('model.isMissing'));
@@ -274,3 +331,11 @@ App.IndexController = Ember.Controller.extend({
         },
     },
 });
+
+/*App.ShInputComponent = Ember.InputComponent.extend({
+    classNames: ['sh-input'],
+});
+
+App.ShNumericInputComponent = App.ShInputComponent.extend({
+    classNames: ['sh-numeric-input'],
+});*/
