@@ -43,12 +43,12 @@
             this.newFileButton = new System.Windows.Forms.ToolStripButton();
             this.effectsOpenFileButton = new System.Windows.Forms.ToolStripButton();
             this.cefDevToolsButton = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             this.openEffectsFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.cloneToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.effectsEditorContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.saveEffectsFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.helpButton = new System.Windows.Forms.Button();
-            this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             ((System.ComponentModel.ISupportInitialize)(this.effectsSplitContainer)).BeginInit();
             this.effectsSplitContainer.Panel1.SuspendLayout();
             this.effectsSplitContainer.Panel2.SuspendLayout();
@@ -68,7 +68,6 @@
             // 
             this.effectsSplitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
             this.effectsSplitContainer.Location = new System.Drawing.Point(0, 25);
-            this.effectsSplitContainer.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.effectsSplitContainer.Name = "effectsSplitContainer";
             // 
             // effectsSplitContainer.Panel1
@@ -78,9 +77,8 @@
             // effectsSplitContainer.Panel2
             // 
             this.effectsSplitContainer.Panel2.Controls.Add(this.effectsSplitContainer2);
-            this.effectsSplitContainer.Size = new System.Drawing.Size(1008, 680);
-            this.effectsSplitContainer.SplitterDistance = 290;
-            this.effectsSplitContainer.SplitterWidth = 5;
+            this.effectsSplitContainer.Size = new System.Drawing.Size(756, 548);
+            this.effectsSplitContainer.SplitterDistance = 217;
             this.effectsSplitContainer.TabIndex = 1;
             // 
             // treeViewTabControl
@@ -89,20 +87,18 @@
             this.treeViewTabControl.Controls.Add(this.effectsTreeViewTab);
             this.treeViewTabControl.Dock = System.Windows.Forms.DockStyle.Fill;
             this.treeViewTabControl.Location = new System.Drawing.Point(0, 0);
-            this.treeViewTabControl.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.treeViewTabControl.Name = "treeViewTabControl";
             this.treeViewTabControl.SelectedIndex = 0;
-            this.treeViewTabControl.Size = new System.Drawing.Size(290, 680);
+            this.treeViewTabControl.Size = new System.Drawing.Size(217, 548);
             this.treeViewTabControl.TabIndex = 0;
             // 
             // cubemittersTreeViewTab
             // 
             this.cubemittersTreeViewTab.Controls.Add(this.cubemittersTreeView);
-            this.cubemittersTreeViewTab.Location = new System.Drawing.Point(4, 25);
-            this.cubemittersTreeViewTab.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.cubemittersTreeViewTab.Location = new System.Drawing.Point(4, 22);
             this.cubemittersTreeViewTab.Name = "cubemittersTreeViewTab";
-            this.cubemittersTreeViewTab.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.cubemittersTreeViewTab.Size = new System.Drawing.Size(282, 651);
+            this.cubemittersTreeViewTab.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
+            this.cubemittersTreeViewTab.Size = new System.Drawing.Size(209, 522);
             this.cubemittersTreeViewTab.TabIndex = 1;
             this.cubemittersTreeViewTab.Text = "Cubemitters";
             this.cubemittersTreeViewTab.UseVisualStyleBackColor = true;
@@ -111,11 +107,10 @@
             // 
             this.cubemittersTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.cubemittersTreeView.FullRowSelect = true;
-            this.cubemittersTreeView.Location = new System.Drawing.Point(4, 4);
-            this.cubemittersTreeView.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.cubemittersTreeView.Location = new System.Drawing.Point(3, 3);
             this.cubemittersTreeView.Name = "cubemittersTreeView";
             this.cubemittersTreeView.PathSeparator = "/";
-            this.cubemittersTreeView.Size = new System.Drawing.Size(274, 643);
+            this.cubemittersTreeView.Size = new System.Drawing.Size(203, 516);
             this.cubemittersTreeView.TabIndex = 1;
             this.cubemittersTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.cubemittersTreeView_AfterSelect);
             this.cubemittersTreeView.MouseClick += new System.Windows.Forms.MouseEventHandler(this.cubemittersTreeView_MouseClick);
@@ -123,11 +118,10 @@
             // effectsTreeViewTab
             // 
             this.effectsTreeViewTab.Controls.Add(this.effectsEditorTreeView);
-            this.effectsTreeViewTab.Location = new System.Drawing.Point(4, 25);
-            this.effectsTreeViewTab.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.effectsTreeViewTab.Location = new System.Drawing.Point(4, 22);
             this.effectsTreeViewTab.Name = "effectsTreeViewTab";
-            this.effectsTreeViewTab.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.effectsTreeViewTab.Size = new System.Drawing.Size(283, 645);
+            this.effectsTreeViewTab.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
+            this.effectsTreeViewTab.Size = new System.Drawing.Size(210, 526);
             this.effectsTreeViewTab.TabIndex = 0;
             this.effectsTreeViewTab.Text = "Effects";
             this.effectsTreeViewTab.UseVisualStyleBackColor = true;
@@ -137,11 +131,10 @@
             this.effectsEditorTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.effectsEditorTreeView.FullRowSelect = true;
             this.effectsEditorTreeView.HideSelection = false;
-            this.effectsEditorTreeView.Location = new System.Drawing.Point(4, 4);
-            this.effectsEditorTreeView.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.effectsEditorTreeView.Location = new System.Drawing.Point(3, 3);
             this.effectsEditorTreeView.Name = "effectsEditorTreeView";
             this.effectsEditorTreeView.PathSeparator = "/";
-            this.effectsEditorTreeView.Size = new System.Drawing.Size(275, 637);
+            this.effectsEditorTreeView.Size = new System.Drawing.Size(204, 520);
             this.effectsEditorTreeView.TabIndex = 0;
             this.effectsEditorTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.effectsEditorTreeView_AfterSelect);
             this.effectsEditorTreeView.MouseClick += new System.Windows.Forms.MouseEventHandler(this.effectsEditorTreeView_MouseClick);
@@ -150,7 +143,6 @@
             // 
             this.effectsSplitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.effectsSplitContainer2.Location = new System.Drawing.Point(0, 0);
-            this.effectsSplitContainer2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.effectsSplitContainer2.Name = "effectsSplitContainer2";
             // 
             // effectsSplitContainer2.Panel1
@@ -160,28 +152,25 @@
             // effectsSplitContainer2.Panel2
             // 
             this.effectsSplitContainer2.Panel2.Controls.Add(this.effectsBrowserPanel);
-            this.effectsSplitContainer2.Size = new System.Drawing.Size(713, 680);
-            this.effectsSplitContainer2.SplitterDistance = 433;
-            this.effectsSplitContainer2.SplitterWidth = 5;
+            this.effectsSplitContainer2.Size = new System.Drawing.Size(535, 548);
+            this.effectsSplitContainer2.SplitterDistance = 179;
             this.effectsSplitContainer2.TabIndex = 0;
             // 
             // filePreviewTabs
             // 
             this.filePreviewTabs.Dock = System.Windows.Forms.DockStyle.Fill;
             this.filePreviewTabs.Location = new System.Drawing.Point(0, 0);
-            this.filePreviewTabs.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.filePreviewTabs.Name = "filePreviewTabs";
             this.filePreviewTabs.SelectedIndex = 0;
-            this.filePreviewTabs.Size = new System.Drawing.Size(433, 680);
+            this.filePreviewTabs.Size = new System.Drawing.Size(179, 548);
             this.filePreviewTabs.TabIndex = 3;
             // 
             // effectsBrowserPanel
             // 
             this.effectsBrowserPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.effectsBrowserPanel.Location = new System.Drawing.Point(0, 0);
-            this.effectsBrowserPanel.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.effectsBrowserPanel.Name = "effectsBrowserPanel";
-            this.effectsBrowserPanel.Size = new System.Drawing.Size(275, 680);
+            this.effectsBrowserPanel.Size = new System.Drawing.Size(352, 548);
             this.effectsBrowserPanel.TabIndex = 0;
             // 
             // effectsToolStrip
@@ -193,7 +182,7 @@
             this.toolStripButton1});
             this.effectsToolStrip.Location = new System.Drawing.Point(0, 0);
             this.effectsToolStrip.Name = "effectsToolStrip";
-            this.effectsToolStrip.Size = new System.Drawing.Size(1008, 25);
+            this.effectsToolStrip.Size = new System.Drawing.Size(756, 25);
             this.effectsToolStrip.TabIndex = 2;
             this.effectsToolStrip.Text = "Effects Tool Strip";
             // 
@@ -236,6 +225,16 @@
             this.cefDevToolsButton.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
             this.cefDevToolsButton.Click += new System.EventHandler(this.cefDevToolsButton_Click);
             // 
+            // toolStripButton1
+            // 
+            this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.toolStripButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton1.Image")));
+            this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton1.Name = "toolStripButton1";
+            this.toolStripButton1.Size = new System.Drawing.Size(68, 22);
+            this.toolStripButton1.Text = "Cef Reload";
+            this.toolStripButton1.Click += new System.EventHandler(this.toolStripButton1_Click);
+            // 
             // openEffectsFileDialog
             // 
             this.openEffectsFileDialog.FileName = "openEffectsFileDialog";
@@ -265,35 +264,23 @@
             // 
             this.helpButton.BackColor = System.Drawing.SystemColors.AppWorkspace;
             this.helpButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.helpButton.Location = new System.Drawing.Point(929, 0);
-            this.helpButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.helpButton.Location = new System.Drawing.Point(697, 0);
             this.helpButton.Name = "helpButton";
-            this.helpButton.Size = new System.Drawing.Size(61, 31);
+            this.helpButton.Size = new System.Drawing.Size(46, 25);
             this.helpButton.TabIndex = 3;
             this.helpButton.Text = "Help";
             this.helpButton.UseVisualStyleBackColor = false;
             this.helpButton.Click += new System.EventHandler(this.helpButton_Click);
             // 
-            // toolStripButton1
-            // 
-            this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.toolStripButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton1.Image")));
-            this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton1.Name = "toolStripButton1";
-            this.toolStripButton1.Size = new System.Drawing.Size(68, 22);
-            this.toolStripButton1.Text = "Cef Reload";
-            this.toolStripButton1.Click += new System.EventHandler(this.toolStripButton1_Click);
-            // 
             // EffectsEditorView
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.helpButton);
             this.Controls.Add(this.effectsSplitContainer);
             this.Controls.Add(this.effectsToolStrip);
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.Name = "EffectsEditorView";
-            this.Size = new System.Drawing.Size(1008, 705);
+            this.Size = new System.Drawing.Size(756, 573);
             this.effectsSplitContainer.Panel1.ResumeLayout(false);
             this.effectsSplitContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.effectsSplitContainer)).EndInit();

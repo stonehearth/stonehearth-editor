@@ -327,7 +327,9 @@ App.IndexController = Ember.Controller.extend({
             EffectsJsObject.preview(this.get('model.effectModel').toJson());
         },
         save: function () {
-            EffectsJsObject.save(this.get('model.effectModel').toJson());
+            var jsonObj = this.get('model.effectModel').toJson();
+            var json = formatEffectTrack(jsonObj);
+            EffectsJsObject.save(json);
         },
     },
 });

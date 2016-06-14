@@ -49,34 +49,26 @@ namespace StonehearthEditor
             mChromeBrowser.LoadError += MChromeBrowser_LoadError;
             panel.Controls.Add(mChromeBrowser);
             mChromeBrowser.Dock = DockStyle.Fill;
-
-            ExposeObjects();
         }
 
         private void MChromeBrowser_LoadError(object sender, LoadErrorEventArgs e)
         {
-            throw new NotImplementedException();
-        }
-
-        private void ExposeObjects()
-        {
-            // Test javascript
-            //mChromeBrowser.RegisterJsObject("eventHandler", new Effects.EffectsEventHandler());
-
-            //mEffectsJsObject = new EffectsJsObject();
-            //mChromeBrowser.RegisterJsObject("effectsJsObject", mEffectsJsObject);
+            MessageBox.Show("file type not supported yet");
         }
 
         private string effectKind;
         private string json;
+        private string filePath;
 
-        public void LoadFromJson(string effectKind, string json)
+        public void LoadFromJson(string effectKind, string json, string filePath)
         {
             this.effectKind = effectKind;
             this.json = json;
+            this.filePath = filePath;
             this.Refresh();
-            //mEffectsJsObject.EffectKind = effectKind;
-            //mEffectsJsObject.Json = json;
+            mEffectsJsObject.EffectKind = effectKind;
+            mEffectsJsObject.Json = json;
+            mEffectsJsObject.FilePath = filePath;
         }
 
         public void RunScript(string script)

@@ -411,6 +411,7 @@
     <Content Include="pages\scripts\effect-property.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="pages\scripts\root\util.js" />
     <Content Include="pages\scripts\root\main.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -444,6 +445,7 @@
     <Content Include="pages\scripts\libs\bootstrap.min.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="pages\styles\main.css" />
     <Content Include="scripts\check_loc_keys.py" />
     <Content Include="pages\scripts\libs\ember-data.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

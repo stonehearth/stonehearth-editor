@@ -14,6 +14,7 @@
     <script src="scripts/libs/ember-template-compiler.js"></script>
     <script src="scripts/root/main.js"></script>
     <script src="scripts/root/routes.js"></script>
+    <script src="scripts/root/util.js"></script>
 
     <style>
         .inline-property-label {
@@ -89,7 +90,7 @@
     <script src="scripts/string-property.js"></script>
     <script src="scripts/complex-property.js"></script>
     <script type="text/x-handlebars" data-template-name="index">
-        <button {{ action "preview" }}>Preview</button>
+        <!-- <button {{ action "preview" }}>Preview</button> -->
         <button {{ action "save" }}>Save</button>
         Validity {{ model.effectModel.isValid }}
         {{ component model.effectModel.componentName model=model.effectModel }}

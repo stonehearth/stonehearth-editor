@@ -211,7 +211,7 @@ namespace StonehearthEditor
                     return;
                 }
 
-                mEffectsChromeBrowser.LoadFromJson("cubeEmitter", jsonString);
+                mEffectsChromeBrowser.LoadFromJson("cubeEmitter", jsonString, fullPath.ToString());
             }
             else
             {
