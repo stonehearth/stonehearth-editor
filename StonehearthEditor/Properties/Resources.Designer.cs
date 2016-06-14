@@ -71,11 +71,12 @@ namespace StonehearthEditor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
+        ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static string defaultMaterial {
+        internal static byte[] defaultManifest {
             get {
-                return ResourceManager.GetString("defaultMaterial", resourceCulture);
+                object obj = ResourceManager.GetObject("defaultManifest", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         

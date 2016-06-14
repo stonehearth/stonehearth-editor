@@ -149,28 +149,32 @@ namespace StonehearthEditor
         public bool Clone(CloneObjectParameters parameters, HashSet<string> alreadyCloned, bool execute)
         {
             string newAlias = parameters.TransformAlias(mAlias);
-            if (mModule.GetAliasFile(newAlias) != null)
+            string sourceModName = Module.Name;
+            string targetModName = parameters.TargetModule;
+            Module targetModule = ModuleDataManager.GetInstance().GetMod(targetModName);
+
+            if (targetModule.GetAliasFile(newAlias) != null)
             {
                 // MessageBox.Show("The alias " + newAlias + " already exists in manifest.json");
                 return false;
             }
 
-            string newPath = parameters.TransformParameter(ResolvedPath);
+            string newPath = parameters.TransformParameter(ResolvedPath.Replace(sourceModName, targetModName));
             if (!FileData.Clone(newPath, parameters, alreadyCloned, execute))
             {
                 return false;
             }
 
-            alreadyCloned.Add(mModule.Name + ':' + newAlias);
+            alreadyCloned.Add(targetModName + ':' + newAlias);
             if (execute)
             {
-                string fileLocation = "file(" + newPath.Replace(mModule.Path + "/", "") + ")";
-                ModuleFile file = new ModuleFile(Module, newAlias, fileLocation);
+                string fileLocation = "file(" + newPath.Replace(mModule.Path.Replace(sourceModName, targetModName) + "/", "") + ")";
+                ModuleFile file = new ModuleFile(targetModule, newAlias, fileLocation);
                 file.TryLoad();
                 if (file.FileData != null)
                 {
-                    mModule.AddToManifest(newAlias, fileLocation);
-                    mModule.WriteManifestToFile();
+                    targetModule.AddToManifest(newAlias, fileLocation);
+                    targetModule.WriteManifestToFile();
                     return true;
                 }
             }

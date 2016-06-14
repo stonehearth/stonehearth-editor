@@ -221,7 +221,7 @@ namespace StonehearthEditor
                 }
             }
 
-            return hasItems ? root : null;
+            return (searchTerm == "" || searchTerm == null || hasItems) ? root : null;
         }
 
         public void Dispose()

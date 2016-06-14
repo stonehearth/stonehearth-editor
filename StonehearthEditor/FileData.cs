@@ -201,8 +201,8 @@ namespace StonehearthEditor
                     else
                     {
                         // This dependency is just a FileData, clone the fileData.
-                        string linkedPath = ModuleDataManager.GetInstance().ModsDirectoryPath + dependencyName;
-                        string newDependencyPath = ModuleDataManager.GetInstance().ModsDirectoryPath + parameters.TransformParameter(dependencyName);
+                        string linkedPath = ModuleDataManager.GetInstance().ModsDirectoryPath + dependencyName.Replace(parameters.SourceModule, parameters.TargetModule);
+                        string newDependencyPath = ModuleDataManager.GetInstance().ModsDirectoryPath + parameters.TransformParameter(dependencyName.Replace(parameters.SourceModule, parameters.TargetModule));
                         if (!alreadyCloned.Contains(newDependencyPath))
                         {
                             alreadyCloned.Add(newDependencyPath);

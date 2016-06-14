@@ -20,6 +20,8 @@ namespace StonehearthEditor
             InitializeComponent();
             Text = "Clone: " + clonedObjectName;
 
+            FillModListDropdown(clonedObjectName);
+
             int index = clonedObjectName.IndexOf(':');
             if (index != -1 && clonedObjectName.Length > index)
             {
@@ -31,6 +33,8 @@ namespace StonehearthEditor
                     AddNewRow(oldAlias);
                 }
             }
+
+            sourceModLabel.Text = clonedObjectName.Split(':')[0];
 
             AddNewRow(initialText);
             AcceptButton = cloneButton;
@@ -62,6 +66,9 @@ namespace StonehearthEditor
                         parameters.AddStringReplacement(original.Text, replacement.Text);
                     }
                 }
+
+                parameters.SetSourceModule(sourceModLabel.Text);
+                parameters.SetTargetModule(modListDropdown.SelectedItem.ToString());
 
                 bool isSuccess = mCallback.OnAccept(parameters);
                 if (isSuccess)
@@ -103,6 +110,13 @@ namespace StonehearthEditor
             parametersTable.Controls.Add(newOriginalParam, 0, parametersTable.RowCount - 1);
             parametersTable.Controls.Add(newReplacementParam, 1, parametersTable.RowCount - 1);
             newOriginalParam.Focus();
+        }
+
+        private void FillModListDropdown(string clonedObjectName)
+        {
+            modListDropdown.Items.Clear();
+            modListDropdown.Items.AddRange(ModuleDataManager.GetInstance().GetAllModuleNames());
+            modListDropdown.SelectedItem = clonedObjectName.Split(':')[0];
         }
     }
 }

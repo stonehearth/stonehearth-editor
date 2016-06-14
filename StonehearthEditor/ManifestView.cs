@@ -27,6 +27,8 @@ namespace StonehearthEditor
             new ModuleDataManager(MainForm.kModsDirectoryPath);
             ModuleDataManager.GetInstance().Load();
             ModuleDataManager.GetInstance().FilterAliasTree(treeView, null);
+            searchBox.BackColor = SystemColors.Window;
+
             if (ModuleDataManager.GetInstance().HasErrors)
             {
                 toolStripStatusLabel1.Text = "Errors were encountered while loading manifests";
@@ -259,6 +261,10 @@ namespace StonehearthEditor
         private void searchBox_TextChanged(object sender, EventArgs e)
         {
             searchButton.PerformClick();
+            if (searchBox.Text == string.Empty)
+            {
+                searchBox.BackColor = SystemColors.Window;
+            }
         }
 
         public void Reload()
@@ -283,6 +289,11 @@ namespace StonehearthEditor
             else
             {
                 SetSelectedFileData(null);
+            }
+
+            if (searchBox.Text == "")
+            {
+                searchBox.BackColor = SystemColors.Window;
             }
         }
 
@@ -328,6 +339,7 @@ namespace StonehearthEditor
         private void searchButton_Click(object sender, EventArgs e)
         {
             string searchTerm = searchBox.Text;
+            searchBox.BackColor = Color.Gold;
             ModuleDataManager.GetInstance().FilterAliasTree(treeView, searchTerm);
         }
 
@@ -436,9 +448,9 @@ namespace StonehearthEditor
                     return false;
                 }
 
-                if (potentialNewNodeName.Equals(originalName))
+                if (potentialNewNodeName.Equals(originalName) && parameters.SourceModule == parameters.TargetModule)
                 {
-                    MessageBox.Show("You must enter a new unique name for the clone!");
+                    MessageBox.Show("You must enter a new unique name for the clone or change the target mod!");
                     return false;
                 }
 
