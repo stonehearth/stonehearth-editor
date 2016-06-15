@@ -1,5 +1,4 @@
-﻿
-App = Ember.Application.create({
+﻿App = Ember.Application.create({
 });
 
 Utils = {
@@ -230,14 +229,14 @@ EffectKinds = {
                             name: 'rate',
                             componentName: "level2-parameter-property",
                             dimension: 'scalar',
-                            timeVarying: false,
+                            timeVarying: true,
                             optional: false,
                         }),
                         ParameterProperty.create({
                             name: 'angle',
                             componentName: "level2-parameter-property",
                             dimension: 'scalar',
-                            timeVarying: false,
+                            timeVarying: true,
                             optional: false,
                         }),
                         OriginProperty.create({
