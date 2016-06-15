@@ -399,7 +399,7 @@ ParameterProperty = EffectProperty.extend({
     toJson: function () {
         return {
             kind: this.kind,
-            value: this.get('parameter').toJson(),
+            values: this.get('parameter').toJson(),
         };
     },
     fromJson: function (json) {
