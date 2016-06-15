@@ -1,0 +1,336 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Effects Editor</title>
+    <link href="styles/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <script src="scripts/libs/jquery-2.1.1.min.js"></script>
+    <script src="scripts/libs/bootstrap.min.js"></script>
+    <script src="scripts/libs/handlebars.min.js"></script>
+    <script src="scripts/libs/ember.min.js"></script>
+    <script src="scripts/libs/ember-data.min.js"></script>
+    <script src="scripts/libs/ember-template-compiler.js"></script>
+    <script src="scripts/root/main.js"></script>
+    <script src="scripts/root/routes.js"></script>
+    <script src="scripts/root/util.js"></script>
+
+    <style>
+        .inline-property-label {
+            display: inline-block;
+            width: 100px;
+        }
+        .warning-icon {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            background-color: red;
+        }
+        .encompassing-group-property-header {
+            border-bottom: 3px solid rgb(40, 40, 40);
+            margin-bottom: 0;
+            padding-left: 5px;
+            background-color: lightgray;
+            color: black;
+            text-transform: capitalize;
+        }
+        .app {
+            background-color: darkgray;
+        }
+        .sub-group-property {
+            margin: 3px 5px;
+        }
+        .sub-group-property-header {
+            text-transform: capitalize;
+            padding: 5px;
+            border-radius: 5px;
+            background-color: gray;
+            width: 500px;
+            font-weight: bold;
+        }
+        .sub-group-property-expand-button {
+            position: absolute;
+            left: 470px;
+            width: 30px;
+            text-align: center;
+            margin-top: -3px;
+        }
+        .level3-parameter-property {
+            margin: 7px 0px 7px 5px;
+        }
+        .level3-parameter-property-expand-button {
+            position: absolute;
+            left: 470px;
+            width: 30px;
+            text-align: center;
+            margin-top: -3px;
+        }
+        .level3-parameter-property-header-text {
+            width: 100px;
+            display: inline-block;
+        }
+        .level3-parameter-property-select {
+            width: 250px;
+        }
+        .parameter-property-label {
+            width: 100px;
+            display: inline-block;
+            text-align: right;
+        }
+        .sh-input {
+
+        }
+        .sh-numeric-input {
+            width: 100px;
+        }
+    </style>
+
+    <script src="scripts/effect-property.js"></script>
+    <script src="scripts/string-property.js"></script>
+    <script src="scripts/complex-property.js"></script>
+    <script type="text/x-handlebars" data-template-name="index">
+        <!-- <button {{ action "preview" }}>Preview</button> -->
+        <button {{ action "save" }}>Save</button>
+        Validity {{ model.effectModel.isValid }}
+        {{ component model.effectModel.componentName model=model.effectModel }}
+    </script>
+    <script type="text/x-handlebars" data-template-name="components/warning-icon">
+        <!-- TODO put message into a tooltip instead -->
+        <span
+              class="warning-icon"
+              style="visibility: {{ if message 'visible' 'hidden' }}; "
+              title="{{ message }}"></span>
+        {{ message }}
+    </script>
+    <script type="text/x-handlebars" data-template-name="components/string-property">
+        <span class="inline-property-label">{{ model.name }}</span>
+        {{ input class="sh-input" type='text' value=model.value }}
+    </script>
+    <script type="text/x-handlebars" data-template-name="components/int-property">
+        <span class="inline-property-label">{{ model.name }}</span>
+        {{ input class="sh-input" type='text' value=model.value }}
+        {{ warning-icon message=model.invalidValueMessage }}
+    </script>
+    <script type="text/x-handlebars" data-template-name="components/complex-property">
+        {{#block-property model=model }}
+            {{#each model.children as |property| }}
+                {{ component property.componentName model=property }}
+            {{/each }}
+        {{/block-property }}
+    </script>
+    <script type="text/x-handlebars" data-template-name="components/encompassing-group-property">
+        <h3 class="encompassing-group-property-header">{{ model.name }}</h3>
+        {{#each model.children as |property| }}
+            {{ component property.componentName model=property }}
+        {{/each }}
+    </script>
+    <script type="text/x-handlebars" data-template-name="components/sub-group-property">
+        {{#if model.optional }}
+            <div class="sub-group-property-header">
+                {{ model.name }}
+                <button {{ action 'toggleMissing' }} class="sub-group-property-expand-button">{{ if model.isMissing '+' '-' }}</button>
+            </div>
+        {{/if }}
+        {{#if model.isMissing }}
+        {{ else }}
+            {{#each model.children as |property| }}
+                {{ component property.componentName model=property }}
+            {{/each }}
+        {{/if }}
+    </script>
+    <script type="text/x-handlebars" data-template-name="components/level3-parameter-property">
+        <span class="level3-parameter-property-header-text">
+            {{ model.name }}
+        </span>
+        {{#if model.isMissing }}
+        {{ else }}
+            <select onchange={{ action (mut model.kind) value="target.value" }} class="level3-parameter-property-select">
+                {{#each model.kindOptionNames as |kindChoice| }}
+                <option value={{ kindChoice }}
+                        selected={{ eq model.kind kindChoice }}>
+                    {{ kindChoice }}
+                </option>
+                {{/each }}
+            </select>
+        {{/if }}
+        {{#if model.optional }}
+            <button class="level3-parameter-property-expand-button" {{ action 'toggleMissing' }}>{{ if model.isMissing '+' '-' }}</button>
+        {{/if }}
+        <br />
+        {{#if model.isMissing }}
+        {{ else }}
+        {{ component model.parameter.componentName model=model.parameter }}
+        {{/if }}
+    </script>
+    <script type="text/x-handlebars" data-template-name="components/level2-parameter-property">
+        <span class="level3-parameter-property-header-text">
+            {{ model.name }}
+        </span>
+        {{#if model.isMissing }}
+        {{ else }}
+            <select onchange={{ action (mut model.kind) value="target.value" }} class="level3-parameter-property-select">
+                {{#each model.kindOptionNames as |kindChoice| }}
+                <option value={{ kindChoice }}
+                        selected={{ eq model.kind kindChoice }}>
+                    {{ kindChoice }}
+                </option>
+                {{/each }}
+            </select>
+        {{/if }}
+        {{#if model.optional }}
+            <button class="level3-parameter-property-expand-button" {{ action 'toggleMissing' }}>{{ if model.isMissing '+' '-' }}</button>
+        {{/if }}
+        <br />
+        {{#if model.isMissing }}
+        {{ else }}
+        {{ component model.parameter.componentName model=model.parameter }}
+        {{/if }}
+    </script>
+    <script type="text/x-handlebars" data-template-name="components/origin-property">
+        {{#block-property model=model }}
+            <table>
+                <tr>
+                    <td>Surface</td>
+                    <td>
+                        <select onchange={{ action (mut model.surface) value="target.value" }}>
+                            {{#each surfaceOptions as |surfaceChoice| }}
+                                <option 
+                                    value={{ surfaceChoice }}
+                                    selected={{ eq model.surface surfaceChoice }}>
+                                    {{ surfaceChoice }}
+                                </option>
+                            {{/each }}
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Value 1</td>
+                    <td>
+                        {{ input type="text" value=model.value1 }}
+                        {{ warning-icon message=model.invalidValue1Message }}
+                    </td>
+                </tr>
+                <tr>
+                    <td>Value 2</td>
+                    <td>
+                        {{ input type="text" value=model.value2 }}
+                        {{ warning-icon message=model.invalidValue2Message }}
+                    </td>
+                </tr>
+            </table>
+        {{/block-property }}
+    </script>
+    <script type="text/x-handlebars" data-template-name="components/block-property">
+        {{#if model.isRoot }}
+        {{ else }}
+            {{#if model.optional }}
+                <button {{ action 'toggleMissing' }}>{{ if model.isMissing 'Add' 'Del' }}</button>
+            {{/if }}
+            {{ model.name }}
+            <br />
+        {{/if }}
+        {{#if model.isMissing }}
+        {{ else }}
+            <div style="{{ if model.isRoot '' 'margin-left: 30px' }}">
+                {{ yield }}
+            </div>
+        {{/if }}
+    </script>
+    <script type="text/x-handlebars" data-template-name="application">
+        <div class="app">
+            {{outlet}}
+        </div>
+    </script>
+    <script type="text/x-handlebars" data-template-name="components/dummy-parameter">
+        hello world!
+    </script>
+    <script type="text/x-handlebars" data-template-name="components/constant-scalar-parameter">
+        <span class="parameter-property-label">value</span>
+        {{ input class="sh-input sh-numeric-input" type="text" value=model.value }}
+        {{ warning-icon message=model.invalidValueMessage }}
+    </script>
+    <script type="text/x-handlebars" data-template-name="components/constant-rgba-parameter">
+        <span class="parameter-property-label">R</span>
+        {{ input class="sh-input sh-numeric-input" type="text" value=model.rValue }}
+        {{ warning-icon message=model.invalidRValueMessage }}
+        <br/>
+        <span class="parameter-property-label">G</span>
+        {{ input class="sh-input sh-numeric-input" type="text" value=model.gValue }}
+        {{ warning-icon message=model.invalidGValueMessage }}
+        <br />
+        <span class="parameter-property-label">B</span>
+        {{ input class="sh-input sh-numeric-input" type="text" value=model.bValue }}
+        {{ warning-icon message=model.invalidBValueMessage }}
+        <br />
+        <span class="parameter-property-label">A</span>
+        {{ input class="sh-input sh-numeric-input" type="text" value=model.aValue }}
+        {{ warning-icon message=model.invalidAValueMessage }}
+    </script>
+    <script type="text/x-handlebars" data-template-name="components/random-between-scalar-parameter">
+        <span class="parameter-property-label">min</span>
+        {{ input class="sh-input sh-numeric-input" type="text" value=model.minValue }}
+        {{ warning-icon message=model.invalidMinValueMessage }}
+        <br />
+        <span class="parameter-property-label">max</span>
+        {{ input class="sh-input sh-numeric-input" type="text" value=model.maxValue }}
+        {{ warning-icon message=model.invalidMaxValueMessage }}
+    </script>
+    <script type="text/x-handlebars" data-template-name="components/curve-scalar-parameter">
+        {{ curve-x model=model.curve }}
+    </script>
+    <script type="text/x-handlebars" data-template-name="components/random-between-curves-scalar-parameter">
+        <div>Curve 1</div>
+        {{ curve-x model=model.curve1 }}
+        <div>Curve 2</div>
+        {{ curve-x model=model.curve2 }}
+    </script>
+    <script type="text/x-handlebars" data-template-name="components/curve-x">
+        <table>
+            <thead>
+                <tr>
+                    <td></td>
+                    <td>Time</td>
+                    <td>Value</td>
+                    <td>{{ warning-icon message=model.errorMap.[-1] }}</td>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each model.points as |point index| }}
+                    <tr>
+                        <td>
+                            <button {{ action 'addAbove' index }}>Add Above</button>
+                            <button {{ action 'delete' index }}>Delete</button>
+                        </td>
+                        <td>{{ input type="text" value=point.time }}</td>
+                        <td>{{ input type="text" value=point.value }}</td>
+                        <td>{{ warning-icon message=(get model.errorMap (tostr index)) }}</td>
+                    </tr>
+                {{/each }}
+                <tr>
+                    <td>
+                        <button {{ action 'add' }}>Add</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </script>
+
+    <script type="text/x-handlebars" data-template-name="components/parameter-property">
+        {{#block-property model=model }}
+            <select onchange={{ action (mut model.kind) value="target.value" }}>
+                {{#each model.kindOptionNames as |kindChoice| }}
+                <option value={{ kindChoice }}
+                        selected={{ eq model.kind kindChoice }}>
+                    {{ kindChoice }}
+                </option>
+                {{/each }}
+            </select>
+            {{ component model.parameter.componentName model=model.parameter }}
+        {{/block-property }}
+    </script>
+</head>
+<body>
+
+</body>
+</html>
