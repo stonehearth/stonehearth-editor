@@ -31,8 +31,6 @@ namespace StonehearthEditor
 
         public void Initialize()
         {
-            new ModuleDataManager(MainForm.kModsDirectoryPath);
-            ModuleDataManager.GetInstance().Load();
             ModuleDataManager.GetInstance().LoadEffectsList(effectsEditorTreeView);
             ModuleDataManager.GetInstance().LoadCubemittersList(cubemittersTreeView);
         }

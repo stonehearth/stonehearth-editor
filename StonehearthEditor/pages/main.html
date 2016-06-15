@@ -78,11 +78,23 @@
             display: inline-block;
             text-align: right;
         }
-        .sh-input {
-
-        }
         .sh-numeric-input {
             width: 100px;
+        }
+        #saveButton {
+            padding: 2px 8px 2px 8px;
+            margin: 4px;
+            font-size: 15px;
+            font-weight: bold;
+        }
+        .glyphicon {
+            font-size: 10px
+        }
+        .glyphicon-remove {
+            color: darkred;
+        }
+        .glyphicon-plus {
+            color: green;
         }
     </style>
 
@@ -91,7 +103,7 @@
     <script src="scripts/complex-property.js"></script>
     <script type="text/x-handlebars" data-template-name="index">
         <!-- <button {{ action "preview" }}>Preview</button> -->
-        <button {{ action "save" }}>Save</button>
+        <button id="saveButton" {{ action "save" }}>Save</button>
         Validity {{ model.effectModel.isValid }}
         {{ component model.effectModel.componentName model=model.effectModel }}
     </script>
@@ -129,7 +141,13 @@
         {{#if model.optional }}
             <div class="sub-group-property-header">
                 {{ model.name }}
-                <button {{ action 'toggleMissing' }} class="sub-group-property-expand-button">{{ if model.isMissing '+' '-' }}</button>
+                <button {{ action 'toggleMissing' }} class="sub-group-property-expand-button">
+                    {{#if model.isMissing }}
+                        <span class="glyphicon glyphicon-plus"></span>
+                    {{ else }}
+                        <span class="glyphicon glyphicon-remove"></span>
+                    {{/if }}
+                </button>
             </div>
         {{/if }}
         {{#if model.isMissing }}
@@ -155,7 +173,13 @@
             </select>
         {{/if }}
         {{#if model.optional }}
-            <button class="level3-parameter-property-expand-button" {{ action 'toggleMissing' }}>{{ if model.isMissing '+' '-' }}</button>
+            <button class="level3-parameter-property-expand-button" {{ action 'toggleMissing' }}>
+                {{#if model.isMissing }}
+                    <span class="glyphicon glyphicon-plus"></span>
+                {{ else }}
+                    <span class="glyphicon glyphicon-remove"></span>
+                {{/if }}
+            </button>
         {{/if }}
         <br />
         {{#if model.isMissing }}
@@ -179,7 +203,13 @@
             </select>
         {{/if }}
         {{#if model.optional }}
-            <button class="level3-parameter-property-expand-button" {{ action 'toggleMissing' }}>{{ if model.isMissing '+' '-' }}</button>
+            <button class="level3-parameter-property-expand-button" {{ action 'toggleMissing' }}>
+                {{#if model.isMissing }}
+                    <span class="glyphicon glyphicon-plus"></span>
+                {{ else }}
+                    <span class="glyphicon glyphicon-remove"></span>
+                {{/if }}
+            </button>
         {{/if }}
         <br />
         {{#if model.isMissing }}
@@ -299,8 +329,12 @@
                 {{#each model.points as |point index| }}
                     <tr>
                         <td>
-                            <button {{ action 'addAbove' index }}>Add Above</button>
-                            <button {{ action 'delete' index }}>Delete</button>
+                            <button {{ action 'addAbove' index }}>
+                                <img src="styles/add_above.png" />
+                            </button>
+                            <button {{ action 'delete' index }}>
+                                <span class="glyphicon glyphicon-remove"></span>
+                            </button>
                         </td>
                         <td>{{ input type="text" value=point.time }}</td>
                         <td>{{ input type="text" value=point.value }}</td>
@@ -309,7 +343,7 @@
                 {{/each }}
                 <tr>
                     <td>
-                        <button {{ action 'add' }}>Add</button>
+                        <button {{ action 'add' }}>Add row</button>
                     </td>
                 </tr>
             </tbody>

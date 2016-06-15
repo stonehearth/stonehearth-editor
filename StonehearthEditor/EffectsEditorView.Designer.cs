@@ -97,7 +97,7 @@
             this.cubemittersTreeViewTab.Controls.Add(this.cubemittersTreeView);
             this.cubemittersTreeViewTab.Location = new System.Drawing.Point(4, 22);
             this.cubemittersTreeViewTab.Name = "cubemittersTreeViewTab";
-            this.cubemittersTreeViewTab.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
+            this.cubemittersTreeViewTab.Padding = new System.Windows.Forms.Padding(3);
             this.cubemittersTreeViewTab.Size = new System.Drawing.Size(209, 522);
             this.cubemittersTreeViewTab.TabIndex = 1;
             this.cubemittersTreeViewTab.Text = "Cubemitters";
@@ -120,8 +120,8 @@
             this.effectsTreeViewTab.Controls.Add(this.effectsEditorTreeView);
             this.effectsTreeViewTab.Location = new System.Drawing.Point(4, 22);
             this.effectsTreeViewTab.Name = "effectsTreeViewTab";
-            this.effectsTreeViewTab.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
-            this.effectsTreeViewTab.Size = new System.Drawing.Size(210, 526);
+            this.effectsTreeViewTab.Padding = new System.Windows.Forms.Padding(3);
+            this.effectsTreeViewTab.Size = new System.Drawing.Size(209, 522);
             this.effectsTreeViewTab.TabIndex = 0;
             this.effectsTreeViewTab.Text = "Effects";
             this.effectsTreeViewTab.UseVisualStyleBackColor = true;
@@ -134,7 +134,7 @@
             this.effectsEditorTreeView.Location = new System.Drawing.Point(3, 3);
             this.effectsEditorTreeView.Name = "effectsEditorTreeView";
             this.effectsEditorTreeView.PathSeparator = "/";
-            this.effectsEditorTreeView.Size = new System.Drawing.Size(204, 520);
+            this.effectsEditorTreeView.Size = new System.Drawing.Size(203, 516);
             this.effectsEditorTreeView.TabIndex = 0;
             this.effectsEditorTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.effectsEditorTreeView_AfterSelect);
             this.effectsEditorTreeView.MouseClick += new System.Windows.Forms.MouseEventHandler(this.effectsEditorTreeView_MouseClick);
@@ -227,9 +227,11 @@
             // 
             // toolStripButton1
             // 
+            this.toolStripButton1.BackColor = System.Drawing.SystemColors.ButtonShadow;
             this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.toolStripButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton1.Image")));
             this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton1.Margin = new System.Windows.Forms.Padding(3, 1, 3, 2);
             this.toolStripButton1.Name = "toolStripButton1";
             this.toolStripButton1.Size = new System.Drawing.Size(68, 22);
             this.toolStripButton1.Text = "Cef Reload";

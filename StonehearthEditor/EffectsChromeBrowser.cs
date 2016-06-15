@@ -18,6 +18,9 @@ namespace StonehearthEditor
         private static readonly string myPath = Application.StartupPath;
         private static readonly string myPages = Path.Combine(myPath, "pages");
         private static EffectsChromeBrowser sInstance = null;
+        private string mEffectKind;
+        private string mJson;
+        private string mFilePath;
         private bool isFrameLoaded = false;
         private ChromiumWebBrowser mChromeBrowser;
         private EffectsJsObject mEffectsJsObject;
@@ -56,18 +59,12 @@ namespace StonehearthEditor
             MessageBox.Show("file type not supported yet");
         }
 
-        private string effectKind;
-        private string json;
-        private string filePath;
-
         public void LoadFromJson(string effectKind, string json, string filePath)
         {
-            this.effectKind = effectKind;
-            this.json = json;
-            this.filePath = filePath;
+            mEffectKind = effectKind;
+            mJson = json;
+            mFilePath = filePath;
             this.Refresh();
-            mEffectsJsObject.EffectKind = effectKind;
-            mEffectsJsObject.Json = json;
             mEffectsJsObject.FilePath = filePath;
         }
 
@@ -168,7 +165,7 @@ namespace StonehearthEditor
                 proc.Start();
                 proc.WaitForExit();
             }
-            mChromeBrowser.RenderProcessMessageHandler = new RenderProcessMessageHandler(effectKind, json);
+            mChromeBrowser.RenderProcessMessageHandler = new RenderProcessMessageHandler(mEffectKind, mJson);
             mChromeBrowser.Reload(true);
         }
     }
