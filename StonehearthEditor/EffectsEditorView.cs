@@ -56,7 +56,7 @@ namespace StonehearthEditor
 
         public void Reload()
         {
-            // filePreviewTabs.TabPages.Clear();
+            filePreviewTabs.TabPages.Clear();
             effectsEditorTreeView.Nodes.Clear();
             cubemittersTreeView.Nodes.Clear();
             ModuleDataManager.GetInstance().LoadEffectsList(effectsEditorTreeView);
@@ -142,7 +142,7 @@ namespace StonehearthEditor
                 if (json != null)
                 {
                     json.Load();
-                    fileData = json.OpenedFiles.First<FileData>();
+                    fileData = json.OpenedFiles.First();
                     mFileDataMap[filePath] = fileData;
                 }
             }
@@ -188,13 +188,20 @@ namespace StonehearthEditor
             }
         }
 
+        private void SaveFile(string path, string json)
+        {
+            File.WriteAllText(path, json);
+            mFileDataMap.Remove(path);
+            this.Invoke(new MethodInvoker(() => LoadFilePreview(path)));
+        }
+
         private void cubemittersTreeView_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            object fullPath = cubemittersTreeView.SelectedNode.Tag;
+            string fullPath = cubemittersTreeView.SelectedNode.Tag as string;
             if (fullPath != null)
             {
-                LoadFilePreview(fullPath.ToString());
-                FileData fileData = GetFileDataFromPath(fullPath.ToString());
+                LoadFilePreview(fullPath);
+                FileData fileData = GetFileDataFromPath(fullPath);
                 string jsonString = fileData.FlatFileData;
                 JObject json = null;
                 try
@@ -209,7 +216,7 @@ namespace StonehearthEditor
                     return;
                 }
 
-                mEffectsChromeBrowser.LoadFromJson("cubeEmitter", jsonString, fullPath.ToString());
+                mEffectsChromeBrowser.LoadFromJson("cubeEmitter", jsonString, j => SaveFile(fullPath, j));
             }
             else
             {

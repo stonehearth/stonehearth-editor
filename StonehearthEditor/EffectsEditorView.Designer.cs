@@ -107,6 +107,7 @@
             // 
             this.cubemittersTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.cubemittersTreeView.FullRowSelect = true;
+            this.cubemittersTreeView.HideSelection = false;
             this.cubemittersTreeView.Location = new System.Drawing.Point(3, 3);
             this.cubemittersTreeView.Name = "cubemittersTreeView";
             this.cubemittersTreeView.PathSeparator = "/";

@@ -147,54 +147,7 @@
     <Compile Include="EffectsEditorView.Designer.cs">
       <DependentUpon>EffectsEditorView.cs</DependentUpon>
     </Compile>
-    <Compile Include="EffectsUI\ComplexUI.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="EffectsUI\EffectUICreator.cs" />
-    <Compile Include="EffectsUI\OriginUI.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="EffectsUI\OriginUI.Designer.cs">
-      <DependentUpon>OriginUI.cs</DependentUpon>
-    </Compile>
-    <Compile Include="EffectsUI\ParameterKinds\ParameterKindUICreator.cs" />
-    <Compile Include="EffectsUI\ParameterKinds\RandomBetweenScalarParameterKindUI.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="EffectsUI\ParameterKinds\RandomBetweenScalarParameterKindUI.Designer.cs">
-      <DependentUpon>RandomBetweenScalarParameterKindUI.cs</DependentUpon>
-    </Compile>
-    <Compile Include="EffectsUI\ParameterUI.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="EffectsUI\TextboxUI.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="EffectsUI\Util.cs" />
-    <Compile Include="EffectsUI\WarningIcon.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Effects\Complex.cs" />
-    <Compile Include="Effects\Dimension.cs" />
-    <Compile Include="Effects\EffectKinds.cs" />
-    <Compile Include="Effects\EffectsEventHandler.cs" />
     <Compile Include="Effects\EffectsJsObject.cs" />
-    <Compile Include="Effects\Int.cs" />
-    <Compile Include="Effects\Origin.cs" />
-    <Compile Include="Effects\Parameter.cs" />
-    <Compile Include="Effects\ParameterKinds\ConstantScalarParameterKind.cs" />
-    <Compile Include="Effects\ParameterKinds\ConstantRbgaParameterKind.cs" />
-    <Compile Include="Effects\ParameterKinds\Curve.cs" />
-    <Compile Include="Effects\ParameterKinds\CurveScalarParameterKind.cs" />
-    <Compile Include="Effects\ParameterKinds\ParameterKind.cs" />
-    <Compile Include="Effects\ParameterKinds\ParameterKindAttribute.cs" />
-    <Compile Include="Effects\ParameterKinds\ParameterKindRegistry.cs" />
-    <Compile Include="Effects\ParameterKinds\RandomBetweenCurvesScalarParameterKind.cs" />
-    <Compile Include="Effects\ParameterKinds\RandomBetweenScalarParameterKind.cs" />
-    <Compile Include="Effects\ParameterKinds\TimePoint.cs" />
-    <Compile Include="Effects\Property.cs" />
-    <Compile Include="Effects\PropertyValue.cs" />
-    <Compile Include="Effects\String.cs" />
     <Compile Include="EncounterDesignerView.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -280,12 +233,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="EffectsEditorView.resx">
       <DependentUpon>EffectsEditorView.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="EffectsUI\OriginUI.resx">
-      <DependentUpon>OriginUI.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="EffectsUI\ParameterKinds\RandomBetweenScalarParameterKindUI.resx">
-      <DependentUpon>RandomBetweenScalarParameterKindUI.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="EncounterDesignerView.resx">
       <DependentUpon>EncounterDesignerView.cs</DependentUpon>
