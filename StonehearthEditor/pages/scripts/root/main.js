@@ -321,14 +321,29 @@ App.CurveXComponent = Ember.Component.extend({
 });
 
 App.IndexController = Ember.Controller.extend({
+    init: function () {
+        this._super();
+        var self = this;
+        $(window).bind('keydown', function (event) {
+            if (event.ctrlKey || event.metaKey) {
+                var charCode = String.fromCharCode(event.which).toLowerCase();
+                if (charCode === "s") {
+                    self.save();
+                }
+            }
+        });
+    },
+    save: function () {
+        var jsonObj = this.get('model.effectModel').toJson();
+        var json = formatEffectTrack(jsonObj);
+        EffectsJsObject.save(json);
+    },
     actions: {
         preview: function () {
             EffectsJsObject.preview(this.get('model.effectModel').toJson());
         },
         save: function () {
-            var jsonObj = this.get('model.effectModel').toJson();
-            var json = formatEffectTrack(jsonObj);
-            EffectsJsObject.save(json);
+            this.save();
         },
     },
 });
