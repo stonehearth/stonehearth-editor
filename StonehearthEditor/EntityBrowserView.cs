@@ -94,6 +94,7 @@ namespace StonehearthEditor
                 ListViewItem item = new ListViewItem(entry.Key); // Item alias
                 JToken token = json.SelectToken("entity_data.stonehearth:net_worth.value_in_gold");
                 string goldValue = token == null ? "" : token.ToString();
+                float goldValueNumber = float.Parse(goldValue);
                 item.SubItems.Add(goldValue); // Net Worth
                 string material = "";
                 string category = "";
@@ -126,6 +127,15 @@ namespace StonehearthEditor
 
                         material = materialToken.ToString();
                     }
+                }
+
+                if (goldValueNumber > 0 &&
+                    (!string.IsNullOrEmpty(category)) &&
+                    (category != "uncategorized") &&
+                    (!ModuleDataManager.GetInstance().ContainsStockpileMaterial(material)))
+                {
+                    item.BackColor = Color.Red;
+                    item.ToolTipText = "WARNING: Material does not contain a stockpile filter";
                 }
 
                 item.SubItems.Add(category); // Category

@@ -434,6 +434,19 @@ namespace StonehearthEditor
             return alreadyCloned;
         }
 
+        public bool ContainsStockpileMaterial(string tokens)
+        {
+            foreach (string stockpileFilter in StockpileFilters)
+            {
+                if (tokens.Contains(stockpileFilter))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         public int GetAverageMaterialCost(string material)
         {
             if (mAverageMaterialCost.ContainsKey(material))
