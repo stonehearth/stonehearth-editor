@@ -13,7 +13,7 @@
     fromJson: function (json) {
         Utils.assert(Utils.isUndefinedOrTypeOf("string", json));
         if (json === undefined) {
-            return;
+            json = '0';
         }
         this.set('value', json);
     }
@@ -34,7 +34,7 @@ IntProperty = EffectProperty.extend({
     fromJson: function (json) {
         Utils.assert(Utils.isUndefinedOrTypeOf("number", json));
         if (json === undefined) {
-            return;
+            json = '0';
         }
         this.set('value', json.toString());
     },
@@ -50,8 +50,8 @@ IntProperty = EffectProperty.extend({
 OriginProperty = EffectProperty.extend({
     componentName: 'origin-property',
     surface: null, // string or null
-    value1: '', // string
-    value2: '', // string
+    value1: '0', // string
+    value2: '0', // string
     isMissing: null,
     isValid: Ember.computed('value1', 'value2', function () {
         return Utils.isNumber(this.get('value1')) && Utils.isNumber(this.get('value2'));
@@ -84,9 +84,9 @@ OriginProperty = EffectProperty.extend({
         if (json === undefined) {
             return;
         }
-        this.set('surface', json['surface']);
-        this.set('value1', json['values'][0].toString());
-        this.set('value2', json['values'][1].toString());
+        this.set('surface', Utils.getEffectValueOrDefault(json, 'surface', 'POINT'));
+        this.set('value1', Utils.getEffectValueOrDefault(json['values'], 0, '0'));
+        this.set('value2', Utils.getEffectValueOrDefault(json['values'], 0, '0'));
     },
 });
 
@@ -105,9 +105,9 @@ ParameterKind = Ember.Object.extend({
 
 ConstantScalarParameterKind = ParameterKind.extend({
     componentName: 'constant-scalar-parameter',
-    value: null,
+    value: '0',
     fromJson: function (json) {
-        this.set('value', json[0].toString());
+        this.set('value', Utils.getEffectValueOrDefault(json, 0, "0"));
     },
     toJson: function () {
         return [Number(this.value)];
@@ -126,15 +126,15 @@ ConstantScalarParameterKind = ParameterKind.extend({
 
 ConstantRgbaParameterKind = ParameterKind.extend({
     componentName: 'constant-rgba-parameter',
-    rValue: null,
-    gValue: null,
-    bValue: null,
-    aValue: null,
+    rValue: '0',
+    gValue: '0',
+    bValue: '0',
+    aValue: '1',
     fromJson: function (json) {
-        this.set('rValue', json[0].toString());
-        this.set('gValue', json[1].toString());
-        this.set('bValue', json[2].toString());
-        this.set('aValue', json[3].toString());
+        this.set('rValue', Utils.getEffectValueOrDefault(json, 0, '0'));
+        this.set('gValue', Utils.getEffectValueOrDefault(json, 1, '0'));
+        this.set('bValue', Utils.getEffectValueOrDefault(json, 2, '0'));
+        this.set('aValue', Utils.getEffectValueOrDefault(json, 3, '0'));
     },
     toJson: function () {
         return [Number(this.rValue), Number(this.gValue), Number(this.bValue), Number(this.aValue)];
@@ -174,11 +174,11 @@ ConstantRgbaParameterKind = ParameterKind.extend({
 
 RandomBetweenScalarParameterKind = ParameterKind.extend({
     componentName: 'random-between-scalar-parameter',
-    minValue: null,
-    maxValue: null,
+    minValue: '0',
+    maxValue: '0.1',
     fromJson: function (json) {
-        this.set('minValue', json[0].toString());
-        this.set('maxValue', json[1].toString());
+        this.set('minValue', Utils.getEffectValueOrDefault(json, 0, '0'));
+        this.set('maxValue', Utils.getEffectValueOrDefault(json, 1, '0'));
     },
     toJson: function () {
         return [Number(this.minValue), Number(this.maxValue)];
@@ -211,8 +211,8 @@ RandomBetweenScalarParameterKind = ParameterKind.extend({
 });
 
 Point = Ember.Object.extend({
-    time: null,
-    value: null,
+    time: 0,
+    value: 0,
 
     isValid: Ember.computed('time', 'value', function () {
         return Utils.isNumber(this.time) && Utils.isNumber(this.value);
@@ -228,8 +228,8 @@ Point = Ember.Object.extend({
         return null;
     }),
     fromJson: function (json) {
-        this.set('time', json[0].toString());
-        this.set('value', json[1].toString());
+        this.set('time', Utils.getEffectValueOrDefault(json, 0, '0'));
+        this.set('value', Utils.getEffectValueOrDefault(json, 1, '0'));
     },
     toJson: function () {
         return [Number(this.time), Number(this.value)];
@@ -364,7 +364,7 @@ ParameterKindRegistry = {
             }
         }
 
-        Utils.assert(false);
+        Utils.assert(false, "parameter kind " + kind + " with dimension " + dimension + " not found valid");
     },
 
     getNames: function (dimension, timeVarying) {

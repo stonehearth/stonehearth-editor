@@ -1,21 +1,6 @@
 ﻿App = Ember.Application.create({
 });
 
-Utils = {
-    isUndefinedOrTypeOf: function (type, obj) {
-        return typeof (obj) === type || typeof (obj) === 'undefined';
-    },
-    assert: function (condition, message) {
-        if (!condition) {
-            console.trace("Error at");
-            throw "AssertionError: " + (message || "");
-        }
-    },
-    isNumber: function (s) {
-        return typeof s === 'string' && s.length > 0 && !isNaN(s);
-    },
-};
-
 EffectKinds = {
     cubeEmitter: function () {
         return ComplexProperty.create({
@@ -335,7 +320,7 @@ App.IndexController = Ember.Controller.extend({
     },
     save: function () {
         var jsonObj = this.get('model.effectModel').toJson();
-        var json = formatEffectTrack(jsonObj);
+        var json = Utils.formatEffectJson(jsonObj);
         EffectsJsObject.save(json);
     },
     actions: {

@@ -359,7 +359,9 @@
     <Content Include="pages\scripts\effect-property.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="pages\scripts\root\util.js" />
+    <Content Include="pages\scripts\root\util.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="pages\scripts\root\main.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
