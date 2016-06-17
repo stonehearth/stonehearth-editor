@@ -398,19 +398,6 @@ namespace StonehearthEditor
             mEffectsChromeBrowser.ShowDevTools();
         }
 
-        // TODO: Implement these in cef
-        private void effectsBuilderView_PreviewRequested(object sender, EventArgs e)
-        {
-            // TODO
-        }
-
-        private void effectsBuilderView_SaveRequested(object sender, EventArgs e)
-        {
-            // string json = effectsBuilderView.GetJsonString();
-            // var desktop = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-            // File.WriteAllText(Path.Combine(desktop, "a.txt"), json);
-        }
-
         private void toolStripButton1_Click(object sender, EventArgs e)
         {
             mEffectsChromeBrowser.Refresh();
