@@ -68,7 +68,10 @@ namespace StonehearthEditor
                 }
 
                 parameters.SetSourceModule(sourceModLabel.Text);
-                parameters.SetTargetModule(modListDropdown.SelectedItem.ToString());
+                if (modListDropdown.SelectedItem != null)
+                {
+                    parameters.SetTargetModule(modListDropdown.SelectedItem.ToString());
+                }
 
                 bool isSuccess = mCallback.OnAccept(parameters);
                 if (isSuccess)

@@ -428,7 +428,9 @@ namespace StonehearthEditor
             }
 
             HashSet<string> alreadyCloned = new HashSet<string>();
-            string newPath = cloneParameters.TransformParameter(file.Path).Replace(owningFile.Module.Name, cloneParameters.TargetModule);
+            string newPath = cloneParameters.TransformParameter(file.Path);
+            // Code will only get here if owningFile is null, so calling the below will cause a null ref exception when indexing the owningFile
+            // .Replace(owningFile.Module.Name, cloneParameters.TargetModule);
 
             file.Clone(newPath, cloneParameters, alreadyCloned, false);
             return alreadyCloned;
