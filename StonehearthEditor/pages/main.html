@@ -6,16 +6,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Effects Editor</title>
     <link href="styles/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="styles/spectrum.css" rel="stylesheet" type="text/css" />
     <script src="scripts/libs/jquery-2.1.1.min.js"></script>
     <script src="scripts/libs/bootstrap.min.js"></script>
     <script src="scripts/libs/handlebars.min.js"></script>
     <script src="scripts/libs/ember.min.js"></script>
     <script src="scripts/libs/ember-data.min.js"></script>
     <script src="scripts/libs/ember-template-compiler.js"></script>
+    <script src="scripts/libs/spectrum.js"></script>
     <script src="scripts/root/util.js"></script>
     <script src="scripts/root/main.js"></script>
     <script src="scripts/root/routes.js"></script>
-    <script src="scripts/root/util.js"></script>
 
     <style>
         .inline-property-label {
@@ -38,6 +39,10 @@
         }
         .app {
             background-color: darkgray;
+        }
+        .color-picker-div {
+            margin-top: 5px;
+            margin-left: 350px;
         }
         .sub-group-property {
             margin: 3px 5px;
@@ -282,13 +287,13 @@
         {{ warning-icon message=model.invalidValueMessage }}
     </script>
     <script type="text/x-handlebars" data-template-name="components/constant-rgba-parameter">
-        {{ rgba-x model=model.rgba }}
+        {{ rgba-x model=model.rgba name="color1"}}
     </script>
     <script type="text/x-handlebars" data-template-name="components/random-between-rgba-parameter">
         <div class="random-between-type-header">Color 1</div>
-            {{ rgba-x model=model.rgba1 }}
+            {{ rgba-x model=model.rgba1 name="color1"}}
         <div class="random-between-type-header">Color 2</div>
-            {{ rgba-x model=model.rgba2 }}
+            {{ rgba-x model=model.rgba2 name="color2"}}
     </script>
     <script type="text/x-handlebars" data-template-name="components/random-between-scalar-parameter">
         <span class="parameter-property-label">min</span>
@@ -344,6 +349,9 @@
     </script>
 
     <script type="text/x-handlebars" data-template-name="components/rgba-x">
+        <div id={{ name }} class="color-picker-div">
+            <input type="text" class="color-picker" />
+        </div>
         <span class="parameter-property-label">R</span>
         {{ input class="sh-input sh-numeric-input" type="text" value=model.rValue }}
         {{ warning-icon message=model.invalidRValueMessage }}

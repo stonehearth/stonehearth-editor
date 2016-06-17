@@ -26,5 +26,25 @@
         } else {
             return defaultVal;
         }
+    },
+    convertRgbaToFloat: function (r, g, b, a) {
+        var convertNum = function (num) {
+            return Math.round((num / 255) * 1000)/1000
+        };
+        var red = r <= 1 ? r : convertNum(r);
+        var green = g <= 1 ? g : convertNum(g);
+        var blue = b <= 1 ? b : convertNum(b);
+        return {
+            r: red.toString(),
+            g: green.toString(),
+            b: blue.toString(),
+            a: a.toString()
+        }
+    },
+    convertFloatToRgba: function(r, g, b, a) {
+        var convert = function (num) {
+            return Math.round(num * 255).toString();
+        };
+        return "rgba(" + convert(r) + "," + convert(g) + "," + convert(b) + "," + a + ")";
     }
 };

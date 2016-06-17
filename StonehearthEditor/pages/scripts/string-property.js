@@ -127,13 +127,37 @@ ConstantScalarParameterKind = ParameterKind.extend({
 ConstantRgbaParameterKind = ParameterKind.extend({
     componentName: 'constant-rgba-parameter',
     rgba: null,
+    colorPicker: null,
     _onInit: function () {
+        var self = this;
         this.set('rgba', Rgba.create({}));
+        Ember.run.scheduleOnce('afterRender', this, function () {
+            var picker = $('#color1 .color-picker');
+            self.set('colorPicker', picker);
+            picker.spectrum({
+                color: "#ff0000",
+                showAlpha: true,
+                showInput: true,
+                showInitial: true,
+                preferredFormat: "rgb",
+                change: function (color) {
+                    self.updateColor(color);
+                }
+            });
+        });
     }.on('init'),
+    updateColor: function (color) {
+        var floatVals = Utils.convertRgbaToFloat(color._r, color._g, color._b, color._a);
+        this.get('rgba').setRgba(floatVals.r, floatVals.g, floatVals.b, floatVals.a);
+    },
     fromJson: function (json) {
+        var self = this;
         var rgba = Rgba.create({});
+        Ember.run.scheduleOnce('afterRender', this, function () {
+            rgba.setPickerColor(self.get('colorPicker'));
+        });
         rgba.fromJson(json);
-        this.set('rgba', rgba);
+        self.set('rgba', rgba);
     },
     toJson: function () {
         return this.rgba.toJson();
@@ -147,18 +171,60 @@ RandomBetweenRgbaParameterKind = ParameterKind.extend({
     componentName: 'random-between-rgba-parameter',
     rgba1: null,
     rgba2: null,
+    colorPicker1: null,
+    colorPicker2: null,
     _onInit: function () {
+        var self = this;
         this.set('rgba1', Rgba.create({}));
         this.set('rgba2', Rgba.create({}));
-    }.on('init'),
-    fromJson: function (json) {
-        var rgba1 = Rgba.create({});
-        rgba1.fromJson(json[0]);
-        this.set('rgba1', rgba1);
 
+        Ember.run.scheduleOnce('afterRender', this, function () {
+            var picker1 = $('#color1 .color-picker');
+            self.set('colorPicker1', picker1);
+            picker1.spectrum({
+                color: "#ff0000",
+                showAlpha: true,
+                showInput: true,
+                showInitial: true,
+                preferredFormat: "rgb",
+                change: function (color) {
+                    self.updateColor(color, 'rgba1');
+                }
+            });
+            var picker2 = $('#color2 .color-picker');
+            self.set('colorPicker2', picker2);
+            picker2.spectrum({
+                color: "#ff0000",
+                showAlpha: true,
+                showInput: true,
+                showInitial: true,
+                preferredFormat: "rgb",
+                change: function (color) {
+                    self.updateColor(color, 'rgba2');
+                }
+            });
+        });
+    }.on('init'),
+    updateColor: function (color, id) {
+        var floatVals = Utils.convertRgbaToFloat(color._r, color._g, color._b, color._a);
+        this.get(id).setRgba(floatVals.r, floatVals.g, floatVals.b, floatVals.a);
+    },
+    fromJson: function (json) {
+        var self = this;
+        var rgba1 = Rgba.create({});
         var rgba2 = Rgba.create({});
+
+        Ember.run.scheduleOnce('afterRender', this, function () {
+            rgba1.setPickerColor(self.get('colorPicker1'));
+        });
+        Ember.run.scheduleOnce('afterRender', this, function () {
+            rgba2.setPickerColor(self.get('colorPicker2'));
+        });
+
+        rgba1.fromJson(json[0]);
+        self.set('rgba1', rgba1);
         rgba2.fromJson(json[1]);
-        this.set('rgba2', rgba2);
+        self.set('rgba2', rgba2);
     },
     toJson: function () {
         return [this.rgba1.toJson(), this.rgba2.toJson()];
@@ -320,11 +386,17 @@ Rgba = Ember.Object.extend({
     gValue: '0',
     bValue: '0',
     aValue: '1',
+    colorPicker: null,
     fromJson: function (json) {
-        this.set('rValue', Utils.getEffectValueOrDefault(json, 0, '0'));
-        this.set('gValue', Utils.getEffectValueOrDefault(json, 1, '0'));
-        this.set('bValue', Utils.getEffectValueOrDefault(json, 2, '0'));
-        this.set('aValue', Utils.getEffectValueOrDefault(json, 3, '0'));
+        var self = this;
+        var r = Utils.getEffectValueOrDefault(json, 0, '0');
+        var g = Utils.getEffectValueOrDefault(json, 1, '0');
+        var b = Utils.getEffectValueOrDefault(json, 2, '0');
+        var a = Utils.getEffectValueOrDefault(json, 3, '0');
+        self.setRgba(r, g, b, a);
+        Ember.run.scheduleOnce('afterRender', this, function () {
+            self.get('colorPicker').spectrum("set", Utils.convertFloatToRgba(r,g,b,a));
+        });
     },
     toJson: function () {
         return [Number(this.rValue), Number(this.gValue), Number(this.bValue), Number(this.aValue)];
@@ -332,6 +404,15 @@ Rgba = Ember.Object.extend({
     isValid: Ember.computed('rValue', 'gValue', 'bValue', 'aValue', function() {
         return Utils.isNumber(this.rValue) && Utils.isNumber(this.gValue) && Utils.isNumber(this.bValue) && Utils.isNumber(this.aValue);
     }),
+    setRgba: function (r, g, b, a) {
+        this.set('rValue', r);
+        this.set('gValue', g);
+        this.set('bValue', b);
+        this.set('aValue', a);
+    },
+    setPickerColor: function(picker) {
+        this.set('colorPicker', picker);
+    },
     invalidRValueMessage: Ember.computed('rValue', function () {
         if (Utils.isNumber(this.get('rValue'))) {
             return null;
