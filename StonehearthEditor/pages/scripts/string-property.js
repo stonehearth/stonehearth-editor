@@ -126,49 +126,64 @@ ConstantScalarParameterKind = ParameterKind.extend({
 
 ConstantRgbaParameterKind = ParameterKind.extend({
     componentName: 'constant-rgba-parameter',
-    rValue: '0',
-    gValue: '0',
-    bValue: '0',
-    aValue: '1',
+    rgba: null,
+    _onInit: function () {
+        this.set('rgba', Rgba.create({}));
+    }.on('init'),
     fromJson: function (json) {
-        this.set('rValue', Utils.getEffectValueOrDefault(json, 0, '0'));
-        this.set('gValue', Utils.getEffectValueOrDefault(json, 1, '0'));
-        this.set('bValue', Utils.getEffectValueOrDefault(json, 2, '0'));
-        this.set('aValue', Utils.getEffectValueOrDefault(json, 3, '0'));
+        var rgba = Rgba.create({});
+        rgba.fromJson(json);
+        this.set('rgba', rgba);
     },
     toJson: function () {
-        return [Number(this.rValue), Number(this.gValue), Number(this.bValue), Number(this.aValue)];
+        return this.rgba.toJson();
     },
-    isValid: Ember.computed('rValue', 'gValue', 'bValue', 'aValue', function() {
-        return Utils.isNumber(this.rValue) && Utils.isNumber(this.gValue) && Utils.isNumber(this.bValue) && Utils.isNumber(this.aValue);
+    isValid: Ember.computed('rgba.isValid', function () {
+        return this.get('rgba.isValid');
     }),
-    invalidRValueMessage: Ember.computed('rValue', function () {
-        if (Utils.isNumber(this.get('rValue'))) {
-            return null;
-        }
+});
 
-        return "Invalid number";
+RandomBetweenRgbaParameterKind = ParameterKind.extend({
+    componentName: 'random-between-rgba-parameter',
+    rgba1: null,
+    rgba2: null,
+    _onInit: function () {
+        this.set('rgba1', Rgba.create({}));
+        this.set('rgba2', Rgba.create({}));
+    }.on('init'),
+    fromJson: function (json) {
+        var rgba1 = Rgba.create({});
+        rgba1.fromJson(json[0]);
+        this.set('rgba1', rgba1);
+
+        var rgba2 = Rgba.create({});
+        rgba2.fromJson(json[1]);
+        this.set('rgba2', rgba2);
+    },
+    toJson: function () {
+        return [this.rgba1.toJson(), this.rgba2.toJson()];
+    },
+    isValid: Ember.computed('rgba1.isValid', 'rgba2.isValid', function () {
+        return this.rgba1.get('isValid') && this.rgba2.get('isValid');
     }),
-    invalidGValueMessage: Ember.computed('gValue', function () {
-        if (Utils.isNumber(this.get('gValue'))) {
-            return null;
-        }
+});
 
-        return "Invalid number";
-    }),
-    invalidBValueMessage: Ember.computed('bValue', function () {
-        if (Utils.isNumber(this.get('bValue'))) {
-            return null;
-        }
-
-        return "Invalid number";
-    }),
-    invalidAValueMessage: Ember.computed('aValue', function () {
-        if (Utils.isNumber(this.get('aValue'))) {
-            return null;
-        }
-
-        return "Invalid number";
+CurveScalarParameterKind = ParameterKind.extend({
+    componentName: 'curve-scalar-parameter',
+    curve: null,
+    _onInit: function () {
+        this.set('curve', Curve.create({}));
+    }.on('init'),
+    fromJson: function (json) {
+        var curve = Curve.create({});
+        curve.fromJson(json);
+        this.set('curve', curve);
+    },
+    toJson: function () {
+        return this.curve.toJson();
+    },
+    isValid: Ember.computed('curve.isValid', function () {
+        return this.get('curve.isValid');
     }),
 });
 
@@ -300,6 +315,53 @@ Curve = Ember.Object.extend({
     }),
 });
 
+Rgba = Ember.Object.extend({
+    rValue: '0',
+    gValue: '0',
+    bValue: '0',
+    aValue: '1',
+    fromJson: function (json) {
+        this.set('rValue', Utils.getEffectValueOrDefault(json, 0, '0'));
+        this.set('gValue', Utils.getEffectValueOrDefault(json, 1, '0'));
+        this.set('bValue', Utils.getEffectValueOrDefault(json, 2, '0'));
+        this.set('aValue', Utils.getEffectValueOrDefault(json, 3, '0'));
+    },
+    toJson: function () {
+        return [Number(this.rValue), Number(this.gValue), Number(this.bValue), Number(this.aValue)];
+    },
+    isValid: Ember.computed('rValue', 'gValue', 'bValue', 'aValue', function() {
+        return Utils.isNumber(this.rValue) && Utils.isNumber(this.gValue) && Utils.isNumber(this.bValue) && Utils.isNumber(this.aValue);
+    }),
+    invalidRValueMessage: Ember.computed('rValue', function () {
+        if (Utils.isNumber(this.get('rValue'))) {
+            return null;
+        }
+
+        return "Invalid number";
+    }),
+    invalidGValueMessage: Ember.computed('gValue', function () {
+        if (Utils.isNumber(this.get('gValue'))) {
+            return null;
+        }
+
+        return "Invalid number";
+    }),
+    invalidBValueMessage: Ember.computed('bValue', function () {
+        if (Utils.isNumber(this.get('bValue'))) {
+            return null;
+        }
+
+        return "Invalid number";
+    }),
+    invalidAValueMessage: Ember.computed('aValue', function () {
+        if (Utils.isNumber(this.get('aValue'))) {
+            return null;
+        }
+
+        return "Invalid number";
+    }),
+});
+
 CurveScalarParameterKind = ParameterKind.extend({
     componentName: 'curve-scalar-parameter',
     curve: null,
@@ -351,6 +413,7 @@ ParameterKindRegistry = {
         { kind: 'CURVE', dimension: 'scalar', timeVarying: true, type: CurveScalarParameterKind, },
         { kind: 'RANDOM_BETWEEN_CURVES', dimension: 'scalar', timeVarying: true, type: RandomBetweenCurvesScalarParameterKind, },
         { kind: 'RANDOM_BETWEEN', dimension: 'scalar', timeVarying: false, type: RandomBetweenScalarParameterKind, },
+        { kind: 'RANDOM_BETWEEN', dimension: 'rgba', timeVarying: false, type: RandomBetweenRgbaParameterKind, },
     ],
 
     get: function (kind, dimension) {
