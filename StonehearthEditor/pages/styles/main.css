@@ -19,6 +19,10 @@
 .app {
     background-color: darkgray;
 }
+.color-picker-div {
+    margin-top: 5px;
+    margin-left: 350px;
+}
 .sub-group-property {
     margin: 3px 5px;
 }
@@ -59,9 +63,21 @@
     display: inline-block;
     text-align: right;
 }
-.sh-input {
-
-}
 .sh-numeric-input {
     width: 100px;
+}
+#saveButton {
+    padding: 2px 8px 2px 8px;
+    margin: 4px;
+    font-size: 15px;
+    font-weight: bold;
+}
+.glyphicon {
+    font-size: 10px
+}
+.glyphicon-remove {
+    color: darkred;
+}
+.glyphicon-plus {
+    color: green;
 }
