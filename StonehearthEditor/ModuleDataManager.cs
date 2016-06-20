@@ -438,11 +438,15 @@ namespace StonehearthEditor
 
         public bool ContainsStockpileMaterial(string tokens)
         {
+            string[] split = tokens.Split(' ');
             foreach (string stockpileFilter in StockpileFilters)
             {
-                if (tokens.Contains(stockpileFilter))
+                foreach (string material in split)
                 {
-                    return true;
+                    if (material.Equals(stockpileFilter))
+                    {
+                        return true;
+                    }
                 }
             }
 
