@@ -14,7 +14,7 @@ namespace StonehearthEditor
         private string mName;
         private JObject mManifestJson;
         private Dictionary<string, Dictionary<string, ModuleFile>> mModuleFiles = new Dictionary<string, Dictionary<string, ModuleFile>>();
-
+        private FileSystemWatcher mFileWatcher;
         private JObject mEnglishLocalizationJson;
 
         public Module(string modPath)
@@ -50,13 +50,13 @@ namespace StonehearthEditor
 
         public void InitializeFromManifest()
         {
-            string stonehearthModManifest = Path + "/manifest.json";
+            string modManifestPath = Path + "/manifest.json";
 
-            if (System.IO.File.Exists(stonehearthModManifest))
+            if (System.IO.File.Exists(modManifestPath))
             {
                 try
                 {
-                    using (StreamReader sr = new StreamReader(stonehearthModManifest, Encoding.UTF8))
+                    using (StreamReader sr = new StreamReader(modManifestPath, Encoding.UTF8))
                     {
                         string fileString = sr.ReadToEnd();
                         mManifestJson = JObject.Parse(fileString);
@@ -65,10 +65,15 @@ namespace StonehearthEditor
                         AddModuleFiles("components");
                         AddModuleFiles("controllers");
                     }
+
+                    mFileWatcher = new FileSystemWatcher(Path, "manifest.json");
+                    mFileWatcher.NotifyFilter = NotifyFilters.LastWrite;
+                    mFileWatcher.Changed += new FileSystemEventHandler(OnChanged);
+                    mFileWatcher.EnableRaisingEvents = true;
                 }
                 catch (Exception e)
                 {
-                    MessageBox.Show("Failure while reading manifest file " + stonehearthModManifest + ". Error: " + e.Message);
+                    MessageBox.Show("Failure while reading manifest file " + modManifestPath + ". Error: " + e.Message);
                 }
             }
 
@@ -88,6 +93,13 @@ namespace StonehearthEditor
                     MessageBox.Show("Exception while reading localization json " + englishLocalizationFilePath + ". Error: " + e.Message);
                 }
             }
+        }
+
+        private void OnChanged(object sender, FileSystemEventArgs e)
+        {
+            // if the manifest has changed
+            MessageBox.Show("The manifest for module " + Name + " has changed! You should reload SHED! (Press F5)");
+   
         }
 
         public void LoadFiles()
@@ -148,6 +160,7 @@ namespace StonehearthEditor
         public void WriteManifestToFile()
         {
             string manifestPath = Path + "/manifest.json";
+            mFileWatcher.EnableRaisingEvents = false;
             using (StreamWriter wr = new StreamWriter(manifestPath, false, new UTF8Encoding(false)))
             {
                 using (JsonTextWriter jsonTextWriter = new JsonTextWriter(wr))
@@ -160,6 +173,7 @@ namespace StonehearthEditor
                     jsonSeralizer.Serialize(jsonTextWriter, mManifestJson);
                 }
             }
+            mFileWatcher.EnableRaisingEvents = true;
         }
 
         public void WriteEnglishLocalizationToFile()
