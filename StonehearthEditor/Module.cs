@@ -15,6 +15,7 @@ namespace StonehearthEditor
         private JObject mManifestJson;
         private Dictionary<string, Dictionary<string, ModuleFile>> mModuleFiles = new Dictionary<string, Dictionary<string, ModuleFile>>();
         private FileSystemWatcher mFileWatcher;
+        private DateTime mLastReadTime = DateTime.MinValue;
         private JObject mEnglishLocalizationJson;
 
         public Module(string modPath)
@@ -98,8 +99,13 @@ namespace StonehearthEditor
         private void OnChanged(object sender, FileSystemEventArgs e)
         {
             // if the manifest has changed
-            MessageBox.Show("The manifest for module " + Name + " has changed! You should reload SHED! (Press F5)");
-   
+            // Applications fire multiple events during the file writing process, so only show message once if there is a new write
+            DateTime lastWriteTime = File.GetLastWriteTime(Path + "/manifest.json");
+            if (lastWriteTime != mLastReadTime)
+            {
+                MessageBox.Show("The manifest for module " + Name + " has changed! You should reload SHED! (Press F5)");
+                mLastReadTime = lastWriteTime;
+            }
         }
 
         public void LoadFiles()
