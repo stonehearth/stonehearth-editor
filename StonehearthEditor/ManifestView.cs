@@ -842,8 +842,8 @@ namespace StonehearthEditor
             TreeNode node = e.Node;
             if (node.Tag != null)
             {
-                JsonFileData jsonFileData = node.Tag as JsonFileData;
-                if (jsonFileData != null && jsonFileData.GetModuleFile() != null)
+                IModuleFileData moduleFileData = node.Tag as IModuleFileData;
+                if (moduleFileData != null && moduleFileData.GetModuleFile() != null)
                 {
                     return; // okay to edit aliases
                 }
@@ -856,14 +856,15 @@ namespace StonehearthEditor
         {
             if (e.Label != null && e.Label.Length > 0)
             {
-                JsonFileData jsonFileData = e.Node.Tag as JsonFileData;
-                ModuleFile moduleFile = jsonFileData.GetModuleFile();
+                FileData fileData = e.Node.Tag as FileData;
+                IModuleFileData moduleFileData = e.Node.Tag as IModuleFileData;
+                ModuleFile moduleFile = moduleFileData.GetModuleFile();
                 string oldAlias = moduleFile.FullAlias;
                 Module mod = moduleFile.Module;
                 string newAlias = mod.Name + ":" + e.Label;
 
                 // Update the references to use the new alias.
-                foreach (FileData reference in jsonFileData.ReferencedByFileData.Values)
+                foreach (FileData reference in fileData.ReferencedByFileData.Values)
                 {
                     if (reference.FlatFileData != null)
                     {

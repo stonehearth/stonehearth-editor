@@ -17,6 +17,7 @@ namespace StonehearthEditor
         private FileSystemWatcher mFileWatcher;
         private DateTime mLastReadTime = DateTime.MinValue;
         private JObject mEnglishLocalizationJson;
+        private bool mShowingManifestModifiedDialog = false;
 
         public Module(string modPath)
         {
@@ -98,13 +99,19 @@ namespace StonehearthEditor
 
         private void OnChanged(object sender, FileSystemEventArgs e)
         {
+            if (mShowingManifestModifiedDialog)
+            {
+                return;
+            }
             // if the manifest has changed
             // Applications fire multiple events during the file writing process, so only show message once if there is a new write
             DateTime lastWriteTime = File.GetLastWriteTime(Path + "/manifest.json");
             if (lastWriteTime != mLastReadTime)
             {
+                mShowingManifestModifiedDialog = true;
                 MessageBox.Show("The manifest for module " + Name + " has changed! You should reload SHED! (Press F5)");
                 mLastReadTime = lastWriteTime;
+                mShowingManifestModifiedDialog = false;
             }
         }
 
