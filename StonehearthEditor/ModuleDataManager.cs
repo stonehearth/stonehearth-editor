@@ -195,28 +195,24 @@ namespace StonehearthEditor
       {
          string[] filePaths = Directory.GetFiles(rootPath);
          string[] folderPaths = Directory.GetDirectories(rootPath);
-
-         if (filePaths != null)
+         
+         foreach (string filePath in filePaths)
          {
-            foreach (string filePath in filePaths)
+            if (root.Tag == null)
             {
-               if (root.Tag == null)
-               {
-                  root.Tag = JsonHelper.NormalizeSystemPath(filePath);
-               }
-               TreeNode node = new TreeNode(System.IO.Path.GetFileName(filePath));
-               node.Tag = JsonHelper.NormalizeSystemPath(filePath);
-               root.Nodes.Add(node);
+               root.Tag = JsonHelper.NormalizeSystemPath(filePath);
             }
+            TreeNode node = new TreeNode(System.IO.Path.GetFileName(filePath));
+            node.Tag = JsonHelper.NormalizeSystemPath(filePath);
+            root.Nodes.Add(node);
          }
-         if (folderPaths != null)
+         
+         foreach (string folderPath in folderPaths)
          {
-            foreach (string folderPath in folderPaths)
-            {
-               TreeNode subRoot = new TreeNode(System.IO.Path.GetFileName(folderPath));
-               subRoot.Tag = JsonHelper.NormalizeSystemPath(folderPath);
-               AppendTreeNodes(subRoot, folderPath);
-            }
+            TreeNode subRoot = new TreeNode(System.IO.Path.GetFileName(folderPath));
+            subRoot.Tag = JsonHelper.NormalizeSystemPath(folderPath);
+            AppendTreeNodes(subRoot, folderPath);
+            root.Nodes.Add(subRoot);
          }
       }
 
