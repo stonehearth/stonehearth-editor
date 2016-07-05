@@ -41,6 +41,12 @@
         <span class="inline-property-label">{{ model.name }}</span>
         {{ input class="sh-input" type='text' value=model.value }}
     </script>
+    <script type="text/x-handlebars" data-template-name="components/boolean-property">
+        <label>
+            <span class="inline-property-label checkbox-property-label">{{ model.name }}</span>
+            {{ input class="sh-input sh-checkbox-input" type='checkbox' checked=model.value }}
+        </label>
+    </script>
     <script type="text/x-handlebars" data-template-name="components/int-property">
         <span class="inline-property-label">{{ model.name }}</span>
         {{ input class="sh-input" type='text' value=model.value }}
@@ -60,18 +66,18 @@
         {{/each }}
     </script>
     <script type="text/x-handlebars" data-template-name="components/sub-group-property">
-        {{#if model.optional }}
             <div class="sub-group-property-header">
                 {{ model.name }}
-                <button {{ action 'toggleMissing' }} class="sub-group-property-expand-button">
-                    {{#if model.isMissing }}
-                        <span class="glyphicon glyphicon-plus"></span>
-                    {{ else }}
-                        <span class="glyphicon glyphicon-remove"></span>
-                    {{/if }}
-                </button>
+                {{#if model.optional }}
+                    <button {{ action 'toggleMissing' }} class="sub-group-property-expand-button">
+                        {{#if model.isMissing }}
+                            <span class="glyphicon glyphicon-plus"></span>
+                        {{ else }}
+                            <span class="glyphicon glyphicon-remove"></span>
+                        {{/if }}
+                    </button>
+                {{/if }}
             </div>
-        {{/if }}
         {{#if model.isMissing }}
         {{ else }}
             {{#each model.children as |property| }}
@@ -280,9 +286,11 @@
         {{ input class="sh-input sh-numeric-input" type="text" value=model.bValue }}
         {{ warning-icon message=model.invalidBValueMessage }}
         <br />
-        <span class="parameter-property-label">A</span>
-        {{ input class="sh-input sh-numeric-input" type="text" value=model.aValue }}
-        {{ warning-icon message=model.invalidAValueMessage }}
+        {{#if model.hasA }}
+            <span class="parameter-property-label">A</span>
+            {{ input class="sh-input sh-numeric-input" type="text" value=model.aValue }}
+            {{ warning-icon message=model.invalidAValueMessage }}
+        {{/if }}
     </script>
 
     <script type="text/x-handlebars" data-template-name="components/parameter-property">

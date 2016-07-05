@@ -69,35 +69,6 @@ namespace StonehearthEditor
         public void RunScript(string script)
         {
             mChromeBrowser.EvaluateScriptAsync(script).Wait();
-            return;
-
-            if (!isFrameLoaded)
-            {
-                mChromeBrowser.FrameLoadEnd += (sender, args) =>
-                {
-                    // Wait for the MainFrame to finish loading
-                    if (args.Frame.IsMain)
-                    {
-                        isFrameLoaded = true;
-                        args.Frame.EvaluateScriptAsync(script).Wait();
-                    }
-                };
-            }
-            else
-            {
-                mChromeBrowser.EvaluateScriptAsync(script).Wait();
-            }
-        }
-
-        public void LoadGameTest()
-        {
-            string temp = "C:/Users/lcai/radiant/stonehearth/build/x86/source/stonehearth/RelWithDebInfo/Stonehearth.exe";
-            string args = "--game.main_mod=stonehearth_tests --mods.stonehearth_tests.test=effect_test";
-            ProcessStartInfo startInfo = new ProcessStartInfo();
-            startInfo.FileName = temp;
-            startInfo.Arguments = args;
-            startInfo.WorkingDirectory = "C:/Users/lcai/radiant/stonehearth/source/stonehearth_data";
-            Process.Start(startInfo);
         }
 
         public void ShowDevTools()
@@ -120,17 +91,13 @@ namespace StonehearthEditor
             // If the page has no javascript, no context will be created.
             void IRenderProcessMessageHandler.OnContextCreated(IWebBrowser browserControl, IBrowser browser, IFrame frame)
             {
-                const string script = "document.addEventListener('DOMContentLoaded', function(){ alert('DomLoaded'); });";
-
                 frame.ExecuteJavaScriptAsync(
                         string.Format(
                             @"
                        document.addEventListener('DOMContentLoaded', function() {{
                             CsApi.effectKind = ""{0}"";
                             CsApi.json = {1};
-                            CsApi.onSelectionChanged();
-                        }});
-                    ",
+                        }});",
                             effectKind,
                             json));
             }

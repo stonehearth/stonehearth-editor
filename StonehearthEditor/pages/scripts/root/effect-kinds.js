@@ -229,4 +229,123 @@
             ]),
         });
     },
+    animatedlight: function () {
+        return ComplexProperty.create({
+            name: null,
+            optional: false,
+            children: Ember.A([
+                StringProperty.create({
+                    name: "name",
+                }),
+
+                IntProperty.create({
+                    name: "duration",
+                }),
+
+                BooleanProperty.create({
+                    name: "loops",
+                }),
+
+                ComplexProperty.create({
+                    name: "intensity",
+                    componentName: "sub-group-property",
+                    optional: true,
+                    children: Ember.A([
+                        ParameterProperty.create({
+                            name: 'start',
+                            componentName: "level3-parameter-property",
+                            dimension: 'scalar',
+                            timeVarying: false,
+                            optional: true,
+                        }),
+                        ParameterProperty.create({
+                            name: 'over_lifetime',
+                            componentName: "level3-parameter-property",
+                            dimension: 'scalar',
+                            timeVarying: true,
+                            optional: true,
+                        }),
+                    ]),
+                }),
+
+                ComplexProperty.create({
+                    name: "radius",
+                    componentName: "sub-group-property",
+                    optional: true,
+                    children: Ember.A([
+                        ParameterProperty.create({
+                            name: 'start',
+                            componentName: "level3-parameter-property",
+                            dimension: 'scalar',
+                            timeVarying: false,
+                            optional: true,
+                        }),
+                        ParameterProperty.create({
+                            name: 'over_lifetime',
+                            componentName: "level3-parameter-property",
+                            dimension: 'scalar',
+                            timeVarying: true,
+                            optional: true,
+                        }),
+                    ]),
+                }),
+                ComplexProperty.create({
+                    name: "inner_radius",
+                    componentName: "sub-group-property",
+                    optional: true,
+                    children: Ember.A([
+                        ParameterProperty.create({
+                            name: 'start',
+                            componentName: "level3-parameter-property",
+                            dimension: 'scalar',
+                            timeVarying: false,
+                            optional: true,
+                        }),
+                        ParameterProperty.create({
+                            name: 'over_lifetime',
+                            componentName: "level3-parameter-property",
+                            dimension: 'scalar',
+                            timeVarying: true,
+                            optional: true,
+                        }),
+                    ]),
+                }),
+                ComplexProperty.create({
+                    name: 'color',
+                    componentName: "sub-group-property",
+                    optional: true,
+                    children: Ember.A([
+                        ParameterProperty.create({
+                            name: 'start',
+                            componentName: "level3-parameter-property",
+                            dimension: 'rgb',
+                            timeVarying: false,
+                            optional: true,
+                        }),
+                        ParameterProperty.create({
+                            name: 'over_lifetime_r',
+                            componentName: "level3-parameter-property",
+                            dimension: 'scalar',
+                            timeVarying: true,
+                            optional: true,
+                        }),
+                        ParameterProperty.create({
+                            name: 'over_lifetime_g',
+                            componentName: "level3-parameter-property",
+                            dimension: 'scalar',
+                            timeVarying: true,
+                            optional: true,
+                        }),
+                        ParameterProperty.create({
+                            name: 'over_lifetime_b',
+                            componentName: "level3-parameter-property",
+                            dimension: 'scalar',
+                            timeVarying: true,
+                            optional: true,
+                        }),
+                    ]),
+                }),
+            ]),
+        });
+    },
 }

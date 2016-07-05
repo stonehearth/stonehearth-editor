@@ -66,6 +66,15 @@
 .sh-numeric-input {
     width: 100px;
 }
+
+.sh-checkbox-input {
+    transform: scale(1.5);
+}
+
+.checkbox-property-label {
+    font-weight: normal;
+}
+
 #saveButton {
     padding: 2px 8px 2px 8px;
     margin: 4px;

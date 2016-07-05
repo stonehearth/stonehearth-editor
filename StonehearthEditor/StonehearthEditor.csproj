@@ -362,7 +362,9 @@
     <Content Include="pages\scripts\libs\spectrum.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="pages\scripts\root\effect-kinds.js" />
+    <Content Include="pages\scripts\root\effect-kinds.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="pages\scripts\root\util.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

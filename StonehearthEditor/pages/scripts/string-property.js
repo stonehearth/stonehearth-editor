@@ -47,6 +47,30 @@ IntProperty = EffectProperty.extend({
     }),
 });
 
+BooleanProperty = EffectProperty.extend({
+    componentName: 'boolean-property',
+    value: true,
+    isMissing: Ember.computed('value', function () {
+        return this.get('value') === undefined;
+    }),
+    isValid: Ember.computed('value', function () {
+        return true;
+    }),
+    toJson: function () {
+        return this.get('value');
+    },
+    fromJson: function (json) {
+        Utils.assert(Utils.isUndefinedOrTypeOf("boolean", json));
+        if (json === undefined) {
+            json = true;
+        }
+        this.set('value', json);
+    },
+    invalidValueMessage: Ember.computed('value', function () {
+        return null;
+    }),
+});
+
 OriginProperty = EffectProperty.extend({
     componentName: 'origin-property',
     surface: null, // string or null
@@ -126,17 +150,18 @@ ConstantScalarParameterKind = ParameterKind.extend({
 
 ConstantRgbaParameterKind = ParameterKind.extend({
     componentName: 'constant-rgba-parameter',
+    hasA: true,
     rgba: null,
     colorPicker: null,
     _onInit: function () {
         var self = this;
-        this.set('rgba', Rgba.create({}));
+        this.set('rgba', Rgba.create({ hasA: this.get('hasA') }));
         Ember.run.scheduleOnce('afterRender', this, function () {
             var picker = $('#color1 .color-picker');
             self.set('colorPicker', picker);
             picker.spectrum({
                 color: "#ff0000",
-                showAlpha: true,
+                showAlpha: this.get('hasA'),
                 showInput: true,
                 showInitial: true,
                 preferredFormat: "rgb",
@@ -152,12 +177,11 @@ ConstantRgbaParameterKind = ParameterKind.extend({
     },
     fromJson: function (json) {
         var self = this;
-        var rgba = Rgba.create({});
+        var rgba = this.get('rgba');
         Ember.run.scheduleOnce('afterRender', this, function () {
             rgba.setPickerColor(self.get('colorPicker'));
         });
         rgba.fromJson(json);
-        self.set('rgba', rgba);
     },
     toJson: function () {
         return this.rgba.toJson();
@@ -169,21 +193,22 @@ ConstantRgbaParameterKind = ParameterKind.extend({
 
 RandomBetweenRgbaParameterKind = ParameterKind.extend({
     componentName: 'random-between-rgba-parameter',
+    hasA: true,
     rgba1: null,
     rgba2: null,
     colorPicker1: null,
     colorPicker2: null,
     _onInit: function () {
         var self = this;
-        this.set('rgba1', Rgba.create({}));
-        this.set('rgba2', Rgba.create({}));
+        this.set('rgba1', Rgba.create({ hasA: this.get('hasA') }));
+        this.set('rgba2', Rgba.create({ hasA: this.get('hasA') }));
 
         Ember.run.scheduleOnce('afterRender', this, function () {
             var picker1 = $('#color1 .color-picker');
             self.set('colorPicker1', picker1);
             picker1.spectrum({
                 color: "#ff0000",
-                showAlpha: true,
+                showAlpha: this.get('hasA'),
                 showInput: true,
                 showInitial: true,
                 preferredFormat: "rgb",
@@ -195,7 +220,7 @@ RandomBetweenRgbaParameterKind = ParameterKind.extend({
             self.set('colorPicker2', picker2);
             picker2.spectrum({
                 color: "#ff0000",
-                showAlpha: true,
+                showAlpha: this.get('hasA'),
                 showInput: true,
                 showInitial: true,
                 preferredFormat: "rgb",
@@ -211,8 +236,8 @@ RandomBetweenRgbaParameterKind = ParameterKind.extend({
     },
     fromJson: function (json) {
         var self = this;
-        var rgba1 = Rgba.create({});
-        var rgba2 = Rgba.create({});
+        var rgba1 = this.get('rgba1');
+        var rgba2 = this.get('rgba2');
 
         Ember.run.scheduleOnce('afterRender', this, function () {
             rgba1.setPickerColor(self.get('colorPicker1'));
@@ -222,9 +247,7 @@ RandomBetweenRgbaParameterKind = ParameterKind.extend({
         });
 
         rgba1.fromJson(json[0]);
-        self.set('rgba1', rgba1);
         rgba2.fromJson(json[1]);
-        self.set('rgba2', rgba2);
     },
     toJson: function () {
         return [this.rgba1.toJson(), this.rgba2.toJson()];
@@ -382,6 +405,7 @@ Curve = Ember.Object.extend({
 });
 
 Rgba = Ember.Object.extend({
+    hasA: true,
     rValue: '0',
     gValue: '0',
     bValue: '0',
@@ -392,14 +416,23 @@ Rgba = Ember.Object.extend({
         var r = Utils.getEffectValueOrDefault(json, 0, '0');
         var g = Utils.getEffectValueOrDefault(json, 1, '0');
         var b = Utils.getEffectValueOrDefault(json, 2, '0');
-        var a = Utils.getEffectValueOrDefault(json, 3, '0');
+        var a;
+        if (!this.get('hasA')) {
+            a = '1';
+        } else {
+            a = Utils.getEffectValueOrDefault(json, 3, '0');
+        }
         self.setRgba(r, g, b, a);
         Ember.run.scheduleOnce('afterRender', this, function () {
             self.get('colorPicker').spectrum("set", Utils.convertFloatToRgba(r,g,b,a));
         });
     },
     toJson: function () {
-        return [Number(this.rValue), Number(this.gValue), Number(this.bValue), Number(this.aValue)];
+        var json = [Number(this.rValue), Number(this.gValue), Number(this.bValue)];
+        if (this.get('hasA')) {
+            json.push(Number(this.aValue));
+        }
+        return json;
     },
     isValid: Ember.computed('rValue', 'gValue', 'bValue', 'aValue', function() {
         return Utils.isNumber(this.rValue) && Utils.isNumber(this.gValue) && Utils.isNumber(this.bValue) && Utils.isNumber(this.aValue);
@@ -490,11 +523,13 @@ RandomBetweenCurvesScalarParameterKind = ParameterKind.extend({
 ParameterKindRegistry = {
     _options: [
         { kind: 'CONSTANT', dimension: 'rgba', timeVarying: false, type: ConstantRgbaParameterKind, },
+        { kind: 'CONSTANT', dimension: 'rgb', timeVarying: false, type: ConstantRgbaParameterKind, args: { hasA: false, }, },
         { kind: 'CONSTANT', dimension: 'scalar', timeVarying: false, type: ConstantScalarParameterKind, },
         { kind: 'CURVE', dimension: 'scalar', timeVarying: true, type: CurveScalarParameterKind, },
         { kind: 'RANDOM_BETWEEN_CURVES', dimension: 'scalar', timeVarying: true, type: RandomBetweenCurvesScalarParameterKind, },
         { kind: 'RANDOM_BETWEEN', dimension: 'scalar', timeVarying: false, type: RandomBetweenScalarParameterKind, },
         { kind: 'RANDOM_BETWEEN', dimension: 'rgba', timeVarying: false, type: RandomBetweenRgbaParameterKind, },
+        { kind: 'RANDOM_BETWEEN', dimension: 'rgb', timeVarying: false, type: RandomBetweenRgbaParameterKind, args: { hasA: false, }, },
     ],
 
     get: function (kind, dimension) {
@@ -504,7 +539,8 @@ ParameterKindRegistry = {
         for (var i = 0; i < ParameterKindRegistry._options.length; i++) {
             var option = ParameterKindRegistry._options[i];
             if (option.kind === kind && option.dimension === dimension) {
-                return option.type.create({});
+                var args = option.args || {};
+                return option.type.create(args);
             }
         }
 

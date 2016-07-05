@@ -120,121 +120,110 @@ namespace StonehearthEditor
             treeView.EndUpdate();
         }
 
-      public void LoadEffectsList(TreeView treeView)
-      {
-         treeView.BeginUpdate();
-         treeView.Nodes.Clear();
+        public void PopulateTreeView(TreeView treeView, string alias, string folder)
+        {
+            treeView.BeginUpdate();
+            treeView.Nodes.Clear();
 
-         List<TreeNode> effects = new List<TreeNode>();
-
-         AddTreeNodesByAlias(effects, "effects");
-         AddTreeNodesByFolder(effects, "/data/effects");
-
-         treeView.Nodes.AddRange(effects.ToArray());
-         treeView.EndUpdate();
-      }
-
-      public void LoadCubemittersList(TreeView treeView)
-      {
-         treeView.BeginUpdate();
-         treeView.Nodes.Clear();
-
-         List<TreeNode> cubemitters = new List<TreeNode>();
-
-         AddTreeNodesByAlias(cubemitters, "cubemitters");
-         AddTreeNodesByFolder(cubemitters, "/data/horde/particles");
-
-         treeView.Nodes.AddRange(cubemitters.ToArray());
-         treeView.EndUpdate();
-      }
-
-      // Add tree nodes for aliases that contain the filter term
-      private void AddTreeNodesByAlias(List<TreeNode> treeNodes, string filterTerm)
-      {
-         foreach (Module module in mModules.Values)
-         {
-            TreeNode node = module.FilterAliasTree(filterTerm);
-            if (node != null)
+            List<TreeNode> effects = new List<TreeNode>();
+            if (alias != string.Empty)
             {
-               treeNodes.Add(node);
+                AddTreeNodesByAlias(effects, alias);
             }
-         }
-      }
 
-      // Add tree nodes in the specified folder (inside mods folder)
-      private void AddTreeNodesByFolder(List<TreeNode> treeNodes, string folderName)
-      {
-         string[] modFolders = Directory.GetDirectories(mModsDirectoryPath);
-         if (modFolders == null)
-         {
-            return;
-         }
+            AddTreeNodesByFolder(effects, folder);
 
-         // check all the mod folders
-         foreach (string modPath in modFolders)
-         {
-            string searchDirectoryPath = JsonHelper.NormalizeSystemPath(modPath) + folderName;
-            if (Directory.Exists(searchDirectoryPath))
+            treeView.Nodes.AddRange(effects.ToArray());
+            treeView.EndUpdate();
+        }
+
+        // Add tree nodes for aliases that contain the filter term
+        private void AddTreeNodesByAlias(List<TreeNode> treeNodes, string filterTerm)
+        {
+            foreach (Module module in mModules.Values)
             {
-               // check all the folders
-               foreach (string folderPath in Directory.EnumerateDirectories(searchDirectoryPath))
-               {
-                  string rootFolderName = System.IO.Path.GetFileName(folderPath);
-                  TreeNode root = new TreeNode(rootFolderName);
-                  root.ExpandAll();
-                  // Append tree nodes from nested folders and files
-                  AppendTreeNodes(root, folderPath);
-                  treeNodes.Add(root);
-               }
+                TreeNode node = module.FilterAliasTree(filterTerm);
+                if (node != null)
+                {
+                    treeNodes.Add(node);
+                }
             }
-         }
-      }
+        }
 
-      // Adds all files and directories in path to tree node root
-      private void AppendTreeNodes(TreeNode root, string rootPath)
-      {
-         string[] filePaths = Directory.GetFiles(rootPath);
-         string[] folderPaths = Directory.GetDirectories(rootPath);
-         
-         foreach (string filePath in filePaths)
-         {
-            if (root.Tag == null)
+        // Add tree nodes in the specified folder (inside mods folder)
+        private void AddTreeNodesByFolder(List<TreeNode> treeNodes, string folderName)
+        {
+            string[] modFolders = Directory.GetDirectories(mModsDirectoryPath);
+            if (modFolders == null)
             {
-               root.Tag = JsonHelper.NormalizeSystemPath(filePath);
+                return;
             }
-            TreeNode node = new TreeNode(System.IO.Path.GetFileName(filePath));
-            node.Tag = JsonHelper.NormalizeSystemPath(filePath);
-            root.Nodes.Add(node);
-         }
-         
-         foreach (string folderPath in folderPaths)
-         {
-            TreeNode subRoot = new TreeNode(System.IO.Path.GetFileName(folderPath));
-            subRoot.Tag = JsonHelper.NormalizeSystemPath(folderPath);
-            AppendTreeNodes(subRoot, folderPath);
-            root.Nodes.Add(subRoot);
-         }
-      }
 
-      // Returns an Object array with a map from alias to jsonfiledata and alias to modname
-      public Object[] FilterJsonByTerm(ListView listView, string filterTerm)
-      {
-         Dictionary<string, JsonFileData> aliasJsonMap = new Dictionary<string, JsonFileData>();
-         Dictionary<string, string> aliasModNameMap = new Dictionary<string, string>();
-         foreach (Module module in mModules.Values)
-         {
-            foreach (ModuleFile moduleFile in module.GetAliases())
+            // check all the mod folders
+            foreach (string modPath in modFolders)
             {
-               JsonFileData data = moduleFile.GetJsonFileDataByTerm(filterTerm);
-               if (data != null)
-               {
-                  aliasJsonMap.Add(moduleFile.FullAlias, data);
-                  aliasModNameMap.Add(moduleFile.FullAlias, module.Name);
-               }
+                string searchDirectoryPath = JsonHelper.NormalizeSystemPath(modPath) + folderName;
+                if (Directory.Exists(searchDirectoryPath))
+                {
+                    // check all the folders
+                    foreach (string folderPath in Directory.EnumerateDirectories(searchDirectoryPath))
+                    {
+                        string rootFolderName = System.IO.Path.GetFileName(folderPath);
+                        TreeNode root = new TreeNode(rootFolderName);
+                        root.ExpandAll();
+                        // Append tree nodes from nested folders and files
+                        AppendTreeNodes(root, folderPath);
+                        treeNodes.Add(root);
+                    }
+                }
             }
-         }
+        }
 
-         return new object[] { aliasJsonMap, aliasModNameMap };
+        // Adds all files and directories in path to tree node root
+        private void AppendTreeNodes(TreeNode root, string rootPath)
+        {
+            string[] filePaths = Directory.GetFiles(rootPath);
+            string[] folderPaths = Directory.GetDirectories(rootPath);
+
+            foreach (string filePath in filePaths)
+            {
+                if (root.Tag == null)
+                {
+                    root.Tag = JsonHelper.NormalizeSystemPath(filePath);
+                }
+                TreeNode node = new TreeNode(System.IO.Path.GetFileName(filePath));
+                node.Tag = JsonHelper.NormalizeSystemPath(filePath);
+                root.Nodes.Add(node);
+            }
+
+            foreach (string folderPath in folderPaths)
+            {
+                TreeNode subRoot = new TreeNode(System.IO.Path.GetFileName(folderPath));
+                subRoot.Tag = JsonHelper.NormalizeSystemPath(folderPath);
+                AppendTreeNodes(subRoot, folderPath);
+                root.Nodes.Add(subRoot);
+            }
+        }
+
+        // Returns an Object array with a map from alias to jsonfiledata and alias to modname
+        public Object[] FilterJsonByTerm(ListView listView, string filterTerm)
+        {
+            Dictionary<string, JsonFileData> aliasJsonMap = new Dictionary<string, JsonFileData>();
+            Dictionary<string, string> aliasModNameMap = new Dictionary<string, string>();
+            foreach (Module module in mModules.Values)
+            {
+                foreach (ModuleFile moduleFile in module.GetAliases())
+                {
+                    JsonFileData data = moduleFile.GetJsonFileDataByTerm(filterTerm);
+                    if (data != null)
+                    {
+                        aliasJsonMap.Add(moduleFile.FullAlias, data);
+                        aliasModNameMap.Add(moduleFile.FullAlias, module.Name);
+                    }
+                }
+            }
+
+            return new object[] { aliasJsonMap, aliasModNameMap };
         }
 
         public object[] GetJsonsOfType(ListView listView, JSONTYPE jsonType)

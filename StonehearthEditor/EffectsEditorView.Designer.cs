@@ -49,6 +49,8 @@
             this.effectsEditorContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.saveEffectsFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.helpButton = new System.Windows.Forms.Button();
+            this.lightsTreeViewTab = new System.Windows.Forms.TabPage();
+            this.lightsTreeView = new System.Windows.Forms.TreeView();
             ((System.ComponentModel.ISupportInitialize)(this.effectsSplitContainer)).BeginInit();
             this.effectsSplitContainer.Panel1.SuspendLayout();
             this.effectsSplitContainer.Panel2.SuspendLayout();
@@ -62,6 +64,7 @@
             this.effectsSplitContainer2.SuspendLayout();
             this.effectsToolStrip.SuspendLayout();
             this.effectsEditorContextMenuStrip.SuspendLayout();
+            this.lightsTreeViewTab.SuspendLayout();
             this.SuspendLayout();
             // 
             // effectsSplitContainer
@@ -84,6 +87,7 @@
             // treeViewTabControl
             // 
             this.treeViewTabControl.Controls.Add(this.cubemittersTreeViewTab);
+            this.treeViewTabControl.Controls.Add(this.lightsTreeViewTab);
             this.treeViewTabControl.Controls.Add(this.effectsTreeViewTab);
             this.treeViewTabControl.Dock = System.Windows.Forms.DockStyle.Fill;
             this.treeViewTabControl.Location = new System.Drawing.Point(0, 0);
@@ -275,6 +279,27 @@
             this.helpButton.UseVisualStyleBackColor = false;
             this.helpButton.Click += new System.EventHandler(this.helpButton_Click);
             // 
+            // lightsTreeViewTab
+            // 
+            this.lightsTreeViewTab.Controls.Add(this.lightsTreeView);
+            this.lightsTreeViewTab.Location = new System.Drawing.Point(4, 22);
+            this.lightsTreeViewTab.Name = "lightsTreeViewTab";
+            this.lightsTreeViewTab.Padding = new System.Windows.Forms.Padding(3);
+            this.lightsTreeViewTab.Size = new System.Drawing.Size(209, 522);
+            this.lightsTreeViewTab.TabIndex = 2;
+            this.lightsTreeViewTab.Text = "Lights";
+            this.lightsTreeViewTab.UseVisualStyleBackColor = true;
+            // 
+            // lightsTreeView
+            // 
+            this.lightsTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lightsTreeView.Location = new System.Drawing.Point(3, 3);
+            this.lightsTreeView.Name = "lightsTreeView";
+            this.lightsTreeView.Size = new System.Drawing.Size(203, 516);
+            this.lightsTreeView.TabIndex = 0;
+            this.lightsTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.lightsTreeView_AfterSelect);
+            this.lightsTreeView.MouseClick += new System.Windows.Forms.MouseEventHandler(this.lightsTreeView_MouseClick);
+            // 
             // EffectsEditorView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -298,6 +323,7 @@
             this.effectsToolStrip.ResumeLayout(false);
             this.effectsToolStrip.PerformLayout();
             this.effectsEditorContextMenuStrip.ResumeLayout(false);
+            this.lightsTreeViewTab.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -324,5 +350,7 @@
         private System.Windows.Forms.Panel effectsBrowserPanel;
         private System.Windows.Forms.ToolStripButton cefDevToolsButton;
         private System.Windows.Forms.ToolStripButton toolStripButton1;
-    }
+      private System.Windows.Forms.TabPage lightsTreeViewTab;
+      private System.Windows.Forms.TreeView lightsTreeView;
+   }
 }
