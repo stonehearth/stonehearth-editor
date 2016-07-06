@@ -110,7 +110,7 @@ OriginProperty = EffectProperty.extend({
         }
         this.set('surface', Utils.getEffectValueOrDefault(json, 'surface', 'POINT'));
         this.set('value1', Utils.getEffectValueOrDefault(json['values'], 0, '0'));
-        this.set('value2', Utils.getEffectValueOrDefault(json['values'], 0, '0'));
+        this.set('value2', Utils.getEffectValueOrDefault(json['values'], 1, '0'));
     },
 });
 
