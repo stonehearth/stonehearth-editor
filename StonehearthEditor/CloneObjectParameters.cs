@@ -6,8 +6,8 @@ namespace StonehearthEditor
     {
         private Dictionary<string, string> mStringReplacements = new Dictionary<string, string>();
         private Dictionary<string, string> mAliasReplacements = new Dictionary<string, string>();
-        private string mSourceModuleName = "";
-        private string mTargetModuleName = "";
+        private string mSourceModuleName;
+        private string mTargetModuleName;
 
         public string TargetModule
         {
@@ -37,6 +37,16 @@ namespace StonehearthEditor
         public void AddAliasReplacement(string original, string replacement)
         {
             mAliasReplacements[original] = replacement;
+        }
+
+        public string TransformModPath(string param)
+        {
+            if (SourceModule != null && TargetModule != null)
+            {
+                return param.Replace(SourceModule, TargetModule);
+            }
+
+            return param;
         }
 
         public string TransformParameter(string param)

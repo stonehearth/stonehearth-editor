@@ -150,7 +150,7 @@ namespace StonehearthEditor
         {
             string newAlias = parameters.TransformAlias(mAlias);
             string sourceModName = Module.Name;
-            string targetModName = parameters.TargetModule;
+            string targetModName = parameters.TargetModule == null ? sourceModName : parameters.TargetModule;
             Module targetModule = ModuleDataManager.GetInstance().GetMod(targetModName);
 
             if (targetModule.GetAliasFile(newAlias) != null)

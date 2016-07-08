@@ -20,7 +20,7 @@ namespace StonehearthEditor
         private static EffectsChromeBrowser sInstance = null;
         private string mEffectKind;
         private string mJson;
-        private bool isFrameLoaded = false;
+
         private ChromiumWebBrowser mChromeBrowser;
         private EffectsJsObject mEffectsJsObject;
 
