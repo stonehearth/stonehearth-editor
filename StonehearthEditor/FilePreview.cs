@@ -184,7 +184,7 @@ namespace StonehearthEditor
             {
                 // Enquotes every single alias and joins it using "\n,"
                 string aliasInsert = string.Join(
-                    Environment.NewLine + ",",
+                    "," + Environment.NewLine,
                     aliases.Select(alias => string.Concat('"', alias, '"')));
 
                 mTextBox.InsertText(mTextBox.SelectionStart, aliasInsert);
