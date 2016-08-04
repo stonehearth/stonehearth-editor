@@ -163,21 +163,30 @@ namespace StonehearthEditor
             // check all the mod folders
             foreach (string modPath in modFolders)
             {
+                string modName = System.IO.Path.GetFileName(modPath);
+                TreeNode modNode = new TreeNode(modName);
+                bool hasChildren = false;
                 string searchDirectoryPath = JsonHelper.NormalizeSystemPath(modPath) + folderName;
                 if (Directory.Exists(searchDirectoryPath))
                 {
                     // check all the folders
                     foreach (string folderPath in Directory.EnumerateDirectories(searchDirectoryPath))
                     {
+                        hasChildren = true;
                         string rootFolderName = System.IO.Path.GetFileName(folderPath);
                         TreeNode root = new TreeNode(rootFolderName);
-                        root.ExpandAll();
-                        // Append tree nodes from nested folders and files
-                        AppendTreeNodes(root, folderPath);
-                        treeNodes.Add(root);
+                        modNode.Nodes.Add(root); // Add effect folder node under mod name node
+                        AppendTreeNodes(root, folderPath); // Append tree nodes from nested folders and files
+                        root.ExpandAll(); // Expand the top level
                     }
                 }
+
+                if (hasChildren)
+                {
+                    treeNodes.Add(modNode);
+                    modNode.ExpandAll();
             }
+        }
         }
 
         // Adds all files and directories in path to tree node root
@@ -276,7 +285,10 @@ namespace StonehearthEditor
 
         public FileData GetSelectedFileData(string selected)
         {
+            // FullPath is a property of treeviews that consists of the labels of all of the
+            // tree nodes that must be navigated to reach the selected tree node
             string[] path = selected.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+
             if (path.Length <= 2)
             {
                 return null;

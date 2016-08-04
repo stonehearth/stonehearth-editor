@@ -34,6 +34,8 @@
             this.treeViewTabControl = new System.Windows.Forms.TabControl();
             this.cubemittersTreeViewTab = new System.Windows.Forms.TabPage();
             this.cubemittersTreeView = new System.Windows.Forms.TreeView();
+            this.lightsTreeViewTab = new System.Windows.Forms.TabPage();
+            this.lightsTreeView = new System.Windows.Forms.TreeView();
             this.effectsTreeViewTab = new System.Windows.Forms.TabPage();
             this.effectsEditorTreeView = new System.Windows.Forms.TreeView();
             this.effectsSplitContainer2 = new System.Windows.Forms.SplitContainer();
@@ -49,14 +51,13 @@
             this.effectsEditorContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.saveEffectsFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.helpButton = new System.Windows.Forms.Button();
-            this.lightsTreeViewTab = new System.Windows.Forms.TabPage();
-            this.lightsTreeView = new System.Windows.Forms.TreeView();
             ((System.ComponentModel.ISupportInitialize)(this.effectsSplitContainer)).BeginInit();
             this.effectsSplitContainer.Panel1.SuspendLayout();
             this.effectsSplitContainer.Panel2.SuspendLayout();
             this.effectsSplitContainer.SuspendLayout();
             this.treeViewTabControl.SuspendLayout();
             this.cubemittersTreeViewTab.SuspendLayout();
+            this.lightsTreeViewTab.SuspendLayout();
             this.effectsTreeViewTab.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.effectsSplitContainer2)).BeginInit();
             this.effectsSplitContainer2.Panel1.SuspendLayout();
@@ -64,7 +65,6 @@
             this.effectsSplitContainer2.SuspendLayout();
             this.effectsToolStrip.SuspendLayout();
             this.effectsEditorContextMenuStrip.SuspendLayout();
-            this.lightsTreeViewTab.SuspendLayout();
             this.SuspendLayout();
             // 
             // effectsSplitContainer
@@ -120,6 +120,27 @@
             this.cubemittersTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.cubemittersTreeView_AfterSelect);
             this.cubemittersTreeView.MouseClick += new System.Windows.Forms.MouseEventHandler(this.cubemittersTreeView_MouseClick);
             // 
+            // lightsTreeViewTab
+            // 
+            this.lightsTreeViewTab.Controls.Add(this.lightsTreeView);
+            this.lightsTreeViewTab.Location = new System.Drawing.Point(4, 22);
+            this.lightsTreeViewTab.Name = "lightsTreeViewTab";
+            this.lightsTreeViewTab.Padding = new System.Windows.Forms.Padding(3);
+            this.lightsTreeViewTab.Size = new System.Drawing.Size(209, 522);
+            this.lightsTreeViewTab.TabIndex = 2;
+            this.lightsTreeViewTab.Text = "Lights";
+            this.lightsTreeViewTab.UseVisualStyleBackColor = true;
+            // 
+            // lightsTreeView
+            // 
+            this.lightsTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lightsTreeView.Location = new System.Drawing.Point(3, 3);
+            this.lightsTreeView.Name = "lightsTreeView";
+            this.lightsTreeView.Size = new System.Drawing.Size(203, 516);
+            this.lightsTreeView.TabIndex = 0;
+            this.lightsTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.lightsTreeView_AfterSelect);
+            this.lightsTreeView.MouseClick += new System.Windows.Forms.MouseEventHandler(this.lightsTreeView_MouseClick);
+            // 
             // effectsTreeViewTab
             // 
             this.effectsTreeViewTab.Controls.Add(this.effectsEditorTreeView);
@@ -138,7 +159,6 @@
             this.effectsEditorTreeView.HideSelection = false;
             this.effectsEditorTreeView.Location = new System.Drawing.Point(3, 3);
             this.effectsEditorTreeView.Name = "effectsEditorTreeView";
-            this.effectsEditorTreeView.PathSeparator = "/";
             this.effectsEditorTreeView.Size = new System.Drawing.Size(203, 516);
             this.effectsEditorTreeView.TabIndex = 0;
             this.effectsEditorTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.effectsEditorTreeView_AfterSelect);
@@ -279,27 +299,6 @@
             this.helpButton.UseVisualStyleBackColor = false;
             this.helpButton.Click += new System.EventHandler(this.helpButton_Click);
             // 
-            // lightsTreeViewTab
-            // 
-            this.lightsTreeViewTab.Controls.Add(this.lightsTreeView);
-            this.lightsTreeViewTab.Location = new System.Drawing.Point(4, 22);
-            this.lightsTreeViewTab.Name = "lightsTreeViewTab";
-            this.lightsTreeViewTab.Padding = new System.Windows.Forms.Padding(3);
-            this.lightsTreeViewTab.Size = new System.Drawing.Size(209, 522);
-            this.lightsTreeViewTab.TabIndex = 2;
-            this.lightsTreeViewTab.Text = "Lights";
-            this.lightsTreeViewTab.UseVisualStyleBackColor = true;
-            // 
-            // lightsTreeView
-            // 
-            this.lightsTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lightsTreeView.Location = new System.Drawing.Point(3, 3);
-            this.lightsTreeView.Name = "lightsTreeView";
-            this.lightsTreeView.Size = new System.Drawing.Size(203, 516);
-            this.lightsTreeView.TabIndex = 0;
-            this.lightsTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.lightsTreeView_AfterSelect);
-            this.lightsTreeView.MouseClick += new System.Windows.Forms.MouseEventHandler(this.lightsTreeView_MouseClick);
-            // 
             // EffectsEditorView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -315,6 +314,7 @@
             this.effectsSplitContainer.ResumeLayout(false);
             this.treeViewTabControl.ResumeLayout(false);
             this.cubemittersTreeViewTab.ResumeLayout(false);
+            this.lightsTreeViewTab.ResumeLayout(false);
             this.effectsTreeViewTab.ResumeLayout(false);
             this.effectsSplitContainer2.Panel1.ResumeLayout(false);
             this.effectsSplitContainer2.Panel2.ResumeLayout(false);
@@ -323,7 +323,6 @@
             this.effectsToolStrip.ResumeLayout(false);
             this.effectsToolStrip.PerformLayout();
             this.effectsEditorContextMenuStrip.ResumeLayout(false);
-            this.lightsTreeViewTab.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 

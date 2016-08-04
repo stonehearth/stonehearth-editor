@@ -36,6 +36,8 @@ namespace StonehearthEditor
         private bool mSaveJsonAfterParse = false;
         private int mNetWorth = -1;
 
+        public string Category = null;
+
         public JsonFileData(string path)
             : base(path)
         {
@@ -407,25 +409,13 @@ namespace StonehearthEditor
         private void ParseJsonSpecificData()
         {
             string directory = Directory;
+            string categoryOverride = null;
             switch (mJsonType)
             {
                 case JSONTYPE.ENTITY:
                     JToken entityFormsComponent = mJson.SelectToken("components.stonehearth:entity_forms");
                     if (entityFormsComponent != null)
                     {
-                        // Look for stonehearth:entity_forms
-                        JToken ghostForm = entityFormsComponent["ghost_form"];
-                        if (ghostForm != null)
-                        {
-                            string ghostFilePath = JsonHelper.GetFileFromFileJson(ghostForm.ToString(), directory);
-                            ghostFilePath = JsonHelper.NormalizeSystemPath(ghostFilePath);
-                            JsonFileData ghost = new JsonFileData(ghostFilePath);
-                            ghost.Load();
-                            ghost.AddMixin("stonehearth:mixins:placed_object");
-                            OpenedFiles.Add(ghost);
-                            ghost.PostLoad();
-                        }
-
                         JToken iconicForm = entityFormsComponent["iconic_form"];
                         if (iconicForm != null)
                         {
@@ -433,7 +423,23 @@ namespace StonehearthEditor
                             iconicFilePath = JsonHelper.NormalizeSystemPath(iconicFilePath);
                             JsonFileData iconic = new JsonFileData(iconicFilePath);
                             iconic.Load();
+                            categoryOverride = iconic.Category;
+                            Category = iconic.Category;
                             OpenedFiles.Add(iconic);
+                        }
+
+                        // Look for stonehearth:entity_forms
+                        JToken ghostForm = entityFormsComponent["ghost_form"];
+                        if (ghostForm != null)
+                        {
+                            string ghostFilePath = JsonHelper.GetFileFromFileJson(ghostForm.ToString(), directory);
+                            ghostFilePath = JsonHelper.NormalizeSystemPath(ghostFilePath);
+                            JsonFileData ghost = new JsonFileData(ghostFilePath);
+                            ghost.Category = categoryOverride;
+                            ghost.Load();
+                            ghost.AddMixin("stonehearth:mixins:placed_object");
+                            OpenedFiles.Add(ghost);
+                            ghost.PostLoad();
                         }
 
                         CheckForNoNetWorth();
@@ -547,6 +553,7 @@ namespace StonehearthEditor
             }
 
             CheckDisplayName();
+            //FixUnitInfo();
             if (Json != null && Json.SelectToken("components.effect_list.effects") != null)
             {
                 AddError("effect_list component is using 'effects' to specify a list of effects. This is bad because these effects will not restart after save load. You should put all the effects into a single file and reference that file as 'default'");
@@ -633,6 +640,7 @@ namespace StonehearthEditor
             }
         }
 
+
         private void CheckDisplayName()
         {
             // make sure display name appears before the description field
@@ -680,6 +688,96 @@ namespace StonehearthEditor
                 CheckStringKeyExists(description, "components.unit_info.description");
                 CheckStringKeyExists(displayName, "components.unit_info.display_name");
             }
+
+            // Check for display name and description in recipes
+            switch (mJsonType)
+            {
+                case JSONTYPE.RECIPE:
+                    CheckStringKeyExists(mJson.SelectToken("recipe_name"), "recipe_name");
+                    CheckStringKeyExists(mJson.SelectToken("description"), "description");
+                    break;
+                case JSONTYPE.BUFF:
+                    JToken invisibleToPlayer = mJson.SelectToken("invisible_to_player");
+                    bool isInvisible = invisibleToPlayer != null ? invisibleToPlayer.Value<bool>() : false;
+                    if (!isInvisible)
+                    {
+                        CheckStringKeyExists(mJson.SelectToken("display_name"), "display_name");
+                        CheckStringKeyExists(mJson.SelectToken("description"), "description");
+                    }
+
+                    break;
+                case JSONTYPE.COMMAND:
+                    CheckStringKeyExists(mJson.SelectToken("display_name"), "display_name");
+                    CheckStringKeyExists(mJson.SelectToken("description"), "description");
+                    break;
+            }
+        }
+
+        private void FixUnitInfo()
+        {
+            // make sure display name appears before the description field
+            if (!mSaveJsonAfterParse)
+            {
+                JObject unitInfo = mJson.SelectToken("components.unit_info") as JObject;
+                JObject entityData = mJson.SelectToken("entity_data") as JObject;
+
+                if (unitInfo != null)
+                {
+                    if (entityData == null)
+                    {
+                        entityData = new JObject();
+                        mJson.Add("entity_data", entityData);
+                    }
+                    mSaveJsonAfterParse = true;
+                    (mJson["components"] as JObject).Remove("unit_info");
+
+                    if (Category != null)
+                    {
+                        unitInfo.Add("category", Category);
+                    }
+
+                    if (unitInfo["name"] != null)
+                    {
+                        AddError("unit Info has name instead of display_name!!");
+                        unitInfo.Add("display_name", unitInfo.GetValue("name").ToString());
+                        unitInfo.Remove("name");
+                    }
+
+                    entityData.Add("stonehearth:catalog", unitInfo);
+                }
+
+                JObject item = mJson.SelectToken("components.item") as JObject;
+                if (item != null)
+                {
+                    (mJson["components"] as JObject).Remove("item");
+
+                    if (entityData == null)
+                    {
+                        entityData = new JObject();
+                        mJson.Add("entity_data", entityData);
+                    }
+
+                    unitInfo = entityData["stonehearth:catalog"] as JObject;
+                    if (unitInfo == null)
+                    {
+                        unitInfo = new JObject();
+                        entityData.Add("stonehearth:catalog", unitInfo);
+                    }
+
+                    unitInfo.Add("is_item", true);
+                   
+                    if (item.GetValue("category") != null && Category == null)
+                    {
+                       Category = item.GetValue("category").ToString();
+                       unitInfo.Add("category", Category);
+                    }
+                    
+                    mSaveJsonAfterParse = true;
+                }
+            }
+                
+            CheckStringKeyExists(mJson.SelectToken("entity_data.stonehearth:catalog.display_name"), "entity_data.stonehearth:catalog.display_name");
+            CheckStringKeyExists(mJson.SelectToken("entity_data.stonehearth:catalog.description"), "entity_data.stonehearth:catalog.description");
 
             // Check for display name and description in recipes
             switch (mJsonType)

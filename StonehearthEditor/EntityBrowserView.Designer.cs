@@ -63,6 +63,7 @@
             this.entityBrowserSplitContainer2 = new System.Windows.Forms.SplitContainer();
             this.entityBrowserSplitContainer3 = new System.Windows.Forms.SplitContainer();
             this.fileDetailsListBox = new System.Windows.Forms.ListBox();
+            this.defenseItemRoles = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             ((System.ComponentModel.ISupportInitialize)(this.iconView)).BeginInit();
             this.entityBrowserTabControl.SuspendLayout();
             this.netWorthItemsTab.SuspendLayout();
@@ -250,6 +251,7 @@
             this.defenseItemAlias,
             this.damageReduction,
             this.defenseItemILevel,
+            this.defenseItemRoles,
             this.defenseItemModName});
             this.defenseItemsListView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.defenseItemsListView.LabelEdit = true;
@@ -277,6 +279,7 @@
             // 
             // defenseItemModName
             // 
+            this.defenseItemModName.DisplayIndex = 3;
             this.defenseItemModName.Text = "Mod Name";
             this.defenseItemModName.Width = -2;
             // 
@@ -408,6 +411,11 @@
             this.fileDetailsListBox.Size = new System.Drawing.Size(207, 300);
             this.fileDetailsListBox.TabIndex = 0;
             // 
+            // defenseItemRoles
+            // 
+            this.defenseItemRoles.Text = "Roles";
+            this.defenseItemRoles.Width = -2;
+            // 
             // EntityBrowserView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -477,5 +485,6 @@
         private System.Windows.Forms.ToolStripButton reloadToolStripItem;
         private System.Windows.Forms.SplitContainer entityBrowserSplitContainer3;
         private System.Windows.Forms.ListBox fileDetailsListBox;
+        private System.Windows.Forms.ColumnHeader defenseItemRoles;
     }
 }
