@@ -1,8 +1,9 @@
 {
    "global": {
-      "components.unit_info.name": "display_name",
-      "components.unit_info.display_name": "display_name",
-      "components.unit_info.description": "description",
+      "tooltips.*.display_name": "{0}.display_name",
+      "tooltips.*.description": "{0}.description",
+      "entity_data.stonehearth:catalog.display_name": "display_name",
+      "entity_data.stonehearth:catalog.description": "description",
       "components.stonehearth:renewable_resource_node.unripe_description": "unripe_description",
       "components.stonehearth:renewable_resource_node.harvest_status_text": "renewable_harvest_status_text",
       "components.stonehearth:job.starting_level_title": "job.starting_level_title",
@@ -35,6 +36,8 @@
       "create_mission_info.mission.sighted_bulletin.message": "mission.sighted_bulletin.message",
       "create_camp_info.*.unit_info.display_name": "{0}.display_name",
       "create_camp_info.*.unit_info.description": "{0}.description",
+      "create_camp_info.citizens.*.unit_info.display_name": "{0}.display_name",
+      "create_camp_info.citizens.*.unit_info.description": "{0}.description",
       "city_raid_info.missions.*.sighted_bulletin.title": "missions.{0}.sighted_bulletin.title",
       "city_raid_info.missions.*.sighted_bulletin.message": "missions.{0}.sighted_bulletin.message",
       "shop_info.name": "shop_info.name",
@@ -60,7 +63,22 @@
       "entities.*.unit_info.description": "{0}.description",
       "citizens.*.unit_info.description": "{0}.description",
       "citizens.*.unit_info.name": "{0}.display_name",
-      "random_location_names.*": "random_location_names.{0}"
+      "citizens.*.unit_info.display_name": "{0}.display_name",
+      "random_location_names.*": "random_location_names.{0}",
+      "unit_info.display_name": "display_name",
+      "unit_info.description": "description",
+      "always_available.*.colors.*.display_name": "colors.{1}",
+      "template_tabs.*.display_name": "template_tabs.{0}.display_name",
+      "template_tabs.*.categories.*.display_name": "template_tabs.{0}.categories.{1}",
+      "header.display_name": "display_name",
+      "unlock_recipe_info.bulletin_title": "bulletin_title",
+      "scenario_data.title": "scenario_data.title",
+      "scenario_data.message": "scenario_data.message",
+      "scenario_data.declined_text": "scenario_data.declined_text",
+      "scenario_data.completed_message": "scenario_data.completed_message",
+      "scenario_data.resource_display_name": "scenario_data.resource_display_name",
+      "scenario_data.ui_steps.*.*.title":"ui_steps.{0}.step{1}.title",
+      "scenario_data.ui_steps.*.*.description":"ui_steps.{0}.step{1}.description"
    },
    "choices": {
       "*.nodes.*.bulletin.choices.*": "{0}.dialog_nodes.{1}.choice_{2}"

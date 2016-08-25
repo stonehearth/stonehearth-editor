@@ -552,8 +552,8 @@ namespace StonehearthEditor
                     break;
             }
 
+            FixUnitInfo();
             CheckDisplayName();
-            //FixUnitInfo();
             if (Json != null && Json.SelectToken("components.effect_list.effects") != null)
             {
                 AddError("effect_list component is using 'effects' to specify a list of effects. This is bad because these effects will not restart after save load. You should put all the effects into a single file and reference that file as 'default'");
@@ -643,51 +643,8 @@ namespace StonehearthEditor
 
         private void CheckDisplayName()
         {
-            // make sure display name appears before the description field
-            JObject unitInfo = mJson.SelectToken("components.unit_info") as JObject;
-            if (unitInfo != null && unitInfo["description"] != null && unitInfo["display_name"] != null)
-            {
-                List<JProperty> properties = new List<JProperty>(unitInfo.Properties());
-                bool seenDisplayName = false;
-                bool needsSort = true;
-                int index = 0;
-
-                foreach (JProperty prop in properties)
-                {
-                    if (prop.Name == "description" && !seenDisplayName)
-                    {
-                        AddError("display_name after description");
-                        needsSort = true;
-                        break;
-                    }
-
-                    if (prop.Name == "display_name")
-                    {
-                        seenDisplayName = true;
-                    }
-
-                    index++;
-                }
-
-                JToken description = unitInfo["description"];
-                JToken icon = unitInfo["icon"];
-                JToken displayName = unitInfo["display_name"];
-                if (needsSort)
-                {
-                    unitInfo.Remove("description");
-                    unitInfo.Remove("icon");
-                    unitInfo.Add("description", description);
-                    if (icon != null)
-                    {
-                        unitInfo.Add("icon", icon);
-                    }
-
-                    mSaveJsonAfterParse = true;
-                }
-
-                CheckStringKeyExists(description, "components.unit_info.description");
-                CheckStringKeyExists(displayName, "components.unit_info.display_name");
-            }
+            CheckStringKeyExists(mJson.SelectToken("entity_data.stonehearth:catalog.display_name"), "entity_data.stonehearth:catalog.display_name");
+            CheckStringKeyExists(mJson.SelectToken("entity_data.stonehearth:catalog.description"), "entity_data.stonehearth:catalog.description");
 
             // Check for display name and description in recipes
             switch (mJsonType)
@@ -765,42 +722,17 @@ namespace StonehearthEditor
                     }
 
                     unitInfo.Add("is_item", true);
-                   
+
                     if (item.GetValue("category") != null && Category == null)
                     {
-                       Category = item.GetValue("category").ToString();
-                       unitInfo.Add("category", Category);
+                        Category = item.GetValue("category").ToString();
+                        unitInfo.Add("category", Category);
                     }
-                    
+
                     mSaveJsonAfterParse = true;
                 }
             }
-                
-            CheckStringKeyExists(mJson.SelectToken("entity_data.stonehearth:catalog.display_name"), "entity_data.stonehearth:catalog.display_name");
-            CheckStringKeyExists(mJson.SelectToken("entity_data.stonehearth:catalog.description"), "entity_data.stonehearth:catalog.description");
 
-            // Check for display name and description in recipes
-            switch (mJsonType)
-            {
-                case JSONTYPE.RECIPE:
-                    CheckStringKeyExists(mJson.SelectToken("recipe_name"), "recipe_name");
-                    CheckStringKeyExists(mJson.SelectToken("description"), "description");
-                    break;
-                case JSONTYPE.BUFF:
-                    JToken invisibleToPlayer = mJson.SelectToken("invisible_to_player");
-                    bool isInvisible = invisibleToPlayer != null ? invisibleToPlayer.Value<bool>() : false;
-                    if (!isInvisible)
-                    {
-                        CheckStringKeyExists(mJson.SelectToken("display_name"), "display_name");
-                        CheckStringKeyExists(mJson.SelectToken("description"), "description");
-                    }
-
-                    break;
-                case JSONTYPE.COMMAND:
-                    CheckStringKeyExists(mJson.SelectToken("display_name"), "display_name");
-                    CheckStringKeyExists(mJson.SelectToken("description"), "description");
-                    break;
-            }
         }
 
         private void CheckStringKeyExists(JToken token, string tokenName)
