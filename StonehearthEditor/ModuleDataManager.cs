@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 using Newtonsoft.Json.Linq;
 
@@ -184,8 +185,8 @@ namespace StonehearthEditor
                 {
                     treeNodes.Add(modNode);
                     modNode.ExpandAll();
-                }
             }
+        }
         }
 
         // Adds all files and directories in path to tree node root
@@ -286,7 +287,8 @@ namespace StonehearthEditor
         {
             // FullPath is a property of treeviews that consists of the labels of all of the
             // tree nodes that must be navigated to reach the selected tree node
-            string[] path = selected.Split('\\');
+            string[] path = selected.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+
             if (path.Length <= 2)
             {
                 return null;
@@ -314,6 +316,51 @@ namespace StonehearthEditor
             }
 
             return mod.GetAliasFile(alias);
+        }
+
+        /// <summary>
+        /// Attempts to resolve a reference.
+        /// </summary>
+        /// <param name="path">Reference that was given</param>
+        /// <param name="parentDirectory">Parent directory, required to resolve relative paths.</param>
+        /// <param name="moduleFile">The file that was found.</param>
+        /// <returns><c>true</c> if the file was found, <c>false</c> otherwise.</returns>
+        public bool TryGetModuleFile(string path, string parentDirectory, out ModuleFile moduleFile)
+        {
+            moduleFile = null;
+
+            // Alias?
+            if (path.Contains(":"))
+            {
+                moduleFile = this.GetModuleFile(path);
+                return true;
+            }
+            else
+            {
+                var fileName = JsonHelper.GetFileFromFileJson(path, parentDirectory);
+
+                // Is it a valid filename?
+                if (!File.Exists(fileName))
+                    return false; // Not a valid file => we don't stand a chance to begin with
+
+                // Cut away the unrequired bits
+                var simplifiedFileName = fileName.Replace(ModuleDataManager.GetInstance().ModsDirectoryPath, "").TrimStart(System.IO.Path.DirectorySeparatorChar, System.IO.Path.AltDirectorySeparatorChar);
+
+                // Split it into mod/path within mod
+                var parts = simplifiedFileName.Split(new[] { System.IO.Path.DirectorySeparatorChar, System.IO.Path.AltDirectorySeparatorChar }, 2);
+
+                var mod = ModuleDataManager.GetInstance().GetMod(parts[0]);
+
+                if (mod == null)
+                    return false;
+
+                // The file exists, but we can't say much beyond that.
+                return true;
+
+                ////// Get all aliases that match this file
+                ////var aliases = mod.GetAliases().Where(alias => alias.ResolvedPath == fileName).ToList();
+                ////return null;
+            }
         }
 
         public ICollection<Module> GetAllModules()

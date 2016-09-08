@@ -9,7 +9,7 @@ using Newtonsoft.Json.Linq;
 
 namespace StonehearthEditor
 {
-    public partial class ManifestView : UserControl, IReloadable
+    public partial class ManifestView : UserControl, IReloadable, IFileDataSelectable
     {
         private const int kThumbnailSize = 20;
         private FileData mSelectedFileData = null;

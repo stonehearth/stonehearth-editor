@@ -265,8 +265,11 @@ namespace StonehearthEditor
 
             mModuleFiles.Clear();
 
-            mFileWatcher.EnableRaisingEvents = false;
-            mFileWatcher.Dispose();
+            if (mFileWatcher != null)
+            {
+                mFileWatcher.EnableRaisingEvents = false;
+                mFileWatcher.Dispose();
+            }
         }
 
         private void AddModuleFiles(string fileType)
