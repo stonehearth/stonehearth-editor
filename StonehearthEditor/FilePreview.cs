@@ -109,6 +109,20 @@ namespace StonehearthEditor
             }
         }
 
+    private void textBox_InsertCheck(object sender, InsertCheckEventArgs e)
+        {
+            var text = e.Text;
+
+            // Replace tabs with 3 whitespaces
+            text = text.Replace("\t", "   ");
+            var x = this.textBox.Lines.Select(l => l.Indentation).ToList();
+
+            // TODO: Handle newlines and indention here somehow? Or can Indentation do that?
+
+            // Return the modified text.
+            e.Text = text;
+        }
+
         private void textBox_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Tab)
