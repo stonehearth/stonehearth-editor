@@ -103,13 +103,14 @@ namespace StonehearthEditor
             if (parentControl != null)
             {
                 int caretPosition = textBox.SelectionStart;
+                textBox.Text = mFileData.FlatFileData;
                 textBox.SelectionStart = caretPosition;
                 textBox.ScrollCaret();
                 parentControl.Text = mFileData.FileName;
             }
         }
 
-    private void textBox_InsertCheck(object sender, InsertCheckEventArgs e)
+        private void textBox_InsertCheck(object sender, InsertCheckEventArgs e)
         {
             var text = e.Text;
 

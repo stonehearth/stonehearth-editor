@@ -50,13 +50,16 @@
             this.textBox.ContextMenuStrip = this.filePreviewContextMenu;
             this.textBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBox.Font = new System.Drawing.Font("Consolas", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBox.IndentationGuides = ScintillaNET.IndentView.LookBoth;
             this.textBox.Location = new System.Drawing.Point(0, 25);
             this.textBox.MouseDwellTime = 10;
             this.textBox.Name = "textBox";
             this.textBox.Size = new System.Drawing.Size(150, 125);
             this.textBox.TabIndex = 0;
-            this.textBox.UseTabs = false;
+            this.textBox.TabWidth = 3;
+            this.textBox.WrapIndentMode = ScintillaNET.WrapIndentMode.Same;
             this.textBox.IndicatorRelease += new System.EventHandler<ScintillaNET.IndicatorReleaseEventArgs>(this.textBox_IndicatorRelease);
+            this.textBox.InsertCheck += new System.EventHandler<ScintillaNET.InsertCheckEventArgs>(this.textBox_InsertCheck);
             this.textBox.SavePointLeft += new System.EventHandler<System.EventArgs>(this.textBox_SavePointLeft);
             this.textBox.SavePointReached += new System.EventHandler<System.EventArgs>(this.textBox_SavePointReached);
             this.textBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBox_KeyDown);
