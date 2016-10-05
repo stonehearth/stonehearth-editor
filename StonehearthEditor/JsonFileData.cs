@@ -363,7 +363,7 @@ namespace StonehearthEditor
             JToken netWorthData = mJson.SelectToken("entity_data.stonehearth:net_worth");
             if (netWorthData == null)
             {
-                if (!Directory.Contains("mixins"))
+                if (!Directory.Contains("mixins") && mJson.SelectToken("mixins") == null)
                 {
                     AddError("No net worth even though object is an item! Add an entity_data.stonehearth:net_worth!");
                     JObject netWorth = JObject.Parse(StonehearthEditor.Properties.Resources.defaultNetWorth);
@@ -446,6 +446,13 @@ namespace StonehearthEditor
                     }
                     else
                     {
+                        // Make sure to check if items have no net worth or set mNetWorth from their net worth data
+                        JToken catalog_data = mJson.SelectToken("entity_data.stonehearth:catalog.is_item");
+                        if (catalog_data != null && catalog_data.Value<bool>())
+                        {
+                            CheckForNoNetWorth();
+                        }
+
                         if (GetModuleFile() != null && mJson.SelectToken("components.item") != null)
                         {
                             CheckForNoNetWorth();
