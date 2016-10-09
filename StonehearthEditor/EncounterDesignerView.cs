@@ -13,6 +13,7 @@ namespace StonehearthEditor
         private static double kMaxDrag = 20;
 
         private GameMasterNode mSelectedNode = null;
+        private TreeNode mSelectedCampaign = null;
         private Timer refreshGraphTimer = null;
         private double mPreviousMouseX;
         private double mPreviousMouseY;
@@ -371,6 +372,8 @@ namespace StonehearthEditor
         private void encounterTreeView_AfterSelect(object sender, TreeViewEventArgs e)
         {
             GameMasterDataManager.GetInstance().OnCampaignSelected(this, e.Node);
+            mSelectedCampaign = e.Node;
+
             if (GameMasterDataManager.GetInstance().GraphRoot != null)
             {
                 addNewGameMasterNode.Enabled = true;
@@ -407,7 +410,14 @@ namespace StonehearthEditor
                 // This can be null.
                 mNodePreview.Refresh();
             }
+
             Initialize();
+
+            // Reselect previously selected campaign if we had one open in the graph view before reloading
+            if (mSelectedCampaign != null)
+            {
+                GameMasterDataManager.GetInstance().OnCampaignSelected(this, mSelectedCampaign);
+            }
         }
 
         private class CloneDialogCallback : InputDialog.IDialogCallback
