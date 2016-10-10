@@ -102,8 +102,8 @@ namespace StonehearthEditor
                 foreach (JsonFileData file in jsonFileData.OpenedFiles)
                 {
                     JObject fileJson = file.Json;
-                    JToken categoryToken = fileJson.SelectToken("components.item.category");
-                    JToken materialToken = fileJson.SelectToken("components.stonehearth:material.tags");
+                    JToken categoryToken = fileJson.SelectToken("entity_data.stonehearth:catalog.category");
+                    JToken materialToken = fileJson.SelectToken("entity_data.stonehearth:catalog.material_tags");
                     if (categoryToken != null)
                     {
                         if (category != "" && category != categoryToken.ToString())
