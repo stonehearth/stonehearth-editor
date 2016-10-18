@@ -68,7 +68,7 @@ namespace StonehearthEditor
             // open file
             Button button = sender as Button;
             string filePath = button.Name;
-            if (filePath.EndsWith(".qmo"))
+            if (filePath.EndsWith(".qmo") || filePath.EndsWith(".qb"))
             {
                 // Find qubicle constructor.ini
                 string myDocuments = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
