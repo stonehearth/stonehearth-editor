@@ -78,7 +78,21 @@
       "scenario_data.completed_message": "scenario_data.completed_message",
       "scenario_data.resource_display_name": "scenario_data.resource_display_name",
       "scenario_data.ui_steps.*.*.title":"ui_steps.{0}.step{1}.title",
-      "scenario_data.ui_steps.*.*.description":"ui_steps.{0}.step{1}.description"
+      "scenario_data.ui_steps.*.*.description":"ui_steps.{0}.step{1}.description",
+      "city_tier_quest_info.title": "title",
+      "city_tier_quest_info.dialog_title": "dialog_title",
+      "city_tier_quest_info.text": "text",
+      "city_tier_quest_info.summon_text": "summon_text",
+      "city_tier_achieved_info.title": "title",
+      "city_tier_achieved_info.speaker_name": "speaker_name",
+      "city_tier_achieved_info.message": "message",
+      "city_tier_achieved_info.accept": "accept",
+      "city_tier_achieved_info.dialog_title": "dialog_title",
+      "city_tier_achieved_info.tier_title": "tier_title",
+      "city_tier_achieved_info.reward_message": "reward_message",
+      "city_tier_achieved_info.reward_message_ctd": "reward_message_ctd",
+      "thoughts.*.*.*.display_name": "{0}.{1}.{2}.display_name",
+      "thoughts.*.*.*.tooltip": "{0}.{1}.{2}.tooltip"
    },
    "choices": {
       "*.nodes.*.bulletin.choices.*": "{0}.dialog_nodes.{1}.choice_{2}"
