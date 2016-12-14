@@ -17,6 +17,7 @@ namespace StonehearthEditor
         private FileData mFileData;
         private string mI18nLocKey = null;
         private IReloadable mOwner;
+        private int maxLineNumberCharLength;
 
         /// <summary>
         /// Index of the indicator for i18n()
@@ -323,6 +324,7 @@ namespace StonehearthEditor
             textBox.Styles[Style.Default].Font = "Consolas";
             textBox.Styles[Style.Default].Size = 10;
             textBox.Styles[Style.Default].ForeColor = Color.Black;
+            textBox.Margins[0].Width = 16;
             textBox.StyleClearAll();
 
             // Based on the extension, we need to choose the right lexer/style
@@ -433,6 +435,16 @@ namespace StonehearthEditor
             this.indicate(@"""[^"" ]*?:[^"" ]*?""", this.transformFileNames);
             this.indicate(@"file\(.+?\)", this.transformFileNames);
             this.indicate(@"""[^""]*?/[^""]*?""", this.transformFileNames);
+
+            // Update line number margin width
+            // From https://github.com/jacobslusser/ScintillaNET/wiki/Displaying-Line-Numbers
+            var maxLineNumberCharLength = scintilla.Lines.Count.ToString().Length;
+            if (maxLineNumberCharLength != this.maxLineNumberCharLength)
+            {
+                const int padding = 2;
+                scintilla.Margins[0].Width = scintilla.TextWidth(Style.LineNumber, new string('9', maxLineNumberCharLength + 1)) + padding;
+                this.maxLineNumberCharLength = maxLineNumberCharLength;
+            }
         }
 
         /// <summary>
