@@ -2,6 +2,7 @@
    "global": {
       "tooltips.*.display_name": "{0}.display_name",
       "tooltips.*.description": "{0}.description",
+      "tooltips.*.town_description": "{0}.town_description",
       "entity_data.stonehearth:catalog.display_name": "display_name",
       "entity_data.stonehearth:catalog.description": "description",
       "components.stonehearth:renewable_resource_node.unripe_description": "unripe_description",
@@ -92,7 +93,11 @@
       "city_tier_achieved_info.reward_message": "reward_message",
       "city_tier_achieved_info.reward_message_ctd": "reward_message_ctd",
       "thoughts.*.*.*.display_name": "{0}.{1}.{2}.display_name",
-      "thoughts.*.*.*.tooltip": "{0}.{1}.{2}.tooltip"
+      "thoughts.*.*.*.tooltip": "{0}.{1}.{2}.tooltip",
+      "thoughts.*.*.*.*.display_name": "{0}.{1}.{2}.{3}.display_name",
+      "thoughts.*.*.*.*.tooltip": "{0}.{1}.{2}.{3}.tooltip",
+      "bindings.*.name": "{0}.name",
+      "bindings.*.tooltip": "{0}.description"
    },
    "choices": {
       "*.nodes.*.bulletin.choices.*": "{0}.dialog_nodes.{1}.choice_{2}"

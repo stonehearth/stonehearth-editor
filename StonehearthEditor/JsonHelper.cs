@@ -329,8 +329,7 @@ namespace StonehearthEditor
                     jsonSeralizer.NullValueHandling = NullValueHandling.Ignore;
                     jsonSeralizer.Serialize(jsonTextWriter, json);
                 }
-
-                return stringWriter.ToString();
+                return stringWriter.ToString() + kNewline;
             }
             catch (Exception e)
             {
