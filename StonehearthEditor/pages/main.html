@@ -8,9 +8,9 @@
 
     <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
     <link href="styles/spectrum.css" rel="stylesheet" type="text/css" />
-    <link href="styles/main.css" rel="stylesheet" type="text/css" />
     <link href="styles/normalize.css" rel="stylesheet" type="text/css" />
     <link href="styles/skeleton.css" rel="stylesheet" type="text/css" />
+    <link href="styles/main.css" rel="stylesheet" type="text/css" />
     <script src="scripts/libs/jquery-2.1.1.min.js"></script>
     <script src="scripts/libs/bootstrap.min.js"></script>
     <script src="scripts/libs/handlebars.min.js"></script>
@@ -28,7 +28,7 @@
     <script src="scripts/complex-property.js"></script>
     <script type="text/x-handlebars" data-template-name="index">
         <!-- <button {{ action "preview" }}>Preview</button> -->
-        <button id="saveButton" {{ action "save" }}>Save</button>
+        <button id="saveButton" class="button-primary" {{ action "save" }}>Save</button>
         Validity {{ model.effectModel.isValid }}
         {{ component model.effectModel.componentName model=model.effectModel }}
     </script>
@@ -239,7 +239,7 @@
         {{ curve-x model=model.curve2 }}
     </script>
     <script type="text/x-handlebars" data-template-name="components/curve-x">
-        <table>
+        <table class="curve-table">
             <thead>
                 <tr>
                     <td></td>
@@ -265,8 +265,11 @@
                 {{/each }}
                 <tr>
                     <td>
-                        <button {{ action 'add' }}>Add row</button>
+                        <button class="button-primary" {{ action 'add' }}>Add row</button>
                     </td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
                 </tr>
             </tbody>
         </table>
