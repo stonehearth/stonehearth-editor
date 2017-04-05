@@ -12,12 +12,12 @@
     border-bottom: 3px solid rgb(40, 40, 40);
     margin-bottom: 0;
     padding-left: 5px;
-    background-color: lightgray;
+    # background-color: lightgray;
     color: black;
     text-transform: capitalize;
 }
 .app {
-    background-color: darkgray;
+    background-color: #fff;
 }
 .color-picker-div {
     margin-top: 5px;
@@ -30,7 +30,7 @@
     text-transform: capitalize;
     padding: 5px;
     border-radius: 5px;
-    background-color: gray;
+    # background-color: gray;
     width: 500px;
     font-weight: bold;
 }
@@ -89,4 +89,8 @@
 }
 .glyphicon-plus {
     color: green;
+}
+
+body {
+    font-family: 'Raleway', sans-serif;
 }

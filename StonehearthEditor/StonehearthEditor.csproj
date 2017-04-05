@@ -412,6 +412,8 @@
     <Content Include="pages\styles\main.css">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="pages\styles\normalize.css" />
+    <Content Include="pages\styles\skeleton.css" />
     <Content Include="pages\styles\spectrum.css" />
     <Content Include="scripts\check_loc_keys.py" />
     <Content Include="pages\scripts\libs\ember-data.js">

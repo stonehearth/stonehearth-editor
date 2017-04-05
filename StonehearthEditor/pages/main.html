@@ -5,9 +5,12 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Effects Editor</title>
-    <link href="styles/bootstrap.min.css" rel="stylesheet" type="text/css" />
+
+    <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
     <link href="styles/spectrum.css" rel="stylesheet" type="text/css" />
     <link href="styles/main.css" rel="stylesheet" type="text/css" />
+    <link href="styles/normalize.css" rel="stylesheet" type="text/css" />
+    <link href="styles/skeleton.css" rel="stylesheet" type="text/css" />
     <script src="scripts/libs/jquery-2.1.1.min.js"></script>
     <script src="scripts/libs/bootstrap.min.js"></script>
     <script src="scripts/libs/handlebars.min.js"></script>
@@ -32,9 +35,9 @@
     <script type="text/x-handlebars" data-template-name="components/warning-icon">
         <!-- TODO put message into a tooltip instead -->
         <span
-              class="warning-icon"
+              class=""
               style="visibility: {{ if message 'visible' 'hidden' }}; "
-              title="{{ message }}"></span>
+              title="{{ message }}">⚠️</span>
         {{ message }}
     </script>
     <script type="text/x-handlebars" data-template-name="components/string-property">
@@ -71,9 +74,9 @@
                 {{#if model.optional }}
                     <button {{ action 'toggleMissing' }} class="sub-group-property-expand-button">
                         {{#if model.isMissing }}
-                            <span class="glyphicon glyphicon-plus"></span>
+                        ➕
                         {{ else }}
-                            <span class="glyphicon glyphicon-remove"></span>
+                        ❌
                         {{/if }}
                     </button>
                 {{/if }}
@@ -103,9 +106,9 @@
         {{#if model.optional }}
             <button class="level3-parameter-property-expand-button" {{ action 'toggleMissing' }}>
                 {{#if model.isMissing }}
-                    <span class="glyphicon glyphicon-plus"></span>
+                ➕
                 {{ else }}
-                    <span class="glyphicon glyphicon-remove"></span>
+                ❌
                 {{/if }}
             </button>
         {{/if }}
@@ -252,8 +255,7 @@
                             <button {{ action 'addAbove' index }}>
                                 <img src="styles/add_above.png" />
                             </button>
-                            <button {{ action 'delete' index }}>
-                                <span class="glyphicon glyphicon-remove"></span>
+                            <button {{ action 'delete' index }}>✖️
                             </button>
                         </td>
                         <td>{{ input type="text" value=point.time }}</td>
