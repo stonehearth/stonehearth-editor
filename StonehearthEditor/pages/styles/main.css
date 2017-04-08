@@ -9,10 +9,9 @@
     background-color: red;
 }
 .encompassing-group-property-header {
-    border-bottom: 2px solid rgb(40, 40, 40);
+    border-bottom: 1px solid rgb(51, 195, 240);
     margin-bottom: 5px;
     padding-left: 5px;
-    # background-color: lightgray;
     color: black;
     text-transform: capitalize;
 }
@@ -33,7 +32,6 @@
     text-transform: capitalize;
     padding: 5px;
     border-radius: 5px;
-    # background-color: gray;
     width: 500px;
     min-height: 38px;
     font-weight: bold;
@@ -57,16 +55,17 @@
     margin-top: -3px;
 }
 .level3-parameter-property-header-text {
-    width: 100px;
+    width: 110px;
     display: inline-block;
 }
 .level3-parameter-property-select {
     width: 250px;
 }
 .parameter-property-label {
-    width: 100px;
+    width: 110px;
     display: inline-block;
     text-align: right;
+    font-style: italic;
 }
 .sh-numeric-input {
     width: 100px;
@@ -95,15 +94,22 @@
     color: green;
 }
 
+button {
+    margin-bottom: 1.5rem;
+    background-color: #fff;
+}
+
 .curve-table {
-    border: 1px dashed #33c3f0;
-    padding: 1px;
+}
+
+.curve-input {
+    width: 176px;
 }
 
 td {
     border: 0px;
-    padding: 1px;
-    margin: 1px;
+    padding: 2px;
+    margin: 2px;
 }
 
 body {

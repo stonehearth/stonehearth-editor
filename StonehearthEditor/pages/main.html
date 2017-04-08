@@ -156,7 +156,7 @@
                     <td>
                         <select onchange={{ action (mut model.surface) value="target.value" }}>
                             {{#each surfaceOptions as |surfaceChoice| }}
-                                <option 
+                                <option
                                     value={{ surfaceChoice }}
                                     selected={{ eq model.surface surfaceChoice }}>
                                     {{ surfaceChoice }}
@@ -258,8 +258,8 @@
                             <button {{ action 'delete' index }}>✖️
                             </button>
                         </td>
-                        <td>{{ input type="text" value=point.time }}</td>
-                        <td>{{ input type="text" value=point.value }}</td>
+                        <td>{{ input class="curve-input" type="text" value=point.time }}</td>
+                        <td>{{ input class="curve-input" type="text" value=point.value }}</td>
                         <td>{{ warning-icon message=(get model.errorMap (tostr index)) }}</td>
                     </tr>
                 {{/each }}
