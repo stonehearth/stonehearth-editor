@@ -106,6 +106,13 @@ button {
     width: 176px;
 }
 
+.curve-button {
+}
+
+.curve-warning {
+   max-width: 220px;
+}
+
 td {
     border: 0px;
     padding: 2px;
