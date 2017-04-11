@@ -79,6 +79,10 @@
     font-weight: normal;
 }
 
+.tools {
+    margin-bottom: 5px;
+}
+
 #saveButton {
     margin: 4px;
     font-size: 15px;
@@ -97,6 +101,12 @@
 button {
     margin-bottom: 1.5rem;
     background-color: #fff;
+}
+
+.curve-editor {
+    width: 520px;
+    height: 170px;
+    border: 1px solid rgb(51, 195, 240);
 }
 
 .curve-table {

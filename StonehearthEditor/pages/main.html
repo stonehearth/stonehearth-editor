@@ -27,10 +27,12 @@
     <script src="scripts/string-property.js"></script>
     <script src="scripts/complex-property.js"></script>
     <script type="text/x-handlebars" data-template-name="index">
-        <!-- <button {{ action "preview" }}>Preview</button> -->
-        <button id="saveButton" class="button-primary" {{ action "save" }}>Save</button>
-        Validity {{ model.effectModel.isValid }}
-        {{ component model.effectModel.componentName model=model.effectModel }}
+        <div class="tools">
+            <!-- <button {{ action "preview" }}>Preview</button> -->
+            <button id="saveButton" class="button-primary" {{ action "save" }}>Save</button>
+            Validity {{ model.effectModel.isValid }}
+        </div>
+         {{ component model.effectModel.componentName model=model.effectModel }}
     </script>
     <script type="text/x-handlebars" data-template-name="components/warning-icon">
         <!-- TODO put message into a tooltip instead -->
@@ -239,6 +241,7 @@
         {{ curve-x model=model.curve2 }}
     </script>
     <script type="text/x-handlebars" data-template-name="components/curve-x">
+        <canvas class="curve-editor"></canvas>
         <table class="curve-table">
             <thead>
                 <tr>
