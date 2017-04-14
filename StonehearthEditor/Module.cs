@@ -143,13 +143,13 @@ namespace StonehearthEditor
         }
 
         // Add alias to manifest under manifest file type (aliases, components, controllers)
-        public void AddToManifest(string alias, string path, string manifestFileType = "aliases")
+        public void AddToManifest(string alias, string path, string manifestEntryType = "aliases")
         {
-            JToken aliases = mManifestJson[manifestFileType];
+            JToken aliases = mManifestJson[manifestEntryType];
             if (aliases == null)
             {
-                mManifestJson.Add(manifestFileType, null);
-                aliases = mManifestJson[manifestFileType];
+                mManifestJson.Add(manifestEntryType, null);
+                aliases = mManifestJson[manifestEntryType];
             }
 
             JObject aliasesObject = aliases as JObject;
@@ -161,9 +161,9 @@ namespace StonehearthEditor
             }
         }
 
-        public void RemoveFromManifest(string manifestFileType, string alias)
+        public void RemoveFromManifest(string manifestEntryType, string alias)
         {
-            JObject aliases = mManifestJson[manifestFileType] as JObject;
+            JObject aliases = mManifestJson[manifestEntryType] as JObject;
             JProperty aliasProperty = aliases.Property(alias);
             if (aliasProperty != null)
             {

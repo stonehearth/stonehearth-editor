@@ -212,6 +212,7 @@
     <Compile Include="EntityBrowserView.Designer.cs">
       <DependentUpon>EntityBrowserView.cs</DependentUpon>
     </Compile>
+    <Compile Include="NewAliasParameters.cs" />
     <Compile Include="NodeData.cs" />
     <Compile Include="PreviewCloneDialog.cs">
       <SubType>Form</SubType>

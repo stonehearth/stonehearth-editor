@@ -56,9 +56,9 @@ namespace StonehearthEditor
                 return; // Don't know how to clone something not module file data
             }
 
-            string manifestFileType = selectedNode.Parent.Text;
+            string manifestEntryType = selectedNode.Parent.Text;
             string name = moduleFile.GetModuleFile() != null ? moduleFile.GetModuleFile().FullAlias : selectedFileData.FileName;
-            CloneAliasCallback callback = new CloneAliasCallback(this, selectedFileData, manifestFileType);
+            CloneAliasCallback callback = new CloneAliasCallback(this, selectedFileData, manifestEntryType);
             CloneDialog dialog = new CloneDialog(name, selectedFileData.GetNameForCloning());
             dialog.SetCallback(callback);
             dialog.ShowDialog();
@@ -426,13 +426,13 @@ namespace StonehearthEditor
             private FileData mFileData;
             private ManifestView mViewer;
             private PreviewCloneAliasCallback mPreviewCallback;
-            private string mManifestFileType;
+            private string mManifestEntryType;
 
-            public CloneAliasCallback(ManifestView viewer, FileData file, string manifestFileType)
+            public CloneAliasCallback(ManifestView viewer, FileData file, string manifestEntryType)
             {
                 mViewer = viewer;
                 mFileData = file;
-                mManifestFileType = manifestFileType;
+                mManifestEntryType = manifestEntryType;
             }
 
             public void OnCancelled()
@@ -457,7 +457,7 @@ namespace StonehearthEditor
                     return false;
                 }
 
-                parameters.SetManifestFileType(mManifestFileType);
+                parameters.SetmanifestEntryType(mManifestEntryType);
 
                 HashSet<string> dependencies = ModuleDataManager.GetInstance().PreviewCloneDependencies(mFileData, parameters);
 
@@ -907,8 +907,10 @@ namespace StonehearthEditor
         private void addNewAliasToolStripMenuItem_Click(object sender, EventArgs e)
         {
             TreeNode selectedNode = treeView.SelectedNode;
+            string manifestEntryType = "aliases";
             if (selectedNode.Parent != null)
             {
+                manifestEntryType = selectedNode.Text;
                 selectedNode = selectedNode.Parent;
             }
 
@@ -928,7 +930,7 @@ namespace StonehearthEditor
                 }
 
                 selectJsonFileDialog.InitialDirectory = initialDirectory;
-                selectJsonFileDialog.Tag = selectedMod;
+                selectJsonFileDialog.Tag = new NewAliasParameters(selectedMod, manifestEntryType);
                 selectJsonFileDialog.ShowDialog(this);
             }
         }
@@ -942,7 +944,10 @@ namespace StonehearthEditor
             }
 
             filePath = JsonHelper.NormalizeSystemPath(filePath);
-            Module selectedMod = selectJsonFileDialog.Tag as Module;
+            NewAliasParameters parameters = selectJsonFileDialog.Tag as NewAliasParameters;
+            Module selectedMod = parameters.SelectedMod;
+            string manifestEntryType = parameters.ManifestEntryType;
+
             if (!filePath.Contains(selectedMod.Path))
             {
                 MessageBox.Show("The file must be under the directory " + selectedMod.Path);
@@ -989,7 +994,7 @@ namespace StonehearthEditor
                 }
             }
 
-            NewAliasCallback callback = new NewAliasCallback(this, selectedMod, shortPath);
+            NewAliasCallback callback = new NewAliasCallback(this, selectedMod, shortPath, manifestEntryType);
             InputDialog dialog = new InputDialog("Add New Alias", "Type the name of the alias for " + filePath, samplePath, "Add!");
             dialog.SetCallback(callback);
             dialog.ShowDialog();
@@ -1000,12 +1005,14 @@ namespace StonehearthEditor
             private ManifestView mOwner;
             private Module mModule;
             private string mFilePath;
+            private string mManifestEntryType;
 
-            public NewAliasCallback(ManifestView owner, Module module, string filePath)
+            public NewAliasCallback(ManifestView owner, Module module, string filePath, string manifestEntryType)
             {
                 mOwner = owner;
                 mModule = module;
                 mFilePath = filePath;
+                mManifestEntryType = manifestEntryType;
             }
 
             public void OnCancelled()
@@ -1029,7 +1036,7 @@ namespace StonehearthEditor
                     return false;
                 }
 
-                mModule.AddToManifest(newAliasName, "file(" + mFilePath + ")");
+                mModule.AddToManifest(newAliasName, "file(" + mFilePath + ")", mManifestEntryType);
                 mModule.WriteManifestToFile();
                 mOwner.Reload();
                 return true;
