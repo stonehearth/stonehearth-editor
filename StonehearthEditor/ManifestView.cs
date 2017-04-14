@@ -56,8 +56,9 @@ namespace StonehearthEditor
                 return; // Don't know how to clone something not module file data
             }
 
+            string manifestFileType = selectedNode.Parent.Text;
             string name = moduleFile.GetModuleFile() != null ? moduleFile.GetModuleFile().FullAlias : selectedFileData.FileName;
-            CloneAliasCallback callback = new CloneAliasCallback(this, selectedFileData);
+            CloneAliasCallback callback = new CloneAliasCallback(this, selectedFileData, manifestFileType);
             CloneDialog dialog = new CloneDialog(name, selectedFileData.GetNameForCloning());
             dialog.SetCallback(callback);
             dialog.ShowDialog();
@@ -425,11 +426,13 @@ namespace StonehearthEditor
             private FileData mFileData;
             private ManifestView mViewer;
             private PreviewCloneAliasCallback mPreviewCallback;
+            private string mManifestFileType;
 
-            public CloneAliasCallback(ManifestView viewer, FileData file)
+            public CloneAliasCallback(ManifestView viewer, FileData file, string manifestFileType)
             {
                 mViewer = viewer;
                 mFileData = file;
+                mManifestFileType = manifestFileType;
             }
 
             public void OnCancelled()
@@ -453,6 +456,8 @@ namespace StonehearthEditor
                     MessageBox.Show("You must enter a new unique name for the clone or change the target mod!");
                     return false;
                 }
+
+                parameters.SetManifestFileType(mManifestFileType);
 
                 HashSet<string> dependencies = ModuleDataManager.GetInstance().PreviewCloneDependencies(mFileData, parameters);
 

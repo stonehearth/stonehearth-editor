@@ -8,6 +8,7 @@ namespace StonehearthEditor
         private Dictionary<string, string> mAliasReplacements = new Dictionary<string, string>();
         private string mSourceModuleName;
         private string mTargetModuleName;
+        private string mManifestFileType;
 
         public string TargetModule
         {
@@ -17,6 +18,16 @@ namespace StonehearthEditor
         public string SourceModule
         {
             get { return mSourceModuleName; }
+        }
+
+        public string ManifestFileType
+        {
+            get { return mManifestFileType; }
+        }
+
+        public void SetManifestFileType(string name)
+        {
+            mManifestFileType = name;
         }
 
         public void SetTargetModule(string name)

@@ -173,7 +173,7 @@ namespace StonehearthEditor
                 file.TryLoad();
                 if (file.FileData != null)
                 {
-                    targetModule.AddToManifest(newAlias, fileLocation);
+                    targetModule.AddToManifest(newAlias, fileLocation, parameters.ManifestFileType);
                     targetModule.WriteManifestToFile();
                     return true;
                 }
