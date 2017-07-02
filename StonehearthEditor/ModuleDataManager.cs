@@ -404,10 +404,17 @@ namespace StonehearthEditor
             Module mod = GetMod(modName);
             if (mod != null)
             {
-                JToken token = mod.EnglishLocalizationJson.SelectToken(key);
-                if (token != null)
+                try
                 {
-                    return token.ToString();
+                    JToken token = mod.EnglishLocalizationJson.SelectToken(key);
+                    if (token != null)
+                    {
+                        return token.ToString();
+                    }
+                }
+                catch (Exception)
+                {
+                    // A regular string that contains characters not allowed in XPaths, like space.
                 }
             }
 
