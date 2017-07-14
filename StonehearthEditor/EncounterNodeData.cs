@@ -167,17 +167,9 @@ namespace StonehearthEditor
 
         public override void UpdateGraphNode(Node graphNode)
         {
-            switch (mEncounterType)
-            {
-                case "generator":
-                    graphNode.Attr.LineWidth = 2;
-                    graphNode.Attr.Shape = Shape.Circle;
-                    graphNode.Attr.FillColor = GameMasterNode.kGreen;
-                    graphNode.Attr.LabelMargin = 6;
-                    break;
-                default:
-                    base.UpdateGraphNode(graphNode);
-                    break;
+            base.UpdateGraphNode(graphNode);
+            if (mEncounterType == "generator") {
+                graphNode.Attr.FillColor = GameMasterNode.kOrange;
             }
 
             if (NodeFile.Owner == null)
