@@ -140,6 +140,7 @@
             this.graphViewer.AsyncLayout = false;
             this.graphViewer.AutoScroll = true;
             this.graphViewer.BackwardEnabled = false;
+            this.graphViewer.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.graphViewer.BuildHitTree = true;
             this.graphViewer.ContextMenuStrip = this.encounterGraphContextMenu;
             this.graphViewer.CurrentLayoutMethod = Microsoft.Msagl.GraphViewerGdi.LayoutMethod.UseSettingsOfTheGraph;
@@ -149,28 +150,28 @@
             this.graphViewer.ForwardEnabled = false;
             this.graphViewer.Graph = null;
             this.graphViewer.InsertingEdge = false;
-            this.graphViewer.LayoutAlgorithmSettingsButtonVisible = true;
-            this.graphViewer.LayoutEditingEnabled = true;
+            this.graphViewer.LayoutAlgorithmSettingsButtonVisible = false;
+            this.graphViewer.LayoutEditingEnabled = false;
             this.graphViewer.Location = new System.Drawing.Point(0, 0);
             this.graphViewer.LooseOffsetForRouting = 0.25D;
             this.graphViewer.MouseHitDistance = 0.05D;
             this.graphViewer.Name = "graphViewer";
-            this.graphViewer.NavigationVisible = true;
+            this.graphViewer.NavigationVisible = false;
             this.graphViewer.NeedToCalculateLayout = true;
             this.graphViewer.OffsetForRelaxingInRouting = 0.6D;
             this.graphViewer.PaddingForEdgeRouting = 8D;
             this.graphViewer.PanButtonPressed = false;
-            this.graphViewer.SaveAsImageEnabled = true;
-            this.graphViewer.SaveAsMsaglEnabled = true;
-            this.graphViewer.SaveButtonVisible = true;
-            this.graphViewer.SaveGraphButtonVisible = true;
-            this.graphViewer.SaveInVectorFormatEnabled = true;
+            this.graphViewer.SaveAsImageEnabled = false;
+            this.graphViewer.SaveAsMsaglEnabled = false;
+            this.graphViewer.SaveButtonVisible = false;
+            this.graphViewer.SaveGraphButtonVisible = false;
+            this.graphViewer.SaveInVectorFormatEnabled = false;
             this.graphViewer.Size = new System.Drawing.Size(875, 321);
             this.graphViewer.TabIndex = 0;
             this.graphViewer.TightOffsetForRouting = 0.125D;
-            this.graphViewer.ToolBarIsVisible = true;
+            this.graphViewer.ToolBarIsVisible = false;
             this.graphViewer.Transform = ((Microsoft.Msagl.Core.Geometry.Curves.PlaneTransformation)(resources.GetObject("graphViewer.Transform")));
-            this.graphViewer.UndoRedoButtonsVisible = true;
+            this.graphViewer.UndoRedoButtonsVisible = false;
             this.graphViewer.WindowZoomButtonPressed = false;
             this.graphViewer.ZoomF = 1D;
             this.graphViewer.ZoomFraction = 0.5D;
@@ -180,7 +181,6 @@
             this.graphViewer.EdgeRemoved += new System.EventHandler(this.graphViewer_EdgeRemoved);
             this.graphViewer.MouseMove += new System.Windows.Forms.MouseEventHandler(this.graphViewer_MouseMove);
             this.graphViewer.MouseDown += new System.Windows.Forms.MouseEventHandler(this.graphViewer_MouseDown);
-            this.graphViewer.MouseUp += new System.Windows.Forms.MouseEventHandler(this.graphViewer_MouseUp);
             // 
             // splitContainer2
             // 

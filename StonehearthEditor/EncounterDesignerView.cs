@@ -12,12 +12,16 @@ namespace StonehearthEditor
     {
         private static double kMaxDrag = 20;
 
+        private DNode mSelectedDNode = null;
         private GameMasterNode mSelectedNode = null;
         private TreeNode mSelectedCampaign = null;
         private Timer refreshGraphTimer = null;
         private double mPreviousMouseX;
         private double mPreviousMouseY;
         private FilePreview mNodePreview = null;
+        private string mSelectedNewScriptNode = null;
+        private DNode mHoveredDNode = null;
+        private Color mHoveredOriginalColor;
 
         public EncounterDesignerView()
         {
@@ -268,41 +272,71 @@ namespace StonehearthEditor
                 mPreviousMouseY = e.Y;
                 graphViewer.Pan(differenceX, differenceY);
             }
-        }
-
-        private void graphViewer_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (graphViewer.Graph != null)
+            else if (e.Button == System.Windows.Forms.MouseButtons.None)
             {
-                object obj = graphViewer.GetObjectAt(e.X, e.Y);
-                var dnode = obj as DNode;
-                if (dnode != null)
+                var dNode = graphViewer.ObjectUnderMouseCursor as DNode;
+                if (mHoveredDNode != dNode)
                 {
-                    Node drawingNode = dnode.DrawingNode;
-                    GameMasterNode nodeData = GameMasterDataManager.GetInstance().GetGameMasterNode(drawingNode.Id);
-                    UpdateSelectedNodeInfo(nodeData);
-                }
-                else
-                {
-                    UpdateSelectedNodeInfo(null);
+                    if (mHoveredDNode != null)
+                    {
+                        mHoveredDNode.DrawingNode.Attr.FillColor = mHoveredOriginalColor;
+                        graphViewer.Invalidate(mHoveredDNode);
+                        mHoveredDNode = null;
+                    }
+
+                    if (dNode != null)
+                    {
+                        GameMasterNode nodeData = GameMasterDataManager.GetInstance().GetGameMasterNode(dNode.DrawingNode.Id);
+                        if (nodeData != null)
+                        {
+                            mHoveredDNode = dNode;
+                            mHoveredOriginalColor = mHoveredDNode.DrawingNode.Attr.FillColor;
+                            Color color = mHoveredOriginalColor;
+                            color.R = (byte)Math.Min(color.R + 40, 255);
+                            color.G = (byte)Math.Min(color.G + 40, 255);
+                            color.B = (byte)Math.Min(color.B + 40, 255);
+                            mHoveredDNode.DrawingNode.Attr.FillColor = color;
+                            graphViewer.Invalidate(mHoveredDNode);
+                        }
+                    }
                 }
             }
         }
 
-        private void graphViewer_MouseUp(object sender, MouseEventArgs e)
+        private void graphViewer_MouseDown(object sender, MouseEventArgs e)
         {
+            if (e.Button == System.Windows.Forms.MouseButtons.Middle)
+            {
+                mPreviousMouseX = e.X;
+                mPreviousMouseY = e.Y;
+            }
+            else if (e.Button == System.Windows.Forms.MouseButtons.Left)
+            {
+                if (graphViewer.Graph != null)
+                {
+                    var dNode = graphViewer.ObjectUnderMouseCursor as DNode;
+                    if (dNode != null)
+                    {
+                        GameMasterNode nodeData = GameMasterDataManager.GetInstance().GetGameMasterNode(dNode.DrawingNode.Id);
+                        if (nodeData != null)
+                        {
+                            if (mSelectedDNode != null)
+                            {
+                                mSelectedDNode.DrawingNode.Attr.LineWidth = 1;
+                                graphViewer.Invalidate(mSelectedDNode);
+                            }
+
+                            mSelectedDNode = dNode;
+                            mSelectedDNode.DrawingNode.Attr.LineWidth = 5;
+                            graphViewer.Invalidate(mSelectedDNode);
+
+                            UpdateSelectedNodeInfo(nodeData);
+                        }
+                    }
+                }
+            }
         }
-
-        private void nodeInfoJsonPreview_Leave(object sender, EventArgs e)
-        {
-        }
-
-        private void nodeInfoJsonPreview_MouseMove(object sender, MouseEventArgs e)
-        {
-        }
-
-        private string mSelectedNewScriptNode = null;
-
+        
         private void addNewGameMasterNode_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
             ToolStripItem clickedItem = e.ClickedItem;
@@ -371,6 +405,8 @@ namespace StonehearthEditor
         {
             GameMasterDataManager.GetInstance().OnCampaignSelected(this, e.Node);
             mSelectedCampaign = e.Node;
+            mSelectedDNode = null;
+            UpdateSelectedNodeInfo(null);
 
             if (GameMasterDataManager.GetInstance().GraphRoot != null)
             {

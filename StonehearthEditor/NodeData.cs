@@ -48,7 +48,8 @@ namespace StonehearthEditor
             node.Attr.Shape = Shape.Box;
             node.Attr.LabelMargin = 3;
             node.Attr.FillColor = GameMasterNode.kPurple;
-            node.Label.FontSize = 6;
+            node.Attr.Color = GameMasterNode.kPurple;
+            node.Label.FontSize = 11;
         }
 
         protected void FixupLoot(string selector)
