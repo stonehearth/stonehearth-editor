@@ -54,7 +54,6 @@ namespace StonehearthEditor
             {
                 mSelectedNode = node;
                 nodeInfoName.Text = node.Name;
-                encounterRightSideFilePath.Text = node.Path;
                 nodeInfoType.Text = node.NodeType.ToString();
                 nodePath.Text = node.Path;
                 nodeInfoSubType.Text = node.NodeType == GameMasterNodeType.ENCOUNTER ? ((EncounterNodeData)node.NodeData).EncounterType : "";
@@ -78,7 +77,6 @@ namespace StonehearthEditor
             {
                 mSelectedNode = null;
                 nodeInfoName.Text = "Select a Node";
-                encounterRightSideFilePath.Text = string.Empty;
                 nodeInfoType.Text = string.Empty;
                 nodeInfoSubType.Text = string.Empty;
                 nodePath.Text = string.Empty;
