@@ -510,4 +510,7 @@
   </Target>
   <Import Project="..\packages\cef.redist.x86.3.2623.1396\build\cef.redist.x86.targets" Condition="Exists('..\packages\cef.redist.x86.3.2623.1396\build\cef.redist.x86.targets')" />
   <Import Project="..\packages\CefSharp.Common.49.0.0\build\CefSharp.Common.targets" Condition="Exists('..\packages\CefSharp.Common.49.0.0\build\CefSharp.Common.targets')" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy /y  "$(ProjectDir)scripts" "$(ProjectDir)$(OutDir)scripts"</PostBuildEvent>
+  </PropertyGroup>
 </Project>

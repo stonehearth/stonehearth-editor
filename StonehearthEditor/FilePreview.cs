@@ -151,7 +151,7 @@ namespace StonehearthEditor
         private void localizeFile_Click(object sender, EventArgs e)
         {
             ProcessStartInfo start = new ProcessStartInfo();
-            string generateLocPythonFile = System.IO.Path.GetDirectoryName(Application.ExecutablePath) + "/scripts/generate_loc_keys.py";
+            string generateLocPythonFile = Application.StartupPath + "/scripts/generate_loc_keys.py";
             start.FileName = generateLocPythonFile;
             string filePath = mFileData.Path;
             string modsRoot = ModuleDataManager.GetInstance().ModsDirectoryPath;
@@ -159,6 +159,12 @@ namespace StonehearthEditor
             ////MessageBox.Show("executing command: " + generateLocPythonFile + " -r " + modsRoot + " " + filePath);
 
             Process myProcess = Process.Start(start);
+            if (myProcess == null)
+            {
+                MessageBox.Show("Could not launch generate_loc_keys.py");
+                return;
+            }
+
             myProcess.WaitForExit();
             if (mOwner != null)
             {
