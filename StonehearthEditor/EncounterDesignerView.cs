@@ -310,7 +310,8 @@ namespace StonehearthEditor
                 mPreviousMouseX = e.X;
                 mPreviousMouseY = e.Y;
             }
-            else if (e.Button == System.Windows.Forms.MouseButtons.Left)
+            else if (e.Button == System.Windows.Forms.MouseButtons.Left ||
+                     e.Button == System.Windows.Forms.MouseButtons.Right)
             {
                 if (graphViewer.Graph != null)
                 {
