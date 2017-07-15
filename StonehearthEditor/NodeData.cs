@@ -12,7 +12,7 @@ namespace StonehearthEditor
         public virtual void UpdateGraph(Graph graph)
         {
             Node graphNode = graph.AddNode(NodeFile.Id);
-            graphNode.LabelText = NodeFile.Name;
+            graphNode.LabelText = NodeFile.Name.Replace("_", " ");
             UpdateGraphNode(graphNode);
             UpdateOutEdges(graph);
         }
