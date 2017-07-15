@@ -49,6 +49,12 @@ namespace StonehearthEditor
             return inEdges;
         }
 
+        public override void UpdateGraphNode(Node graphNode)
+        {
+            base.UpdateGraphNode(graphNode);
+            graphNode.Attr.FillColor = GameMasterNode.kTeal;
+        }
+
         public override void GetRelatedNodes(HashSet<GameMasterNode> set)
         {
             base.GetRelatedNodes(set);
