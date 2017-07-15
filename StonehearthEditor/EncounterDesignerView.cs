@@ -76,6 +76,23 @@ namespace StonehearthEditor
                 openEncounterFileButton.Visible = true;
                 deleteNodeToolStripMenuItem.Visible = true;
                 PopulateFileDetails(node);
+                if (node.Owner == null)
+                {
+                    moveToArcMenuItem.Visible = true;
+                    moveToArcMenuItem.DropDownItems.Clear();
+                    var dm = GameMasterDataManager.GetInstance();
+                    foreach (var arc in dm.GetAllNodesOfType(GameMasterNodeType.ARC))
+                    {
+                        if (arc.Owner == dm.GraphRoot)
+                        {
+                            moveToArcMenuItem.DropDownItems.Add(arc.Name).Tag = arc;
+                        }
+                    }
+                }
+                else
+                {
+                    moveToArcMenuItem.Visible = false;
+                }
             }
             else
             {
@@ -91,6 +108,7 @@ namespace StonehearthEditor
 
                 copyGameMasterNode.Text = "Clone Node";
                 copyGameMasterNode.Enabled = false;
+                moveToArcMenuItem.Visible = false;
                 openEncounterFileButton.Visible = false;
                 deleteNodeToolStripMenuItem.Visible = false;
                 PopulateFileDetails(null);
@@ -490,6 +508,21 @@ namespace StonehearthEditor
                 GameMasterDataManager.GetInstance().CloneNode(mViewer, mNode, potentialNewNodeName);
                 return true;
             }
+        }
+
+        private void moveToArcMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        {
+            if (mSelectedNode == null || mSelectedNode.Owner != null || !(mSelectedNode.NodeData is EncounterNodeData))
+            {
+                return;
+            }
+
+            var selectedNodeId = mSelectedNode.Id;
+            mSelectedNode.Owner = e.ClickedItem.Tag as GameMasterNode;
+            (mSelectedNode.Owner.NodeData as ArcNodeData).AddEncounter(mSelectedNode.NodeData as EncounterNodeData);
+            mSelectedNode.Owner.IsModified = true;
+            GameMasterDataManager.GetInstance().SaveModifiedFiles();
+            GameMasterDataManager.GetInstance().RefreshGraph(this);
         }
     }
 }

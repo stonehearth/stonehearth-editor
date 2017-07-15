@@ -33,9 +33,13 @@
             this.encounterGraphContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.copyGameMasterNode = new System.Windows.Forms.ToolStripMenuItem();
             this.addNewGameMasterNode = new System.Windows.Forms.ToolStripMenuItem();
+            this.moveToArcMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteNodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveNewEncounterNodeDialog = new System.Windows.Forms.SaveFileDialog();
             this.i18nTooltip = new System.Windows.Forms.ToolTip(this.components);
+            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+            this.toolstripSaveButton = new System.Windows.Forms.ToolStripButton();
+            this.encounterTreeView = new System.Windows.Forms.TreeView();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.encounterTabRightSide = new System.Windows.Forms.Panel();
             this.graphViewer = new Microsoft.Msagl.GraphViewerGdi.GViewer();
@@ -48,10 +52,8 @@
             this.nodePath = new System.Windows.Forms.Label();
             this.nodeInfoType = new System.Windows.Forms.Label();
             this.nodeInfoName = new System.Windows.Forms.Label();
-            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
-            this.toolstripSaveButton = new System.Windows.Forms.ToolStripButton();
-            this.encounterTreeView = new System.Windows.Forms.TreeView();
             this.encounterGraphContextMenu.SuspendLayout();
+            this.toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -62,7 +64,6 @@
             this.splitContainer2.SuspendLayout();
             this.fileDetailStats.SuspendLayout();
             this.nodeInfoPanel.SuspendLayout();
-            this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // encounterGraphContextMenu
@@ -70,9 +71,10 @@
             this.encounterGraphContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.copyGameMasterNode,
             this.addNewGameMasterNode,
+            this.moveToArcMenuItem,
             this.deleteNodeToolStripMenuItem});
             this.encounterGraphContextMenu.Name = "encounterGraphContextMenu";
-            this.encounterGraphContextMenu.Size = new System.Drawing.Size(156, 70);
+            this.encounterGraphContextMenu.Size = new System.Drawing.Size(156, 114);
             // 
             // copyGameMasterNode
             // 
@@ -90,6 +92,13 @@
             this.addNewGameMasterNode.Text = "Add New Node";
             this.addNewGameMasterNode.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.addNewGameMasterNode_DropDownItemClicked);
             // 
+            // moveToArcMenuItem
+            // 
+            this.moveToArcMenuItem.Name = "moveToArcMenuItem";
+            this.moveToArcMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.moveToArcMenuItem.Text = "Parent to Arc";
+            this.moveToArcMenuItem.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.moveToArcMenuItem_DropDownItemClicked);
+            // 
             // deleteNodeToolStripMenuItem
             // 
             this.deleteNodeToolStripMenuItem.Name = "deleteNodeToolStripMenuItem";
@@ -103,6 +112,38 @@
             this.saveNewEncounterNodeDialog.Filter = "Json Files|*.json";
             this.saveNewEncounterNodeDialog.RestoreDirectory = true;
             this.saveNewEncounterNodeDialog.FileOk += new System.ComponentModel.CancelEventHandler(this.saveNewEncounterNodeDialog_FileOk);
+            // 
+            // toolStrip1
+            // 
+            this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolstripSaveButton});
+            this.toolStrip1.Location = new System.Drawing.Point(0, 0);
+            this.toolStrip1.Name = "toolStrip1";
+            this.toolStrip1.Size = new System.Drawing.Size(1125, 25);
+            this.toolStrip1.TabIndex = 5;
+            this.toolStrip1.Text = "toolStrip1";
+            // 
+            // toolstripSaveButton
+            // 
+            this.toolstripSaveButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolstripSaveButton.Image = ((System.Drawing.Image)(resources.GetObject("toolstripSaveButton.Image")));
+            this.toolstripSaveButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolstripSaveButton.Name = "toolstripSaveButton";
+            this.toolstripSaveButton.Size = new System.Drawing.Size(23, 22);
+            this.toolstripSaveButton.Text = "Save modified files";
+            this.toolstripSaveButton.Click += new System.EventHandler(this.toolstripSaveButton_Click);
+            // 
+            // encounterTreeView
+            // 
+            this.encounterTreeView.Dock = System.Windows.Forms.DockStyle.Left;
+            this.encounterTreeView.FullRowSelect = true;
+            this.encounterTreeView.HideSelection = false;
+            this.encounterTreeView.Location = new System.Drawing.Point(0, 25);
+            this.encounterTreeView.Name = "encounterTreeView";
+            this.encounterTreeView.PathSeparator = "/";
+            this.encounterTreeView.Size = new System.Drawing.Size(250, 473);
+            this.encounterTreeView.TabIndex = 6;
+            this.encounterTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.encounterTreeView_AfterSelect);
             // 
             // splitContainer1
             // 
@@ -279,38 +320,6 @@
             this.nodeInfoName.TabIndex = 0;
             this.nodeInfoName.Text = "Select a Node";
             // 
-            // toolStrip1
-            // 
-            this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolstripSaveButton});
-            this.toolStrip1.Location = new System.Drawing.Point(0, 0);
-            this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(1125, 25);
-            this.toolStrip1.TabIndex = 5;
-            this.toolStrip1.Text = "toolStrip1";
-            // 
-            // toolstripSaveButton
-            // 
-            this.toolstripSaveButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolstripSaveButton.Image = ((System.Drawing.Image)(resources.GetObject("toolstripSaveButton.Image")));
-            this.toolstripSaveButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolstripSaveButton.Name = "toolstripSaveButton";
-            this.toolstripSaveButton.Size = new System.Drawing.Size(23, 22);
-            this.toolstripSaveButton.Text = "Save modified files";
-            this.toolstripSaveButton.Click += new System.EventHandler(this.toolstripSaveButton_Click);
-            // 
-            // encounterTreeView
-            // 
-            this.encounterTreeView.Dock = System.Windows.Forms.DockStyle.Left;
-            this.encounterTreeView.FullRowSelect = true;
-            this.encounterTreeView.HideSelection = false;
-            this.encounterTreeView.Location = new System.Drawing.Point(0, 25);
-            this.encounterTreeView.Name = "encounterTreeView";
-            this.encounterTreeView.PathSeparator = "/";
-            this.encounterTreeView.Size = new System.Drawing.Size(250, 473);
-            this.encounterTreeView.TabIndex = 6;
-            this.encounterTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.encounterTreeView_AfterSelect);
-            // 
             // EncounterDesignerView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -321,6 +330,8 @@
             this.Name = "EncounterDesignerView";
             this.Size = new System.Drawing.Size(1125, 498);
             this.encounterGraphContextMenu.ResumeLayout(false);
+            this.toolStrip1.ResumeLayout(false);
+            this.toolStrip1.PerformLayout();
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
@@ -332,8 +343,6 @@
             this.fileDetailStats.ResumeLayout(false);
             this.nodeInfoPanel.ResumeLayout(false);
             this.nodeInfoPanel.PerformLayout();
-            this.toolStrip1.ResumeLayout(false);
-            this.toolStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -362,5 +371,6 @@
         private System.Windows.Forms.SplitContainer splitContainer2;
         private System.Windows.Forms.Panel fileDetailStats;
         private System.Windows.Forms.ListBox fileDetailsListBox;
+        private System.Windows.Forms.ToolStripMenuItem moveToArcMenuItem;
     }
 }

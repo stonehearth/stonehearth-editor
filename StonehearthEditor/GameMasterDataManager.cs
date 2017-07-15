@@ -87,6 +87,20 @@ namespace StonehearthEditor
             return mGenericScriptNodes.Values;
         }
 
+        public ICollection<GameMasterNode> GetAllNodesOfType(GameMasterNodeType type)
+        {
+            List<GameMasterNode> result = new List<GameMasterNode>();
+            foreach (GameMasterNode node in mGameMasterNodes.Values)
+            {
+                if (node.NodeType == type)
+                {
+                    result.Add(node);
+                }
+            }
+
+            return result;
+        }
+
         public bool CloneNode(IGraphOwner graphOwner, GameMasterNode original, string cloneName)
         {
             GameMasterNode newNode = original.Clone(cloneName);
@@ -123,7 +137,11 @@ namespace StonehearthEditor
         {
             foreach (GameMasterNode node in mGameMasterNodes.Values)
             {
-                node.SaveIfNecessary();
+                if (node.IsModified)
+                {
+                    node.SaveIfNecessary();
+                    node.Load(mGameMasterNodes);
+                }
             }
         }
 
