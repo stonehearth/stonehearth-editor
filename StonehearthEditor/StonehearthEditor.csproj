@@ -134,9 +134,9 @@
     <Compile Include="AliasSelectionDialog.Designer.cs">
       <DependentUpon>AliasSelectionDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="ArcNodeData.cs" />
-    <Compile Include="CampaignNodeData.cs" />
-    <Compile Include="CampPieceNodeData.cs" />
+    <Compile Include="EncounterEditor\ArcNodeData.cs" />
+    <Compile Include="EncounterEditor\CampaignNodeData.cs" />
+    <Compile Include="EncounterEditor\CampPieceNodeData.cs" />
     <Compile Include="CloneDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -152,13 +152,13 @@
       <DependentUpon>EffectsEditorView.cs</DependentUpon>
     </Compile>
     <Compile Include="Effects\EffectsJsObject.cs" />
-    <Compile Include="EncounterDesignerView.cs">
+    <Compile Include="EncounterEditor\EncounterDesignerView.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="EncounterDesignerView.Designer.cs">
+    <Compile Include="EncounterEditor\EncounterDesignerView.Designer.cs">
       <DependentUpon>EncounterDesignerView.cs</DependentUpon>
     </Compile>
-    <Compile Include="EncounterNodeData.cs" />
+    <Compile Include="EncounterEditor\EncounterNodeData.cs" />
     <Compile Include="ErrorFileList.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -167,7 +167,7 @@
     </Compile>
     <Compile Include="FileData.cs" />
     <Compile Include="FolderSelectDialog.cs" />
-    <Compile Include="GameMasterNode.cs" />
+    <Compile Include="EncounterEditor\GameMasterNode.cs" />
     <Compile Include="IFileDataSelectable.cs" />
     <Compile Include="IGraphOwner.cs" />
     <Compile Include="IModuleFileData.cs" />
@@ -182,7 +182,7 @@
       <DependentUpon>InputDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="JsonFileData.cs" />
-    <Compile Include="GameMasterDataManager.cs" />
+    <Compile Include="EncounterEditor\GameMasterDataManager.cs" />
     <Compile Include="ManifestView.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -190,7 +190,7 @@
       <DependentUpon>ManifestView.cs</DependentUpon>
     </Compile>
     <Compile Include="ModuleDataManager.cs" />
-    <Compile Include="EncounterScriptFile.cs" />
+    <Compile Include="EncounterEditor\EncounterScriptFile.cs" />
     <Compile Include="ModuleFile.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
@@ -213,7 +213,7 @@
       <DependentUpon>EntityBrowserView.cs</DependentUpon>
     </Compile>
     <Compile Include="NewAliasParameters.cs" />
-    <Compile Include="NodeData.cs" />
+    <Compile Include="EncounterEditor\NodeData.cs" />
     <Compile Include="PreviewCloneDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -240,7 +240,7 @@
     <EmbeddedResource Include="EffectsEditorView.resx">
       <DependentUpon>EffectsEditorView.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="EncounterDesignerView.resx">
+    <EmbeddedResource Include="EncounterEditor\EncounterDesignerView.resx">
       <DependentUpon>EncounterDesignerView.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ErrorFileList.resx">
