@@ -435,6 +435,7 @@ namespace StonehearthEditor
 
         private void toolstripSaveButton_Click(object sender, EventArgs e)
         {
+            GameMasterDataManager.GetInstance().SaveModifiedFiles();
         }
 
         private void copyGameMasterNode_Click(object sender, EventArgs e)
