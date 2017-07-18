@@ -26,6 +26,7 @@ namespace StonehearthEditor
         public static readonly Color kOrange = new Color(255, 196, 71);
         public static readonly Color kBlue = new Color(122, 179, 255);
         public static readonly Color kTeal = new Color(74, 219, 206);
+        public static readonly Color kGrey = new Color(200, 200, 200);
 
         public GameMasterNode Owner { get; set; }
 
