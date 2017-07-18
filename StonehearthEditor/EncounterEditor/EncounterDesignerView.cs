@@ -10,8 +10,6 @@ namespace StonehearthEditor
 {
     public partial class EncounterDesignerView : UserControl, IGraphOwner, IReloadable
     {
-        private static double kMaxDrag = 20;
-
         private DNode mSelectedDNode = null;
         private GameMasterNode mSelectedNode = null;
         private TreeNode mSelectedCampaign = null;
@@ -282,9 +280,6 @@ namespace StonehearthEditor
             {
                 double differenceX = e.X - mPreviousMouseX;
                 double differenceY = e.Y - mPreviousMouseY;
-
-                differenceX = Math.Min(Math.Max(differenceX, -kMaxDrag), kMaxDrag);
-                differenceY = Math.Min(Math.Max(differenceY, -kMaxDrag), kMaxDrag);
 
                 mPreviousMouseX = e.X;
                 mPreviousMouseY = e.Y;
