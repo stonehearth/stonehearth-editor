@@ -375,16 +375,37 @@ namespace StonehearthEditor
         /// </summary>
         private void configureJsonHighlighting()
         {
-            textBox.Lexer = ScintillaNET.Lexer.Cpp;
+            textBox.Lexer = ScintillaNET.Lexer.Json;
 
             var scintilla = textBox;
-            scintilla.Styles[ScintillaNET.Style.Cpp.Number].Bold = true;
-            scintilla.Styles[ScintillaNET.Style.Cpp.Number].ForeColor = Color.Navy;
-            scintilla.Styles[ScintillaNET.Style.Cpp.Number].Weight = 700;
-            scintilla.Styles[ScintillaNET.Style.Cpp.String].ForeColor = Color.Purple;
-            scintilla.Styles[ScintillaNET.Style.Cpp.Identifier].Bold = true;
-            scintilla.Styles[ScintillaNET.Style.Cpp.Identifier].ForeColor = Color.ForestGreen;
-            scintilla.Styles[ScintillaNET.Style.Cpp.Identifier].Weight = 700;
+
+            scintilla.Styles[Style.Json.Operator].ForeColor = Color.Black;
+            scintilla.Styles[Style.Json.Operator].Bold = true;
+            scintilla.Styles[Style.Json.Operator].Weight = 700;
+
+            scintilla.Styles[Style.Json.Number].ForeColor = Color.Navy;
+            scintilla.Styles[Style.Json.Number].Bold = true;
+            scintilla.Styles[Style.Json.Number].Weight = 700;
+
+            scintilla.Styles[Style.Json.Keyword].ForeColor = Color.Navy;
+            scintilla.Styles[Style.Json.Keyword].Bold = true;
+            scintilla.Styles[Style.Json.Keyword].Weight = 700;
+
+            // Unfortunately as of ScintillaNET 3.6.3, "true", "false", and "null" are parsed as errors.
+            scintilla.Styles[Style.Json.Error].ForeColor = Color.DarkRed;
+            scintilla.Styles[Style.Json.Error].Bold = true;
+            scintilla.Styles[Style.Json.Error].Weight = 700;
+
+            scintilla.Styles[Style.Json.String].ForeColor = Color.Purple;
+
+            scintilla.Styles[Style.Json.PropertyName].ForeColor = Color.ForestGreen;
+            scintilla.Styles[Style.Json.PropertyName].Bold = true;
+            scintilla.Styles[Style.Json.PropertyName].Weight = 700;
+
+            scintilla.Styles[Style.Json.StringEol].ForeColor = Color.Red;
+
+            scintilla.Styles[Style.Json.BlockComment].ForeColor = Color.Green;
+            scintilla.Styles[Style.Json.LineComment].ForeColor = Color.Green;
 
             // Prepare indicator
             this.mI18nIndicator.Style = IndicatorStyle.FullBox;
