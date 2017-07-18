@@ -400,10 +400,6 @@ namespace StonehearthEditor
             }
         }
 
-        private void nodeInfoSubType_Click(object sender, EventArgs e)
-        {
-        }
-
         private void encounterTreeView_AfterSelect(object sender, TreeViewEventArgs e)
         {
             GameMasterDataManager.GetInstance().OnCampaignSelected(this, e.Node);
