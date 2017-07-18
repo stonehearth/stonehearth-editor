@@ -159,6 +159,7 @@
       <DependentUpon>EncounterDesignerView.cs</DependentUpon>
     </Compile>
     <Compile Include="EncounterEditor\EncounterNodeData.cs" />
+    <Compile Include="EncounterEditor\EncounterNodeRenderer.cs" />
     <Compile Include="ErrorFileList.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -511,6 +512,7 @@
   <Import Project="..\packages\cef.redist.x86.3.2623.1396\build\cef.redist.x86.targets" Condition="Exists('..\packages\cef.redist.x86.3.2623.1396\build\cef.redist.x86.targets')" />
   <Import Project="..\packages\CefSharp.Common.49.0.0\build\CefSharp.Common.targets" Condition="Exists('..\packages\CefSharp.Common.49.0.0\build\CefSharp.Common.targets')" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy /y  "$(ProjectDir)scripts" "$(ProjectDir)$(OutDir)scripts"</PostBuildEvent>
+    <PostBuildEvent>xcopy /y "$(ProjectDir)scripts\*" "$(ProjectDir)$(OutDir)scripts\*"
+xcopy /y "$(ProjectDir)images\*" "$(ProjectDir)$(OutDir)images\*"</PostBuildEvent>
   </PropertyGroup>
 </Project>

@@ -4,6 +4,7 @@ using System.Linq;
 using Microsoft.Msagl.Drawing;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Image = System.Drawing.Image;
 
 namespace StonehearthEditor
 {

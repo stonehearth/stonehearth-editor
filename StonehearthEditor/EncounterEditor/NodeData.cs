@@ -5,6 +5,8 @@ namespace StonehearthEditor
 {
     public abstract class NodeData
     {
+        public static readonly int kDesiredLabelWidth = 10;
+
         public GameMasterNode NodeFile { get; set; }
 
         public abstract void LoadData(Dictionary<string, GameMasterNode> allNodes);
@@ -12,17 +14,37 @@ namespace StonehearthEditor
         public virtual void UpdateGraph(Graph graph)
         {
             Node graphNode = graph.AddNode(NodeFile.Id);
-            graphNode.LabelText = NodeFile.Name.Replace("_", " ");
+            graphNode.LabelText = NodeFile.Name;
             UpdateGraphNode(graphNode);
             UpdateOutEdges(graph);
         }
 
-        public virtual void UpdateGraphNode(Node graphNode)
+        public virtual void UpdateGraphNode(Node node)
         {
-            graphNode.Attr.LabelWidthToHeightRatio = 1;
-            graphNode.Attr.Shape = Shape.Box;
-            graphNode.Attr.FillColor = GameMasterNode.kGreen;
-            graphNode.Attr.LabelMargin = 6;
+            SetNodeDefaults(node);
+            node.Attr.FillColor = GameMasterNode.kGreen;
+            node.Attr.LabelMargin = 6;
+        }
+
+        protected void MakeNodePrivate(Node node)
+        {
+            SetNodeDefaults(node);
+            node.Attr.FillColor = GameMasterNode.kPurple;
+            node.Attr.Color = GameMasterNode.kPurple;
+            node.Attr.LabelMargin = 3;
+            node.Label.FontSize = 11;
+        }
+
+        protected void SetNodeDefaults(Node node)
+        {
+            node.LabelText = DecorateString(node.LabelText);
+            node.Attr.Shape = Shape.Box;
+            EncounterNodeRenderer.SetupNodeRendering(node);
+        }
+
+        protected void SetIcon(Node node, System.Drawing.Image icon)
+        {
+            node.UserData = icon;
         }
 
         public virtual void GetRelatedNodes(HashSet<GameMasterNode> set)
@@ -43,19 +65,42 @@ namespace StonehearthEditor
 
         protected abstract void UpdateOutEdges(Graph graph);
 
-        protected void MakeNodePrivate(Node node)
-        {
-            node.Attr.Shape = Shape.Box;
-            node.Attr.LabelMargin = 3;
-            node.Attr.FillColor = GameMasterNode.kPurple;
-            node.Attr.Color = GameMasterNode.kPurple;
-            node.Label.FontSize = 11;
-        }
-
         protected void FixupLoot(string selector)
         {
             NodeFile.IsModified = JsonHelper.FixupLootTable(NodeFile.Json, selector);
             NodeFile.SaveIfNecessary();
+        }
+
+        private string DecorateString(string rawName)
+        {
+            if (rawName.Length <= kDesiredLabelWidth)
+            {
+                return rawName.Replace("_", " ");
+            }
+            else
+            {
+                var parts = rawName.Split('_');
+                var result = parts[0];
+                var lineLength = parts[0].Length;
+                for (int i = 1; i < parts.Length; ++i)
+                {
+                    if (lineLength > kDesiredLabelWidth)
+                    {
+                        result += '\n';
+                        lineLength = 0;
+                    }
+                    else
+                    {
+                        result += ' ';
+                        lineLength += 1;
+                    }
+
+                    result += parts[i];
+                    lineLength += parts[i].Length;
+                }
+
+                return result;
+            }
         }
     }
 }
