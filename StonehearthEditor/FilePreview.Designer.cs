@@ -47,9 +47,13 @@
             // 
             // textBox
             // 
+            this.textBox.CaretLineBackColor = System.Drawing.Color.Lavender;
+            this.textBox.CaretLineVisible = true;
             this.textBox.ContextMenuStrip = this.filePreviewContextMenu;
             this.textBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBox.Font = new System.Drawing.Font("Consolas", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBox.FontQuality = ScintillaNET.FontQuality.LcdOptimized;
+            this.textBox.IdleStyling = ScintillaNET.IdleStyling.All;
             this.textBox.IndentationGuides = ScintillaNET.IndentView.LookBoth;
             this.textBox.Location = new System.Drawing.Point(0, 25);
             this.textBox.MouseDwellTime = 10;
