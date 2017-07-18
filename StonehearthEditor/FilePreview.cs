@@ -608,7 +608,14 @@ namespace StonehearthEditor
                 // TODO: instead of using an interface, try to have some function in
                 // the main view that allows switching to the manifest view + displaying a modulefile/filedata
                 if (selectable != null)
+                {
                     selectable.SetSelectedFileData(module.FileData);
+                }
+                else
+                {
+                    // No one is listening. Just open the file in the default OS viewer.
+                    System.Diagnostics.Process.Start(module.ResolvedPath);
+                }
             }
         }
 

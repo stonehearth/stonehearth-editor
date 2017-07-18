@@ -354,7 +354,8 @@ namespace StonehearthEditor
                 if (mod == null)
                     return false;
 
-                // The file exists, but we can't say much beyond that.
+                // The file exists, but isn't a global alias, so create a temporary entry so the caller can access it.
+                moduleFile = new ModuleFile(mod, "<no-alias>", parts[1]);
                 return true;
 
                 ////// Get all aliases that match this file
