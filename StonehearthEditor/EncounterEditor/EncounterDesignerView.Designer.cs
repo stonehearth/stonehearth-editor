@@ -193,7 +193,7 @@
             // 
             this.splitContainer2.Panel2.Controls.Add(this.fileDetailsListBox);
             this.splitContainer2.Size = new System.Drawing.Size(875, 173);
-            this.splitContainer2.SplitterDistance = 646;
+            this.splitContainer2.SplitterDistance = 700;
             this.splitContainer2.TabIndex = 0;
             // 
             // fileDetailsListBox
@@ -203,7 +203,7 @@
             this.fileDetailsListBox.FormattingEnabled = true;
             this.fileDetailsListBox.Location = new System.Drawing.Point(0, 0);
             this.fileDetailsListBox.Name = "fileDetailsListBox";
-            this.fileDetailsListBox.Size = new System.Drawing.Size(225, 173);
+            this.fileDetailsListBox.Size = new System.Drawing.Size(171, 173);
             this.fileDetailsListBox.TabIndex = 0;
             // 
             // EncounterDesignerView

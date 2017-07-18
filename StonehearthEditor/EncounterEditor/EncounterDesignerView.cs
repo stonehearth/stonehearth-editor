@@ -77,6 +77,7 @@ namespace StonehearthEditor
                 copyGameMasterNode.Enabled = true;
                 deleteNodeToolStripMenuItem.Visible = true;
                 PopulateFileDetails(node);
+                splitContainer2.Panel2Collapsed = fileDetailsListBox.Items.Count == 0;
                 if (node.Owner == null)
                 {
                     moveToArcMenuItem.Visible = true;
@@ -108,6 +109,7 @@ namespace StonehearthEditor
                 moveToArcMenuItem.Visible = false;
                 deleteNodeToolStripMenuItem.Visible = false;
                 PopulateFileDetails(null);
+                splitContainer2.Panel2Collapsed = true;
             }
         }
 
@@ -127,7 +129,6 @@ namespace StonehearthEditor
             fileDetailsListBox.Items.Clear();
             if (node == null)
             {
-                // remove details
                 return;
             }
 
