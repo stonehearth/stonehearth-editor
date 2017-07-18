@@ -14,11 +14,6 @@ namespace StonehearthEditor
 {
     public partial class FilePreview : UserControl
     {
-        private FileData mFileData;
-        private string mI18nLocKey = null;
-        private IReloadable mOwner;
-        private int maxLineNumberCharLength;
-
         /// <summary>
         /// Index of the indicator for i18n()
         /// </summary>
@@ -28,6 +23,12 @@ namespace StonehearthEditor
         /// Index of the indicator for file() and file-ish things
         /// </summary>
         private const int kFileIndicator = 9;
+
+        private FileData mFileData;
+        private string mI18nLocKey = null;
+        private IReloadable mOwner;
+        private int maxLineNumberCharLength;
+        private int lastTipAnchor = -1;
 
         /// <summary>
         /// Indicator for i18n()
@@ -58,29 +59,43 @@ namespace StonehearthEditor
         {
             // Translate mouse xy to character position
             var position = this.textBox.CharPositionFromPoint(e.X, e.Y);
-            var locKey = this.getLocKey(position);
+            var currentAnchor = this.getIndicatorStartPosition(position);
 
-            if (locKey == this.mI18nLocKey)
-                return;
-
-            this.mI18nLocKey = locKey;
-
-            if (locKey == null)
+            if (lastTipAnchor == currentAnchor)
+            {
+                return;  // Nothing to change.
+            }
+            else
             {
                 this.textBox.CallTipCancel();
-                return;
+                lastTipAnchor = currentAnchor;
             }
 
-            try
+            var hoveredIndicator = this.getIndicatorAt(position);
+            if (hoveredIndicator == kFileIndicator)
             {
-                // Translate and display it as a tip
-                var translated = ModuleDataManager.GetInstance().LocalizeString(locKey);
-                translated = JsonHelper.WordWrap(translated, 100).Trim();
-                this.textBox.CallTipShow(position, translated);
+                this.textBox.CallTipShow(position, "Ctrl-click to open file.");
             }
-            catch (Exception)
+            else if (hoveredIndicator == kI18nIndicator)
             {
-                this.textBox.CallTipShow(position, $"(Uncaught exception while trying to find i18n for {locKey})");
+                var locKey = this.getLocKey(position);
+                if (string.IsNullOrEmpty(locKey))
+                {
+                    return;
+                }
+
+                this.mI18nLocKey = locKey;
+                try
+                {
+                    // Translate and display it as a tip
+                    var translated = ModuleDataManager.GetInstance().LocalizeString(locKey);
+                    translated = JsonHelper.WordWrap(translated, 100).Trim();
+                    this.textBox.CallTipShow(position, translated);
+                }
+                catch (Exception)
+                {
+                    this.textBox.CallTipShow(position, $"(Uncaught exception while trying to find i18n for {locKey})");
+                }
             }
         }
 
@@ -566,6 +581,23 @@ namespace StonehearthEditor
             var locKey = this.textBox.GetTextRange(startPos, endPos - startPos);
             var i18nLength = "i18n(".Length;
             return locKey.Substring(i18nLength, locKey.Length - i18nLength - 1);
+        }
+
+        private int getIndicatorStartPosition(int position)
+        {
+            var indicatorId = this.getIndicatorAt(position);
+            if (indicatorId == kFileIndicator)
+            {
+                return this.mFileIndicator.Start(position);
+            }
+            else if (indicatorId == kI18nIndicator)
+            {
+                return this.mI18nIndicator.Start(position);
+            }
+            else
+            {
+                return -1;
+            }
         }
 
         /// <summary>
