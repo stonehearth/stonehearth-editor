@@ -54,6 +54,7 @@
             this.textBox.Location = new System.Drawing.Point(0, 25);
             this.textBox.MouseDwellTime = 10;
             this.textBox.Name = "textBox";
+            this.textBox.ScrollWidth = 1;
             this.textBox.Size = new System.Drawing.Size(150, 125);
             this.textBox.TabIndex = 0;
             this.textBox.TabWidth = 3;
@@ -173,12 +174,12 @@
       private System.Windows.Forms.ToolTip i18nTooltip;
       private System.Windows.Forms.ContextMenuStrip filePreviewContextMenu;
       private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
-      private System.Windows.Forms.ToolStrip toolStrip;
       private System.Windows.Forms.ToolStripButton saveFile;
       private System.Windows.Forms.ToolStripButton openFolder;
       private System.Windows.Forms.ToolStripButton openFile;
       private System.Windows.Forms.ToolStripButton localizeFile;
       private System.Windows.Forms.ToolStripMenuItem insertAliasToolStripMenuItem;
       private System.Windows.Forms.ToolStripMenuItem editLocStringToolStripMenuItem;
-   }
+        internal System.Windows.Forms.ToolStrip toolStrip;
+    }
 }

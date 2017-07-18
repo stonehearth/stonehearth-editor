@@ -55,10 +55,6 @@ namespace StonehearthEditor
             if (node != null)
             {
                 mSelectedNode = node;
-                nodeInfoName.Text = node.Name;
-                nodeInfoType.Text = node.NodeType.ToString();
-                nodePath.Text = node.Path;
-                nodeInfoSubType.Text = node.NodeType == GameMasterNodeType.ENCOUNTER ? ((EncounterNodeData)node.NodeData).EncounterType : "";
 
                 if (mNodePreview != null)
                 {
@@ -69,9 +65,16 @@ namespace StonehearthEditor
                 mNodePreview.Dock = DockStyle.Fill;
                 splitContainer2.Panel1.Controls.Add(mNodePreview);
 
+                var nodeNameLabel = mNodePreview.toolStrip.Items.Add(node.Name + (node.NodeType == GameMasterNodeType.ENCOUNTER ? (" (" + ((EncounterNodeData)node.NodeData).EncounterType + ")") : ""));
+                nodeNameLabel.Margin = new Padding(24, 0, 0, 0);
+                nodeNameLabel.Enabled = false;
+
+                var nodePathLabel = mNodePreview.toolStrip.Items.Add(node.Path);
+                nodePathLabel.Enabled = false;
+                nodePathLabel.Alignment = ToolStripItemAlignment.Right;
+
                 copyGameMasterNode.Text = "Clone " + node.Name;
                 copyGameMasterNode.Enabled = true;
-                openEncounterFileButton.Visible = true;
                 deleteNodeToolStripMenuItem.Visible = true;
                 PopulateFileDetails(node);
                 if (node.Owner == null)
@@ -95,10 +98,6 @@ namespace StonehearthEditor
             else
             {
                 mSelectedNode = null;
-                nodeInfoName.Text = "Select a Node";
-                nodeInfoType.Text = string.Empty;
-                nodeInfoSubType.Text = string.Empty;
-                nodePath.Text = string.Empty;
                 if (mNodePreview != null)
                 {
                     splitContainer2.Panel1.Controls.Remove(mNodePreview);
@@ -107,7 +106,6 @@ namespace StonehearthEditor
                 copyGameMasterNode.Text = "Clone Node";
                 copyGameMasterNode.Enabled = false;
                 moveToArcMenuItem.Visible = false;
-                openEncounterFileButton.Visible = false;
                 deleteNodeToolStripMenuItem.Visible = false;
                 PopulateFileDetails(null);
             }
@@ -350,7 +348,7 @@ namespace StonehearthEditor
                 }
             }
         }
-        
+
         private void addNewGameMasterNode_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
             ToolStripItem clickedItem = e.ClickedItem;
@@ -379,15 +377,6 @@ namespace StonehearthEditor
             }
 
             GameMasterDataManager.GetInstance().AddNewGenericScriptNode(this, mSelectedNewScriptNode, filePath);
-        }
-
-        private void openEncounterFileButton_Click(object sender, EventArgs e)
-        {
-            if (mSelectedNode != null)
-            {
-                string path = mSelectedNode.Path;
-                System.Diagnostics.Process.Start(@path);
-            }
         }
 
         private void deleteNodeToolStripMenuItem_Click(object sender, EventArgs e)
@@ -426,11 +415,6 @@ namespace StonehearthEditor
             {
                 addNewGameMasterNode.Enabled = true;
             }
-        }
-
-        private void toolstripSaveButton_Click(object sender, EventArgs e)
-        {
-            GameMasterDataManager.GetInstance().SaveModifiedFiles();
         }
 
         private void copyGameMasterNode_Click(object sender, EventArgs e)

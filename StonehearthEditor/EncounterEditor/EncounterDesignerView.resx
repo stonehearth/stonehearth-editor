@@ -126,18 +126,6 @@
   <metadata name="i18nTooltip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>228, 8</value>
   </metadata>
-  <metadata name="toolStrip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>375, 11</value>
-  </metadata>
-  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-  <data name="toolstripSaveButton.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABLSURBVDhPYwCC/xRihv/fvn0jGWMY4OTkBMcf3n+EY2Qx
-        EN3W1oZuCGkGgDDMELINAGGiDUDGyGpoawAxeNSAQWkAORhuAPmY4T8A8LU2KZxldVEAAAAASUVORK5C
-        YII=
-</value>
-  </data>
   <data name="graphViewer.Transform" mimetype="application/x-microsoft.net.object.binary.base64">
     <value>
         AAEAAAD/////AQAAAAAAAAAMAgAAAFJNaWNyb3NvZnQuTXNhZ2wsIFZlcnNpb249MS4wLjAuMCwgQ3Vs
