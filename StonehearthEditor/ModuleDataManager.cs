@@ -315,7 +315,26 @@ namespace StonehearthEditor
                 return null;
             }
 
-            return mod.GetAliasFile(alias);
+            ModuleFile result;
+            result = mod.GetModuleFile("aliases", alias);
+            if (result != null)
+            {
+                return result;
+            }
+
+            result = mod.GetModuleFile("components", alias);
+            if (result != null)
+            {
+                return result;
+            }
+
+            result = mod.GetModuleFile("controllers", alias);
+            if (result != null)
+            {
+                return result;
+            }
+
+            return null;
         }
 
         /// <summary>
