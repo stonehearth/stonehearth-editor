@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.Msagl.Drawing;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace StonehearthEditor
 {
@@ -75,16 +76,52 @@ namespace StonehearthEditor
 
         public void AddEncounter(EncounterNodeData encounter)
         {
-            // TODO, get relative path
             GameMasterNode encounterNodeFile = encounter.NodeFile;
-            string filePath = encounterNodeFile.Path;
-            string selfPath = NodeFile.Directory + '/';
-            filePath = "file(" + filePath.Replace(selfPath, "") + ")";
+            var filePath = GetEncounterFilePath(encounter);
             mEncounters.Add(encounterNodeFile.Name, filePath);
             mEncounterFiles.Add(encounterNodeFile);
             NodeFile.Json["encounters"][encounterNodeFile.Name] = filePath;
             NodeFile.IsModified = true;
             NodeFile.SaveIfNecessary();
+        }
+
+        // Returns whether the encounter was found (and therefore removed).
+        public bool RemoveEncounter(EncounterNodeData encounter)
+        {
+            GameMasterNode encounterNodeFile = encounter.NodeFile;
+            var filePath = GetEncounterFilePath(encounter);
+            string key = null;
+            foreach (var pair in mEncounters)
+            {
+                if (pair.Value == filePath)
+                {
+                    key = pair.Key;
+                    break;
+                }
+            }
+
+            if (key != null)
+            {
+                mEncounters.Remove(key);
+                mEncounterFiles.Remove(encounterNodeFile);
+                (NodeFile.Json["encounters"] as JObject).Property(key).Remove();
+                NodeFile.IsModified = true;
+                NodeFile.SaveIfNecessary();
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        private string GetEncounterFilePath(EncounterNodeData encounter)
+        {
+            GameMasterNode encounterNodeFile = encounter.NodeFile;
+            string filePath = encounterNodeFile.Path;
+            string selfPath = NodeFile.Directory + '/';
+            // TODO: if selfPath isn't in filePath, make path relative to mod folder.
+            return "file(" + filePath.Replace(selfPath, "") + ")";
         }
 
         public override bool AddOutEdge(GameMasterNode nodeFile)

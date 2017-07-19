@@ -407,15 +407,30 @@ namespace StonehearthEditor
                 DialogResult result = MessageBox.Show("Are you sure you want to delete " + path + "?", "Confirm Delete", MessageBoxButtons.OKCancel);
                 if (result == DialogResult.OK)
                 {
+                    // Unparent.
+                    var encounter = mSelectedNode.NodeData as EncounterNodeData;
+                    if (encounter != null)
+                    {
+                        var owner = mSelectedNode.Owner;
+                        if (owner?.NodeData is ArcNodeData)
+                        {
+                            (owner.NodeData as ArcNodeData).RemoveEncounter(encounter);
+                        }
+                    }
+
+                    // Delete the actual file.
+                    System.IO.File.Delete(path);
+
+                    // Reinitialize.
                     GameMasterNode currentCampaign = GameMasterDataManager.GetInstance().GraphRoot;
                     string currentCampaignName = currentCampaign != null ? currentCampaign.Name : null;
                     string currentCampaignMod = currentCampaign != null ? currentCampaign.Module : null;
-                    System.IO.File.Delete(path);
                     Initialize();
                     if (currentCampaignName != null)
                     {
                         GameMasterDataManager.GetInstance().SelectCampaign(this, currentCampaignMod, currentCampaignName);
                     }
+                    GameMasterDataManager.GetInstance().RefreshGraph(this);
                 }
             }
         }
