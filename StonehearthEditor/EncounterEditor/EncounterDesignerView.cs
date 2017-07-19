@@ -373,6 +373,7 @@ namespace StonehearthEditor
             if (clickedItem != null && GameMasterDataManager.GetInstance().GraphRoot != null)
             {
                 mSelectedNewScriptNode = clickedItem.Text;
+                encounterGraphContextMenu.Hide();
                 saveNewEncounterNodeDialog.InitialDirectory = System.IO.Path.GetFullPath(GameMasterDataManager.GetInstance().GraphRoot.Directory);
                 saveNewEncounterNodeDialog.ShowDialog(this);
             }
@@ -401,6 +402,7 @@ namespace StonehearthEditor
         {
             if (mSelectedNode != null)
             {
+                encounterGraphContextMenu.Hide();
                 string path = mSelectedNode.Path;
                 DialogResult result = MessageBox.Show("Are you sure you want to delete " + path + "?", "Confirm Delete", MessageBoxButtons.OKCancel);
                 if (result == DialogResult.OK)
