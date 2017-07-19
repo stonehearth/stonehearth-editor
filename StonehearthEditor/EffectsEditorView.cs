@@ -23,14 +23,14 @@ namespace StonehearthEditor
         public EffectsEditorView()
         {
             InitializeComponent();
-
-            // Initialize cef
-            mEffectsChromeBrowser = EffectsChromeBrowser.GetInstance();
-            mEffectsChromeBrowser.InitBrowser(this.effectsBrowserPanel);
         }
 
         public void Initialize()
         {
+            // Initialize cef
+            mEffectsChromeBrowser = EffectsChromeBrowser.GetInstance();
+            mEffectsChromeBrowser.InitBrowser(this.effectsBrowserPanel);
+
             ModuleDataManager.GetInstance().PopulateTreeView(effectsEditorTreeView, "effects", "/data/effects");
             ModuleDataManager.GetInstance().PopulateTreeView(cubemittersTreeView, "cubemitters", "/data/horde/particles");
             ModuleDataManager.GetInstance().PopulateTreeView(lightsTreeView, "", "/data/horde/animatedlights");

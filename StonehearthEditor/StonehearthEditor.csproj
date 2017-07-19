@@ -105,8 +105,12 @@
     <Reference Include="Microsoft.Msagl.GraphViewerGdi">
       <HintPath>..\External\automatic-graph-layout\Bin\Debug\Microsoft.Msagl.GraphViewerGdi.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="NJsonSchema, Version=9.4.2.0, Culture=neutral, PublicKeyToken=c2f9c3bdfae56102, processorArchitecture=MSIL">
+      <HintPath>..\packages\NJsonSchema.9.4.2\lib\net45\NJsonSchema.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="ScintillaNET, Version=3.5.10.0, Culture=neutral, processorArchitecture=MSIL">
@@ -134,9 +138,9 @@
     <Compile Include="AliasSelectionDialog.Designer.cs">
       <DependentUpon>AliasSelectionDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="ArcNodeData.cs" />
-    <Compile Include="CampaignNodeData.cs" />
-    <Compile Include="CampPieceNodeData.cs" />
+    <Compile Include="EncounterEditor\ArcNodeData.cs" />
+    <Compile Include="EncounterEditor\CampaignNodeData.cs" />
+    <Compile Include="EncounterEditor\CampPieceNodeData.cs" />
     <Compile Include="CloneDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -152,13 +156,14 @@
       <DependentUpon>EffectsEditorView.cs</DependentUpon>
     </Compile>
     <Compile Include="Effects\EffectsJsObject.cs" />
-    <Compile Include="EncounterDesignerView.cs">
+    <Compile Include="EncounterEditor\EncounterDesignerView.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="EncounterDesignerView.Designer.cs">
+    <Compile Include="EncounterEditor\EncounterDesignerView.Designer.cs">
       <DependentUpon>EncounterDesignerView.cs</DependentUpon>
     </Compile>
-    <Compile Include="EncounterNodeData.cs" />
+    <Compile Include="EncounterEditor\EncounterNodeData.cs" />
+    <Compile Include="EncounterEditor\EncounterNodeRenderer.cs" />
     <Compile Include="ErrorFileList.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -167,7 +172,7 @@
     </Compile>
     <Compile Include="FileData.cs" />
     <Compile Include="FolderSelectDialog.cs" />
-    <Compile Include="GameMasterNode.cs" />
+    <Compile Include="EncounterEditor\GameMasterNode.cs" />
     <Compile Include="IFileDataSelectable.cs" />
     <Compile Include="IGraphOwner.cs" />
     <Compile Include="IModuleFileData.cs" />
@@ -182,7 +187,7 @@
       <DependentUpon>InputDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="JsonFileData.cs" />
-    <Compile Include="GameMasterDataManager.cs" />
+    <Compile Include="EncounterEditor\GameMasterDataManager.cs" />
     <Compile Include="ManifestView.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -190,7 +195,7 @@
       <DependentUpon>ManifestView.cs</DependentUpon>
     </Compile>
     <Compile Include="ModuleDataManager.cs" />
-    <Compile Include="EncounterScriptFile.cs" />
+    <Compile Include="EncounterEditor\EncounterScriptFile.cs" />
     <Compile Include="ModuleFile.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
@@ -212,7 +217,8 @@
     <Compile Include="EntityBrowserView.Designer.cs">
       <DependentUpon>EntityBrowserView.cs</DependentUpon>
     </Compile>
-    <Compile Include="NodeData.cs" />
+    <Compile Include="NewAliasParameters.cs" />
+    <Compile Include="EncounterEditor\NodeData.cs" />
     <Compile Include="PreviewCloneDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -239,7 +245,7 @@
     <EmbeddedResource Include="EffectsEditorView.resx">
       <DependentUpon>EffectsEditorView.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="EncounterDesignerView.resx">
+    <EmbeddedResource Include="EncounterEditor\EncounterDesignerView.resx">
       <DependentUpon>EncounterDesignerView.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ErrorFileList.resx">
@@ -512,5 +518,9 @@
   </Target>
   <Import Project="..\packages\cef.redist.x86.3.2883.1552\build\cef.redist.x86.targets" Condition="Exists('..\packages\cef.redist.x86.3.2883.1552\build\cef.redist.x86.targets')" />
   <Import Project="..\packages\CefSharp.Common.55.0.0\build\CefSharp.Common.targets" Condition="Exists('..\packages\CefSharp.Common.55.0.0\build\CefSharp.Common.targets')" />
-  <Import Project="..\packages\CefSharp.WinForms.55.0.0\build\CefSharp.WinForms.targets" Condition="Exists('..\packages\CefSharp.WinForms.55.0.0\build\CefSharp.WinForms.targets')" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy /y /e "$(ProjectDir)scripts\*" "$(ProjectDir)$(OutDir)scripts\*"
+xcopy /y /e "$(ProjectDir)images\*" "$(ProjectDir)$(OutDir)images\*"
+xcopy /y /e "$(ProjectDir)schemas\*" "$(ProjectDir)$(OutDir)schemas\*"</PostBuildEvent>
+  </PropertyGroup>
 </Project>

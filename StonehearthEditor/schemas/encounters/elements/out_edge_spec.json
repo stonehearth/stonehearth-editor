@@ -1,0 +1,79 @@
+{
+   "$schema": "http://json-schema.org/draft-04/schema#",
+   "id": "http://stonehearth.net/schemas/encounters/elements/out_edge_spec.json",
+   "anyOf": [
+      {"title": "Single Edge", "$ref": "edge.json"},
+      
+      {
+         "title": "Trigger Many",
+         "type": "object",
+         "properties": {
+            "type": {"enum": ["trigger_many"]},
+            "out_edges": {
+               "type": "array",
+               "items": {"$ref": "edge.json"}
+            }
+         },
+         "required": ["type", "out_edges"],
+         "additionalProperties": false
+      },
+      
+      {
+         "title": "Trigger One",
+         "type": "object",
+         "properties": {
+            "type": {"enum": ["trigger_one"]},
+            "out_edges": {
+               "type": "array",
+               "items": {
+                  "anyOf": [
+                     { "title": "Single Edge", "$ref" : "edge.json" },
+                     {
+                        "title": "Weighted Edge",
+                        "type": "object",
+                        "properties": {
+                           "type": {"enum": ["weighted_edge"]},
+                           "out_edge": { "$ref": "edge.json" },
+                           "weight": {"type": "number", "minimum": 0, "exclusiveMinimum": true}
+                        },
+                        "required": ["type", "out_edge", "weight"],
+                        "additionalProperties": false
+                     }
+                  ]
+               }
+            },
+            "repeat_last": {"type": "boolean"}
+         },
+         "required": ["type", "out_edges"],
+         "additionalProperties": false
+      },
+      
+      {
+         "title": "Trigger Sequence",
+         "type": "object",
+         "properties": {
+            "type": {"enum": ["trigger_sequence"]},
+            "out_edges": {
+               "type": "array",
+               "items": {"$ref": "edge.json"}
+            },
+            "repeat_last": {"type": "boolean"}
+         },
+         "required": ["type", "out_edges"],
+         "additionalProperties": false
+      },
+      
+      {
+         "title": "Destroy Tree",
+         "type": "object",
+         "properties": {
+            "type": {"enum": ["destroy_tree"]},
+            "root": {"type": "string"},
+            "destroy_root": {"type": "boolean"},
+            "pattern_match": {"type": "boolean"}
+         },
+         "required": ["type", "root"],
+         "additionalProperties": false
+      }
+   ]
+}

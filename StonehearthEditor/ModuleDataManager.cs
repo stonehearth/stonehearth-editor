@@ -315,7 +315,26 @@ namespace StonehearthEditor
                 return null;
             }
 
-            return mod.GetAliasFile(alias);
+            ModuleFile result;
+            result = mod.GetModuleFile("aliases", alias);
+            if (result != null)
+            {
+                return result;
+            }
+
+            result = mod.GetModuleFile("components", alias);
+            if (result != null)
+            {
+                return result;
+            }
+
+            result = mod.GetModuleFile("controllers", alias);
+            if (result != null)
+            {
+                return result;
+            }
+
+            return null;
         }
 
         /// <summary>
@@ -354,7 +373,8 @@ namespace StonehearthEditor
                 if (mod == null)
                     return false;
 
-                // The file exists, but we can't say much beyond that.
+                // The file exists, but isn't a global alias, so create a temporary entry so the caller can access it.
+                moduleFile = new ModuleFile(mod, "<no-alias>", parts[1]);
                 return true;
 
                 ////// Get all aliases that match this file
@@ -404,10 +424,17 @@ namespace StonehearthEditor
             Module mod = GetMod(modName);
             if (mod != null)
             {
-                JToken token = mod.EnglishLocalizationJson.SelectToken(key);
-                if (token != null)
+                try
                 {
-                    return token.ToString();
+                    JToken token = mod.EnglishLocalizationJson.SelectToken(key);
+                    if (token != null)
+                    {
+                        return token.ToString();
+                    }
+                }
+                catch (Exception)
+                {
+                    // A regular string that contains characters not allowed in XPaths, like space.
                 }
             }
 

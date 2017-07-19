@@ -46,7 +46,7 @@ namespace StonehearthEditor
         public override void UpdateGraphNode(Node graphNode)
         {
             base.UpdateGraphNode(graphNode);
-            graphNode.Attr.FillColor = Color.LightBlue;
+            graphNode.Attr.FillColor = GameMasterNode.kBlue;
         }
 
         public override void GetRelatedNodes(HashSet<GameMasterNode> set)

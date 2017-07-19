@@ -10,14 +10,15 @@ namespace StonehearthEditor
 {
     public partial class EncounterDesignerView : UserControl, IGraphOwner, IReloadable
     {
-        private static double kMaxDrag = 20;
-
+        private DNode mSelectedDNode = null;
         private GameMasterNode mSelectedNode = null;
         private TreeNode mSelectedCampaign = null;
-        private Timer refreshGraphTimer = null;
         private double mPreviousMouseX;
         private double mPreviousMouseY;
         private FilePreview mNodePreview = null;
+        private string mSelectedNewScriptNode = null;
+        private DNode mHoveredDNode = null;
+        private Color mHoveredOriginalColor;
 
         public EncounterDesignerView()
         {
@@ -50,49 +51,115 @@ namespace StonehearthEditor
 
         private void UpdateSelectedNodeInfo(GameMasterNode node)
         {
+            if (mSelectedNode == node)
+            {
+                return;
+            }
+
+            if (mNodePreview != null)
+            {
+                textVisualSplitter.Panel1.Controls.Remove(mNodePreview);
+            }
+
             if (node != null)
             {
                 mSelectedNode = node;
-                nodeInfoName.Text = node.Name;
-                encounterRightSideFilePath.Text = node.Path;
-                nodeInfoType.Text = node.NodeType.ToString();
-                nodePath.Text = node.Path;
-                nodeInfoSubType.Text = node.NodeType == GameMasterNodeType.ENCOUNTER ? ((EncounterNodeData)node.NodeData).EncounterType : "";
 
-                if (mNodePreview != null)
-                {
-                    splitContainer2.Panel1.Controls.Remove(mNodePreview);
-                }
-
+                // Add a text editor.
                 mNodePreview = new FilePreview(this, node.FileData);
                 mNodePreview.Dock = DockStyle.Fill;
-                splitContainer2.Panel1.Controls.Add(mNodePreview);
+                textVisualSplitter.Panel1.Controls.Add(mNodePreview);
+                UpdateValidationSchema();
+                mNodePreview.OnModifiedChanged += (bool isModified) =>
+                {
+                    if (isModified != mSelectedNode.IsModified)
+                    {
+                        mSelectedNode.IsModified = isModified;
+                        node.NodeData.UpdateGraphNode(mSelectedDNode.DrawingNode);
+                        graphViewer.Invalidate(mSelectedDNode);
+                    }
+                };
 
+                // Add some extra labels to the text editor toolbar.
+                var nodeNameLabel = mNodePreview.toolStrip.Items.Add(node.Name + (node.NodeType == GameMasterNodeType.ENCOUNTER ? (" (" + ((EncounterNodeData)node.NodeData).EncounterType + ")") : ""));
+                nodeNameLabel.Margin = new Padding(24, 0, 0, 0);
+                nodeNameLabel.Enabled = false;
+                var nodePathLabel = mNodePreview.toolStrip.Items.Add(node.Path);
+                nodePathLabel.Enabled = false;
+                nodePathLabel.Alignment = ToolStripItemAlignment.Right;
+
+                // Set up context menu.
                 copyGameMasterNode.Text = "Clone " + node.Name;
                 copyGameMasterNode.Enabled = true;
-                openEncounterFileButton.Visible = true;
                 deleteNodeToolStripMenuItem.Visible = true;
+                if (node.Owner == null)
+                {
+                    moveToArcMenuItem.Visible = true;
+                    moveToArcMenuItem.DropDownItems.Clear();
+                    var dm = GameMasterDataManager.GetInstance();
+                    foreach (var arc in dm.GetAllNodesOfType(GameMasterNodeType.ARC))
+                    {
+                        if (arc.Owner == dm.GraphRoot)
+                        {
+                            moveToArcMenuItem.DropDownItems.Add(arc.Name).Tag = arc;
+                        }
+                    }
+                }
+                else
+                {
+                    moveToArcMenuItem.Visible = false;
+                }
+
+                // Set up the visual editor.
+                PopulateVisualEditor(node);
+                textVisualSplitter.Panel2Collapsed = textVisualSplitter.Panel2.Controls.Count == 0;
+
+                // Set up the details panel.
                 PopulateFileDetails(node);
+                editorInfoSplitter.Panel2Collapsed = fileDetailsListBox.Items.Count == 0;
             }
             else
             {
                 mSelectedNode = null;
-                nodeInfoName.Text = "Select a Node";
-                encounterRightSideFilePath.Text = string.Empty;
-                nodeInfoType.Text = string.Empty;
-                nodeInfoSubType.Text = string.Empty;
-                nodePath.Text = string.Empty;
-                if (mNodePreview != null)
-                {
-                    splitContainer2.Panel1.Controls.Remove(mNodePreview);
-                }
-
                 copyGameMasterNode.Text = "Clone Node";
                 copyGameMasterNode.Enabled = false;
-                openEncounterFileButton.Visible = false;
+                moveToArcMenuItem.Visible = false;
                 deleteNodeToolStripMenuItem.Visible = false;
                 PopulateFileDetails(null);
+                editorInfoSplitter.Panel2Collapsed = true;
             }
+        }
+
+        private void UpdateValidationSchema()
+        {
+            if (mNodePreview == null || mSelectedNode == null)
+            {
+                return;
+            }
+
+            var encounterNode = mSelectedNode.NodeData as EncounterNodeData;
+            if (encounterNode == null)
+            {
+                return;
+            }
+
+            foreach (var scriptFile in GameMasterDataManager.GetInstance().GetGenericScriptNodes())
+            {
+                // TODO: Better matching of type to schema.
+                if (scriptFile.Name == encounterNode.EncounterType + "_encounter")
+                {
+                    if (scriptFile.Schema != null)
+                    {
+                        mNodePreview.SetValidationSchema(scriptFile.Schema);
+                    }
+                    break;
+                }
+            }
+        }
+
+        private void PopulateVisualEditor(GameMasterNode node)
+        {
+            // TODO: Implement.
         }
 
         private static string[] kAttributesOfInterest = new string[]
@@ -111,7 +178,6 @@ namespace StonehearthEditor
             fileDetailsListBox.Items.Clear();
             if (node == null)
             {
-                // remove details
                 return;
             }
 
@@ -218,38 +284,6 @@ namespace StonehearthEditor
             }
         }
 
-        private void graphViewer_EdgeAdded(object sender, EventArgs e)
-        {
-            Edge edge = (Edge)sender;
-            if (!GameMasterDataManager.GetInstance().TryAddEdge(edge.Source, edge.Target))
-            {
-                // Shouldn't add this edge. Undo it
-                graphViewer.Undo();
-            }
-            else
-            {
-                GameMasterDataManager.GetInstance().SaveModifiedFiles();
-                if (refreshGraphTimer == null)
-                {
-                    refreshGraphTimer = new Timer();
-                    refreshGraphTimer.Interval = 100;
-                    refreshGraphTimer.Enabled = true;
-                    refreshGraphTimer.Tick += new EventHandler(OnRefreshTimerTick);
-                    refreshGraphTimer.Start();
-                }
-            }
-        }
-
-        private void OnRefreshTimerTick(object sender, EventArgs e)
-        {
-            GameMasterDataManager.GetInstance().RefreshGraph(this);
-            if (refreshGraphTimer != null)
-            {
-                refreshGraphTimer.Stop();
-                refreshGraphTimer = null;
-            }
-        }
-
         private void graphViewer_EdgeRemoved(object sender, EventArgs e)
         {
             // TODO yshan: replace this
@@ -263,47 +297,75 @@ namespace StonehearthEditor
                 double differenceX = e.X - mPreviousMouseX;
                 double differenceY = e.Y - mPreviousMouseY;
 
-                differenceX = Math.Min(Math.Max(differenceX, -kMaxDrag), kMaxDrag);
-                differenceY = Math.Min(Math.Max(differenceY, -kMaxDrag), kMaxDrag);
-
                 mPreviousMouseX = e.X;
                 mPreviousMouseY = e.Y;
                 graphViewer.Pan(differenceX, differenceY);
+            }
+            else if (e.Button == System.Windows.Forms.MouseButtons.None)
+            {
+                var dNode = graphViewer.ObjectUnderMouseCursor as DNode;
+                if (mHoveredDNode != dNode)
+                {
+                    if (mHoveredDNode != null)
+                    {
+                        mHoveredDNode.DrawingNode.Attr.FillColor = mHoveredOriginalColor;
+                        graphViewer.Invalidate(mHoveredDNode);
+                        mHoveredDNode = null;
+                    }
+
+                    if (dNode != null)
+                    {
+                        GameMasterNode nodeData = GameMasterDataManager.GetInstance().GetGameMasterNode(dNode.DrawingNode.Id);
+                        if (nodeData != null)
+                        {
+                            mHoveredDNode = dNode;
+                            mHoveredOriginalColor = mHoveredDNode.DrawingNode.Attr.FillColor;
+                            Color color = mHoveredOriginalColor;
+                            color.R = (byte)Math.Min(color.R + 40, 255);
+                            color.G = (byte)Math.Min(color.G + 40, 255);
+                            color.B = (byte)Math.Min(color.B + 40, 255);
+                            mHoveredDNode.DrawingNode.Attr.FillColor = color;
+                            graphViewer.Invalidate(mHoveredDNode);
+                        }
+                    }
+                }
             }
         }
 
         private void graphViewer_MouseDown(object sender, MouseEventArgs e)
         {
-            if (graphViewer.Graph != null)
+            if (e.Button == System.Windows.Forms.MouseButtons.Middle)
             {
-                object obj = graphViewer.GetObjectAt(e.X, e.Y);
-                var dnode = obj as DNode;
-                if (dnode != null)
+                mPreviousMouseX = e.X;
+                mPreviousMouseY = e.Y;
+            }
+            else if (e.Button == System.Windows.Forms.MouseButtons.Left ||
+                     e.Button == System.Windows.Forms.MouseButtons.Right)
+            {
+                if (graphViewer.Graph != null)
                 {
-                    Node drawingNode = dnode.DrawingNode;
-                    GameMasterNode nodeData = GameMasterDataManager.GetInstance().GetGameMasterNode(drawingNode.Id);
-                    UpdateSelectedNodeInfo(nodeData);
-                }
-                else
-                {
-                    UpdateSelectedNodeInfo(null);
+                    var dNode = graphViewer.ObjectUnderMouseCursor as DNode;
+                    if (dNode != null)
+                    {
+                        GameMasterNode nodeData = GameMasterDataManager.GetInstance().GetGameMasterNode(dNode.DrawingNode.Id);
+                        if (nodeData != null)
+                        {
+                            if (mSelectedDNode != null)
+                            {
+                                mSelectedDNode.DrawingNode.Attr.LineWidth = 1;
+                                graphViewer.Invalidate(mSelectedDNode);
+                            }
+
+                            mSelectedDNode = dNode;
+                            mSelectedDNode.DrawingNode.Attr.LineWidth = 5;
+                            graphViewer.Invalidate(mSelectedDNode);
+
+                            UpdateSelectedNodeInfo(nodeData);
+                        }
+                    }
                 }
             }
         }
-
-        private void graphViewer_MouseUp(object sender, MouseEventArgs e)
-        {
-        }
-
-        private void nodeInfoJsonPreview_Leave(object sender, EventArgs e)
-        {
-        }
-
-        private void nodeInfoJsonPreview_MouseMove(object sender, MouseEventArgs e)
-        {
-        }
-
-        private string mSelectedNewScriptNode = null;
 
         private void addNewGameMasterNode_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
@@ -335,15 +397,6 @@ namespace StonehearthEditor
             GameMasterDataManager.GetInstance().AddNewGenericScriptNode(this, mSelectedNewScriptNode, filePath);
         }
 
-        private void openEncounterFileButton_Click(object sender, EventArgs e)
-        {
-            if (mSelectedNode != null)
-            {
-                string path = mSelectedNode.Path;
-                System.Diagnostics.Process.Start(@path);
-            }
-        }
-
         private void deleteNodeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (mSelectedNode != null)
@@ -365,23 +418,17 @@ namespace StonehearthEditor
             }
         }
 
-        private void nodeInfoSubType_Click(object sender, EventArgs e)
-        {
-        }
-
         private void encounterTreeView_AfterSelect(object sender, TreeViewEventArgs e)
         {
             GameMasterDataManager.GetInstance().OnCampaignSelected(this, e.Node);
             mSelectedCampaign = e.Node;
+            mSelectedDNode = null;
+            UpdateSelectedNodeInfo(null);
 
             if (GameMasterDataManager.GetInstance().GraphRoot != null)
             {
                 addNewGameMasterNode.Enabled = true;
             }
-        }
-
-        private void toolstripSaveButton_Click(object sender, EventArgs e)
-        {
         }
 
         private void copyGameMasterNode_Click(object sender, EventArgs e)
@@ -455,6 +502,21 @@ namespace StonehearthEditor
                 GameMasterDataManager.GetInstance().CloneNode(mViewer, mNode, potentialNewNodeName);
                 return true;
             }
+        }
+
+        private void moveToArcMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        {
+            if (mSelectedNode == null || mSelectedNode.Owner != null || !(mSelectedNode.NodeData is EncounterNodeData))
+            {
+                return;
+            }
+
+            var selectedNodeId = mSelectedNode.Id;
+            mSelectedNode.Owner = e.ClickedItem.Tag as GameMasterNode;
+            (mSelectedNode.Owner.NodeData as ArcNodeData).AddEncounter(mSelectedNode.NodeData as EncounterNodeData);
+            mSelectedNode.Owner.IsModified = true;
+            GameMasterDataManager.GetInstance().SaveModifiedFiles();
+            GameMasterDataManager.GetInstance().RefreshGraph(this);
         }
     }
 }

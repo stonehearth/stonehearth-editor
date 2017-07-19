@@ -142,13 +142,14 @@ namespace StonehearthEditor
             return returned;
         }
 
-        public void AddToManifest(string alias, string path)
+        // Add alias to manifest under manifest file type (aliases, components, controllers)
+        public void AddToManifest(string alias, string path, string manifestEntryType = "aliases")
         {
-            JToken aliases = mManifestJson["aliases"];
+            JToken aliases = mManifestJson[manifestEntryType];
             if (aliases == null)
             {
-                mManifestJson.Add("aliases", null);
-                aliases = mManifestJson["aliases"];
+                mManifestJson.Add(manifestEntryType, null);
+                aliases = mManifestJson[manifestEntryType];
             }
 
             JObject aliasesObject = aliases as JObject;
@@ -160,9 +161,9 @@ namespace StonehearthEditor
             }
         }
 
-        public void RemoveFromManifest(string parent, string alias)
+        public void RemoveFromManifest(string manifestEntryType, string alias)
         {
-            JObject aliases = mManifestJson[parent] as JObject;
+            JObject aliases = mManifestJson[manifestEntryType] as JObject;
             JProperty aliasProperty = aliases.Property(alias);
             if (aliasProperty != null)
             {
@@ -225,10 +226,9 @@ namespace StonehearthEditor
             foreach (KeyValuePair<string, Dictionary<string, ModuleFile>> pair in mModuleFiles)
             {
                 TreeNode subRoot = new TreeNode(pair.Key);
-                if (pair.Key == "aliases")
-                {
-                    subRoot.ExpandAll();
-                }
+
+                // Expand all sub tree nodes
+                subRoot.ExpandAll();
 
                 subRoot.SelectedImageIndex = 100;
                 subRoot.ImageIndex = 100;

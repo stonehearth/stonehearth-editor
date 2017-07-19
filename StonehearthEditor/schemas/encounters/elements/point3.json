@@ -1,0 +1,11 @@
+{
+   "$schema": "http://json-schema.org/draft-04/schema#",
+   "id": "http://stonehearth.net/schemas/encounters/elements/point3.json",
+   "type": "object",
+   "properties": {
+      "x": {"type": "number"},
+      "y": {"type": "number"},
+      "z": {"type": "number"}
+   },
+   "additionalProperties": false
+}

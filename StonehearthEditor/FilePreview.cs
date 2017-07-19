@@ -6,7 +6,10 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using NJsonSchema;
+using NJsonSchema.Validation;
 using ScintillaNET;
 using Color = System.Drawing.Color;
 
@@ -14,20 +17,28 @@ namespace StonehearthEditor
 {
     public partial class FilePreview : UserControl
     {
+        // Index of the indicator for i18n()
+        private const int kI18nIndicator = 8;
+
+        // Index of the indicator for file() and file-ish things
+        private const int kFileIndicator = 9;
+
+        // The margin used to display errors.
+        private const int kErrorMarginNumber = 1;
+
+        // The marker used to display errors.
+        private const int kErrorMarkerNumber = 3;
+
         private FileData mFileData;
         private string mI18nLocKey = null;
         private IReloadable mOwner;
         private int maxLineNumberCharLength;
+        private int lastTipAnchor = -1;
 
-        /// <summary>
-        /// Index of the indicator for i18n()
-        /// </summary>
-        private const int kI18nIndicator = 8;
-
-        /// <summary>
-        /// Index of the indicator for file() and file-ish things
-        /// </summary>
-        private const int kFileIndicator = 9;
+        // JSON validation stuff.
+        private JsonSchema4 jsonValidationSchema;
+        private Dictionary<int, string> validationErrors = new Dictionary<int, string>();
+        private Timer validationDelayTimer;
 
         /// <summary>
         /// Indicator for i18n()
@@ -39,6 +50,10 @@ namespace StonehearthEditor
         /// </summary>
         private Indicator mFileIndicator => this.textBox.Indicators[kFileIndicator];
 
+        public delegate void ModifiedChangedHandler(bool isModified);
+
+        public event ModifiedChangedHandler OnModifiedChanged;
+
         public FilePreview(IReloadable owner, FileData fileData)
         {
             mFileData = fileData;
@@ -49,38 +64,72 @@ namespace StonehearthEditor
             this.configureScintilla();
         }
 
+        public string GetText()
+        {
+            return textBox.Text;
+        }
+
         private void textBox_Leave(object sender, EventArgs e)
         {
-            mFileData.TrySetFlatFileData(textBox.Text);
+            if (mFileData.FlatFileData != textBox.Text)
+            {
+                mFileData.TrySetFlatFileData(textBox.Text);
+                OnModifiedChanged?.Invoke(true);
+            }
         }
 
         private void textBox_MouseMove(object sender, MouseEventArgs e)
         {
             // Translate mouse xy to character position
             var position = this.textBox.CharPositionFromPoint(e.X, e.Y);
-            var locKey = this.getLocKey(position);
+            var line = this.textBox.LineFromPosition(position);
 
-            if (locKey == this.mI18nLocKey)
+            // Figure out if we are hovering over an error indicator.
+            var isInErrorMargin = e.X > textBox.Margins[0].Width && e.X <= textBox.Margins[0].Width + textBox.Margins[kErrorMarginNumber].Width;
+            if (isInErrorMargin && validationErrors.ContainsKey(line))
+            {
+                this.textBox.CallTipShow(position, validationErrors[line]);
+                lastTipAnchor = -2;
                 return;
+            }
 
-            this.mI18nLocKey = locKey;
+            var currentAnchor = this.getIndicatorStartPosition(position);
 
-            if (locKey == null)
+            if (lastTipAnchor == currentAnchor)
+            {
+                return;  // Nothing to change.
+            }
+            else
             {
                 this.textBox.CallTipCancel();
-                return;
+                lastTipAnchor = currentAnchor;
             }
 
-            try
+            var hoveredIndicator = this.getIndicatorAt(position);
+            if (hoveredIndicator == kFileIndicator)
             {
-                // Translate and display it as a tip
-                var translated = ModuleDataManager.GetInstance().LocalizeString(locKey);
-                translated = JsonHelper.WordWrap(translated, 100).Trim();
-                this.textBox.CallTipShow(position, translated);
+                this.textBox.CallTipShow(position, "Ctrl-click to open file.");
             }
-            catch (Exception)
+            else if (hoveredIndicator == kI18nIndicator)
             {
-                this.textBox.CallTipShow(position, $"(Uncaught exception while trying to find i18n for {locKey})");
+                var locKey = this.getLocKey(position);
+                if (string.IsNullOrEmpty(locKey))
+                {
+                    return;
+                }
+
+                this.mI18nLocKey = locKey;
+                try
+                {
+                    // Translate and display it as a tip
+                    var translated = ModuleDataManager.GetInstance().LocalizeString(locKey);
+                    translated = JsonHelper.WordWrap(translated, 100).Trim();
+                    this.textBox.CallTipShow(position, translated);
+                }
+                catch (Exception)
+                {
+                    this.textBox.CallTipShow(position, $"(Uncaught exception while trying to find i18n for {locKey})");
+                }
             }
         }
 
@@ -100,6 +149,7 @@ namespace StonehearthEditor
             mFileData.TrySaveFile();
 
             this.textBox.SetSavePoint();
+            OnModifiedChanged?.Invoke(false);
             TabPage parentControl = Parent as TabPage;
             if (parentControl != null)
             {
@@ -115,22 +165,28 @@ namespace StonehearthEditor
         {
             var text = e.Text;
 
-            // Replace tabs with 3 whitespaces
+            // Replace tabs with 3 spaces.
             text = text.Replace("\t", "   ");
-            var x = this.textBox.Lines.Select(l => l.Indentation).ToList();
 
-            // TODO: Handle newlines and indention here somehow? Or can Indentation do that?
+            // Auto indent.
+            if (text == "\r\n")
+            {
+                var curLine = textBox.LineFromPosition(e.Position);
+                var curLineText = textBox.Lines[curLine].Text;
+
+                // Copy last line's indent.
+                var indent = Regex.Match(curLineText, @"^[ \t]*");
+                text += indent.Value;
+
+                // For JSON, add one level of indent if the line ends with a bracket.
+                if (textBox.Lexer == ScintillaNET.Lexer.Json && Regex.IsMatch(curLineText, @"[\[\{]\s*$"))
+                {
+                    text += "   ";
+                }
+            }
 
             // Return the modified text.
             e.Text = text;
-        }
-
-        private void textBox_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Tab)
-            {
-                e.Handled = true;
-            }
         }
 
         private void openFile_Click(object sender, EventArgs e)
@@ -151,7 +207,7 @@ namespace StonehearthEditor
         private void localizeFile_Click(object sender, EventArgs e)
         {
             ProcessStartInfo start = new ProcessStartInfo();
-            string generateLocPythonFile = System.IO.Path.GetDirectoryName(Application.ExecutablePath) + "/scripts/generate_loc_keys.py";
+            string generateLocPythonFile = Application.StartupPath + "/scripts/generate_loc_keys.py";
             start.FileName = generateLocPythonFile;
             string filePath = mFileData.Path;
             string modsRoot = ModuleDataManager.GetInstance().ModsDirectoryPath;
@@ -159,10 +215,185 @@ namespace StonehearthEditor
             ////MessageBox.Show("executing command: " + generateLocPythonFile + " -r " + modsRoot + " " + filePath);
 
             Process myProcess = Process.Start(start);
+            if (myProcess == null)
+            {
+                MessageBox.Show("Could not launch generate_loc_keys.py");
+                return;
+            }
+
             myProcess.WaitForExit();
             if (mOwner != null)
             {
                 mOwner.Reload();
+            }
+        }
+
+        internal void SetValidationSchema(JsonSchema4 schema)
+        {
+            jsonValidationSchema = schema;
+            ValidateSchema();
+        }
+
+        private void ValidateSchema()
+        {
+            if (textBox.Lexer != ScintillaNET.Lexer.Json)
+            {
+                // No validation possible.
+                textBox.Styles[Style.LineNumber].BackColor = Color.LightGray;
+                return;
+            }
+
+            // Find errors.
+            validationErrors.Clear();
+            try
+            {
+                if (jsonValidationSchema == null)
+                {
+                    // No schema. Just make sure the JSON is valid.
+                    JToken.Parse(GetText());
+                }
+                else
+                {
+                    // Validate based on the schema.
+                    foreach (var error in jsonValidationSchema.Validate(GetText()))
+                    {
+                        FillValidationErrorsFromJsonSchemaError(error);
+                    }
+                }
+            }
+            catch (JsonReaderException exception)
+            {
+                validationErrors[exception.LineNumber - 1] = exception.Message;
+            }
+
+            // Display errors.
+            textBox.MarkerDeleteAll(kErrorMarkerNumber);
+            textBox.Styles[Style.LineNumber].BackColor = validationErrors.Count > 0 ? Color.IndianRed : (jsonValidationSchema == null ? Color.LightGray : Color.LightGreen);
+            if (validationErrors.Count > 0)
+            {
+                foreach (var error in validationErrors)
+                {
+                    textBox.Lines[error.Key].MarkerAdd(kErrorMarkerNumber);
+                }
+            }
+        }
+
+        private void FillValidationErrorsFromJsonSchemaError(ValidationError error)
+        {
+            if (!error.HasLineInfo)
+            {
+                return;
+            }
+
+            switch (error.Kind)
+            {
+                case ValidationErrorKind.PatternMismatch:
+                    AddValidationError(error.LineNumber, string.Format("The value of '{0}' must match the regex pattern: {1}", error.Property, error.Schema.Pattern));
+                    break;
+                case ValidationErrorKind.NotInEnumeration:
+                    string choices = "";
+                    foreach (var choice in error.Schema.Enumeration)
+                    {
+                        if (choices.Length > 0)
+                        {
+                            choices += ", ";
+                        }
+
+                        choices += '"';
+                        choices += choice == null ? "null" : choice.ToString();
+                        choices += '"';
+                    }
+
+                    AddValidationError(error.LineNumber, string.Format("The value of '{0}' must be one of: {1}", error.Property, choices));
+                    break;
+                case ValidationErrorKind.NoAdditionalPropertiesAllowed:
+                    string validProperties = string.Join(", ", error.Schema.ActualProperties.Keys);
+                    AddValidationError(error.LineNumber, string.Format(
+                        "Property '{0}' is not expected in this object. Valid properties: {1}", error.Property, validProperties));
+                    break;
+                case ValidationErrorKind.PropertyRequired:
+                    AddValidationError(error.LineNumber, string.Format("Missing required property '{0}'.", error.Property));
+                    break;
+                case ValidationErrorKind.NotAnyOf:
+                    string validFormats = " Valid formats:";
+                    foreach (var alternativeSchema in error.Schema.AnyOf)
+                    {
+                        if (alternativeSchema.Title == null)
+                        {
+                            // We can't name the formats, so skip the extra info.
+                            validFormats = "";
+                            break;
+                        }
+
+                        validFormats += "\n  ";
+                        validFormats += alternativeSchema.Title;
+                    }
+
+                    AddValidationError(error.LineNumber, string.Format(
+                        "None of the {0} valid formats for {1} match.{2}",
+                        error.Schema.AnyOf.Count,
+                        string.IsNullOrEmpty(error.Property) ? "the element" : ("'" + error.Property + "'"),
+                        validFormats));
+
+                    // Show sub-errors for the closest matching alternative.
+                    var multiError = error as ChildSchemaValidationError;
+                    if (multiError != null)
+                    {
+                        int minNumSubErrors = int.MaxValue;
+                        ICollection<ValidationError> bestSubErrorsList = null;
+                        foreach (var subErrors in multiError.Errors)
+                        {
+                            if (subErrors.Value.Count <= minNumSubErrors)
+                            {
+                                bestSubErrorsList = subErrors.Value;
+                                minNumSubErrors = bestSubErrorsList.Count;
+                            }
+                        }
+
+                        if (bestSubErrorsList != null)
+                        {
+                            foreach (var subError in bestSubErrorsList)
+                            {
+                                FillValidationErrorsFromJsonSchemaError(subError);
+                            }
+                        }
+                    }
+
+                    return;  // Don't process sub-errors. We've handled them already.
+                default:
+                    var errorString = Regex.Replace(error.Kind.ToString(), "([A-Z])", " $1", RegexOptions.Compiled).ToLower().Trim();
+                    if (error.Property != null)
+                    {
+                        errorString = error.Property + ": " + errorString;
+                    }
+
+                    AddValidationError(error.LineNumber, errorString);
+                    break;
+            }
+
+            // Show all sub-errors.
+            if (error is ChildSchemaValidationError)
+            {
+                foreach (var subErrors in (error as ChildSchemaValidationError).Errors)
+                {
+                    foreach (var subError in subErrors.Value)
+                    {
+                        FillValidationErrorsFromJsonSchemaError(subError);
+                    }
+                }
+            }
+        }
+
+        private void AddValidationError(int line, string message)
+        {
+            var zeroBasedLine = line - 1;
+            if (validationErrors.ContainsKey(zeroBasedLine))
+            {
+                validationErrors[zeroBasedLine] += '\n' + message;
+            }
+            else
+            {
+                validationErrors[zeroBasedLine] = message;
             }
         }
 
@@ -325,7 +556,18 @@ namespace StonehearthEditor
             textBox.Styles[Style.Default].Size = 10;
             textBox.Styles[Style.Default].ForeColor = Color.Black;
             textBox.Margins[0].Width = 16;
+            textBox.Margins[0].Cursor = MarginCursor.Arrow;
             textBox.StyleClearAll();
+
+            // Configure error margin & marker style.
+            this.textBox.Margins[kErrorMarginNumber].Width = 0;
+            this.textBox.Margins[kErrorMarginNumber].Type = MarginType.Symbol;
+            this.textBox.Margins[kErrorMarginNumber].Mask = Marker.MaskAll;
+            this.textBox.Margins[kErrorMarginNumber].Cursor = MarginCursor.Arrow;
+
+            this.textBox.Markers[kErrorMarkerNumber].Symbol = MarkerSymbol.ShortArrow;
+            this.textBox.Markers[kErrorMarkerNumber].SetForeColor(Color.Red);
+            this.textBox.Markers[kErrorMarkerNumber].SetBackColor(Color.IndianRed);
 
             // Based on the extension, we need to choose the right lexer/style
             switch (System.IO.Path.GetExtension(mFileData.Path))
@@ -354,12 +596,14 @@ namespace StonehearthEditor
                     break;
             }
 
+            // Configure tooltip.
             this.textBox.Styles[Style.CallTip].SizeF = 8.25f;
             this.textBox.Styles[Style.CallTip].ForeColor = Color.Black;
             this.textBox.Styles[Style.CallTip].BackColor = Color.White;
             this.textBox.Styles[Style.CallTip].Font = "Verdana";
             this.textBox.Styles[Style.CallTip].Hotspot = true;
 
+            // Restyle now and on demand.
             this.textBox.TextChanged += (sender, e) => this.restyleDocument();
             this.restyleDocument();
         }
@@ -369,16 +613,37 @@ namespace StonehearthEditor
         /// </summary>
         private void configureJsonHighlighting()
         {
-            textBox.Lexer = ScintillaNET.Lexer.Cpp;
+            textBox.Lexer = ScintillaNET.Lexer.Json;
 
             var scintilla = textBox;
-            scintilla.Styles[ScintillaNET.Style.Cpp.Number].Bold = true;
-            scintilla.Styles[ScintillaNET.Style.Cpp.Number].ForeColor = Color.Navy;
-            scintilla.Styles[ScintillaNET.Style.Cpp.Number].Weight = 700;
-            scintilla.Styles[ScintillaNET.Style.Cpp.String].ForeColor = Color.Purple;
-            scintilla.Styles[ScintillaNET.Style.Cpp.Identifier].Bold = true;
-            scintilla.Styles[ScintillaNET.Style.Cpp.Identifier].ForeColor = Color.ForestGreen;
-            scintilla.Styles[ScintillaNET.Style.Cpp.Identifier].Weight = 700;
+
+            scintilla.Styles[Style.Json.Operator].ForeColor = Color.Black;
+            scintilla.Styles[Style.Json.Operator].Bold = true;
+            scintilla.Styles[Style.Json.Operator].Weight = 700;
+
+            scintilla.Styles[Style.Json.Number].ForeColor = Color.Navy;
+            scintilla.Styles[Style.Json.Number].Bold = true;
+            scintilla.Styles[Style.Json.Number].Weight = 700;
+
+            scintilla.Styles[Style.Json.Keyword].ForeColor = Color.Navy;
+            scintilla.Styles[Style.Json.Keyword].Bold = true;
+            scintilla.Styles[Style.Json.Keyword].Weight = 700;
+
+            // Unfortunately as of ScintillaNET 3.6.3, "true", "false", and "null" are parsed as errors.
+            scintilla.Styles[Style.Json.Error].ForeColor = Color.DarkRed;
+            scintilla.Styles[Style.Json.Error].Bold = true;
+            scintilla.Styles[Style.Json.Error].Weight = 700;
+
+            scintilla.Styles[Style.Json.String].ForeColor = Color.Purple;
+
+            scintilla.Styles[Style.Json.PropertyName].ForeColor = Color.ForestGreen;
+            scintilla.Styles[Style.Json.PropertyName].Bold = true;
+            scintilla.Styles[Style.Json.PropertyName].Weight = 700;
+
+            scintilla.Styles[Style.Json.StringEol].ForeColor = Color.Red;
+
+            scintilla.Styles[Style.Json.BlockComment].ForeColor = Color.Green;
+            scintilla.Styles[Style.Json.LineComment].ForeColor = Color.Green;
 
             // Prepare indicator
             this.mI18nIndicator.Style = IndicatorStyle.FullBox;
@@ -390,6 +655,16 @@ namespace StonehearthEditor
             this.mFileIndicator.ForeColor = Color.Green;
             this.mFileIndicator.HoverForeColor = Color.DarkGreen;
             this.mFileIndicator.Alpha = 50;
+
+            // Prepare validator.
+            validationDelayTimer = new Timer();  // To be started by textBox_TextChanged().
+            validationDelayTimer.Interval = 100;
+            validationDelayTimer.Enabled = true;
+            validationDelayTimer.Tick += new EventHandler((s, e) => {
+                validationDelayTimer.Stop();
+                ValidateSchema();
+            });
+            this.textBox.Margins[kErrorMarginNumber].Width = 16;
         }
 
         /// <summary>
@@ -541,6 +816,23 @@ namespace StonehearthEditor
             return locKey.Substring(i18nLength, locKey.Length - i18nLength - 1);
         }
 
+        private int getIndicatorStartPosition(int position)
+        {
+            var indicatorId = this.getIndicatorAt(position);
+            if (indicatorId == kFileIndicator)
+            {
+                return this.mFileIndicator.Start(position);
+            }
+            else if (indicatorId == kI18nIndicator)
+            {
+                return this.mI18nIndicator.Start(position);
+            }
+            else
+            {
+                return -1;
+            }
+        }
+
         /// <summary>
         /// Whenever the user clicked on an indicator.
         /// Used instead of IndicatorClick because the opening dialog is eating the
@@ -581,7 +873,14 @@ namespace StonehearthEditor
                 // TODO: instead of using an interface, try to have some function in
                 // the main view that allows switching to the manifest view + displaying a modulefile/filedata
                 if (selectable != null)
+                {
                     selectable.SetSelectedFileData(module.FileData);
+                }
+                else
+                {
+                    // No one is listening. Just open the file in the default OS viewer.
+                    System.Diagnostics.Process.Start(module.ResolvedPath);
+                }
             }
         }
 
@@ -641,6 +940,15 @@ namespace StonehearthEditor
             if (parentControl != null)
             {
                 parentControl.Text = mFileData.FileName;
+            }
+        }
+
+        private void textBox_TextChanged(object sender, EventArgs e)
+        {
+            if (validationDelayTimer != null)
+            {
+                validationDelayTimer.Stop();
+                validationDelayTimer.Start();
             }
         }
     }

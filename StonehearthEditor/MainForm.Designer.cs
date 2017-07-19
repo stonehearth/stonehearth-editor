@@ -31,11 +31,8 @@ namespace StonehearthEditor
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.tabControl = new System.Windows.Forms.TabControl();
             this.manifestTab = new System.Windows.Forms.TabPage();
-            this.manifestView = new StonehearthEditor.ManifestView();
             this.encounterTab = new System.Windows.Forms.TabPage();
-            this.encounterDesignerView = new StonehearthEditor.EncounterDesignerView();
             this.entityBrowserTab = new System.Windows.Forms.TabPage();
-            this.entityBrowserView = new StonehearthEditor.EntityBrowserView();
             this.effectsEditorTab = new System.Windows.Forms.TabPage();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mainFormMenu = new System.Windows.Forms.MenuStrip();
@@ -46,13 +43,16 @@ namespace StonehearthEditor
             this.changeModDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.netWorthVisualizerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.manifestView = new StonehearthEditor.ManifestView();
+            this.encounterDesignerView = new StonehearthEditor.EncounterDesignerView();
+            this.entityBrowserView = new StonehearthEditor.EntityBrowserView();
             this.effectsEditorView = new StonehearthEditor.EffectsEditorView();
             this.tabControl.SuspendLayout();
             this.manifestTab.SuspendLayout();
             this.encounterTab.SuspendLayout();
             this.entityBrowserTab.SuspendLayout();
-            this.mainFormMenu.SuspendLayout();
             this.effectsEditorTab.SuspendLayout();
+            this.mainFormMenu.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabControl
@@ -80,14 +80,6 @@ namespace StonehearthEditor
             this.manifestTab.Text = "Manifest";
             this.manifestTab.UseVisualStyleBackColor = true;
             // 
-            // manifestView
-            // 
-            this.manifestView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.manifestView.Location = new System.Drawing.Point(3, 3);
-            this.manifestView.Name = "manifestView";
-            this.manifestView.Size = new System.Drawing.Size(1109, 549);
-            this.manifestView.TabIndex = 0;
-            // 
             // encounterTab
             // 
             this.encounterTab.Controls.Add(this.encounterDesignerView);
@@ -98,14 +90,6 @@ namespace StonehearthEditor
             this.encounterTab.TabIndex = 1;
             this.encounterTab.Text = "Encounter Designer";
             this.encounterTab.UseVisualStyleBackColor = true;
-            // 
-            // encounterDesignerView
-            // 
-            this.encounterDesignerView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.encounterDesignerView.Location = new System.Drawing.Point(3, 3);
-            this.encounterDesignerView.Name = "encounterDesignerView";
-            this.encounterDesignerView.Size = new System.Drawing.Size(1109, 549);
-            this.encounterDesignerView.TabIndex = 0;
             // 
             // entityBrowserTab
             // 
@@ -118,14 +102,6 @@ namespace StonehearthEditor
             this.entityBrowserTab.Text = "Entity Stats Browser";
             this.entityBrowserTab.UseVisualStyleBackColor = true;
             // 
-            // entityBrowserView
-            // 
-            this.entityBrowserView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.entityBrowserView.Location = new System.Drawing.Point(3, 3);
-            this.entityBrowserView.Name = "entityBrowserView";
-            this.entityBrowserView.Size = new System.Drawing.Size(1109, 549);
-            this.entityBrowserView.TabIndex = 0;
-            //
             // effectsEditorTab
             // 
             this.effectsEditorTab.Controls.Add(this.effectsEditorView);
@@ -176,7 +152,7 @@ namespace StonehearthEditor
             // saveAllToolStripMenuItem
             // 
             this.saveAllToolStripMenuItem.Name = "saveAllToolStripMenuItem";
-            this.saveAllToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift)
+            this.saveAllToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
             | System.Windows.Forms.Keys.S)));
             this.saveAllToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
             this.saveAllToolStripMenuItem.Text = "Save All";
@@ -212,6 +188,30 @@ namespace StonehearthEditor
             this.netWorthVisualizerToolStripMenuItem.Text = "Net Worth Visualizer";
             this.netWorthVisualizerToolStripMenuItem.Click += new System.EventHandler(this.netWorthVisualizerToolStripMenuItem_Click);
             // 
+            // manifestView
+            // 
+            this.manifestView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.manifestView.Location = new System.Drawing.Point(3, 3);
+            this.manifestView.Name = "manifestView";
+            this.manifestView.Size = new System.Drawing.Size(1109, 549);
+            this.manifestView.TabIndex = 0;
+            // 
+            // encounterDesignerView
+            // 
+            this.encounterDesignerView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.encounterDesignerView.Location = new System.Drawing.Point(3, 3);
+            this.encounterDesignerView.Name = "encounterDesignerView";
+            this.encounterDesignerView.Size = new System.Drawing.Size(1109, 549);
+            this.encounterDesignerView.TabIndex = 0;
+            // 
+            // entityBrowserView
+            // 
+            this.entityBrowserView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.entityBrowserView.Location = new System.Drawing.Point(3, 3);
+            this.entityBrowserView.Name = "entityBrowserView";
+            this.entityBrowserView.Size = new System.Drawing.Size(1109, 549);
+            this.entityBrowserView.TabIndex = 0;
+            // 
             // effectsEditorView
             // 
             this.effectsEditorView.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -219,6 +219,7 @@ namespace StonehearthEditor
             this.effectsEditorView.Name = "effectsEditorView";
             this.effectsEditorView.Size = new System.Drawing.Size(1109, 549);
             this.effectsEditorView.TabIndex = 0;
+            // 
             // MainForm
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
@@ -231,6 +232,7 @@ namespace StonehearthEditor
             this.Location = global::StonehearthEditor.Properties.Settings.Default.MainFormLocation;
             this.MainMenuStrip = this.mainFormMenu;
             this.Name = "MainForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Stonehearth Editor";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
@@ -239,9 +241,9 @@ namespace StonehearthEditor
             this.manifestTab.ResumeLayout(false);
             this.encounterTab.ResumeLayout(false);
             this.entityBrowserTab.ResumeLayout(false);
+            this.effectsEditorTab.ResumeLayout(false);
             this.mainFormMenu.ResumeLayout(false);
             this.mainFormMenu.PerformLayout();
-            this.effectsEditorTab.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 

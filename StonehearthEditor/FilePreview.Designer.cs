@@ -47,13 +47,18 @@
             // 
             // textBox
             // 
+            this.textBox.CaretLineBackColor = System.Drawing.Color.Lavender;
+            this.textBox.CaretLineVisible = true;
             this.textBox.ContextMenuStrip = this.filePreviewContextMenu;
             this.textBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBox.Font = new System.Drawing.Font("Consolas", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBox.FontQuality = ScintillaNET.FontQuality.LcdOptimized;
+            this.textBox.IdleStyling = ScintillaNET.IdleStyling.All;
             this.textBox.IndentationGuides = ScintillaNET.IndentView.LookBoth;
             this.textBox.Location = new System.Drawing.Point(0, 25);
             this.textBox.MouseDwellTime = 10;
             this.textBox.Name = "textBox";
+            this.textBox.ScrollWidth = 1;
             this.textBox.Size = new System.Drawing.Size(150, 125);
             this.textBox.TabIndex = 0;
             this.textBox.TabWidth = 3;
@@ -62,7 +67,7 @@
             this.textBox.InsertCheck += new System.EventHandler<ScintillaNET.InsertCheckEventArgs>(this.textBox_InsertCheck);
             this.textBox.SavePointLeft += new System.EventHandler<System.EventArgs>(this.textBox_SavePointLeft);
             this.textBox.SavePointReached += new System.EventHandler<System.EventArgs>(this.textBox_SavePointReached);
-            this.textBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBox_KeyDown);
+            this.textBox.TextChanged += new System.EventHandler(this.textBox_TextChanged);
             this.textBox.Leave += new System.EventHandler(this.textBox_Leave);
             this.textBox.MouseMove += new System.Windows.Forms.MouseEventHandler(this.textBox_MouseMove);
             // 
@@ -173,12 +178,12 @@
       private System.Windows.Forms.ToolTip i18nTooltip;
       private System.Windows.Forms.ContextMenuStrip filePreviewContextMenu;
       private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
-      private System.Windows.Forms.ToolStrip toolStrip;
       private System.Windows.Forms.ToolStripButton saveFile;
       private System.Windows.Forms.ToolStripButton openFolder;
       private System.Windows.Forms.ToolStripButton openFile;
       private System.Windows.Forms.ToolStripButton localizeFile;
       private System.Windows.Forms.ToolStripMenuItem insertAliasToolStripMenuItem;
       private System.Windows.Forms.ToolStripMenuItem editLocStringToolStripMenuItem;
-   }
+        internal System.Windows.Forms.ToolStrip toolStrip;
+    }
 }

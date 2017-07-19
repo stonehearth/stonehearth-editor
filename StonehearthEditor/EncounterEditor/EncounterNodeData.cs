@@ -4,6 +4,7 @@ using System.Linq;
 using Microsoft.Msagl.Drawing;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Image = System.Drawing.Image;
 
 namespace StonehearthEditor
 {
@@ -81,6 +82,7 @@ namespace StonehearthEditor
             mChoiceEdgeInfo = new Dictionary<string, List<string>>();
             mEncounterType = NodeFile.Json["encounter_type"].ToString();
             mInEdge = NodeFile.Json["in_edge"].ToString();
+
             if (mInEdge.Equals("start"))
             {
                 mIsStartNode = true;
@@ -167,22 +169,30 @@ namespace StonehearthEditor
 
         public override void UpdateGraphNode(Node graphNode)
         {
+            base.UpdateGraphNode(graphNode);
+
             switch (mEncounterType)
             {
                 case "generator":
-                    graphNode.Attr.LineWidth = 2;
-                    graphNode.Attr.Shape = Shape.Circle;
-                    graphNode.Attr.FillColor = GameMasterNode.kGreen;
-                    graphNode.Attr.LabelMargin = 6;
+                    graphNode.Attr.FillColor = GameMasterNode.kOrange;
                     break;
-                default:
-                    base.UpdateGraphNode(graphNode);
+                case "none":
+                    graphNode.Attr.FillColor = GameMasterNode.kGrey;
                     break;
             }
 
             if (NodeFile.Owner == null)
             {
                 graphNode.Attr.Color = Color.Red;
+            }
+
+            if (NodeFile.IsModified)
+            {
+                graphNode.Attr.AddStyle(Style.Diagonals);
+            }
+            else
+            {
+                graphNode.Attr.RemoveStyle(Style.Diagonals);
             }
         }
 
