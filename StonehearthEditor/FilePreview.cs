@@ -29,11 +29,17 @@ namespace StonehearthEditor
         // The marker used to display errors.
         private const int kErrorMarkerNumber = 3;
 
+        // The lastTipAnchor value when showing error tips.
+        private const int kAnchorError = -2;
+
+        // The lastTipAnchor value when not showing any tips.
+        private const int kAnchorNone = -1;
+
         private FileData mFileData;
         private string mI18nLocKey = null;
         private IReloadable mOwner;
         private int maxLineNumberCharLength;
-        private int lastTipAnchor = -1;
+        private int lastTipAnchor = kAnchorNone;
 
         // JSON validation stuff.
         private JsonSchema4 jsonValidationSchema;
@@ -89,7 +95,7 @@ namespace StonehearthEditor
             if (isInErrorMargin && validationErrors.ContainsKey(line))
             {
                 this.textBox.CallTipShow(position, validationErrors[line]);
-                lastTipAnchor = -2;
+                lastTipAnchor = kAnchorError;
                 return;
             }
 
@@ -829,7 +835,7 @@ namespace StonehearthEditor
             }
             else
             {
-                return -1;
+                return kAnchorNone;
             }
         }
 
@@ -950,6 +956,12 @@ namespace StonehearthEditor
                 validationDelayTimer.Stop();
                 validationDelayTimer.Start();
             }
+        }
+
+        private void textBox_MouseLeave(object sender, EventArgs e)
+        {
+            this.textBox.CallTipCancel();
+            lastTipAnchor = kAnchorNone;
         }
     }
 }
