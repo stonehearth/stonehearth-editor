@@ -27,12 +27,13 @@
                "type": "array",
                "items": {
                   "anyOf": [
-                     {"$ref": "edge.json"},
+                     { "title": "Single Edge", "$ref" : "edge.json" },
                      {
+                        "title": "Weighted Edge",
                         "type": "object",
                         "properties": {
                            "type": {"enum": ["weighted_edge"]},
-                           "out_edge": {"$ref": "edge.json"},
+                           "out_edge": { "$ref": "edge.json" },
                            "weight": {"type": "number", "minimum": 0, "exclusiveMinimum": true}
                         },
                         "required": ["type", "out_edge", "weight"],

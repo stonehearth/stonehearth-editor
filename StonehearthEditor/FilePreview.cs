@@ -302,10 +302,25 @@ namespace StonehearthEditor
                     AddValidationError(error.LineNumber, string.Format("Missing required property '{0}'.", error.Property));
                     break;
                 case ValidationErrorKind.NotAnyOf:
+                    string validFormats = " Valid formats:";
+                    foreach (var alternativeSchema in error.Schema.AnyOf)
+                    {
+                        if (alternativeSchema.Title == null)
+                        {
+                            // We can't name the formats, so skip the extra info.
+                            validFormats = "";
+                            break;
+                        }
+
+                        validFormats += "\n  ";
+                        validFormats += alternativeSchema.Title;
+                    }
+
                     AddValidationError(error.LineNumber, string.Format(
-                        "None of the {0} valid formats for {1} match.",
+                        "None of the {0} valid formats for {1} match.{2}",
                         error.Schema.AnyOf.Count,
-                        string.IsNullOrEmpty(error.Property) ? "the element" : ("'" + error.Property + "'")));
+                        string.IsNullOrEmpty(error.Property) ? "the element" : ("'" + error.Property + "'"),
+                        validFormats));
 
                     // Show sub-errors for the closest matching alternative.
                     var multiError = error as ChildSchemaValidationError;
@@ -333,7 +348,7 @@ namespace StonehearthEditor
 
                     return;  // Don't process sub-errors. We've handled them already.
                 default:
-                    var errorString = error.Kind.ToString();
+                    var errorString = Regex.Replace(error.Kind.ToString(), "([A-Z])", " $1", RegexOptions.Compiled).ToLower().Trim();
                     if (error.Property != null)
                     {
                         errorString = error.Property + ": " + errorString;
