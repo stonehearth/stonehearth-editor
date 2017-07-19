@@ -1,0 +1,11 @@
+{
+   "$schema": "http://json-schema.org/draft-04/schema#",
+   "id": "http://stonehearth.net/schemas/encounters/elements/range.json",
+   "type": "object",
+   "properties": {
+      "min": {"type": "number"},
+      "max": {"type": "number"}
+   },
+   "required": ["min", "max"],
+   "additionalProperties": false
+}

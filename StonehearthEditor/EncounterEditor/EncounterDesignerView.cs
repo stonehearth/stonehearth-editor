@@ -13,7 +13,6 @@ namespace StonehearthEditor
         private DNode mSelectedDNode = null;
         private GameMasterNode mSelectedNode = null;
         private TreeNode mSelectedCampaign = null;
-        private Timer refreshGraphTimer = null;
         private double mPreviousMouseX;
         private double mPreviousMouseY;
         private FilePreview mNodePreview = null;
@@ -52,32 +51,38 @@ namespace StonehearthEditor
 
         private void UpdateSelectedNodeInfo(GameMasterNode node)
         {
+            if (mSelectedNode == node)
+            {
+                return;
+            }
+
+            if (mNodePreview != null)
+            {
+                textVisualSplitter.Panel1.Controls.Remove(mNodePreview);
+            }
+
             if (node != null)
             {
                 mSelectedNode = node;
 
-                if (mNodePreview != null)
-                {
-                    splitContainer2.Panel1.Controls.Remove(mNodePreview);
-                }
-
+                // Add a text editor.
                 mNodePreview = new FilePreview(this, node.FileData);
                 mNodePreview.Dock = DockStyle.Fill;
-                splitContainer2.Panel1.Controls.Add(mNodePreview);
+                textVisualSplitter.Panel1.Controls.Add(mNodePreview);
+                UpdateValidationSchema();
 
+                // Add some extra labels to the text editor toolbar.
                 var nodeNameLabel = mNodePreview.toolStrip.Items.Add(node.Name + (node.NodeType == GameMasterNodeType.ENCOUNTER ? (" (" + ((EncounterNodeData)node.NodeData).EncounterType + ")") : ""));
                 nodeNameLabel.Margin = new Padding(24, 0, 0, 0);
                 nodeNameLabel.Enabled = false;
-
                 var nodePathLabel = mNodePreview.toolStrip.Items.Add(node.Path);
                 nodePathLabel.Enabled = false;
                 nodePathLabel.Alignment = ToolStripItemAlignment.Right;
 
+                // Set up context menu.
                 copyGameMasterNode.Text = "Clone " + node.Name;
                 copyGameMasterNode.Enabled = true;
                 deleteNodeToolStripMenuItem.Visible = true;
-                PopulateFileDetails(node);
-                splitContainer2.Panel2Collapsed = fileDetailsListBox.Items.Count == 0;
                 if (node.Owner == null)
                 {
                     moveToArcMenuItem.Visible = true;
@@ -95,22 +100,57 @@ namespace StonehearthEditor
                 {
                     moveToArcMenuItem.Visible = false;
                 }
+
+                // Set up the visual editor.
+                PopulateVisualEditor(node);
+                textVisualSplitter.Panel2Collapsed = textVisualSplitter.Panel2.Controls.Count == 0;
+
+                // Set up the details panel.
+                PopulateFileDetails(node);
+                editorInfoSplitter.Panel2Collapsed = fileDetailsListBox.Items.Count == 0;
             }
             else
             {
                 mSelectedNode = null;
-                if (mNodePreview != null)
-                {
-                    splitContainer2.Panel1.Controls.Remove(mNodePreview);
-                }
-
                 copyGameMasterNode.Text = "Clone Node";
                 copyGameMasterNode.Enabled = false;
                 moveToArcMenuItem.Visible = false;
                 deleteNodeToolStripMenuItem.Visible = false;
                 PopulateFileDetails(null);
-                splitContainer2.Panel2Collapsed = true;
+                editorInfoSplitter.Panel2Collapsed = true;
             }
+        }
+
+        private void UpdateValidationSchema()
+        {
+            if (mNodePreview == null || mSelectedNode == null)
+            {
+                return;
+            }
+
+            var encounterNode = mSelectedNode.NodeData as EncounterNodeData;
+            if (encounterNode == null)
+            {
+                return;
+            }
+
+            foreach (var scriptFile in GameMasterDataManager.GetInstance().GetGenericScriptNodes())
+            {
+                // TODO: Better matching of type to schema.
+                if (scriptFile.Name == encounterNode.EncounterType + "_encounter")
+                {
+                    if (scriptFile.Schema != null)
+                    {
+                        mNodePreview.SetValidationSchema(scriptFile.Schema);
+                    }
+                    break;
+                }
+            }
+        }
+
+        private void PopulateVisualEditor(GameMasterNode node)
+        {
+            // TODO: Implement.
         }
 
         private static string[] kAttributesOfInterest = new string[]
@@ -232,38 +272,6 @@ namespace StonehearthEditor
                         fileDetailsListBox.Items.Add("average " + attribute + " : " + allStats[attribute] / maxEnemies);
                     }
                 }
-            }
-        }
-
-        private void graphViewer_EdgeAdded(object sender, EventArgs e)
-        {
-            Edge edge = (Edge)sender;
-            if (!GameMasterDataManager.GetInstance().TryAddEdge(edge.Source, edge.Target))
-            {
-                // Shouldn't add this edge. Undo it
-                graphViewer.Undo();
-            }
-            else
-            {
-                GameMasterDataManager.GetInstance().SaveModifiedFiles();
-                if (refreshGraphTimer == null)
-                {
-                    refreshGraphTimer = new Timer();
-                    refreshGraphTimer.Interval = 100;
-                    refreshGraphTimer.Enabled = true;
-                    refreshGraphTimer.Tick += new EventHandler(OnRefreshTimerTick);
-                    refreshGraphTimer.Start();
-                }
-            }
-        }
-
-        private void OnRefreshTimerTick(object sender, EventArgs e)
-        {
-            GameMasterDataManager.GetInstance().RefreshGraph(this);
-            if (refreshGraphTimer != null)
-            {
-                refreshGraphTimer.Stop();
-                refreshGraphTimer = null;
             }
         }
 

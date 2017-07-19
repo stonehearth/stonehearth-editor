@@ -38,18 +38,22 @@
             this.saveNewEncounterNodeDialog = new System.Windows.Forms.SaveFileDialog();
             this.i18nTooltip = new System.Windows.Forms.ToolTip(this.components);
             this.encounterTreeView = new System.Windows.Forms.TreeView();
-            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.graphEditorSplitter = new System.Windows.Forms.SplitContainer();
             this.graphViewer = new Microsoft.Msagl.GraphViewerGdi.GViewer();
-            this.splitContainer2 = new System.Windows.Forms.SplitContainer();
+            this.editorInfoSplitter = new System.Windows.Forms.SplitContainer();
+            this.textVisualSplitter = new System.Windows.Forms.SplitContainer();
             this.fileDetailsListBox = new System.Windows.Forms.ListBox();
             this.encounterGraphContextMenu.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
-            this.splitContainer1.Panel1.SuspendLayout();
-            this.splitContainer1.Panel2.SuspendLayout();
-            this.splitContainer1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
-            this.splitContainer2.Panel2.SuspendLayout();
-            this.splitContainer2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.graphEditorSplitter)).BeginInit();
+            this.graphEditorSplitter.Panel1.SuspendLayout();
+            this.graphEditorSplitter.Panel2.SuspendLayout();
+            this.graphEditorSplitter.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.editorInfoSplitter)).BeginInit();
+            this.editorInfoSplitter.Panel1.SuspendLayout();
+            this.editorInfoSplitter.Panel2.SuspendLayout();
+            this.editorInfoSplitter.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.textVisualSplitter)).BeginInit();
+            this.textVisualSplitter.SuspendLayout();
             this.SuspendLayout();
             // 
             // encounterGraphContextMenu
@@ -111,25 +115,25 @@
             this.encounterTreeView.TabIndex = 6;
             this.encounterTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.encounterTreeView_AfterSelect);
             // 
-            // splitContainer1
+            // graphEditorSplitter
             // 
-            this.splitContainer1.DataBindings.Add(new System.Windows.Forms.Binding("SplitterDistance", global::StonehearthEditor.Properties.Settings.Default, "EncounterDesignerViewTreeSplitterDistance", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
-            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer1.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
-            this.splitContainer1.Location = new System.Drawing.Point(250, 0);
-            this.splitContainer1.Name = "splitContainer1";
-            this.splitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            this.graphEditorSplitter.DataBindings.Add(new System.Windows.Forms.Binding("SplitterDistance", global::StonehearthEditor.Properties.Settings.Default, "EncounterDesignerViewTreeSplitterDistance", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.graphEditorSplitter.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.graphEditorSplitter.FixedPanel = System.Windows.Forms.FixedPanel.Panel2;
+            this.graphEditorSplitter.Location = new System.Drawing.Point(250, 0);
+            this.graphEditorSplitter.Name = "graphEditorSplitter";
+            this.graphEditorSplitter.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
-            // splitContainer1.Panel1
+            // graphEditorSplitter.Panel1
             // 
-            this.splitContainer1.Panel1.Controls.Add(this.graphViewer);
+            this.graphEditorSplitter.Panel1.Controls.Add(this.graphViewer);
             // 
-            // splitContainer1.Panel2
+            // graphEditorSplitter.Panel2
             // 
-            this.splitContainer1.Panel2.Controls.Add(this.splitContainer2);
-            this.splitContainer1.Size = new System.Drawing.Size(875, 498);
-            this.splitContainer1.SplitterDistance = global::StonehearthEditor.Properties.Settings.Default.EncounterDesignerViewTreeSplitterDistance;
-            this.splitContainer1.TabIndex = 4;
+            this.graphEditorSplitter.Panel2.Controls.Add(this.editorInfoSplitter);
+            this.graphEditorSplitter.Size = new System.Drawing.Size(875, 498);
+            this.graphEditorSplitter.SplitterDistance = global::StonehearthEditor.Properties.Settings.Default.EncounterDesignerViewTreeSplitterDistance;
+            this.graphEditorSplitter.TabIndex = 4;
             // 
             // graphViewer
             // 
@@ -174,27 +178,36 @@
             this.graphViewer.ZoomFraction = 0.5D;
             this.graphViewer.ZoomWhenMouseWheelScroll = true;
             this.graphViewer.ZoomWindowThreshold = 0.05D;
-            this.graphViewer.EdgeAdded += new System.EventHandler(this.graphViewer_EdgeAdded);
             this.graphViewer.EdgeRemoved += new System.EventHandler(this.graphViewer_EdgeRemoved);
             this.graphViewer.MouseMove += new System.Windows.Forms.MouseEventHandler(this.graphViewer_MouseMove);
             this.graphViewer.MouseDown += new System.Windows.Forms.MouseEventHandler(this.graphViewer_MouseDown);
             // 
-            // splitContainer2
+            // editorInfoSplitter
             // 
-            this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer2.Location = new System.Drawing.Point(0, 0);
-            this.splitContainer2.Name = "splitContainer2";
+            this.editorInfoSplitter.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.editorInfoSplitter.Location = new System.Drawing.Point(0, 0);
+            this.editorInfoSplitter.Name = "editorInfoSplitter";
             // 
-            // splitContainer2.Panel1
+            // editorInfoSplitter.Panel1
             // 
-            this.splitContainer2.Panel1.AutoScroll = true;
+            this.editorInfoSplitter.Panel1.AutoScroll = true;
+            this.editorInfoSplitter.Panel1.Controls.Add(this.textVisualSplitter);
             // 
-            // splitContainer2.Panel2
+            // editorInfoSplitter.Panel2
             // 
-            this.splitContainer2.Panel2.Controls.Add(this.fileDetailsListBox);
-            this.splitContainer2.Size = new System.Drawing.Size(875, 173);
-            this.splitContainer2.SplitterDistance = 700;
-            this.splitContainer2.TabIndex = 0;
+            this.editorInfoSplitter.Panel2.Controls.Add(this.fileDetailsListBox);
+            this.editorInfoSplitter.Size = new System.Drawing.Size(875, 173);
+            this.editorInfoSplitter.SplitterDistance = 700;
+            this.editorInfoSplitter.TabIndex = 0;
+            // 
+            // textVisualSplitter
+            // 
+            this.textVisualSplitter.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textVisualSplitter.Location = new System.Drawing.Point(0, 0);
+            this.textVisualSplitter.Name = "textVisualSplitter";
+            this.textVisualSplitter.Size = new System.Drawing.Size(700, 173);
+            this.textVisualSplitter.SplitterDistance = 459;
+            this.textVisualSplitter.TabIndex = 0;
             // 
             // fileDetailsListBox
             // 
@@ -210,18 +223,21 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.splitContainer1);
+            this.Controls.Add(this.graphEditorSplitter);
             this.Controls.Add(this.encounterTreeView);
             this.Name = "EncounterDesignerView";
             this.Size = new System.Drawing.Size(1125, 498);
             this.encounterGraphContextMenu.ResumeLayout(false);
-            this.splitContainer1.Panel1.ResumeLayout(false);
-            this.splitContainer1.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
-            this.splitContainer1.ResumeLayout(false);
-            this.splitContainer2.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
-            this.splitContainer2.ResumeLayout(false);
+            this.graphEditorSplitter.Panel1.ResumeLayout(false);
+            this.graphEditorSplitter.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.graphEditorSplitter)).EndInit();
+            this.graphEditorSplitter.ResumeLayout(false);
+            this.editorInfoSplitter.Panel1.ResumeLayout(false);
+            this.editorInfoSplitter.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.editorInfoSplitter)).EndInit();
+            this.editorInfoSplitter.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.textVisualSplitter)).EndInit();
+            this.textVisualSplitter.ResumeLayout(false);
             this.ResumeLayout(false);
 
       }
@@ -234,11 +250,12 @@
       private System.Windows.Forms.ToolStripMenuItem deleteNodeToolStripMenuItem;
       private System.Windows.Forms.SaveFileDialog saveNewEncounterNodeDialog;
       private System.Windows.Forms.ToolTip i18nTooltip;
-      private System.Windows.Forms.SplitContainer splitContainer1;
+      private System.Windows.Forms.SplitContainer graphEditorSplitter;
       private Microsoft.Msagl.GraphViewerGdi.GViewer graphViewer;
       private System.Windows.Forms.TreeView encounterTreeView;
-        private System.Windows.Forms.SplitContainer splitContainer2;
+        private System.Windows.Forms.SplitContainer editorInfoSplitter;
         private System.Windows.Forms.ListBox fileDetailsListBox;
         private System.Windows.Forms.ToolStripMenuItem moveToArcMenuItem;
+        private System.Windows.Forms.SplitContainer textVisualSplitter;
     }
 }

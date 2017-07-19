@@ -7,28 +7,38 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using Newtonsoft.Json.Linq;
+using NJsonSchema;
 using ScintillaNET;
 using Color = System.Drawing.Color;
+using Newtonsoft.Json;
+using NJsonSchema.Validation;
 
 namespace StonehearthEditor
 {
     public partial class FilePreview : UserControl
     {
-        /// <summary>
-        /// Index of the indicator for i18n()
-        /// </summary>
+        // Index of the indicator for i18n()
         private const int kI18nIndicator = 8;
 
-        /// <summary>
-        /// Index of the indicator for file() and file-ish things
-        /// </summary>
+        // Index of the indicator for file() and file-ish things
         private const int kFileIndicator = 9;
+
+        // The margin used to display errors.
+        private const int kErrorMarginNumber = 1;
+
+        // The marker used to display errors.
+        private const int kErrorMarkerNumber = 3;
 
         private FileData mFileData;
         private string mI18nLocKey = null;
         private IReloadable mOwner;
         private int maxLineNumberCharLength;
         private int lastTipAnchor = -1;
+
+        // JSON validation stuff.
+        private JsonSchema4 jsonValidationSchema;
+        private Timer validationTimer;
+        private Dictionary<int, string> validationErrors = new Dictionary<int, string>();
 
         /// <summary>
         /// Indicator for i18n()
@@ -50,6 +60,11 @@ namespace StonehearthEditor
             this.configureScintilla();
         }
 
+        public string GetText()
+        {
+            return textBox.Text;
+        }
+
         private void textBox_Leave(object sender, EventArgs e)
         {
             mFileData.TrySetFlatFileData(textBox.Text);
@@ -59,6 +74,17 @@ namespace StonehearthEditor
         {
             // Translate mouse xy to character position
             var position = this.textBox.CharPositionFromPoint(e.X, e.Y);
+            var line = this.textBox.LineFromPosition(position);
+
+            // Figure out if we are hovering over an error indicator.
+            var isInErrorMargin = e.X > textBox.Margins[0].Width && e.X <= textBox.Margins[0].Width + textBox.Margins[kErrorMarginNumber].Width;
+            if (isInErrorMargin && validationErrors.ContainsKey(line))
+            {
+                this.textBox.CallTipShow(position, validationErrors[line]);
+                lastTipAnchor = -2;
+                return;
+            }
+
             var currentAnchor = this.getIndicatorStartPosition(position);
 
             if (lastTipAnchor == currentAnchor)
@@ -184,6 +210,66 @@ namespace StonehearthEditor
             if (mOwner != null)
             {
                 mOwner.Reload();
+            }
+        }
+
+        internal void SetValidationSchema(JsonSchema4 schema)
+        {
+            jsonValidationSchema = schema;
+
+            this.textBox.Margins[kErrorMarginNumber].Width = jsonValidationSchema == null ? 0 : 16;
+
+            if (validationTimer != null)
+            {
+                validationTimer.Stop();
+                validationTimer = null;
+            }
+
+            if (jsonValidationSchema != null)
+            {
+                validationTimer = new Timer();
+                validationTimer.Interval = 200;
+                validationTimer.Enabled = true;
+                validationTimer.Tick += new EventHandler(ValidateSchema);
+                validationTimer.Start();
+            }
+        }
+
+        private void ValidateSchema(object sender, EventArgs evt)
+        {
+            if (jsonValidationSchema == null || textBox.Lexer != ScintillaNET.Lexer.Json)
+            {
+                // No validation possible.
+                textBox.Styles[Style.LineNumber].BackColor = Color.LightGray;
+                return;
+            }
+
+            // Find errors.
+            validationErrors.Clear();
+            try
+            {
+                foreach (var error in jsonValidationSchema.Validate(GetText()))
+                {
+                    if (error.HasLineInfo)
+                    {
+                        validationErrors[error.LineNumber - 1] = error.ToString();
+                    }
+                }
+            }
+            catch (JsonReaderException exception)
+            {
+                validationErrors[exception.LineNumber - 1] = exception.Message;
+            }
+
+            // Display errors.
+            textBox.MarkerDeleteAll(kErrorMarkerNumber);
+            textBox.Styles[Style.LineNumber].BackColor = validationErrors.Count > 0 ? Color.LightGray : Color.LightGreen;
+            if (validationErrors.Count > 0)
+            {
+                foreach (var error in validationErrors)
+                {
+                    textBox.Lines[error.Key].MarkerAdd(kErrorMarkerNumber);
+                }
             }
         }
 
@@ -346,6 +432,7 @@ namespace StonehearthEditor
             textBox.Styles[Style.Default].Size = 10;
             textBox.Styles[Style.Default].ForeColor = Color.Black;
             textBox.Margins[0].Width = 16;
+            textBox.Margins[0].Cursor = MarginCursor.Arrow;
             textBox.StyleClearAll();
 
             // Based on the extension, we need to choose the right lexer/style
@@ -375,12 +462,24 @@ namespace StonehearthEditor
                     break;
             }
 
+            // Configure tooltip.
             this.textBox.Styles[Style.CallTip].SizeF = 8.25f;
             this.textBox.Styles[Style.CallTip].ForeColor = Color.Black;
             this.textBox.Styles[Style.CallTip].BackColor = Color.White;
             this.textBox.Styles[Style.CallTip].Font = "Verdana";
             this.textBox.Styles[Style.CallTip].Hotspot = true;
 
+            // Configure error margin & marker style.
+            this.textBox.Margins[kErrorMarginNumber].Width = 16;
+            this.textBox.Margins[kErrorMarginNumber].Type = MarginType.Symbol;
+            this.textBox.Margins[kErrorMarginNumber].Mask = Marker.MaskAll;
+            this.textBox.Margins[kErrorMarginNumber].Cursor = MarginCursor.Arrow;
+
+            this.textBox.Markers[kErrorMarkerNumber].Symbol = MarkerSymbol.ShortArrow;
+            this.textBox.Markers[kErrorMarkerNumber].SetForeColor(Color.Red);
+            this.textBox.Markers[kErrorMarkerNumber].SetBackColor(Color.IndianRed);
+
+            // Restyle now and on demand.
             this.textBox.TextChanged += (sender, e) => this.restyleDocument();
             this.restyleDocument();
         }

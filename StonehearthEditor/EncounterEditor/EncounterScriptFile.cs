@@ -1,13 +1,22 @@
 ﻿using System.IO;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using Newtonsoft.Json;
+using NJsonSchema;
 
 namespace StonehearthEditor
 {
     public class EncounterScriptFile
     {
+        private static readonly TaskFactory taskFactory = new TaskFactory(
+            CancellationToken.None, TaskCreationOptions.None, TaskContinuationOptions.None, TaskScheduler.Default);
+
         private string mPath;
         private string mFileName;
         private string mDefaultJson;
+        private JsonSchema4 mSchema;
 
         public EncounterScriptFile(string filePath)
         {
@@ -17,16 +26,34 @@ namespace StonehearthEditor
 
         public void Load()
         {
-            if (System.IO.File.Exists(mPath))
+            mDefaultJson = ExtractTextRange(mPath, "<StonehearthEditor>", "</StonehearthEditor>");
+            var schemaText = ExtractTextRange(mPath, "<StonehearthEditorSchema>", "</StonehearthEditorSchema>");
+            if (schemaText.Length > 0)
             {
-                using (StreamReader sr = new StreamReader(mPath, Encoding.UTF8))
+                try
+                {
+                    mSchema = taskFactory.StartNew(() => JsonSchema4.FromJsonAsync(schemaText, Application.StartupPath + "/schemas/encounters/tmp.json"))
+                        .Unwrap().GetAwaiter().GetResult();
+                }
+                catch (System.Exception e)
+                {
+                    MessageBox.Show("Encounter type specifies a schema, but it isn't valid.\nFile: " + mPath + "\nError: " + e.Message);
+                }
+            }
+        }
+
+        private static string ExtractTextRange(string filePath, string startToken, string endToken)
+        {
+            if (System.IO.File.Exists(filePath))
+            {
+                using (StreamReader sr = new StreamReader(filePath, Encoding.UTF8))
                 {
                     string line;
                     bool started = false;
                     StringBuilder sb = new StringBuilder();
                     while ((line = sr.ReadLine()) != null)
                     {
-                        if (line.StartsWith("</StonehearthEditor>"))
+                        if (line.TrimStart().StartsWith(endToken))
                         {
                             started = false;
                             break;
@@ -37,15 +64,17 @@ namespace StonehearthEditor
                             sb.AppendLine(line);
                         }
 
-                        if (line.StartsWith("<StonehearthEditor>"))
+                        if (line.TrimStart().StartsWith(startToken))
                         {
                             started = true;
                         }
                     }
 
-                    mDefaultJson = sb.ToString();
+                    return sb.ToString();
                 }
             }
+
+            return "";
         }
 
         public void WriteDefaultToFile(string path)
@@ -69,6 +98,11 @@ namespace StonehearthEditor
         public string Path
         {
             get { return mPath; }
+        }
+
+        public JsonSchema4 Schema
+        {
+            get { return mSchema; }
         }
     }
 }
