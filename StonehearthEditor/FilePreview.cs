@@ -74,7 +74,7 @@ namespace StonehearthEditor
             if (mFileData.FlatFileData != textBox.Text)
             {
                 mFileData.TrySetFlatFileData(textBox.Text);
-                OnModifiedChanged(true);
+                OnModifiedChanged?.Invoke(true);
             }
         }
 
@@ -149,7 +149,7 @@ namespace StonehearthEditor
             mFileData.TrySaveFile();
 
             this.textBox.SetSavePoint();
-            OnModifiedChanged(false);
+            OnModifiedChanged?.Invoke(false);
             TabPage parentControl = Parent as TabPage;
             if (parentControl != null)
             {
@@ -225,23 +225,12 @@ namespace StonehearthEditor
         internal void SetValidationSchema(JsonSchema4 schema)
         {
             jsonValidationSchema = schema;
-            this.textBox.Margins[kErrorMarginNumber].Width = jsonValidationSchema == null ? 0 : 16;
-
             ValidateSchema();
-
-            // Timer to be started by textBox_TextChanged().
-            validationDelayTimer = new Timer();
-            validationDelayTimer.Interval = 100;
-            validationDelayTimer.Enabled = true;
-            validationDelayTimer.Tick += new EventHandler((s, e) => {
-                validationDelayTimer.Stop();
-                ValidateSchema();
-            });
         }
 
         private void ValidateSchema()
         {
-            if (jsonValidationSchema == null || textBox.Lexer != ScintillaNET.Lexer.Json)
+            if (textBox.Lexer != ScintillaNET.Lexer.Json)
             {
                 // No validation possible.
                 textBox.Styles[Style.LineNumber].BackColor = Color.LightGray;
@@ -252,9 +241,18 @@ namespace StonehearthEditor
             validationErrors.Clear();
             try
             {
-                foreach (var error in jsonValidationSchema.Validate(GetText()))
+                if (jsonValidationSchema == null)
                 {
-                    FillValidationErrorsFromJsonSchemaError(error);
+                    // No schema. Just make sure the JSON is valid.
+                    JToken.Parse(GetText());
+                }
+                else
+                {
+                    // Validate based on the schema.
+                    foreach (var error in jsonValidationSchema.Validate(GetText()))
+                    {
+                        FillValidationErrorsFromJsonSchemaError(error);
+                    }
                 }
             }
             catch (JsonReaderException exception)
@@ -264,7 +262,7 @@ namespace StonehearthEditor
 
             // Display errors.
             textBox.MarkerDeleteAll(kErrorMarkerNumber);
-            textBox.Styles[Style.LineNumber].BackColor = validationErrors.Count > 0 ? Color.IndianRed : Color.LightGreen;
+            textBox.Styles[Style.LineNumber].BackColor = validationErrors.Count > 0 ? Color.IndianRed : (jsonValidationSchema == null ? Color.LightGray : Color.LightGreen);
             if (validationErrors.Count > 0)
             {
                 foreach (var error in validationErrors)
@@ -555,6 +553,16 @@ namespace StonehearthEditor
             textBox.Margins[0].Cursor = MarginCursor.Arrow;
             textBox.StyleClearAll();
 
+            // Configure error margin & marker style.
+            this.textBox.Margins[kErrorMarginNumber].Width = 0;
+            this.textBox.Margins[kErrorMarginNumber].Type = MarginType.Symbol;
+            this.textBox.Margins[kErrorMarginNumber].Mask = Marker.MaskAll;
+            this.textBox.Margins[kErrorMarginNumber].Cursor = MarginCursor.Arrow;
+
+            this.textBox.Markers[kErrorMarkerNumber].Symbol = MarkerSymbol.ShortArrow;
+            this.textBox.Markers[kErrorMarkerNumber].SetForeColor(Color.Red);
+            this.textBox.Markers[kErrorMarkerNumber].SetBackColor(Color.IndianRed);
+
             // Based on the extension, we need to choose the right lexer/style
             switch (System.IO.Path.GetExtension(mFileData.Path))
             {
@@ -588,16 +596,6 @@ namespace StonehearthEditor
             this.textBox.Styles[Style.CallTip].BackColor = Color.White;
             this.textBox.Styles[Style.CallTip].Font = "Verdana";
             this.textBox.Styles[Style.CallTip].Hotspot = true;
-
-            // Configure error margin & marker style.
-            this.textBox.Margins[kErrorMarginNumber].Width = 0;
-            this.textBox.Margins[kErrorMarginNumber].Type = MarginType.Symbol;
-            this.textBox.Margins[kErrorMarginNumber].Mask = Marker.MaskAll;
-            this.textBox.Margins[kErrorMarginNumber].Cursor = MarginCursor.Arrow;
-
-            this.textBox.Markers[kErrorMarkerNumber].Symbol = MarkerSymbol.ShortArrow;
-            this.textBox.Markers[kErrorMarkerNumber].SetForeColor(Color.Red);
-            this.textBox.Markers[kErrorMarkerNumber].SetBackColor(Color.IndianRed);
 
             // Restyle now and on demand.
             this.textBox.TextChanged += (sender, e) => this.restyleDocument();
@@ -651,6 +649,16 @@ namespace StonehearthEditor
             this.mFileIndicator.ForeColor = Color.Green;
             this.mFileIndicator.HoverForeColor = Color.DarkGreen;
             this.mFileIndicator.Alpha = 50;
+
+            // Prepare validator.
+            validationDelayTimer = new Timer();  // To be started by textBox_TextChanged().
+            validationDelayTimer.Interval = 100;
+            validationDelayTimer.Enabled = true;
+            validationDelayTimer.Tick += new EventHandler((s, e) => {
+                validationDelayTimer.Stop();
+                ValidateSchema();
+            });
+            this.textBox.Margins[kErrorMarginNumber].Width = 16;
         }
 
         /// <summary>
