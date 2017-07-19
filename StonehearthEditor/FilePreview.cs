@@ -6,12 +6,12 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NJsonSchema;
+using NJsonSchema.Validation;
 using ScintillaNET;
 using Color = System.Drawing.Color;
-using Newtonsoft.Json;
-using NJsonSchema.Validation;
 
 namespace StonehearthEditor
 {
@@ -37,8 +37,8 @@ namespace StonehearthEditor
 
         // JSON validation stuff.
         private JsonSchema4 jsonValidationSchema;
-        private Timer validationTimer;
         private Dictionary<int, string> validationErrors = new Dictionary<int, string>();
+        private Timer validationDelayTimer;
 
         /// <summary>
         /// Indicator for i18n()
@@ -216,26 +216,21 @@ namespace StonehearthEditor
         internal void SetValidationSchema(JsonSchema4 schema)
         {
             jsonValidationSchema = schema;
-
             this.textBox.Margins[kErrorMarginNumber].Width = jsonValidationSchema == null ? 0 : 16;
 
-            if (validationTimer != null)
-            {
-                validationTimer.Stop();
-                validationTimer = null;
-            }
+            ValidateSchema();
 
-            if (jsonValidationSchema != null)
-            {
-                validationTimer = new Timer();
-                validationTimer.Interval = 200;
-                validationTimer.Enabled = true;
-                validationTimer.Tick += new EventHandler(ValidateSchema);
-                validationTimer.Start();
-            }
+            // Timer to be started by textBox_TextChanged().
+            validationDelayTimer = new Timer();
+            validationDelayTimer.Interval = 100;
+            validationDelayTimer.Enabled = true;
+            validationDelayTimer.Tick += new EventHandler((s, e) => {
+                validationDelayTimer.Stop();
+                ValidateSchema();
+            });
         }
 
-        private void ValidateSchema(object sender, EventArgs evt)
+        private void ValidateSchema()
         {
             if (jsonValidationSchema == null || textBox.Lexer != ScintillaNET.Lexer.Json)
             {
@@ -250,10 +245,7 @@ namespace StonehearthEditor
             {
                 foreach (var error in jsonValidationSchema.Validate(GetText()))
                 {
-                    if (error.HasLineInfo)
-                    {
-                        validationErrors[error.LineNumber - 1] = error.ToString();
-                    }
+                    FillValidationErrorsFromJsonSchemaError(error);
                 }
             }
             catch (JsonReaderException exception)
@@ -263,13 +255,117 @@ namespace StonehearthEditor
 
             // Display errors.
             textBox.MarkerDeleteAll(kErrorMarkerNumber);
-            textBox.Styles[Style.LineNumber].BackColor = validationErrors.Count > 0 ? Color.LightGray : Color.LightGreen;
+            textBox.Styles[Style.LineNumber].BackColor = validationErrors.Count > 0 ? Color.IndianRed : Color.LightGreen;
             if (validationErrors.Count > 0)
             {
                 foreach (var error in validationErrors)
                 {
                     textBox.Lines[error.Key].MarkerAdd(kErrorMarkerNumber);
                 }
+            }
+        }
+
+        private void FillValidationErrorsFromJsonSchemaError(ValidationError error)
+        {
+            if (!error.HasLineInfo)
+            {
+                return;
+            }
+
+            switch (error.Kind)
+            {
+                case ValidationErrorKind.PatternMismatch:
+                    AddValidationError(error.LineNumber, string.Format("The value of '{0}' must match the regex pattern: {1}", error.Property, error.Schema.Pattern));
+                    break;
+                case ValidationErrorKind.NotInEnumeration:
+                    string choices = "";
+                    foreach (var choice in error.Schema.Enumeration)
+                    {
+                        if (choices.Length > 0)
+                        {
+                            choices += ", ";
+                        }
+
+                        choices += '"';
+                        choices += choice == null ? "null" : choice.ToString();
+                        choices += '"';
+                    }
+
+                    AddValidationError(error.LineNumber, string.Format("The value of '{0}' must be one of: {1}", error.Property, choices));
+                    break;
+                case ValidationErrorKind.NoAdditionalPropertiesAllowed:
+                    string validProperties = string.Join(", ", error.Schema.ActualProperties.Keys);
+                    AddValidationError(error.LineNumber, string.Format(
+                        "Property '{0}' is not expected in this object. Valid properties: {1}", error.Property, validProperties));
+                    break;
+                case ValidationErrorKind.PropertyRequired:
+                    AddValidationError(error.LineNumber, string.Format("Missing required property '{0}'.", error.Property));
+                    break;
+                case ValidationErrorKind.NotAnyOf:
+                    AddValidationError(error.LineNumber, string.Format(
+                        "None of the {0} valid formats for {1} match.",
+                        error.Schema.AnyOf.Count,
+                        string.IsNullOrEmpty(error.Property) ? "the element" : ("'" + error.Property + "'")));
+
+                    // Show sub-errors for the closest matching alternative.
+                    var multiError = error as ChildSchemaValidationError;
+                    if (multiError != null)
+                    {
+                        int minNumSubErrors = int.MaxValue;
+                        ICollection<ValidationError> bestSubErrorsList = null;
+                        foreach (var subErrors in multiError.Errors)
+                        {
+                            if (subErrors.Value.Count <= minNumSubErrors)
+                            {
+                                bestSubErrorsList = subErrors.Value;
+                                minNumSubErrors = bestSubErrorsList.Count;
+                            }
+                        }
+
+                        if (bestSubErrorsList != null)
+                        {
+                            foreach (var subError in bestSubErrorsList)
+                            {
+                                FillValidationErrorsFromJsonSchemaError(subError);
+                            }
+                        }
+                    }
+
+                    return;  // Don't process sub-errors. We've handled them already.
+                default:
+                    var errorString = error.Kind.ToString();
+                    if (error.Property != null)
+                    {
+                        errorString = error.Property + ": " + errorString;
+                    }
+
+                    AddValidationError(error.LineNumber, errorString);
+                    break;
+            }
+
+            // Show all sub-errors.
+            if (error is ChildSchemaValidationError)
+            {
+                foreach (var subErrors in (error as ChildSchemaValidationError).Errors)
+                {
+                    foreach (var subError in subErrors.Value)
+                    {
+                        FillValidationErrorsFromJsonSchemaError(subError);
+                    }
+                }
+            }
+        }
+
+        private void AddValidationError(int line, string message)
+        {
+            var zeroBasedLine = line - 1;
+            if (validationErrors.ContainsKey(zeroBasedLine))
+            {
+                validationErrors[zeroBasedLine] += '\n' + message;
+            }
+            else
+            {
+                validationErrors[zeroBasedLine] = message;
             }
         }
 
@@ -470,7 +566,7 @@ namespace StonehearthEditor
             this.textBox.Styles[Style.CallTip].Hotspot = true;
 
             // Configure error margin & marker style.
-            this.textBox.Margins[kErrorMarginNumber].Width = 16;
+            this.textBox.Margins[kErrorMarginNumber].Width = 0;
             this.textBox.Margins[kErrorMarginNumber].Type = MarginType.Symbol;
             this.textBox.Margins[kErrorMarginNumber].Mask = Marker.MaskAll;
             this.textBox.Margins[kErrorMarginNumber].Cursor = MarginCursor.Arrow;
@@ -806,6 +902,15 @@ namespace StonehearthEditor
             if (parentControl != null)
             {
                 parentControl.Text = mFileData.FileName;
+            }
+        }
+
+        private void textBox_TextChanged(object sender, EventArgs e)
+        {
+            if (validationDelayTimer != null)
+            {
+                validationDelayTimer.Stop();
+                validationDelayTimer.Start();
             }
         }
     }

@@ -67,6 +67,7 @@
             this.textBox.InsertCheck += new System.EventHandler<ScintillaNET.InsertCheckEventArgs>(this.textBox_InsertCheck);
             this.textBox.SavePointLeft += new System.EventHandler<System.EventArgs>(this.textBox_SavePointLeft);
             this.textBox.SavePointReached += new System.EventHandler<System.EventArgs>(this.textBox_SavePointReached);
+            this.textBox.TextChanged += new System.EventHandler(this.textBox_TextChanged);
             this.textBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBox_KeyDown);
             this.textBox.Leave += new System.EventHandler(this.textBox_Leave);
             this.textBox.MouseMove += new System.Windows.Forms.MouseEventHandler(this.textBox_MouseMove);
