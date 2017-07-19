@@ -165,11 +165,25 @@ namespace StonehearthEditor
         {
             var text = e.Text;
 
-            // Replace tabs with 3 whitespaces
+            // Replace tabs with 3 spaces.
             text = text.Replace("\t", "   ");
-            var x = this.textBox.Lines.Select(l => l.Indentation).ToList();
 
-            // TODO: Handle newlines and indention here somehow? Or can Indentation do that?
+            // Auto indent.
+            if (text == "\r\n")
+            {
+                var curLine = textBox.LineFromPosition(e.Position);
+                var curLineText = textBox.Lines[curLine].Text;
+
+                // Copy last line's indent.
+                var indent = Regex.Match(curLineText, @"^\s*");
+                text += indent.Value;
+
+                // For JSON, add one level of indent if the line ends with a bracket.
+                if (textBox.Lexer == ScintillaNET.Lexer.Json && Regex.IsMatch(curLineText, @"[\[\{]\s*$"))
+                {
+                    text += "   ";
+                }
+            }
 
             // Return the modified text.
             e.Text = text;
