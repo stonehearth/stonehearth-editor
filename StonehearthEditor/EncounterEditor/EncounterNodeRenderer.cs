@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Linq;
 using Microsoft.Msagl.Core.Geometry.Curves;
 using Microsoft.Msagl.Drawing;
 using Microsoft.Msagl.GraphViewerGdi;
@@ -134,7 +135,17 @@ namespace StonehearthEditor
             var yRadius = (float)nodeAttr.YRadius;
             var path = new GraphicsPath();
             FillTheGraphicsPath(drNode, width, height, ref xRadius, ref yRadius, path);
-            g.FillPath(new SolidBrush(fc), path);
+            Brush brush;
+            if (nodeAttr.Styles.FirstOrDefault() == Style.Diagonals)
+            {
+                brush = new HatchBrush(HatchStyle.DiagonalCross, Color.FromArgb(160, 160, 165), fc);
+            }
+            else
+            {
+                brush = new SolidBrush(fc);
+            }
+
+            g.FillPath(brush, path);
             g.DrawPath(pen, path);
         }
 

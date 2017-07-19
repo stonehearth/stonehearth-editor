@@ -82,6 +82,7 @@ namespace StonehearthEditor
             mChoiceEdgeInfo = new Dictionary<string, List<string>>();
             mEncounterType = NodeFile.Json["encounter_type"].ToString();
             mInEdge = NodeFile.Json["in_edge"].ToString();
+
             if (mInEdge.Equals("start"))
             {
                 mIsStartNode = true;
@@ -183,6 +184,15 @@ namespace StonehearthEditor
             if (NodeFile.Owner == null)
             {
                 graphNode.Attr.Color = Color.Red;
+            }
+
+            if (NodeFile.IsModified)
+            {
+                graphNode.Attr.AddStyle(Style.Diagonals);
+            }
+            else
+            {
+                graphNode.Attr.RemoveStyle(Style.Diagonals);
             }
         }
 

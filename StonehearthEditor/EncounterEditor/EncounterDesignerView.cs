@@ -70,6 +70,15 @@ namespace StonehearthEditor
                 mNodePreview.Dock = DockStyle.Fill;
                 textVisualSplitter.Panel1.Controls.Add(mNodePreview);
                 UpdateValidationSchema();
+                mNodePreview.OnModifiedChanged += (bool isModified) =>
+                {
+                    if (isModified != mSelectedNode.IsModified)
+                    {
+                        mSelectedNode.IsModified = isModified;
+                        node.NodeData.UpdateGraphNode(mSelectedDNode.DrawingNode);
+                        graphViewer.Invalidate(mSelectedDNode);
+                    }
+                };
 
                 // Add some extra labels to the text editor toolbar.
                 var nodeNameLabel = mNodePreview.toolStrip.Items.Add(node.Name + (node.NodeType == GameMasterNodeType.ENCOUNTER ? (" (" + ((EncounterNodeData)node.NodeData).EncounterType + ")") : ""));

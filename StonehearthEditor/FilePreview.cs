@@ -50,6 +50,10 @@ namespace StonehearthEditor
         /// </summary>
         private Indicator mFileIndicator => this.textBox.Indicators[kFileIndicator];
 
+        public delegate void ModifiedChangedHandler(bool isModified);
+
+        public event ModifiedChangedHandler OnModifiedChanged;
+
         public FilePreview(IReloadable owner, FileData fileData)
         {
             mFileData = fileData;
@@ -67,7 +71,11 @@ namespace StonehearthEditor
 
         private void textBox_Leave(object sender, EventArgs e)
         {
-            mFileData.TrySetFlatFileData(textBox.Text);
+            if (mFileData.FlatFileData != textBox.Text)
+            {
+                mFileData.TrySetFlatFileData(textBox.Text);
+                OnModifiedChanged(true);
+            }
         }
 
         private void textBox_MouseMove(object sender, MouseEventArgs e)
@@ -141,6 +149,7 @@ namespace StonehearthEditor
             mFileData.TrySaveFile();
 
             this.textBox.SetSavePoint();
+            OnModifiedChanged(false);
             TabPage parentControl = Parent as TabPage;
             if (parentControl != null)
             {
