@@ -175,7 +175,7 @@ namespace StonehearthEditor
                 var curLineText = textBox.Lines[curLine].Text;
 
                 // Copy last line's indent.
-                var indent = Regex.Match(curLineText, @"^\s*");
+                var indent = Regex.Match(curLineText, @"^[ \t]*");
                 text += indent.Value;
 
                 // For JSON, add one level of indent if the line ends with a bracket.
@@ -187,14 +187,6 @@ namespace StonehearthEditor
 
             // Return the modified text.
             e.Text = text;
-        }
-
-        private void textBox_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Tab)
-            {
-                e.Handled = true;
-            }
         }
 
         private void openFile_Click(object sender, EventArgs e)
