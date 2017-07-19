@@ -174,6 +174,7 @@
             // 
             this.splitContainer2.Panel2.Controls.Add(this.splitContainer3);
             this.splitContainer2.Panel2.Controls.Add(this.selectedFilePathTextBox);
+            this.splitContainer2.Panel2.Padding = new System.Windows.Forms.Padding(0, 3, 0, 0);
             this.splitContainer2.Size = new System.Drawing.Size(762, 547);
             this.splitContainer2.SplitterDistance = 200;
             this.splitContainer2.TabIndex = 3;
@@ -210,8 +211,9 @@
             // 
             // searchBox
             // 
-            this.searchBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.searchBox.Location = new System.Drawing.Point(0, 0);
+            this.searchBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.searchBox.Location = new System.Drawing.Point(0, 3);
             this.searchBox.Name = "searchBox";
             this.searchBox.Size = new System.Drawing.Size(177, 20);
             this.searchBox.TabIndex = 3;
@@ -221,13 +223,13 @@
             // 
             // searchButton
             // 
-            this.searchButton.Dock = System.Windows.Forms.DockStyle.Right;
+            this.searchButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.searchButton.Image = ((System.Drawing.Image)(resources.GetObject("searchButton.Image")));
             this.searchButton.ImageAlign = System.Drawing.ContentAlignment.TopLeft;
-            this.searchButton.Location = new System.Drawing.Point(177, 0);
+            this.searchButton.Location = new System.Drawing.Point(177, 2);
             this.searchButton.Margin = new System.Windows.Forms.Padding(0);
             this.searchButton.Name = "searchButton";
-            this.searchButton.Size = new System.Drawing.Size(23, 26);
+            this.searchButton.Size = new System.Drawing.Size(23, 22);
             this.searchButton.TabIndex = 4;
             this.searchButton.UseVisualStyleBackColor = true;
             this.searchButton.Click += new System.EventHandler(this.searchButton_Click);
@@ -237,7 +239,7 @@
             this.splitContainer3.DataBindings.Add(new System.Windows.Forms.Binding("SplitterDistance", global::StonehearthEditor.Properties.Settings.Default, "ManifestViewFileDependenciesSplitter", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
             this.splitContainer3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer3.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
-            this.splitContainer3.Location = new System.Drawing.Point(0, 20);
+            this.splitContainer3.Location = new System.Drawing.Point(0, 23);
             this.splitContainer3.Name = "splitContainer3";
             // 
             // splitContainer3.Panel1
@@ -250,7 +252,7 @@
             this.splitContainer3.Panel2.Controls.Add(this.referencesPanel);
             this.splitContainer3.Panel2.Controls.Add(this.dependenciesPanel);
             this.splitContainer3.Panel2.Controls.Add(this.panel2);
-            this.splitContainer3.Size = new System.Drawing.Size(558, 527);
+            this.splitContainer3.Size = new System.Drawing.Size(558, 524);
             this.splitContainer3.SplitterDistance = global::StonehearthEditor.Properties.Settings.Default.ManifestViewFileDependenciesSplitter;
             this.splitContainer3.TabIndex = 3;
             this.splitContainer3.TabStop = false;
@@ -263,7 +265,7 @@
             this.filePreviewTabs.Name = "filePreviewTabs";
             this.filePreviewTabs.SelectedIndex = 0;
             this.filePreviewTabs.ShowToolTips = true;
-            this.filePreviewTabs.Size = new System.Drawing.Size(318, 494);
+            this.filePreviewTabs.Size = new System.Drawing.Size(318, 491);
             this.filePreviewTabs.TabIndex = 2;
             // 
             // openFileButtonPanel
@@ -369,7 +371,7 @@
             // selectedFilePathTextBox
             // 
             this.selectedFilePathTextBox.Dock = System.Windows.Forms.DockStyle.Top;
-            this.selectedFilePathTextBox.Location = new System.Drawing.Point(0, 0);
+            this.selectedFilePathTextBox.Location = new System.Drawing.Point(0, 3);
             this.selectedFilePathTextBox.Name = "selectedFilePathTextBox";
             this.selectedFilePathTextBox.ReadOnly = true;
             this.selectedFilePathTextBox.Size = new System.Drawing.Size(558, 20);
