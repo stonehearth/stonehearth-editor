@@ -41,7 +41,6 @@
             this.graphEditorSplitter = new System.Windows.Forms.SplitContainer();
             this.graphViewer = new Microsoft.Msagl.GraphViewerGdi.GViewer();
             this.editorInfoSplitter = new System.Windows.Forms.SplitContainer();
-            this.textVisualSplitter = new System.Windows.Forms.SplitContainer();
             this.fileDetailsListBox = new System.Windows.Forms.ListBox();
             this.encounterGraphContextMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.graphEditorSplitter)).BeginInit();
@@ -49,11 +48,8 @@
             this.graphEditorSplitter.Panel2.SuspendLayout();
             this.graphEditorSplitter.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.editorInfoSplitter)).BeginInit();
-            this.editorInfoSplitter.Panel1.SuspendLayout();
             this.editorInfoSplitter.Panel2.SuspendLayout();
             this.editorInfoSplitter.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.textVisualSplitter)).BeginInit();
-            this.textVisualSplitter.SuspendLayout();
             this.SuspendLayout();
             // 
             // encounterGraphContextMenu
@@ -117,7 +113,6 @@
             // 
             // graphEditorSplitter
             // 
-            this.graphEditorSplitter.DataBindings.Add(new System.Windows.Forms.Binding("SplitterDistance", global::StonehearthEditor.Properties.Settings.Default, "EncounterDesignerViewTreeSplitterDistance", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
             this.graphEditorSplitter.Dock = System.Windows.Forms.DockStyle.Fill;
             this.graphEditorSplitter.FixedPanel = System.Windows.Forms.FixedPanel.Panel2;
             this.graphEditorSplitter.Location = new System.Drawing.Point(250, 0);
@@ -127,12 +122,14 @@
             // graphEditorSplitter.Panel1
             // 
             this.graphEditorSplitter.Panel1.Controls.Add(this.graphViewer);
+            this.graphEditorSplitter.Panel1MinSize = 200;
             // 
             // graphEditorSplitter.Panel2
             // 
             this.graphEditorSplitter.Panel2.Controls.Add(this.editorInfoSplitter);
+            this.graphEditorSplitter.Panel2MinSize = 200;
             this.graphEditorSplitter.Size = new System.Drawing.Size(875, 498);
-            this.graphEditorSplitter.SplitterDistance = global::StonehearthEditor.Properties.Settings.Default.EncounterDesignerViewTreeSplitterDistance;
+            this.graphEditorSplitter.SplitterDistance = 200;
             this.graphEditorSplitter.TabIndex = 4;
             // 
             // graphViewer
@@ -167,7 +164,7 @@
             this.graphViewer.SaveButtonVisible = false;
             this.graphViewer.SaveGraphButtonVisible = false;
             this.graphViewer.SaveInVectorFormatEnabled = false;
-            this.graphViewer.Size = new System.Drawing.Size(875, 321);
+            this.graphViewer.Size = new System.Drawing.Size(875, 200);
             this.graphViewer.TabIndex = 0;
             this.graphViewer.TightOffsetForRouting = 0.125D;
             this.graphViewer.ToolBarIsVisible = false;
@@ -184,6 +181,7 @@
             // 
             // editorInfoSplitter
             // 
+            this.editorInfoSplitter.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.editorInfoSplitter.Dock = System.Windows.Forms.DockStyle.Fill;
             this.editorInfoSplitter.Location = new System.Drawing.Point(0, 0);
             this.editorInfoSplitter.Name = "editorInfoSplitter";
@@ -191,23 +189,14 @@
             // editorInfoSplitter.Panel1
             // 
             this.editorInfoSplitter.Panel1.AutoScroll = true;
-            this.editorInfoSplitter.Panel1.Controls.Add(this.textVisualSplitter);
             // 
             // editorInfoSplitter.Panel2
             // 
             this.editorInfoSplitter.Panel2.Controls.Add(this.fileDetailsListBox);
-            this.editorInfoSplitter.Size = new System.Drawing.Size(875, 173);
+            this.editorInfoSplitter.Panel2Collapsed = true;
+            this.editorInfoSplitter.Size = new System.Drawing.Size(875, 294);
             this.editorInfoSplitter.SplitterDistance = 700;
             this.editorInfoSplitter.TabIndex = 0;
-            // 
-            // textVisualSplitter
-            // 
-            this.textVisualSplitter.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.textVisualSplitter.Location = new System.Drawing.Point(0, 0);
-            this.textVisualSplitter.Name = "textVisualSplitter";
-            this.textVisualSplitter.Size = new System.Drawing.Size(700, 173);
-            this.textVisualSplitter.SplitterDistance = 459;
-            this.textVisualSplitter.TabIndex = 0;
             // 
             // fileDetailsListBox
             // 
@@ -216,7 +205,7 @@
             this.fileDetailsListBox.FormattingEnabled = true;
             this.fileDetailsListBox.Location = new System.Drawing.Point(0, 0);
             this.fileDetailsListBox.Name = "fileDetailsListBox";
-            this.fileDetailsListBox.Size = new System.Drawing.Size(171, 173);
+            this.fileDetailsListBox.Size = new System.Drawing.Size(94, 98);
             this.fileDetailsListBox.TabIndex = 0;
             // 
             // EncounterDesignerView
@@ -232,12 +221,9 @@
             this.graphEditorSplitter.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.graphEditorSplitter)).EndInit();
             this.graphEditorSplitter.ResumeLayout(false);
-            this.editorInfoSplitter.Panel1.ResumeLayout(false);
             this.editorInfoSplitter.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.editorInfoSplitter)).EndInit();
             this.editorInfoSplitter.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.textVisualSplitter)).EndInit();
-            this.textVisualSplitter.ResumeLayout(false);
             this.ResumeLayout(false);
 
       }
@@ -256,6 +242,5 @@
         private System.Windows.Forms.SplitContainer editorInfoSplitter;
         private System.Windows.Forms.ListBox fileDetailsListBox;
         private System.Windows.Forms.ToolStripMenuItem moveToArcMenuItem;
-        private System.Windows.Forms.SplitContainer textVisualSplitter;
     }
 }

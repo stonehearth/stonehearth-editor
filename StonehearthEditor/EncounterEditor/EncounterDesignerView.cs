@@ -58,7 +58,7 @@ namespace StonehearthEditor
 
             if (mNodePreview != null)
             {
-                textVisualSplitter.Panel1.Controls.Remove(mNodePreview);
+                editorInfoSplitter.Panel1.Controls.Remove(mNodePreview);
             }
 
             if (node != null)
@@ -68,7 +68,7 @@ namespace StonehearthEditor
                 // Add a text editor.
                 mNodePreview = new FilePreview(this, node.FileData);
                 mNodePreview.Dock = DockStyle.Fill;
-                textVisualSplitter.Panel1.Controls.Add(mNodePreview);
+                editorInfoSplitter.Panel1.Controls.Add(mNodePreview);
                 UpdateValidationSchema();
                 mNodePreview.OnModifiedChanged += (bool isModified) =>
                 {
@@ -109,10 +109,6 @@ namespace StonehearthEditor
                 {
                     moveToArcMenuItem.Visible = false;
                 }
-
-                // Set up the visual editor.
-                PopulateVisualEditor(node);
-                textVisualSplitter.Panel2Collapsed = textVisualSplitter.Panel2.Controls.Count == 0;
 
                 // Set up the details panel.
                 PopulateFileDetails(node);
@@ -155,11 +151,6 @@ namespace StonehearthEditor
                     break;
                 }
             }
-        }
-
-        private void PopulateVisualEditor(GameMasterNode node)
-        {
-            // TODO: Implement.
         }
 
         private static string[] kAttributesOfInterest = new string[]

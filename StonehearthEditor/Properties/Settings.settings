@@ -17,9 +17,6 @@
     <Setting Name="ManifestViewTreeSplitterDistance" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">200</Value>
     </Setting>
-    <Setting Name="EncounterDesignerViewTreeSplitterDistance" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">321</Value>
-    </Setting>
     <Setting Name="ManifestViewFileDependenciesSplitter" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">318</Value>
     </Setting>
