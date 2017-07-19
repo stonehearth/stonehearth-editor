@@ -5,8 +5,11 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Effects Editor</title>
-    <link href="styles/bootstrap.min.css" rel="stylesheet" type="text/css" />
+
+    <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
     <link href="styles/spectrum.css" rel="stylesheet" type="text/css" />
+    <link href="styles/normalize.css" rel="stylesheet" type="text/css" />
+    <link href="styles/skeleton.css" rel="stylesheet" type="text/css" />
     <link href="styles/main.css" rel="stylesheet" type="text/css" />
     <script src="scripts/libs/jquery-2.1.1.min.js"></script>
     <script src="scripts/libs/bootstrap.min.js"></script>
@@ -24,17 +27,19 @@
     <script src="scripts/string-property.js"></script>
     <script src="scripts/complex-property.js"></script>
     <script type="text/x-handlebars" data-template-name="index">
-        <!-- <button {{ action "preview" }}>Preview</button> -->
-        <button id="saveButton" {{ action "save" }}>Save</button>
-        Validity {{ model.effectModel.isValid }}
-        {{ component model.effectModel.componentName model=model.effectModel }}
+        <div class="tools">
+            <!-- <button {{ action "preview" }}>Preview</button> -->
+            <button id="saveButton" class="button-primary" {{ action "save" }}>Save</button>
+            Validity {{ model.effectModel.isValid }}
+        </div>
+         {{ component model.effectModel.componentName model=model.effectModel }}
     </script>
     <script type="text/x-handlebars" data-template-name="components/warning-icon">
         <!-- TODO put message into a tooltip instead -->
         <span
-              class="warning-icon"
+              class=""
               style="visibility: {{ if message 'visible' 'hidden' }}; "
-              title="{{ message }}"></span>
+              title="{{ message }}">⚠️</span>
         {{ message }}
     </script>
     <script type="text/x-handlebars" data-template-name="components/string-property">
@@ -71,9 +76,9 @@
                 {{#if model.optional }}
                     <button {{ action 'toggleMissing' }} class="sub-group-property-expand-button">
                         {{#if model.isMissing }}
-                            <span class="glyphicon glyphicon-plus"></span>
+                        ➕
                         {{ else }}
-                            <span class="glyphicon glyphicon-remove"></span>
+                        ❌
                         {{/if }}
                     </button>
                 {{/if }}
@@ -103,9 +108,9 @@
         {{#if model.optional }}
             <button class="level3-parameter-property-expand-button" {{ action 'toggleMissing' }}>
                 {{#if model.isMissing }}
-                    <span class="glyphicon glyphicon-plus"></span>
+                ➕
                 {{ else }}
-                    <span class="glyphicon glyphicon-remove"></span>
+                ❌
                 {{/if }}
             </button>
         {{/if }}
@@ -153,7 +158,7 @@
                     <td>
                         <select onchange={{ action (mut model.surface) value="target.value" }}>
                             {{#each surfaceOptions as |surfaceChoice| }}
-                                <option 
+                                <option
                                     value={{ surfaceChoice }}
                                     selected={{ eq model.surface surfaceChoice }}>
                                     {{ surfaceChoice }}
@@ -236,7 +241,7 @@
         {{ curve-x model=model.curve2 }}
     </script>
     <script type="text/x-handlebars" data-template-name="components/curve-x">
-        <table>
+        <table class="curve-table">
             <thead>
                 <tr>
                     <td></td>
@@ -249,22 +254,24 @@
                 {{#each model.points as |point index| }}
                     <tr>
                         <td>
-                            <button {{ action 'addAbove' index }}>
+                            <button class="curve-button" {{ action 'addAbove' index }}>
                                 <img src="styles/add_above.png" />
                             </button>
-                            <button {{ action 'delete' index }}>
-                                <span class="glyphicon glyphicon-remove"></span>
+                            <button class="curve-button" {{ action 'delete' index }}>✖️
                             </button>
                         </td>
-                        <td>{{ input type="text" value=point.time }}</td>
-                        <td>{{ input type="text" value=point.value }}</td>
-                        <td>{{ warning-icon message=(get model.errorMap (tostr index)) }}</td>
+                        <td>{{ input class="curve-input" type="text" value=point.time }}</td>
+                        <td>{{ input class="curve-input" type="text" value=point.value }}</td>
+                        <td class="curve-warning">{{ warning-icon message=(get model.errorMap (tostr index)) }}</td>
                     </tr>
                 {{/each }}
                 <tr>
                     <td>
-                        <button {{ action 'add' }}>Add row</button>
+                        <button class="button-primary" {{ action 'add' }}>Add row</button>
                     </td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
                 </tr>
             </tbody>
         </table>

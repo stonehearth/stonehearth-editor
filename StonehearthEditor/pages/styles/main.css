@@ -9,19 +9,21 @@
     background-color: red;
 }
 .encompassing-group-property-header {
-    border-bottom: 3px solid rgb(40, 40, 40);
-    margin-bottom: 0;
+    border-bottom: 1px solid rgb(51, 195, 240);
+    margin-bottom: 5px;
     padding-left: 5px;
-    background-color: lightgray;
     color: black;
     text-transform: capitalize;
 }
 .app {
-    background-color: darkgray;
+    background-color: #fff;
 }
 .color-picker-div {
-    margin-top: 5px;
-    margin-left: 350px;
+    position: absolute;
+    left: 470px;
+    width: 62px;
+    text-align: center;
+    margin-top: -3px;
 }
 .sub-group-property {
     margin: 3px 5px;
@@ -30,8 +32,8 @@
     text-transform: capitalize;
     padding: 5px;
     border-radius: 5px;
-    background-color: gray;
     width: 500px;
+    min-height: 38px;
     font-weight: bold;
 }
 .sub-group-property-expand-button {
@@ -43,6 +45,7 @@
 }
 .level3-parameter-property {
     margin: 7px 0px 7px 5px;
+    min-height: 38px;
 }
 .level3-parameter-property-expand-button {
     position: absolute;
@@ -52,16 +55,17 @@
     margin-top: -3px;
 }
 .level3-parameter-property-header-text {
-    width: 100px;
+    width: 110px;
     display: inline-block;
 }
 .level3-parameter-property-select {
     width: 250px;
 }
 .parameter-property-label {
-    width: 100px;
+    width: 110px;
     display: inline-block;
     text-align: right;
+    font-style: italic;
 }
 .sh-numeric-input {
     width: 100px;
@@ -75,8 +79,11 @@
     font-weight: normal;
 }
 
+.tools {
+    margin-bottom: 5px;
+}
+
 #saveButton {
-    padding: 2px 8px 2px 8px;
     margin: 4px;
     font-size: 15px;
     font-weight: bold;
@@ -89,4 +96,39 @@
 }
 .glyphicon-plus {
     color: green;
+}
+
+button {
+    margin-bottom: 1.5rem;
+    background-color: #fff;
+}
+
+.curve-editor {
+    width: 520px;
+    height: 170px;
+    border: 1px solid rgb(51, 195, 240);
+}
+
+.curve-table {
+}
+
+.curve-input {
+    width: 176px;
+}
+
+.curve-button {
+}
+
+.curve-warning {
+   max-width: 220px;
+}
+
+td {
+    border: 0px;
+    padding: 2px;
+    margin: 2px;
+}
+
+body {
+    font-family: 'Raleway', sans-serif;
 }
