@@ -334,7 +334,7 @@ namespace AutocompleteMenuNS
             else
             {
                 toolTip.ToolTipTitle = title;
-                toolTip.Show(text, control, Width + 3, 0, ToolTipDuration);
+                toolTip.Show(Regex.Replace(text, @"(.{60,100}\s|\S{100})", "$1\n"), control, Width + 3, 0, ToolTipDuration);
             }
         }
 
