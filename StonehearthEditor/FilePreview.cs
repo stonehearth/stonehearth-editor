@@ -190,13 +190,13 @@ namespace StonehearthEditor
                     var context = jsonSuggester.ParseOutContext(contextParsingPosition + 1);
                     if (context.IsValid)
                     {
-                        var targetSchemas = JsonSchemaTools.GetSchemasForPath(jsonValidationSchema, context.Path);
+                        var targetSchemas = JsonSchemaTools.GetSchemasForPath(jsonValidationSchema, context.Path, context.ObjectAroundCursor, context.ActivePropertyName);
                         if (targetSchemas.Count > 0)
                         {
                             var schemaDescriptions = new HashSet<string>(targetSchemas.Select(
                                 annotated => JsonSchemaTools.DescribeSchema(annotated) +
                                           (annotated.Description != null ? "\n" + annotated.Description : "")));
-                            var tipText = context.Path.Last();
+                            var tipText = context.ActivePropertyName ?? context.Path.Last();
                             if (schemaDescriptions.Count == 1)
                             {
                                 tipText += ": " + schemaDescriptions.First();

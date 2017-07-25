@@ -34,11 +34,25 @@ namespace StonehearthEditor
             customSourcesBySchemeId[schemaId] = lister;
         }
 
+        // The cursor context for suggesting values or property names.
         public struct Context
         {
+            // If false, all other properties are garbage.
             public bool IsValid;
+
+            // The JSON object or array surrounding the cursor.
+            public JToken ObjectAroundCursor;
+
+            // The JSON path to ObjectAroundCursor.
             public List<string> Path;
-            public bool SuggestingValue;
+
+            // Whether the context is expecting a value (rather than a property name).
+            public bool IsSuggestingValue;
+
+            // The property name whose value is being suggested. Only meaningful if IsSuggestingValue == true.
+            public string ActivePropertyName;
+
+            // The top-level JSON object representing everything we managed to parse.
             public JObject KnownJson;
         }
 
@@ -50,13 +64,13 @@ namespace StonehearthEditor
                 yield break;
             }
 
-            var targetSchemas = JsonSchemaTools.GetSchemasForPath(schema, context.Path);
+            var targetSchemas = JsonSchemaTools.GetSchemasForPath(schema, context.Path, context.ObjectAroundCursor, context.ActivePropertyName);
             if (targetSchemas.Count == 0)
             {
                 yield break;
             }
 
-            if (context.SuggestingValue)
+            if (context.IsSuggestingValue)
             {
                 foreach (var item in SuggestValues(targetSchemas))
                 {
@@ -65,7 +79,7 @@ namespace StonehearthEditor
             }
             else
             {
-                foreach (var item in SuggestProperties(context, targetSchemas))
+                foreach (var item in SuggestProperties(context.ObjectAroundCursor as JObject ?? new JObject(), targetSchemas))
                 {
                     yield return item;
                 }
@@ -184,9 +198,8 @@ namespace StonehearthEditor
             }
         }
 
-        private IEnumerable<AutocompleteItem> SuggestProperties(Context context, ICollection<AnnotatedSchema> annotatedSchemas)
+        private IEnumerable<AutocompleteItem> SuggestProperties(JObject contextObject, ICollection<AnnotatedSchema> annotatedSchemas)
         {
-            var contextObject = context.KnownJson.SelectToken(string.Join(".", context.Path)) as JObject ?? new JObject();
             var yieldedAny = false;
             foreach (var annotatedSchema in annotatedSchemas)
             {
@@ -328,7 +341,7 @@ namespace StonehearthEditor
                     case JsonToken.Null:
                     case JsonToken.Undefined:
                         // Primitive value types. These don't affect the path.
-                        var newValue = JToken.FromObject(reader.Value);
+                        var newValue = reader.Value == null ? null : JToken.FromObject(reader.Value);
                         addNewEntryToCurrentObjectOrArray(newValue);
                         lastProperty = null;
                         break;
@@ -347,16 +360,21 @@ namespace StonehearthEditor
                 }
             }
 
-            result.SuggestingValue = Regex.IsMatch(textBox.Text.Substring(0, position), @":\s*$") || lastProperty == "0";
-            if (result.SuggestingValue)
+            result.ObjectAroundCursor = result.KnownJson.SelectToken(string.Join(".", result.Path));
+            result.IsSuggestingValue = Regex.IsMatch(textBox.Text.Substring(0, position), @":\s*$") || lastProperty == "0";
+            if (result.IsSuggestingValue)
             {
                 if (lastProperty != null)
                 {
-                    result.Path.Add(lastProperty);
+                    result.ActivePropertyName = lastProperty;
                 }
                 else if (currentJsonStack.Last() is JArray)
                 {
-                    result.Path.Add("0");  // We assume arrays are homogeneous, so all items are equivalent to [0].
+                    result.ActivePropertyName = "0";  // We assume arrays are homogeneous, so all items are equivalent to [0].
+                }
+                else
+                {
+                    result.IsValid = false;
                 }
             }
 

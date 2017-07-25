@@ -309,7 +309,7 @@ namespace StonehearthEditor
             return o is string ? '"' + o.ToString() + '"' : JToken.FromObject(o).ToString();
         }
 
-        public static ICollection<AnnotatedSchema> GetSchemasForPath(JsonSchema4 schema, List<string> path)
+        public static ICollection<AnnotatedSchema> GetSchemasForPath(JsonSchema4 schema, List<string> path, JToken contextObject, string activeProperty)
         {
             var currentSchemas = new List<JsonSchema4> { schema };
             var result = new Dictionary<JsonSchema4, AnnotatedSchema>();
@@ -324,8 +324,27 @@ namespace StonehearthEditor
                 }
             }
 
-            // Clean/dedupe. This could be much faster.
-            foreach (var currentSchema in currentSchemas)
+            // Discard less likely schemas.
+            currentSchemas = GuessIntendedSchemas(CleanAndFlattenSchemas(currentSchemas).Select(p => p.Item2).ToList(), contextObject);
+
+            // Descend one last time if we are suggesting a property value, after we've finished filtering.
+            if (activeProperty != null)
+            {
+                currentSchemas = DescendIntoSchemas(currentSchemas, activeProperty);
+            }
+
+            // Clean/dedupe.
+            foreach (var pair in CleanAndFlattenSchemas(currentSchemas))
+            {
+                result[pair.Item2] = pair.Item1;
+            }
+
+            return result.Values;
+        }
+
+        public static IEnumerable<Tuple<AnnotatedSchema, JsonSchema4>> CleanAndFlattenSchemas(List<JsonSchema4> schemas)
+        {
+            foreach (var currentSchema in schemas)
             {
                 var alternatives = (currentSchema.ActualSchema.AnyOf.Count > 0) ? currentSchema.ActualSchema.AnyOf : new JsonSchema4[] { currentSchema };
                 foreach (var alternative in alternatives)
@@ -340,11 +359,9 @@ namespace StonehearthEditor
                         entry.IsRequired = (currentSchema as JsonProperty).IsRequired;
                     }
 
-                    result[alternative] = entry;
+                    yield return new Tuple<AnnotatedSchema, JsonSchema4>(entry, alternative);
                 }
             }
-
-            return result.Values;
         }
 
         private static List<JsonSchema4> DescendIntoSchemas(List<JsonSchema4> roots, string property)
@@ -443,6 +460,33 @@ namespace StonehearthEditor
                 default:
                     return new List<JsonSchema4>();
             }
+        }
+
+        private static List<JsonSchema4> GuessIntendedSchemas(List<JsonSchema4> schemas, JToken contextObject)
+        {
+            if (schemas.Count <= 1 || contextObject == null)
+            {
+                return schemas;
+            }
+
+            var minErrorCount = int.MaxValue;
+            var minErrorSchemas = new List<JsonSchema4>();
+            foreach (var schema in schemas)
+            {
+                var errorCount = schema.Validate(contextObject).Count;
+                if (errorCount < minErrorCount)
+                {
+                    minErrorCount = errorCount;
+                    minErrorSchemas.Clear();
+                    minErrorSchemas.Add(schema);
+                }
+                else if (errorCount == minErrorCount)
+                {
+                    minErrorSchemas.Add(schema);
+                }
+            }
+
+            return minErrorSchemas;
         }
     }
 }
