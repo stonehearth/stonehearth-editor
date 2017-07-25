@@ -9,17 +9,20 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NJsonSchema;
 using ScintillaNET;
+using System.Windows.Forms;
 
 namespace StonehearthEditor
 {
     internal class JsonSuggester : IEnumerable<AutocompleteItem>
     {
+        private string filePath;
         private JsonSchema4 schema;
         private Scintilla textBox;
         private Dictionary<string, Func<IEnumerable<string>>> customSourcesBySchemeId;
 
-        public JsonSuggester(JsonSchema4 schema, Scintilla textBox)
+        public JsonSuggester(JsonSchema4 schema, Scintilla textBox, string filePath)
         {
+            this.filePath = filePath;
             this.schema = schema;
             this.textBox = textBox;
             customSourcesBySchemeId = new Dictionary<string, Func<IEnumerable<string>>>();
@@ -76,8 +79,9 @@ namespace StonehearthEditor
                     }
                     else if (targetSchema.Id == "http://stonehearth.net/schemas/encounters/elements/file.json")
                     {
-                        // Special handling for files (trigger alias insertion).
-                        yield return new FileSuggestItem(title, description);
+                        // Special handling for files (alias or file insertion prompts).
+                        yield return new AliasSuggestItem(title, description);
+                        yield return new FileSuggestItem(title, description, filePath);
                     }
                     else if (targetSchema.Enumeration.Count > 0)
                     {
@@ -432,13 +436,13 @@ namespace StonehearthEditor
         }
 
         // A suggest list entry that opens an alias selection dialog.
-        internal class FileSuggestItem : AutocompleteItem
+        internal class AliasSuggestItem : AutocompleteItem
         {
-            public FileSuggestItem(string title, string description)
+            public AliasSuggestItem(string title, string description)
             {
                 Text = null;
                 MenuText = "Select an alias...";
-                ToolTipTitle = title ?? "File";
+                ToolTipTitle = title ?? "File alias";
                 ToolTipText = description;
             }
 
@@ -456,6 +460,42 @@ namespace StonehearthEditor
                 });
                 aliasDialog.MultiSelect = false;
                 aliasDialog.ShowDialog();
+            }
+
+            public override CompareResult Compare(string fragmentText)
+            {
+                return CompareResult.Visible;
+            }
+        }
+
+        // A suggest list entry that opens a file selection dialog.
+        internal class FileSuggestItem : AutocompleteItem
+        {
+            private string currentFilePath;
+
+            public FileSuggestItem(string title, string description, string currentFilePath)
+            {
+                this.currentFilePath = currentFilePath;
+                Text = null;
+                MenuText = "Select a file...";
+                ToolTipTitle = title ?? "File";
+                ToolTipText = description;
+            }
+
+            public override void OnSelected(SelectedEventArgs e)
+            {
+                var textbox = (Parent.TargetControlWrapper as ScintillaWrapper).target;
+                OpenFileDialog dialog = new OpenFileDialog();
+                dialog.InitialDirectory = Path.GetDirectoryName(currentFilePath);
+                dialog.Multiselect = false;
+                dialog.FileOk += (sender, args) =>
+                {
+                    string relativePath = new Uri(dialog.FileName).MakeRelativeUri(new Uri(currentFilePath)).ToString();
+                    var replacement = "\"file(" + relativePath + ")\"";
+                    textbox.InsertText(textbox.SelectionStart, replacement);
+                    textbox.SelectionStart = textbox.SelectionEnd + replacement.Length;
+                };
+                dialog.ShowDialog();
             }
 
             public override CompareResult Compare(string fragmentText)

@@ -301,7 +301,7 @@ namespace StonehearthEditor
         internal JsonSuggester SetValidationSchema(JsonSchema4 schema)
         {
             jsonValidationSchema = schema;
-            jsonSuggester = new JsonSuggester(schema, textBox);
+            jsonSuggester = new JsonSuggester(schema, textBox, mFileData.Path);
             ValidateSchema();
 
             autocompleteMenu.SetAutocompleteItems(jsonSuggester);
