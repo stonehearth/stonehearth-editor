@@ -862,7 +862,7 @@ namespace StonehearthEditor
                     this.mI18nLocKey = locKey;
                     EditLocStringCallback callback = new EditLocStringCallback(this.mI18nLocKey);
                     string translated = ModuleDataManager.GetInstance().LocalizeString(this.mI18nLocKey);
-                    InputDialog dialog = new InputDialog("Edit Loc String", $"Edit Loc Text For: {mI18nLocKey}", translated, "Edit");
+                    InputDialog dialog = new InputDialog("Edit i18n Text", $"Edit English text for:\n{mI18nLocKey}", translated, "Save");
                     dialog.SetCallback(callback);
                     dialog.ShowDialog();
                 }
