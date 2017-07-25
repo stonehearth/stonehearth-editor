@@ -1,0 +1,20 @@
+{
+   "$schema": "http://json-schema.org/draft-04/schema#",
+   "id": "http://stonehearth.net/schemas/encounters/elements/kingdom.json",
+   "title": "Kingdom",
+   "description": "A player or NPC kingdom name, which represents the cultural background of an entity. It is useful for driving content decisions (e.g. which outfit to use for workers, which journal entries to write, which seeds to start off with for farms, etc.).",
+   "type": "string",
+   "enum": [
+      "stonehearth:kingdoms:ascendancy",
+      "rayyas_children:kingdoms:rayyas_children",
+      "stonehearth:kingdoms:northern_alliance",
+      "stonehearth:kingdoms:human_npcs",
+      "stonehearth:kingdoms:animals",
+      "stonehearth:kingdoms:forest",
+      "stonehearth:kingdoms:rabbit",
+      "stonehearth:kingdoms:goblin",
+      "stonehearth:kingdoms:orcs",
+      "stonehearth:kingdoms:undead"
+   ]
+}
+
