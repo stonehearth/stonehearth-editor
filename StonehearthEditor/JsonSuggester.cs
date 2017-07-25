@@ -361,7 +361,7 @@ namespace StonehearthEditor
             }
 
             result.ObjectAroundCursor = result.KnownJson.SelectToken(string.Join(".", result.Path));
-            result.IsSuggestingValue = Regex.IsMatch(textBox.Text.Substring(0, position), @":\s*$") || lastProperty == "0";
+            result.IsSuggestingValue = Regex.IsMatch(textBox.Text.Substring(0, position), @":\s*$") || currentJsonStack.Last() is JArray;
             if (result.IsSuggestingValue)
             {
                 if (lastProperty != null)
