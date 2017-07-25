@@ -37,11 +37,8 @@ public class ScintillaWrapper : ITextBoxWrapper
             //Store the start of the selection.
             int start = target.SelectionStart;
 
-            //Delete the current text between selections.
-            target.DeleteRange(target.SelectionStart, (target.SelectionEnd - target.SelectionStart));
-
-            //Add the text in the same postion.
-            target.InsertText(start, value);
+            //Replace the currently selected text as a single undo-able transaction.
+            target.ReplaceSelection(value);
 
             //Clear selection and make sure the caret is at the end.
             target.SelectionStart = (start + value.Length);
