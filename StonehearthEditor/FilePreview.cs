@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using AutocompleteMenuNS;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NJsonSchema;
@@ -43,7 +43,8 @@ namespace StonehearthEditor
 
         // JSON validation stuff.
         private JsonSchema4 jsonValidationSchema;
-        private Dictionary<int, string> validationErrors = new Dictionary<int, string>();
+        private JsonSuggester jsonSuggester;
+        private Dictionary<int, string> validationErrors;
         private Timer validationDelayTimer;
 
         /// <summary>
@@ -75,68 +76,120 @@ namespace StonehearthEditor
             return textBox.Text;
         }
 
+        public bool TrySetFileDataFromTextbox()
+        {
+            if (mFileData.FlatFileData == textBox.Text)
+            {
+                return true;
+            }
+
+            if (mFileData.TrySetFlatFileData(textBox.Text))
+            {
+                OnModifiedChanged?.Invoke(true);
+                return true;
+            }
+
+            return false;
+        }
+
         private void textBox_Leave(object sender, EventArgs e)
         {
-            if (mFileData.FlatFileData != textBox.Text)
-            {
-                mFileData.TrySetFlatFileData(textBox.Text);
-                OnModifiedChanged?.Invoke(true);
-            }
+            TrySetFileDataFromTextbox();
         }
 
         private void textBox_MouseMove(object sender, MouseEventArgs e)
         {
-            // Translate mouse xy to character position
-            var position = this.textBox.CharPositionFromPoint(e.X, e.Y);
+            var tooltip = GetTooltipAt(e.X, e.Y);
+            if (lastTipAnchor != tooltip.Item2)
+            {
+                lastTipAnchor = tooltip.Item2;
+                textBox.CallTipCancel();
+                if (tooltip.Item2 != kAnchorNone)
+                {
+                    textBox.CallTipShow(tooltip.Item2, tooltip.Item1);
+                }
+            }
+        }
+
+        private Tuple<string, int> GetTooltipAt(int x, int y)
+        {
+            // Translate mouse x,y to character position.
+            var position = this.textBox.CharPositionFromPoint(x, y);
             var line = this.textBox.LineFromPosition(position);
 
-            // Figure out if we are hovering over an error indicator.
-            var isInErrorMargin = e.X > textBox.Margins[0].Width && e.X <= textBox.Margins[0].Width + textBox.Margins[kErrorMarginNumber].Width;
-            if (isInErrorMargin && validationErrors.ContainsKey(line))
+            // Are we are hovering over an error icon in the margin?
+            var isInErrorMargin = x > textBox.Margins[0].Width && x <= textBox.Margins[0].Width + textBox.Margins[kErrorMarginNumber].Width;
+            if (isInErrorMargin && validationErrors != null && validationErrors.ContainsKey(line))
             {
-                this.textBox.CallTipShow(position, validationErrors[line]);
-                lastTipAnchor = kAnchorError;
-                return;
+                return new Tuple<string, int>(Regex.Replace(validationErrors[line], @"(.{60,100}\s|\S{100})", "$1\n"), kAnchorError);
             }
 
+            // Are we hovering over an indicator?
             var currentAnchor = this.getIndicatorStartPosition(position);
-
-            if (lastTipAnchor == currentAnchor)
-            {
-                return;  // Nothing to change.
-            }
-            else
-            {
-                this.textBox.CallTipCancel();
-                lastTipAnchor = currentAnchor;
-            }
-
             var hoveredIndicator = this.getIndicatorAt(position);
             if (hoveredIndicator == kFileIndicator)
             {
-                this.textBox.CallTipShow(position, "Ctrl-click to open file.");
+                return new Tuple<string, int>("Ctrl-click to open file.", currentAnchor);
             }
             else if (hoveredIndicator == kI18nIndicator)
             {
                 var locKey = this.getLocKey(position);
                 if (string.IsNullOrEmpty(locKey))
                 {
-                    return;
+                    return new Tuple<string, int>("No such i18n entry found!", currentAnchor);
                 }
 
-                this.mI18nLocKey = locKey;
+                mI18nLocKey = locKey;
                 try
                 {
-                    // Translate and display it as a tip
+                    // Translate and display it as a tip.
                     var translated = ModuleDataManager.GetInstance().LocalizeString(locKey);
                     translated = JsonHelper.WordWrap(translated, 100).Trim();
-                    this.textBox.CallTipShow(position, translated);
+                    return new Tuple<string, int>(translated + "\n\nCtrl-click to edit.", currentAnchor);
                 }
                 catch (Exception)
                 {
-                    this.textBox.CallTipShow(position, $"(Uncaught exception while trying to find i18n for {locKey})");
+                    return new Tuple<string, int>($"(Uncaught exception while trying to find i18n for {locKey})", currentAnchor);
                 }
             }
+
+            // For JSON, display tips about the property or value being hovered over.
+            if (jsonSuggester != null && !char.IsWhiteSpace(textBox.Text[position]))
+            {
+                var contextParsingPosition = position;
+
+                // Find a following (or as a fallback, preceding) colon on the same line so we can parse out the property.
+                // Could fail for colons embedded in strings, but that's good enough for now.
+                while (contextParsingPosition < textBox.Lines[line].EndPosition && textBox.Text[contextParsingPosition] != ':')
+                {
+                    contextParsingPosition++;
+                }
+
+                while (contextParsingPosition >= textBox.Lines[line].Position && textBox.Text[contextParsingPosition] != ':')
+                {
+                    contextParsingPosition--;
+                }
+
+                if (contextParsingPosition >= 0 && textBox.Text[contextParsingPosition] == ':')
+                {
+                    var context = jsonSuggester.ParseOutContext(contextParsingPosition + 1);
+                    if (context.IsValid)
+                    {
+                        var targetSchemas = JsonSchemaTools.GetSchemasForPath(jsonValidationSchema, context.Path);
+                        if (targetSchemas.Count > 0)
+                        {
+                            var schemaDescriptions = new HashSet<string>(targetSchemas.Select(
+                                schema => JsonSchemaTools.DescribeSchema(schema) +
+                                          (schema.Description != null ? "\n" + schema.Description : "")));
+                            var propertyName = context.Path.Last();
+                            var tipText = propertyName + "\n\n" + string.Join("\nOR\n", schemaDescriptions);
+                            return new Tuple<string, int>(tipText, contextParsingPosition);
+                        }
+                    }
+                }
+            }
+
+            return new Tuple<string, int>(null, kAnchorNone);
         }
 
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
@@ -234,172 +287,47 @@ namespace StonehearthEditor
             }
         }
 
-        internal void SetValidationSchema(JsonSchema4 schema)
+        internal JsonSuggester SetValidationSchema(JsonSchema4 schema)
         {
             jsonValidationSchema = schema;
+            jsonSuggester = new JsonSuggester(schema, textBox);
             ValidateSchema();
+
+            autocompleteMenu.SetAutocompleteItems(jsonSuggester);
+            return jsonSuggester;
         }
 
         private void ValidateSchema()
         {
+            textBox.Styles[Style.LineNumber].BackColor = Color.LightGray;
+
             if (textBox.Lexer != ScintillaNET.Lexer.Json)
             {
                 // No validation possible.
-                textBox.Styles[Style.LineNumber].BackColor = Color.LightGray;
                 return;
             }
 
             // Find errors.
-            validationErrors.Clear();
-            try
+            var result = JsonSchemaTools.Validate(jsonValidationSchema, textBox.Text);
+            validationErrors = result.Item2;
+            textBox.Styles[Style.LineNumber].BackColor = Color.LightGreen;
+            if (result.Item1 == JsonSchemaTools.ValidationResult.Valid)
             {
-                if (jsonValidationSchema == null)
-                {
-                    // No schema. Just make sure the JSON is valid.
-                    JToken.Parse(GetText());
-                }
-                else
-                {
-                    // Validate based on the schema.
-                    foreach (var error in jsonValidationSchema.Validate(GetText()))
-                    {
-                        FillValidationErrorsFromJsonSchemaError(error);
-                    }
-                }
+                textBox.Styles[Style.LineNumber].BackColor = (jsonValidationSchema != null) ? Color.LightGreen : Color.LightGray;
             }
-            catch (JsonReaderException exception)
+            else
             {
-                validationErrors[exception.LineNumber - 1] = exception.Message;
+                textBox.Styles[Style.LineNumber].BackColor = (result.Item1 == JsonSchemaTools.ValidationResult.InvalidJson) ? Color.IndianRed : Color.Orange;
             }
 
             // Display errors.
             textBox.MarkerDeleteAll(kErrorMarkerNumber);
-            textBox.Styles[Style.LineNumber].BackColor = validationErrors.Count > 0 ? Color.IndianRed : (jsonValidationSchema == null ? Color.LightGray : Color.LightGreen);
             if (validationErrors.Count > 0)
             {
                 foreach (var error in validationErrors)
                 {
                     textBox.Lines[error.Key].MarkerAdd(kErrorMarkerNumber);
                 }
-            }
-        }
-
-        private void FillValidationErrorsFromJsonSchemaError(ValidationError error)
-        {
-            if (!error.HasLineInfo)
-            {
-                return;
-            }
-
-            switch (error.Kind)
-            {
-                case ValidationErrorKind.PatternMismatch:
-                    AddValidationError(error.LineNumber, string.Format("The value of '{0}' must match the regex pattern: {1}", error.Property, error.Schema.Pattern));
-                    break;
-                case ValidationErrorKind.NotInEnumeration:
-                    string choices = "";
-                    foreach (var choice in error.Schema.Enumeration)
-                    {
-                        if (choices.Length > 0)
-                        {
-                            choices += ", ";
-                        }
-
-                        choices += '"';
-                        choices += choice == null ? "null" : choice.ToString();
-                        choices += '"';
-                    }
-
-                    AddValidationError(error.LineNumber, string.Format("The value of '{0}' must be one of: {1}", error.Property, choices));
-                    break;
-                case ValidationErrorKind.NoAdditionalPropertiesAllowed:
-                    string validProperties = string.Join(", ", error.Schema.ActualProperties.Keys);
-                    AddValidationError(error.LineNumber, string.Format(
-                        "Property '{0}' is not expected in this object. Valid properties: {1}", error.Property, validProperties));
-                    break;
-                case ValidationErrorKind.PropertyRequired:
-                    AddValidationError(error.LineNumber, string.Format("Missing required property '{0}'.", error.Property));
-                    break;
-                case ValidationErrorKind.NotAnyOf:
-                    string validFormats = " Valid formats:";
-                    foreach (var alternativeSchema in error.Schema.AnyOf)
-                    {
-                        if (alternativeSchema.Title == null)
-                        {
-                            // We can't name the formats, so skip the extra info.
-                            validFormats = "";
-                            break;
-                        }
-
-                        validFormats += "\n  ";
-                        validFormats += alternativeSchema.Title;
-                    }
-
-                    AddValidationError(error.LineNumber, string.Format(
-                        "None of the {0} valid formats for {1} match.{2}",
-                        error.Schema.AnyOf.Count,
-                        string.IsNullOrEmpty(error.Property) ? "the element" : ("'" + error.Property + "'"),
-                        validFormats));
-
-                    // Show sub-errors for the closest matching alternative.
-                    var multiError = error as ChildSchemaValidationError;
-                    if (multiError != null)
-                    {
-                        int minNumSubErrors = int.MaxValue;
-                        ICollection<ValidationError> bestSubErrorsList = null;
-                        foreach (var subErrors in multiError.Errors)
-                        {
-                            if (subErrors.Value.Count <= minNumSubErrors)
-                            {
-                                bestSubErrorsList = subErrors.Value;
-                                minNumSubErrors = bestSubErrorsList.Count;
-                            }
-                        }
-
-                        if (bestSubErrorsList != null)
-                        {
-                            foreach (var subError in bestSubErrorsList)
-                            {
-                                FillValidationErrorsFromJsonSchemaError(subError);
-                            }
-                        }
-                    }
-
-                    return;  // Don't process sub-errors. We've handled them already.
-                default:
-                    var errorString = Regex.Replace(error.Kind.ToString(), "([A-Z])", " $1", RegexOptions.Compiled).ToLower().Trim();
-                    if (error.Property != null)
-                    {
-                        errorString = error.Property + ": " + errorString;
-                    }
-
-                    AddValidationError(error.LineNumber, errorString);
-                    break;
-            }
-
-            // Show all sub-errors.
-            if (error is ChildSchemaValidationError)
-            {
-                foreach (var subErrors in (error as ChildSchemaValidationError).Errors)
-                {
-                    foreach (var subError in subErrors.Value)
-                    {
-                        FillValidationErrorsFromJsonSchemaError(subError);
-                    }
-                }
-            }
-        }
-
-        private void AddValidationError(int line, string message)
-        {
-            var zeroBasedLine = line - 1;
-            if (validationErrors.ContainsKey(zeroBasedLine))
-            {
-                validationErrors[zeroBasedLine] += '\n' + message;
-            }
-            else
-            {
-                validationErrors[zeroBasedLine] = message;
             }
         }
 
@@ -558,7 +486,12 @@ namespace StonehearthEditor
             this.textBox.Markers[kErrorMarkerNumber].SetForeColor(Color.Red);
             this.textBox.Markers[kErrorMarkerNumber].SetBackColor(Color.IndianRed);
 
-            // Based on the extension, we need to choose the right lexer/style
+            // Prepare autocomplete handler.
+            autocompleteMenu.TargetControlWrapper = new ScintillaWrapper(textBox);
+            autocompleteMenu.Selecting += (menu, args) => args.Handled = true;  // We do out own replacement.
+            autocompleteMenu.Enabled = false;
+
+            // Based on the extension, we need to choose the right lexer/style/autocomplete
             switch (System.IO.Path.GetExtension(mFileData.Path))
             {
                 case ".lua":
@@ -654,6 +587,9 @@ namespace StonehearthEditor
                 ValidateSchema();
             });
             this.textBox.Margins[kErrorMarginNumber].Width = 16;
+
+            // Enable autocomplete.
+            autocompleteMenu.Enabled = true;
         }
 
         /// <summary>

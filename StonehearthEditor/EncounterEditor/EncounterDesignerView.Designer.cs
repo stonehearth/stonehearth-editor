@@ -175,9 +175,9 @@
             this.graphViewer.ZoomFraction = 0.5D;
             this.graphViewer.ZoomWhenMouseWheelScroll = true;
             this.graphViewer.ZoomWindowThreshold = 0.05D;
-            this.graphViewer.EdgeRemoved += new System.EventHandler(this.graphViewer_EdgeRemoved);
             this.graphViewer.MouseMove += new System.Windows.Forms.MouseEventHandler(this.graphViewer_MouseMove);
             this.graphViewer.MouseDown += new System.Windows.Forms.MouseEventHandler(this.graphViewer_MouseDown);
+            this.graphViewer.MouseLeave += new System.EventHandler(this.graphViewer_MouseLeave);
             // 
             // editorInfoSplitter
             // 

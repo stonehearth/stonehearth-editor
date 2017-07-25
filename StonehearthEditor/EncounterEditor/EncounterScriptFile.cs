@@ -10,9 +10,6 @@ namespace StonehearthEditor
 {
     public class EncounterScriptFile
     {
-        private static readonly TaskFactory taskFactory = new TaskFactory(
-            CancellationToken.None, TaskCreationOptions.None, TaskContinuationOptions.None, TaskScheduler.Default);
-
         private string mPath;
         private string mFileName;
         private string mDefaultJson;
@@ -32,8 +29,7 @@ namespace StonehearthEditor
             {
                 try
                 {
-                    mSchema = taskFactory.StartNew(() => JsonSchema4.FromJsonAsync(schemaText, Application.StartupPath + "/schemas/encounters/tmp.json"))
-                        .Unwrap().GetAwaiter().GetResult();
+                    mSchema = JsonSchemaTools.ParseSchema(schemaText, Application.StartupPath + "/schemas/encounters/tmp.json");
                 }
                 catch (System.Exception e)
                 {

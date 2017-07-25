@@ -5,6 +5,7 @@ using Microsoft.Msagl.Drawing;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Image = System.Drawing.Image;
+using static StonehearthEditor.EncounterNodeRenderer;
 
 namespace StonehearthEditor
 {
@@ -24,6 +25,11 @@ namespace StonehearthEditor
         public string InEdge
         {
             get { return mInEdge; }
+        }
+
+        public List<string> OutEdgeStrings
+        {
+            get { return new List<string>(mOutEdgeStrings); }
         }
 
         public string EncounterType
@@ -171,6 +177,8 @@ namespace StonehearthEditor
         {
             base.UpdateGraphNode(graphNode);
 
+            NodeDisplaySettings settings = graphNode.UserData as NodeDisplaySettings;
+
             switch (mEncounterType)
             {
                 case "generator":
@@ -181,18 +189,18 @@ namespace StonehearthEditor
                     break;
             }
 
+            settings.HasUnsavedChanges = NodeFile.IsModified;
+
             if (NodeFile.Owner == null)
             {
-                graphNode.Attr.Color = Color.Red;
+                settings.HasErrors = true;
             }
 
-            if (NodeFile.IsModified)
+            if (!settings.HasErrors && NodeFile.Json["mixins"] == null)
             {
-                graphNode.Attr.AddStyle(Style.Diagonals);
-            }
-            else
-            {
-                graphNode.Attr.RemoveStyle(Style.Diagonals);
+                // TODO: Allow validation to handle mixins.
+                var schema = GameMasterDataManager.GetInstance().GetGenericScriptNode(mEncounterType)?.Schema;
+                settings.HasErrors = schema != null && schema.Validate(NodeFile.FileData.FlatFileData).Count > 0;
             }
         }
 

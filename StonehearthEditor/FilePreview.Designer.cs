@@ -1,4 +1,6 @@
-﻿namespace StonehearthEditor
+﻿using AutocompleteMenuNS;
+
+namespace StonehearthEditor
 {
    partial class FilePreview
    {
@@ -41,6 +43,7 @@
             this.openFolder = new System.Windows.Forms.ToolStripButton();
             this.saveFile = new System.Windows.Forms.ToolStripButton();
             this.localizeFile = new System.Windows.Forms.ToolStripButton();
+            this.autocompleteMenu = new AutocompleteMenuNS.AutocompleteMenu();
             this.filePreviewContextMenu.SuspendLayout();
             this.toolStrip.SuspendLayout();
             this.SuspendLayout();
@@ -79,22 +82,23 @@
             this.insertAliasToolStripMenuItem,
             this.editLocStringToolStripMenuItem});
             this.filePreviewContextMenu.Name = "filePreviewContextMenu";
-            this.filePreviewContextMenu.Size = new System.Drawing.Size(197, 70);
+            this.filePreviewContextMenu.Size = new System.Drawing.Size(229, 70);
             this.filePreviewContextMenu.Opening += new System.ComponentModel.CancelEventHandler(this.filePreviewContextMenu_Opening);
             // 
             // saveToolStripMenuItem
             // 
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
             this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(196, 22);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(228, 22);
             this.saveToolStripMenuItem.Text = "Save";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
             // 
             // insertAliasToolStripMenuItem
             // 
             this.insertAliasToolStripMenuItem.Name = "insertAliasToolStripMenuItem";
-            this.insertAliasToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Space)));
-            this.insertAliasToolStripMenuItem.Size = new System.Drawing.Size(196, 22);
+            this.insertAliasToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.Space)));
+            this.insertAliasToolStripMenuItem.Size = new System.Drawing.Size(228, 22);
             this.insertAliasToolStripMenuItem.Text = "Insert Alias";
             this.insertAliasToolStripMenuItem.Click += new System.EventHandler(this.insertAliasToolStripMenuItem_Click);
             // 
@@ -102,7 +106,7 @@
             // 
             this.editLocStringToolStripMenuItem.Name = "editLocStringToolStripMenuItem";
             this.editLocStringToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.L)));
-            this.editLocStringToolStripMenuItem.Size = new System.Drawing.Size(196, 22);
+            this.editLocStringToolStripMenuItem.Size = new System.Drawing.Size(228, 22);
             this.editLocStringToolStripMenuItem.Text = "Edit Loc String";
             this.editLocStringToolStripMenuItem.Click += new System.EventHandler(this.editLocStringToolStripMenuItem_Click);
             // 
@@ -159,6 +163,19 @@
             this.localizeFile.Text = "Localize This File";
             this.localizeFile.Click += new System.EventHandler(this.localizeFile_Click);
             // 
+            // autocompleteMenu
+            // 
+            this.autocompleteMenu.AppearInterval = 200;
+            this.autocompleteMenu.Colors = ((AutocompleteMenuNS.Colors)(resources.GetObject("autocompleteMenu.Colors")));
+            this.autocompleteMenu.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F);
+            this.autocompleteMenu.ImageList = null;
+            this.autocompleteMenu.Items = new string[0];
+            this.autocompleteMenu.LeftPadding = 0;
+            this.autocompleteMenu.MinFragmentLength = 1;
+            this.autocompleteMenu.SearchPattern = "[:,{\\[]\\s*";
+            this.autocompleteMenu.TargetControlWrapper = null;
+            this.autocompleteMenu.ToolTipDuration = 9999999;
+            // 
             // FilePreview
             // 
             this.ContextMenuStrip = this.filePreviewContextMenu;
@@ -186,5 +203,6 @@
       private System.Windows.Forms.ToolStripMenuItem insertAliasToolStripMenuItem;
       private System.Windows.Forms.ToolStripMenuItem editLocStringToolStripMenuItem;
         internal System.Windows.Forms.ToolStrip toolStrip;
+        private AutocompleteMenuNS.AutocompleteMenu autocompleteMenu;
     }
 }

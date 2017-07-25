@@ -42,11 +42,6 @@ namespace StonehearthEditor
             EncounterNodeRenderer.SetupNodeRendering(node);
         }
 
-        protected void SetIcon(Node node, System.Drawing.Image icon)
-        {
-            node.UserData = icon;
-        }
-
         public virtual void GetRelatedNodes(HashSet<GameMasterNode> set)
         {
             set.Add(NodeFile);

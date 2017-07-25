@@ -87,6 +87,12 @@ namespace StonehearthEditor
             return mGenericScriptNodes.Values;
         }
 
+        public EncounterScriptFile GetGenericScriptNode(string type)
+        {
+            var key = type + "_encounter";
+            return mGenericScriptNodes.ContainsKey(key) ? mGenericScriptNodes[key] : null;
+        }
+
         public ICollection<GameMasterNode> GetAllNodesOfType(GameMasterNodeType type)
         {
             List<GameMasterNode> result = new List<GameMasterNode>();

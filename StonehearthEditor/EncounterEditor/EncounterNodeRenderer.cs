@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
 using System.Linq;
 using Microsoft.Msagl.Core.Geometry.Curves;
 using Microsoft.Msagl.Drawing;
@@ -14,11 +15,19 @@ namespace StonehearthEditor
     {
         public static readonly int kIconSize = 24;
 
+        public class NodeDisplaySettings
+        {
+            public System.Drawing.Image Icon;
+            public bool HasUnsavedChanges;
+            public bool HasErrors;
+        }
+
         public static void SetupNodeRendering(DrawingNode node)
         {
             System.Diagnostics.Debug.Assert(node.Attr.Shape == Shape.Box, "Only box nodes are supported");
             node.DrawNodeDelegate = new DelegateToOverrideNodeRendering(DrawNode);
             node.NodeBoundaryDelegate = new DelegateToSetNodeBoundary(GetNodeBoundary);
+            node.UserData = new NodeDisplaySettings();
         }
 
         // Based on https://github.com/Microsoft/automatic-graph-layout/blob/master/GraphLayout/tools/GraphViewerGDI/Draw.cs
@@ -36,7 +45,8 @@ namespace StonehearthEditor
 
         private static void DrawIcon(Graphics g, DrawingNode node)
         {
-            Image image = node.UserData as Image;
+            NodeDisplaySettings settings = node.UserData as NodeDisplaySettings;
+            Image image = settings.Icon;
             if (image == null)
             {
                 return;
@@ -51,7 +61,14 @@ namespace StonehearthEditor
 
             var x = (float)(node.GeometryNode.Center.X - (node.GeometryNode.Width / 2) + (node.Attr.LabelMargin / 2));
             var y = (float)(node.GeometryNode.Center.Y - (kIconSize / 2));
-            g.DrawImage(image, x, y, kIconSize, kIconSize);
+
+            // Apply foreground color alpha to the icon.
+            ColorMatrix colorMatrix = new ColorMatrix();
+            colorMatrix.Matrix33 = node.Attr.Color.A / 255.0f;
+            ImageAttributes imageAttributes = new ImageAttributes();
+            imageAttributes.SetColorMatrix(colorMatrix);
+
+            g.DrawImage(image, new Rectangle((int)x, (int)y, kIconSize, kIconSize), 0, 0, kIconSize, kIconSize, GraphicsUnit.Pixel, imageAttributes);
 
             g.Transform = saveM;
         }
@@ -63,7 +80,7 @@ namespace StonehearthEditor
             var font = new Font(label.FontName, (float)label.FontSize, (System.Drawing.FontStyle)(int)label.FontStyle);
             var bbox = node.GeometryNode.BoundingBox;
             var rect = new RectangleF((float)bbox.Left, (float)bbox.Bottom - node.Attr.LabelMargin, (float)bbox.Width, (float)bbox.Height);
-            if (node.UserData is Image)
+            if ((node.UserData as NodeDisplaySettings).Icon != null)
             {
                 rect.Offset(kIconSize, 0);
                 var size = rect.Size;
@@ -92,7 +109,6 @@ namespace StonehearthEditor
 
         private static void FillTheGraphicsPath(DrawingNode drNode, float width, float height, ref float xRadius, ref float yRadius, GraphicsPath path)
         {
-            NodeAttr nodeAttr = drNode.Attr;
             float w = width / 2;
             if (xRadius > w)
                 xRadius = w;
@@ -128,7 +144,6 @@ namespace StonehearthEditor
         {
             var pen = new Pen(Draw.MsaglColorToDrawingColor(drNode.Attr.Color), (float)drNode.Attr.LineWidth);
             NodeAttr nodeAttr = drNode.Attr;
-            Color fc = Draw.MsaglColorToDrawingColor(nodeAttr.FillColor);
             var width = (float)drNode.Width;
             var height = (float)drNode.Height;
             var xRadius = (float)nodeAttr.XRadius;
@@ -136,7 +151,13 @@ namespace StonehearthEditor
             var path = new GraphicsPath();
             FillTheGraphicsPath(drNode, width, height, ref xRadius, ref yRadius, path);
             Brush brush;
-            if (nodeAttr.Styles.FirstOrDefault() == Style.Diagonals)
+            Color fc = Draw.MsaglColorToDrawingColor(nodeAttr.FillColor);
+            var settings = drNode.UserData as NodeDisplaySettings;
+            if (settings.HasErrors)
+            {
+                brush = new HatchBrush(HatchStyle.WideUpwardDiagonal, Color.FromArgb((int)((fc.R * 0.7) + (255 * 0.3)), (int)(fc.G * 0.7), (int)(fc.B * 0.7)), fc);
+            }
+            else if (settings.HasUnsavedChanges)
             {
                 brush = new HatchBrush(HatchStyle.DiagonalCross, Color.FromArgb(160, 160, 165), fc);
             }
@@ -163,7 +184,7 @@ namespace StonehearthEditor
                 StringMeasure.MeasureWithFont("a", font, out width, out height);
             }
 
-            if (node.UserData is Image)
+            if ((node.UserData as NodeDisplaySettings).Icon != null)
             {
                 width += kIconSize;
             }

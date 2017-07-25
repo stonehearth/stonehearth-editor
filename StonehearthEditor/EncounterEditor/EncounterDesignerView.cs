@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Windows.Forms;
 using Microsoft.Msagl.Drawing;
 using Microsoft.Msagl.GraphViewerGdi;
@@ -18,7 +19,6 @@ namespace StonehearthEditor
         private FilePreview mNodePreview = null;
         private string mSelectedNewScriptNode = null;
         private DNode mHoveredDNode = null;
-        private Color mHoveredOriginalColor;
 
         public EncounterDesignerView()
         {
@@ -58,6 +58,14 @@ namespace StonehearthEditor
 
             if (mNodePreview != null)
             {
+                if (!mNodePreview.TrySetFileDataFromTextbox())
+                {
+                    // Don't allow switching nodes if the file is invalid.
+                    // This is terrible, but since we currently don't allow writing out invalid JSON,
+                    // switching away could cause data loss.
+                    return;
+                }
+
                 editorInfoSplitter.Panel1.Controls.Remove(mNodePreview);
             }
 
@@ -72,12 +80,9 @@ namespace StonehearthEditor
                 UpdateValidationSchema();
                 mNodePreview.OnModifiedChanged += (bool isModified) =>
                 {
-                    if (isModified != mSelectedNode.IsModified)
-                    {
-                        mSelectedNode.IsModified = isModified;
-                        node.NodeData.UpdateGraphNode(mSelectedDNode.DrawingNode);
-                        graphViewer.Invalidate(mSelectedDNode);
-                    }
+                    mSelectedNode.IsModified = isModified;
+                    node.NodeData.UpdateGraphNode(mSelectedDNode.DrawingNode);
+                    graphViewer.Invalidate(mSelectedDNode);
                 };
 
                 // Add some extra labels to the text editor toolbar.
@@ -139,17 +144,62 @@ namespace StonehearthEditor
                 return;
             }
 
-            foreach (var scriptFile in GameMasterDataManager.GetInstance().GetGenericScriptNodes())
+            var scriptFile = GameMasterDataManager.GetInstance().GetGenericScriptNode(encounterNode.EncounterType);
+            if (scriptFile?.Schema != null)
             {
-                // TODO: Better matching of type to schema.
-                if (scriptFile.Name == encounterNode.EncounterType + "_encounter")
+                var suggester = mNodePreview.SetValidationSchema(scriptFile.Schema);
+                suggester.AddCustomSource("http://stonehearth.net/schemas/encounters/elements/edge.json", GetAllEdges);
+                suggester.AddCustomSource("http://stonehearth.net/schemas/encounters/elements/node.json", GetAllNodes);
+            }
+        }
+
+        private IEnumerable<string> GetAllEdges()
+        {
+            if (graphViewer.Graph == null)
+            {
+                yield break;
+            }
+
+            SortedSet<string> allEdges = new SortedSet<string>();
+            foreach (var node in graphViewer.Graph.Nodes)
+            {
+                GameMasterNode nodeData = GameMasterDataManager.GetInstance().GetGameMasterNode(node.Id);
+                var encounterNode = nodeData?.NodeData as EncounterNodeData;
+                if (encounterNode != null)
                 {
-                    if (scriptFile.Schema != null)
+                    foreach (var edge in encounterNode.OutEdgeStrings)
                     {
-                        mNodePreview.SetValidationSchema(scriptFile.Schema);
+                        allEdges.Add(edge);
                     }
-                    break;
                 }
+            }
+
+            foreach (var edge in allEdges)
+            {
+                yield return '"' + edge + '"';
+            }
+        }
+
+        private IEnumerable<string> GetAllNodes()
+        {
+            if (graphViewer.Graph == null)
+            {
+                yield break;
+            }
+
+            SortedSet<string> allNodes = new SortedSet<string>();
+            foreach (var node in graphViewer.Graph.Nodes)
+            {
+                GameMasterNode nodeData = GameMasterDataManager.GetInstance().GetGameMasterNode(node.Id);
+                if (nodeData != null)
+                {
+                    allNodes.Add(nodeData.Name);
+                }
+            }
+
+            foreach (var node in allNodes)
+            {
+                yield return '"' + node + '"';
             }
         }
 
@@ -275,10 +325,69 @@ namespace StonehearthEditor
             }
         }
 
-        private void graphViewer_EdgeRemoved(object sender, EventArgs e)
+        private void SetBranchHighlighted(DNode root, bool highlighted)
         {
-            // TODO yshan: replace this
-            Console.WriteLine("edge removed!");
+            // Find all accessible nodes.
+            var toHighlight = new HashSet<IViewerObject>();
+            var queue = new List<IViewerNode>();
+            queue.Add(root);
+            while (queue.Count > 0)
+            {
+                var node = queue.Last();
+                queue.RemoveAt(queue.Count - 1);
+                if (!toHighlight.Contains(node))
+                {
+                    toHighlight.Add(node);
+                    toHighlight.UnionWith(node.OutEdges);
+                    foreach (var edge in node.OutEdges)
+                    {
+                        queue.Add(edge.Target);
+                    }
+                }
+            }
+
+            // Fade out (or restore) all nodes that are not in the highlighted branch.
+            var desiredAlpha = highlighted ? (byte)160 : (byte)255;
+            var lineWidthDelta = highlighted ? +2 : -2;
+            foreach (var edgeOrNode in graphViewer.Entities)
+            {
+                if (!toHighlight.Contains(edgeOrNode))
+                {
+                    if (edgeOrNode is IViewerNode)
+                    {
+                        Color color = (edgeOrNode as IViewerNode).Node.Attr.FillColor;
+                        color.A = desiredAlpha;
+                        (edgeOrNode as IViewerNode).Node.Attr.FillColor = color;
+
+                        color = (edgeOrNode as IViewerNode).Node.Attr.Color;
+                        color.A = desiredAlpha;
+                        (edgeOrNode as IViewerNode).Node.Attr.Color = color;
+
+                        color = (edgeOrNode as IViewerNode).Node.Label.FontColor;
+                        color.A = desiredAlpha;
+                        (edgeOrNode as IViewerNode).Node.Label.FontColor = color;
+                    }
+                    else if (edgeOrNode is IViewerEdge)
+                    {
+                        Color color = (edgeOrNode as IViewerEdge).Edge.Attr.Color;
+                        color.A = desiredAlpha;
+                        (edgeOrNode as IViewerEdge).Edge.Attr.Color = color;
+                    }
+                }
+                else
+                {
+                    if (edgeOrNode is IViewerNode)
+                    {
+                        (edgeOrNode as IViewerNode).Node.Attr.LineWidth += lineWidthDelta;
+                    }
+                    else if (edgeOrNode is IViewerEdge)
+                    {
+                        (edgeOrNode as IViewerEdge).Edge.Attr.LineWidth += lineWidthDelta;
+                    }
+                }
+
+                graphViewer.Invalidate(edgeOrNode);
+            }
         }
 
         private void graphViewer_MouseMove(object sender, MouseEventArgs e)
@@ -299,8 +408,7 @@ namespace StonehearthEditor
                 {
                     if (mHoveredDNode != null)
                     {
-                        mHoveredDNode.DrawingNode.Attr.FillColor = mHoveredOriginalColor;
-                        graphViewer.Invalidate(mHoveredDNode);
+                        SetBranchHighlighted(mHoveredDNode, false);
                         mHoveredDNode = null;
                     }
 
@@ -310,13 +418,7 @@ namespace StonehearthEditor
                         if (nodeData != null)
                         {
                             mHoveredDNode = dNode;
-                            mHoveredOriginalColor = mHoveredDNode.DrawingNode.Attr.FillColor;
-                            Color color = mHoveredOriginalColor;
-                            color.R = (byte)Math.Min(color.R + 40, 255);
-                            color.G = (byte)Math.Min(color.G + 40, 255);
-                            color.B = (byte)Math.Min(color.B + 40, 255);
-                            mHoveredDNode.DrawingNode.Attr.FillColor = color;
-                            graphViewer.Invalidate(mHoveredDNode);
+                            SetBranchHighlighted(mHoveredDNode, true);
                         }
                     }
                 }
@@ -348,7 +450,7 @@ namespace StonehearthEditor
                             }
 
                             mSelectedDNode = dNode;
-                            mSelectedDNode.DrawingNode.Attr.LineWidth = 5;
+                            mSelectedDNode.DrawingNode.Attr.LineWidth = 7;
                             graphViewer.Invalidate(mSelectedDNode);
 
                             UpdateSelectedNodeInfo(nodeData);
@@ -525,6 +627,15 @@ namespace StonehearthEditor
             mSelectedNode.Owner.IsModified = true;
             GameMasterDataManager.GetInstance().SaveModifiedFiles();
             GameMasterDataManager.GetInstance().RefreshGraph(this);
+        }
+
+        private void graphViewer_MouseLeave(object sender, EventArgs e)
+        {
+            if (mHoveredDNode != null)
+            {
+                SetBranchHighlighted(mHoveredDNode, false);
+                mHoveredDNode = null;
+            }
         }
     }
 }
