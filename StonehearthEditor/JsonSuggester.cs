@@ -4,12 +4,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Windows.Forms;
 using AutocompleteMenuNS;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NJsonSchema;
 using ScintillaNET;
-using System.Windows.Forms;
 using static StonehearthEditor.JsonSchemaTools;
 
 namespace StonehearthEditor
@@ -39,7 +39,7 @@ namespace StonehearthEditor
             public bool IsValid;
             public List<string> Path;
             public bool SuggestingValue;
-            public List<string> ExistingProperties;
+            public JObject KnownJson;
         }
 
         private IEnumerable<AutocompleteItem> BuildList()
@@ -186,6 +186,7 @@ namespace StonehearthEditor
 
         private IEnumerable<AutocompleteItem> SuggestProperties(Context context, ICollection<AnnotatedSchema> annotatedSchemas)
         {
+            var contextObject = context.KnownJson.SelectToken(string.Join(".", context.Path)) as JObject ?? new JObject();
             var yieldedAny = false;
             foreach (var annotatedSchema in annotatedSchemas)
             {
@@ -201,7 +202,7 @@ namespace StonehearthEditor
                 {
                     foreach (var propertyDef in curSchema.ActualProperties)
                     {
-                        if (!context.ExistingProperties.Contains(propertyDef.Key))
+                        if (contextObject.Property(propertyDef.Key) == null)
                         {
                             yield return new PropertySuggestItem(propertyDef.Key, propertyDef.Value.ActualPropertySchema);
                             yieldedAny = true;
@@ -224,7 +225,7 @@ namespace StonehearthEditor
 
             // Parse JSON until the the current position (or until earlier failure), constructing a path.
             result.Path = new List<string>();
-            var existingPropertiesStack = new List<List<string>>();
+            var currentJsonStack = new List<JToken>();
             string lastProperty = null;
             var lastPosition = 0;
             var reader = new JsonTextReader(new StringReader(textBox.Text.Substring(0, position)));
@@ -266,56 +267,81 @@ namespace StonehearthEditor
 
                 lastPosition = textBox.Lines[reader.LineNumber - 1].Position + reader.LinePosition;
 
+                if (result.KnownJson == null)
+                {
+                    if (reader.TokenType == JsonToken.StartObject)
+                    {
+                        result.KnownJson = new JObject();
+                        currentJsonStack.Add(result.KnownJson);
+                    }
+                    else
+                    {
+                        // We only allow objects at the top level.
+                        result.IsValid = false;
+                        return result;
+                    }
+
+                    continue;
+                }
+
+                Action<JToken> addNewEntryToCurrentObjectOrArray = (value) =>
+                {
+                    var target = currentJsonStack.Last();
+                    if (target is JArray)
+                    {
+                        (target as JArray).Add(value);
+                    }
+                    else
+                    {
+                        target[lastProperty] = value;
+                    }
+                };
+
                 switch (reader.TokenType)
                 {
-                    case Newtonsoft.Json.JsonToken.StartObject:
-                        existingPropertiesStack.Add(new List<string>());
-                        if (lastProperty != null)
-                        {
-                            result.Path.Add(lastProperty);
-                            lastProperty = null;
-                        }
-
+                    case JsonToken.StartObject:
+                        var newObject = new JObject();
+                        addNewEntryToCurrentObjectOrArray(newObject);
+                        currentJsonStack.Add(newObject);
+                        result.Path.Add(lastProperty ?? "0");
+                        lastProperty = null;
                         break;
-                    case Newtonsoft.Json.JsonToken.StartArray:
-                        if (lastProperty != null)
-                        {
-                            result.Path.Add(lastProperty);
-                        }
-
-                        lastProperty = "0";  // We assume arrays are heterogeneous, so all items are equivalent to [0].
+                    case JsonToken.StartArray:
+                        var newArray = new JArray();
+                        addNewEntryToCurrentObjectOrArray(newArray);
+                        currentJsonStack.Add(newArray);
+                        result.Path.Add(lastProperty ?? "0");
+                        lastProperty = null;
                         break;
-                    case Newtonsoft.Json.JsonToken.PropertyName:
+                    case JsonToken.PropertyName:
                         lastProperty = reader.Value as string;
-                        existingPropertiesStack.Last().Add(lastProperty);
                         break;
-                    case Newtonsoft.Json.JsonToken.EndObject:
-                        existingPropertiesStack.RemoveAt(existingPropertiesStack.Count - 1);
-                        lastProperty = result.Path.Last();
+                    case JsonToken.EndObject:
+                    case JsonToken.EndArray:
+                        currentJsonStack.RemoveAt(currentJsonStack.Count - 1);
                         result.Path.RemoveAt(result.Path.Count - 1);
                         break;
-                    case Newtonsoft.Json.JsonToken.EndArray:
-                        lastProperty = result.Path.Last();
-                        result.Path.RemoveAt(result.Path.Count - 1);
-
-                        break;
-                    case Newtonsoft.Json.JsonToken.Integer:
-                    case Newtonsoft.Json.JsonToken.Float:
-                    case Newtonsoft.Json.JsonToken.String:
-                    case Newtonsoft.Json.JsonToken.Boolean:
-                    case Newtonsoft.Json.JsonToken.Null:
-                    case Newtonsoft.Json.JsonToken.Undefined:
+                    case JsonToken.Integer:
+                    case JsonToken.Float:
+                    case JsonToken.String:
+                    case JsonToken.Boolean:
+                    case JsonToken.Null:
+                    case JsonToken.Undefined:
                         // Primitive value types. These don't affect the path.
+                        var newValue = JToken.FromObject(reader.Value);
+                        addNewEntryToCurrentObjectOrArray(newValue);
+                        lastProperty = null;
                         break;
-                    case Newtonsoft.Json.JsonToken.None:
-                    case Newtonsoft.Json.JsonToken.Raw:
-                    case Newtonsoft.Json.JsonToken.Date:
-                    case Newtonsoft.Json.JsonToken.Bytes:
-                    case Newtonsoft.Json.JsonToken.StartConstructor:
-                    case Newtonsoft.Json.JsonToken.EndConstructor:
-                        // We don't expect to ever see these.
-                        break;
-                    case Newtonsoft.Json.JsonToken.Comment:
+                    case JsonToken.None:
+                    case JsonToken.Raw:
+                    case JsonToken.Date:
+                    case JsonToken.Bytes:
+                    case JsonToken.StartConstructor:
+                    case JsonToken.EndConstructor:
+                        // We don't expect to ever see these in valid SH JSON.
+                        result.IsValid = false;
+                        return result;
+                    case JsonToken.Comment:
                     default:
                         break;
                 }
@@ -328,16 +354,9 @@ namespace StonehearthEditor
                 {
                     result.Path.Add(lastProperty);
                 }
-            }
-            else
-            {
-                if (existingPropertiesStack.Count > 0)
+                else if (currentJsonStack.Last() is JArray)
                 {
-                    result.ExistingProperties = existingPropertiesStack.Last();
-                }
-                else
-                {
-                    result.ExistingProperties = new List<string>();
+                    result.Path.Add("0");  // We assume arrays are homogeneous, so all items are equivalent to [0].
                 }
             }
 
