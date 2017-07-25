@@ -330,6 +330,18 @@
     <None Include="pages\scripts\libs\jquery-2.1.1.min.map">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="schemas\encounters\elements\amenity.json" />
+    <None Include="schemas\encounters\elements\display_string.json" />
+    <None Include="schemas\encounters\elements\duration.json" />
+    <None Include="schemas\encounters\elements\edge.json" />
+    <None Include="schemas\encounters\elements\faction.json" />
+    <None Include="schemas\encounters\elements\file.json" />
+    <None Include="schemas\encounters\elements\node.json" />
+    <None Include="schemas\encounters\elements\out_edge_spec.json" />
+    <None Include="schemas\encounters\elements\point2.json" />
+    <None Include="schemas\encounters\elements\point3.json" />
+    <None Include="schemas\encounters\elements\range.json" />
+    <None Include="schemas\encounters\encounter.json" />
     <None Include="scripts\loc_fields.json" />
     <None Include="StonehearthEditor.ruleset" />
   </ItemGroup>
