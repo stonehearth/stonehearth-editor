@@ -129,6 +129,11 @@ namespace AutocompleteMenuNS
             using(var brush = new SolidBrush(e.IsSelected ? e.Colors.SelectedForeColor : e.Colors.ForeColor))
                 e.Graphics.DrawString(ToString(), e.Font, brush, e.TextRect, e.StringFormat);
         }
+
+        public virtual bool CanBeSelected()
+        {
+            return true;
+        }
     }
 
     public enum CompareResult

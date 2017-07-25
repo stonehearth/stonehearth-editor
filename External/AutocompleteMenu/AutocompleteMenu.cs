@@ -836,9 +836,16 @@ namespace AutocompleteMenuNS
 
         public void SelectNext(int shift)
         {
-            SelectedItemIndex = Math.Max(0, Math.Min(SelectedItemIndex + shift, VisibleItems.Count - 1));
-            //
-            (Host.ListView as Control).Invalidate();
+            var newIndex = Math.Max(0, Math.Min(SelectedItemIndex + shift, VisibleItems.Count - 1));
+            if (VisibleItems[newIndex].CanBeSelected())
+            {
+                SelectedItemIndex = newIndex;
+                (Host.ListView as Control).Invalidate();
+            }
+            else if (newIndex != 0 && newIndex != VisibleItems.Count - 1)
+            {
+                SelectNext(shift + Math.Sign(shift));
+            }
         }
 
         public bool ProcessKey(char c, Keys keyModifiers)

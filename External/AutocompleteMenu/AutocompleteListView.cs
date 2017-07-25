@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 namespace AutocompleteMenuNS
@@ -232,9 +233,13 @@ namespace AutocompleteMenuNS
 
             if (e.Button == MouseButtons.Left)
             {
-                SelectedItemIndex = PointToItemIndex(e.Location);
-                ScrollToSelected();
-                Invalidate();
+                var index = PointToItemIndex(e.Location);
+                if (index != -1)
+                {
+                    SelectedItemIndex = index;
+                    ScrollToSelected();
+                    Invalidate();
+                }
             }
         }
 
@@ -260,9 +265,13 @@ namespace AutocompleteMenuNS
         protected override void OnMouseDoubleClick(MouseEventArgs e)
         {
             base.OnMouseDoubleClick(e);
-            SelectedItemIndex = PointToItemIndex(e.Location);
-            Invalidate();
-            OnItemSelected();
+            var index = PointToItemIndex(e.Location);
+            if (index != -1)
+            {
+                SelectedItemIndex = index;
+                Invalidate();
+                OnItemSelected();
+            }
         }
 
         private void OnItemSelected()
@@ -274,7 +283,8 @@ namespace AutocompleteMenuNS
 
         private int PointToItemIndex(Point p)
         {
-            return (p.Y + VerticalScroll.Value)/ItemHeight;
+            var index = (p.Y + VerticalScroll.Value) / ItemHeight;
+            return (index >= 0 && index < VisibleItems.Count && VisibleItems[index].CanBeSelected()) ? index : -1;
         }
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
@@ -289,7 +299,7 @@ namespace AutocompleteMenuNS
 
         public void SelectItem(int itemIndex)
         {
-            SelectedItemIndex = itemIndex;
+            SelectedItemIndex = VisibleItems[itemIndex].CanBeSelected() ? itemIndex : -1;
             ScrollToSelected();
             Invalidate();
         }
