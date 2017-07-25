@@ -327,30 +327,13 @@ namespace StonehearthEditor
             }
         }
 
-        private void SetBranchHighlighted(DNode root, bool highlighted)
+        private void SetBranchFocused(DNode root, bool highlighted)
         {
-            // Find all accessible nodes.
-            var toHighlight = new HashSet<IViewerObject>();
-            var queue = new List<IViewerNode>();
-            queue.Add(root);
-            while (queue.Count > 0)
-            {
-                var node = queue.Last();
-                queue.RemoveAt(queue.Count - 1);
-                if (!toHighlight.Contains(node))
-                {
-                    toHighlight.Add(node);
-                    toHighlight.UnionWith(node.OutEdges);
-                    foreach (var edge in node.OutEdges)
-                    {
-                        queue.Add(edge.Target);
-                    }
-                }
-            }
-
-            // Fade out (or restore) all nodes that are not in the highlighted branch.
-            var desiredAlpha = highlighted ? (byte)160 : (byte)255;
-            var lineWidthDelta = highlighted ? +2 : -2;
+            // TODO: The specific styling choices should be handled by EncounterNodeRenderer (and an EncounterEdgeRenderer)
+            //       rather than set explicitly here.
+            // Fade out (or restore) all nodes and edges that are not in the focused branch.
+            var toHighlight = FindAllConnectedObjects(root);
+            var desiredAlpha = highlighted ? (byte)128 : (byte)255;
             foreach (var edgeOrNode in graphViewer.Entities)
             {
                 if (!toHighlight.Contains(edgeOrNode))
@@ -376,20 +359,63 @@ namespace StonehearthEditor
                         (edgeOrNode as IViewerEdge).Edge.Attr.Color = color;
                     }
                 }
-                else
+
+                graphViewer.Invalidate(edgeOrNode);
+            }
+        }
+
+        private void SetBranchHighlighted(DNode root, bool highlighted)
+        {
+            // Highlight (or restore) all nodes and edges that are not in the highlighted branch.
+            var toHighlight = FindAllConnectedObjects(root);
+            var lineWidthDelta = highlighted ? +2 : -2;
+            var desiredBlueChannelValue = highlighted ? (byte)255 : (byte)0;
+            foreach (var edgeOrNode in graphViewer.Entities)
+            {
+                if (toHighlight.Contains(edgeOrNode))
                 {
                     if (edgeOrNode is IViewerNode)
                     {
                         (edgeOrNode as IViewerNode).Node.Attr.LineWidth += lineWidthDelta;
+                        var color = (edgeOrNode as IViewerNode).Node.Attr.Color;
+                        color.B = desiredBlueChannelValue;
+                        (edgeOrNode as IViewerNode).Node.Attr.Color = color;
                     }
                     else if (edgeOrNode is IViewerEdge)
                     {
                         (edgeOrNode as IViewerEdge).Edge.Attr.LineWidth += lineWidthDelta;
+                        var color = (edgeOrNode as IViewerEdge).Edge.Attr.Color;
+                        color.B = desiredBlueChannelValue;
+                        (edgeOrNode as IViewerEdge).Edge.Attr.Color = color;
                     }
                 }
 
                 graphViewer.Invalidate(edgeOrNode);
             }
+        }
+
+        private HashSet<IViewerObject> FindAllConnectedObjects(DNode root)
+        {
+            // Find all accessible nodes.
+            var result = new HashSet<IViewerObject>();
+            var queue = new List<IViewerNode>();
+            queue.Add(root);
+            while (queue.Count > 0)
+            {
+                var node = queue.Last();
+                queue.RemoveAt(queue.Count - 1);
+                if (!result.Contains(node))
+                {
+                    result.Add(node);
+                    result.UnionWith(node.OutEdges);
+                    foreach (var edge in node.OutEdges)
+                    {
+                        queue.Add(edge.Target);
+                    }
+                }
+            }
+
+            return result;
         }
 
         private void graphViewer_MouseMove(object sender, MouseEventArgs e)
@@ -447,11 +473,13 @@ namespace StonehearthEditor
                         {
                             if (mSelectedDNode != null)
                             {
+                                SetBranchFocused(mSelectedDNode, false);
                                 mSelectedDNode.DrawingNode.Attr.LineWidth = 1;
                                 graphViewer.Invalidate(mSelectedDNode);
                             }
 
                             mSelectedDNode = dNode;
+                            SetBranchFocused(mSelectedDNode, true);
                             mSelectedDNode.DrawingNode.Attr.LineWidth = 7;
                             graphViewer.Invalidate(mSelectedDNode);
 
