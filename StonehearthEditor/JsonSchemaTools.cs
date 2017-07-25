@@ -325,7 +325,7 @@ namespace StonehearthEditor
             }
 
             // Discard less likely schemas.
-            currentSchemas = GuessIntendedSchemas(CleanAndFlattenSchemas(currentSchemas).Select(p => p.Item2).ToList(), contextObject);
+            currentSchemas = GuessIntendedSchemas(CleanAndDedupeSchemas(currentSchemas).Select(a => a.Schema).ToList(), contextObject);
 
             // Descend one last time if we are suggesting a property value, after we've finished filtering.
             if (activeProperty != null)
@@ -334,16 +334,12 @@ namespace StonehearthEditor
             }
 
             // Clean/dedupe.
-            foreach (var pair in CleanAndFlattenSchemas(currentSchemas))
-            {
-                result[pair.Item2] = pair.Item1;
-            }
-
-            return result.Values;
+            return CleanAndDedupeSchemas(currentSchemas);
         }
 
-        public static IEnumerable<Tuple<AnnotatedSchema, JsonSchema4>> CleanAndFlattenSchemas(List<JsonSchema4> schemas)
+        public static ICollection<AnnotatedSchema> CleanAndDedupeSchemas(List<JsonSchema4> schemas)
         {
+            var result = new Dictionary<JsonSchema4, AnnotatedSchema>();
             foreach (var currentSchema in schemas)
             {
                 var alternatives = (currentSchema.ActualSchema.AnyOf.Count > 0) ? currentSchema.ActualSchema.AnyOf : new JsonSchema4[] { currentSchema };
@@ -359,9 +355,11 @@ namespace StonehearthEditor
                         entry.IsRequired = (currentSchema as JsonProperty).IsRequired;
                     }
 
-                    yield return new Tuple<AnnotatedSchema, JsonSchema4>(entry, alternative);
+                    result[entry.Schema] = entry;
                 }
             }
+
+            return result.Values;
         }
 
         private static List<JsonSchema4> DescendIntoSchemas(List<JsonSchema4> roots, string property)
@@ -462,6 +460,23 @@ namespace StonehearthEditor
             }
         }
 
+        private static int ScoreSchemaMatch(JsonSchema4 schema, JToken contextObject)
+        {
+            if (contextObject is JObject && (schema.Type == JsonObjectType.Object || schema.Type == JsonObjectType.None))
+            {
+                var errors = schema.Validate(contextObject).Where(e => e.Kind != ValidationErrorKind.PropertyRequired);
+                return 100 - errors.Count();
+            }
+            else if (schema.Type == JsonObjectType.Array && (contextObject is JArray))
+            {
+                return 100 - schema.Validate(contextObject).Count;
+            }
+            else
+            {
+                return 0;  // Non-objects can't match.
+            }
+        }
+
         private static List<JsonSchema4> GuessIntendedSchemas(List<JsonSchema4> schemas, JToken contextObject)
         {
             if (schemas.Count <= 1 || contextObject == null)
@@ -469,24 +484,24 @@ namespace StonehearthEditor
                 return schemas;
             }
 
-            var minErrorCount = int.MaxValue;
-            var minErrorSchemas = new List<JsonSchema4>();
+            var bestScore = 0;
+            var bestSchemas = new List<JsonSchema4>();
             foreach (var schema in schemas)
             {
-                var errorCount = schema.Validate(contextObject).Count;
-                if (errorCount < minErrorCount)
+                var score = ScoreSchemaMatch(schema, contextObject);
+                if (score > bestScore)
                 {
-                    minErrorCount = errorCount;
-                    minErrorSchemas.Clear();
-                    minErrorSchemas.Add(schema);
+                    bestScore = score;
+                    bestSchemas.Clear();
+                    bestSchemas.Add(schema);
                 }
-                else if (errorCount == minErrorCount)
+                else if (score == bestScore)
                 {
-                    minErrorSchemas.Add(schema);
+                    bestSchemas.Add(schema);
                 }
             }
 
-            return minErrorSchemas;
+            return bestSchemas;
         }
     }
 }
