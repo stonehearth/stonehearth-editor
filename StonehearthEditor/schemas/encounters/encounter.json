@@ -33,7 +33,7 @@
          "title": "Comparison operator",
          "description": "How to compare the constant in the 'value' field with the variable or operation result from the 'item' field.",
          "enum": ["deny_if", "deny_if_not", "deny_if_less_than", "deny_if_greater_than", "deny_if_between", "deny_if_not_between"],
-         "default": "\"deny_if_not\""
+         "default": "deny_if_not"
       },
       "can_start_rule": {
          "title": "Rule",

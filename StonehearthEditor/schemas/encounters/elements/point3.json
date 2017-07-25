@@ -9,6 +9,6 @@
       "y": {"type": "number"},
       "z": {"type": "number"}
    },
-   "default": "{\"x\": 0\", \"y\": 0, \"z\": 0}",
+   "default": {"x": 0, "y": 0, "z": 0},
    "additionalProperties": false
 }
