@@ -142,7 +142,9 @@ namespace StonehearthEditor
 
         private static void DrawBox(Graphics g, DrawingNode drNode)
         {
-            var pen = new Pen(Draw.MsaglColorToDrawingColor(drNode.Attr.Color), (float)drNode.Attr.LineWidth);
+            var settings = drNode.UserData as NodeDisplaySettings;
+            var pen = new Pen(settings.HasErrors ? Color.Red : Draw.MsaglColorToDrawingColor(drNode.Attr.Color),
+                              (float)drNode.Attr.LineWidth + (settings.HasErrors ? 2 : 0));
             NodeAttr nodeAttr = drNode.Attr;
             var width = (float)drNode.Width;
             var height = (float)drNode.Height;
@@ -152,12 +154,7 @@ namespace StonehearthEditor
             FillTheGraphicsPath(drNode, width, height, ref xRadius, ref yRadius, path);
             Brush brush;
             Color fc = Draw.MsaglColorToDrawingColor(nodeAttr.FillColor);
-            var settings = drNode.UserData as NodeDisplaySettings;
-            if (settings.HasErrors)
-            {
-                brush = new HatchBrush(HatchStyle.WideUpwardDiagonal, Color.FromArgb((int)((fc.R * 0.7) + (255 * 0.3)), (int)(fc.G * 0.7), (int)(fc.B * 0.7)), fc);
-            }
-            else if (settings.HasUnsavedChanges)
+            if (settings.HasUnsavedChanges)
             {
                 brush = new HatchBrush(HatchStyle.DiagonalCross, Color.FromArgb(160, 160, 165), fc);
             }
