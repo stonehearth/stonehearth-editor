@@ -176,9 +176,13 @@ namespace StonehearthEditor
                     contextParsingPosition++;
                 }
 
-                while (contextParsingPosition >= textBox.Lines[line].Position && textBox.Text[contextParsingPosition] != ':')
+                if (contextParsingPosition == textBox.Lines[line].EndPosition)
                 {
-                    contextParsingPosition--;
+                    contextParsingPosition = position;
+                    while (contextParsingPosition >= textBox.Lines[line].Position && textBox.Text[contextParsingPosition] != ':')
+                    {
+                        contextParsingPosition--;
+                    }
                 }
 
                 if (contextParsingPosition >= 0 && textBox.Text[contextParsingPosition] == ':')
