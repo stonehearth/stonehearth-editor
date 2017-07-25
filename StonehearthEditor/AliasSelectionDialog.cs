@@ -15,8 +15,40 @@ namespace StonehearthEditor
             void OnCancelled();
         }
 
+        private class SimpleCallback : IDialogCallback
+        {
+            private Action<IEnumerable<string>> acceptCallback;
+
+            public SimpleCallback(Action<IEnumerable<string>> acceptCallback)
+            {
+                this.acceptCallback = acceptCallback;
+            }
+
+            public bool OnAccept(IEnumerable<string> aliases)
+            {
+                acceptCallback(aliases);
+                return true;
+            }
+
+            public void OnCancelled()
+            {
+                // Nothing!
+            }
+        }
+
         private HashSet<string> mAllAliases = new HashSet<string>();
         private IDialogCallback mCallback;
+
+        public bool MultiSelect
+        {
+            get { return listBox.SelectionMode == SelectionMode.MultiExtended; }
+            set { listBox.SelectionMode = value ? SelectionMode.MultiExtended : SelectionMode.One; }
+        }
+
+        public AliasSelectionDialog(Action<IEnumerable<string>> acceptCallback)
+            : this(new SimpleCallback(acceptCallback))
+        {
+        }
 
         public AliasSelectionDialog(IDialogCallback callback)
         {

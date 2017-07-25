@@ -420,34 +420,17 @@ namespace StonehearthEditor
 
         private void insertAliasToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            AliasSelectionDialog aliasDialog = new AliasSelectionDialog(new AliasSelectCallback(textBox));
-            aliasDialog.ShowDialog();
-        }
-
-        private class AliasSelectCallback : AliasSelectionDialog.IDialogCallback
-        {
-            private Scintilla mTextBox;
-
-            public AliasSelectCallback(Scintilla textbox)
-            {
-                mTextBox = textbox;
-            }
-
-            public bool OnAccept(IEnumerable<string> aliases)
+            AliasSelectionDialog aliasDialog = new AliasSelectionDialog((aliases) =>
             {
                 // Enquotes every single alias and joins it using "\n,"
                 string aliasInsert = string.Join(
                     "," + Environment.NewLine,
                     aliases.Select(alias => string.Concat('"', alias, '"')));
 
-                mTextBox.InsertText(mTextBox.SelectionStart, aliasInsert);
-                mTextBox.SelectionEnd = mTextBox.SelectionEnd + aliasInsert.Length;
-                return true;
-            }
-
-            public void OnCancelled()
-            {
-            }
+                textBox.InsertText(textBox.SelectionStart, aliasInsert);
+                textBox.SelectionEnd = textBox.SelectionEnd + aliasInsert.Length;
+            });
+            aliasDialog.ShowDialog();
         }
 
         private class EditLocStringCallback : InputDialog.IDialogCallback
