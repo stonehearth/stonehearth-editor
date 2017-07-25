@@ -294,6 +294,7 @@ namespace StonehearthEditor
         public static ICollection<JsonSchema4> GetSchemasForPath(JsonSchema4 schema, List<string> path)
         {
             var currentSchemas = new List<JsonSchema4> { schema };
+            var result = new HashSet<JsonSchema4>();
 
             // Walk the path.
             foreach (var step in path)
@@ -301,12 +302,11 @@ namespace StonehearthEditor
                 currentSchemas = DescendIntoSchemas(currentSchemas, step);
                 if (currentSchemas.Count == 0)
                 {
-                    return new HashSet<JsonSchema4>();
+                    return result;
                 }
             }
 
             // Clean/dedupe. This could be much faster.
-            var result = new HashSet<JsonSchema4>();
             foreach (var currentSchema in currentSchemas)
             {
                 var alternatives = (currentSchema.ActualSchema.AnyOf.Count > 0) ? currentSchema.ActualSchema.AnyOf : new JsonSchema4[] { currentSchema };
@@ -402,23 +402,24 @@ namespace StonehearthEditor
                         return new List<JsonSchema4> { root.ActualProperties[property] };
                     }
 
+                    var result = new List<JsonSchema4>();
                     if (root.PatternProperties != null)
                     {
                         foreach (var pair in root.PatternProperties)
                         {
                             if (Regex.IsMatch(property, pair.Key))
                             {
-                                return new List<JsonSchema4> { pair.Value };
+                                result.Add(pair.Value);
                             }
                         }
                     }
 
                     if (root.AdditionalPropertiesSchema != null)
                     {
-                        return new List<JsonSchema4> { root.AdditionalPropertiesSchema };
+                        result.Add(root.AdditionalPropertiesSchema);
                     }
 
-                    return new List<JsonSchema4>();
+                    return result;
                 case JsonObjectType.None:
                 case JsonObjectType.Null:
                 case JsonObjectType.Boolean:

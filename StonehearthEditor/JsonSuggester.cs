@@ -57,125 +57,151 @@ namespace StonehearthEditor
 
             if (context.SuggestingValue)
             {
-                foreach (var targetSchema in targetSchemas)
+                foreach (var item in SuggestValues(targetSchemas))
                 {
-                    // Add a divider between schema alternatives.
-                    if (targetSchema != targetSchemas.First())
-                    {
-                        yield return new DividerItem();
-                    }
-
-                    // Help text.
-                    var title = targetSchema.Title ?? (targetSchema as JsonProperty)?.Name;
-                    var description = targetSchema.Description ?? JsonSchemaTools.DescribeSchema(targetSchema);
-
-                    if (targetSchema.Id != null && customSourcesBySchemeId.ContainsKey(targetSchema.Id))
-                    {
-                        // Special handling for sources set by the environment (edge names, node names, files, etc.).
-                        foreach (var value in customSourcesBySchemeId[targetSchema.Id]())
-                        {
-                            yield return new ValueSuggestItem(value, title != null ? title + ": " + value : value, description);
-                        }
-                    }
-                    else if (targetSchema.Id == "http://stonehearth.net/schemas/encounters/elements/file.json")
-                    {
-                        // Special handling for files (alias or file insertion prompts).
-                        yield return new AliasSuggestItem(title, description);
-                        yield return new FileSuggestItem(title, description, filePath);
-                    }
-                    else if (targetSchema.Enumeration.Count > 0)
-                    {
-                        // Suggest enumeration alternatives.
-                        foreach (var alternative in targetSchema.Enumeration)
-                        {
-                            yield return new ValueSuggestItem(JsonSchemaTools.FormatEnumValue(alternative), title, description);
-                        }
-                    }
-                    else if (targetSchema.Type == JsonObjectType.Boolean)
-                    {
-                        // Suggest the two alternatives of bool.
-                        yield return new ValueSuggestItem("true", title, description);
-                        yield return new ValueSuggestItem("false", title, description);
-                    }
-                    else if (targetSchema.Default != null)
-                    {
-                        // If there's a default value, suggest that.
-                        yield return new ValueSuggestItem(JsonSchemaTools.FormatEnumValue(targetSchema.Default), title, description);
-                    }
-                    else if (targetSchema.Type == JsonObjectType.Object)
-                    {
-                        // Construct as much of an object as required.
-                        var left = "{\n   ";
-                        var right = "\n}";
-                        var addedAnyToLeft = false;
-                        var toAddOnLeft = 1;
-                        foreach (var property in targetSchema.ActualProperties)
-                        {
-                            if (property.Value.IsRequired)
-                            {
-                                var propertyText = "\"" + property.Key + "\": ";
-                                if (property.Value.Enumeration.Count == 1)
-                                {
-                                    propertyText += JsonSchemaTools.FormatEnumValue(property.Value.Enumeration.First());
-                                    toAddOnLeft++;  // Keep adding required properties before the cursor.
-                                }
-
-                                if (toAddOnLeft > 0)
-                                {
-                                    addedAnyToLeft = true;
-                                    toAddOnLeft--;
-                                    left += propertyText;
-                                    if (toAddOnLeft > 0)
-                                    {
-                                        left += ",\n   ";
-                                    }
-                                }
-                                else
-                                {
-                                    right = "\n   " + propertyText + "," + right;
-                                }
-                            }
-                        }
-
-                        if (addedAnyToLeft)
-                        {
-                            right = "," + right;
-                        }
-
-                        yield return new ValueSuggestItem(left, right, title, description);
-                    }
-                    else if (targetSchema.Type == JsonObjectType.Array)
-                    {
-                        // Trivial array form.
-                        yield return new ValueSuggestItem("[\n   ", "\n]", title, description);
-                    }
-                    else if (targetSchema.Type == JsonObjectType.String)
-                    {
-                        // Trivial string form.
-                        yield return new ValueSuggestItem("\"", "\"", title ?? "\"...\"", description);
-                    }
+                    yield return item;
                 }
             }
             else
             {
-                foreach (var targetSchema in targetSchemas)
+                foreach (var item in SuggestProperties(context, targetSchemas))
                 {
-                    var curSchema = targetSchema;
-                    do
+                    yield return item;
+                }
+            }
+        }
+
+        private IEnumerable<AutocompleteItem> SuggestValues(ICollection<JsonSchema4> targetSchemas)
+        {
+            foreach (var targetSchema in targetSchemas)
+            {
+                var yieldedAny = true;
+
+                // Help text.
+                var title = targetSchema.Title ?? (targetSchema as JsonProperty)?.Name;
+                var description = targetSchema.Description ?? JsonSchemaTools.DescribeSchema(targetSchema);
+
+                if (targetSchema.Id != null && customSourcesBySchemeId.ContainsKey(targetSchema.Id))
+                {
+                    // Special handling for sources set by the environment (edge names, node names, files, etc.).
+                    yieldedAny = false;
+                    foreach (var value in customSourcesBySchemeId[targetSchema.Id]())
                     {
-                        foreach (var propertyDef in curSchema.ActualProperties)
+                        yield return new ValueSuggestItem(value, title != null ? title + ": " + value : value, description);
+                        yieldedAny = true;
+                    }
+                }
+                else if (targetSchema.Id == "http://stonehearth.net/schemas/encounters/elements/file.json")
+                {
+                    // Special handling for files (alias or file insertion prompts).
+                    yield return new AliasSuggestItem(title, description);
+                    yield return new FileSuggestItem(title, description, filePath);
+                }
+                else if (targetSchema.Enumeration.Count > 0)
+                {
+                    // Suggest enumeration alternatives.
+                    foreach (var alternative in targetSchema.Enumeration)
+                    {
+                        yield return new ValueSuggestItem(JsonSchemaTools.FormatEnumValue(alternative), title, description);
+                    }
+                }
+                else if (targetSchema.Type == JsonObjectType.Boolean)
+                {
+                    // Suggest the two alternatives of bool.
+                    yield return new ValueSuggestItem("true", title, description);
+                    yield return new ValueSuggestItem("false", title, description);
+                }
+                else if (targetSchema.Default != null)
+                {
+                    // If there's a default value, suggest that.
+                    yield return new ValueSuggestItem(JsonSchemaTools.FormatEnumValue(targetSchema.Default), title, description);
+                }
+                else if (targetSchema.Type == JsonObjectType.Object || targetSchema.ActualProperties.Count > 0)
+                {
+                    // Construct as much of an object as required.
+                    var left = "{\n   ";
+                    var right = "\n}";
+                    var addedAnyToLeft = false;
+                    var toAddOnLeft = 1;
+                    foreach (var property in targetSchema.ActualProperties)
+                    {
+                        if (property.Value.IsRequired)
                         {
-                            if (!context.ExistingProperties.Contains(propertyDef.Key))
+                            var propertyText = "\"" + property.Key + "\": ";
+                            if (property.Value.Enumeration.Count == 1)
                             {
-                                yield return new PropertySuggestItem(propertyDef.Key, propertyDef.Value.ActualPropertySchema);
+                                propertyText += JsonSchemaTools.FormatEnumValue(property.Value.Enumeration.First());
+                                toAddOnLeft++;  // Keep adding required properties before the cursor.
+                            }
+
+                            if (toAddOnLeft > 0)
+                            {
+                                addedAnyToLeft = true;
+                                toAddOnLeft--;
+                                left += propertyText;
+                                if (toAddOnLeft > 0)
+                                {
+                                    left += ",\n   ";
+                                }
+                            }
+                            else
+                            {
+                                right = "\n   " + propertyText + "," + right;
                             }
                         }
-                    } while ((curSchema = curSchema.InheritedSchema) != null);
-
-                    if (targetSchema != targetSchemas.Last())
-                    {
-                        yield return new DividerItem();
                     }
+
+                    if (addedAnyToLeft)
+                    {
+                        right = "," + right;
+                    }
+
+                    yield return new ValueSuggestItem(left, right, title, description);
+                }
+                else if (targetSchema.Type == JsonObjectType.Array)
+                {
+                    // Trivial array form.
+                    yield return new ValueSuggestItem("[\n   ", "\n]", title, description);
+                }
+                else if (targetSchema.Type == JsonObjectType.String)
+                {
+                    // Trivial string form.
+                    yield return new ValueSuggestItem("\"", "\"", title ?? "\"...\"", description);
+                }
+                else
+                {
+                    yieldedAny = false;
+                }
+
+                // Add a divider between schema alternatives.
+                if (targetSchema != targetSchemas.Last() && yieldedAny)
+                {
+                    yield return new DividerItem();
+                }
+            }
+        }
+
+        private IEnumerable<AutocompleteItem> SuggestProperties(Context context, ICollection<JsonSchema4> targetSchemas)
+        {
+            foreach (var targetSchema in targetSchemas)
+            {
+                var yieldedAny = false;
+                var curSchema = targetSchema;
+                do
+                {
+                    foreach (var propertyDef in curSchema.ActualProperties)
+                    {
+                        if (!context.ExistingProperties.Contains(propertyDef.Key))
+                        {
+                            yield return new PropertySuggestItem(propertyDef.Key, propertyDef.Value.ActualPropertySchema);
+                            yieldedAny = true;
+                        }
+                    }
+                } while ((curSchema = curSchema.InheritedSchema) != null);
+
+                if (targetSchema != targetSchemas.Last() && yieldedAny)
+                {
+                    yield return new DividerItem();
                 }
             }
         }
