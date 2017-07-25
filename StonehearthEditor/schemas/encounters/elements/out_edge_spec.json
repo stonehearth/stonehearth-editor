@@ -83,6 +83,12 @@
          },
          "required": ["type", "root"],
          "additionalProperties": false
+      },
+      
+      {
+         "title": "Arc End",
+         "description": "Mark the arc as officially ended. Lets the parent campaign know it's OK to start another arc. Other encounters from this arc may still be around (waiting on boss death, etc) but they should resolve themselves on their own.",
+         "enum": ["arc:finish"]
       }
    ]
 }
