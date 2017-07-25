@@ -522,6 +522,10 @@ namespace AutocompleteMenuNS
                     case Keys.End:
                     case Keys.Home:
                     case Keys.ControlKey:
+                    case Keys.ShiftKey:
+                    case Keys.Escape:
+                    case Keys.Delete:
+                    case Keys.Back:
                         {
                             timer.Stop();
                             return;
@@ -574,7 +578,7 @@ namespace AutocompleteMenuNS
 
         bool forcedOpened = false;
 
-        internal void ShowAutocomplete(bool forced)
+        public void ShowAutocomplete(bool forced)
         {
             if (forced)
                 forcedOpened = true;
@@ -603,14 +607,7 @@ namespace AutocompleteMenuNS
             //show popup menu
             if (VisibleItems.Count > 0)
             {
-                if (forced && VisibleItems.Count == 1 && Host.ListView.SelectedItemIndex == 0)
-                {
-                    //do autocomplete if menu contains only one line and user press CTRL-SPACE
-                    OnSelecting();
-                    Close();
-                }
-                else
-                    ShowMenu();
+                ShowMenu();
             }
             else
                 Close();
@@ -625,17 +622,15 @@ namespace AutocompleteMenuNS
                 if (!args.Cancel)
                 {
                     //calc screen point for popup menu
-                    Point point = TargetControlWrapper.TargetControl.Location;
-                    point.Offset(2, TargetControlWrapper.TargetControl.Height + 2);
-                    point = TargetControlWrapper.GetPositionFromCharIndex(Fragment.Start);
+                    Point point = TargetControlWrapper.GetPositionFromCharIndex(Fragment.End);
                     point.Offset(2, TargetControlWrapper.TargetControl.Font.Height + 2);
-                    //
                     Host.Show(TargetControlWrapper.TargetControl, point);
                     if (CaptureFocus)
                     {
                         (Host.ListView  as Control).Focus();
                         //ProcessKey((char) Keys.Down, Keys.None);
                     }
+                    Host.ListView.ShowToolTip(VisibleItems[0], (Host.ListView as Control).Parent);
                 }
             }
             else
@@ -864,6 +859,9 @@ namespace AutocompleteMenuNS
                         return false;
                     case Keys.Escape:
                         Close();
+                        return true;
+                    case Keys.ControlKey:
+                    case Keys.ShiftKey:
                         return true;
                 }
 
