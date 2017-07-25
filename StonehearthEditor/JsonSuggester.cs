@@ -294,6 +294,10 @@ namespace StonehearthEditor
                 {
                     result.ExistingProperties = existingPropertiesStack.Last();
                 }
+                else
+                {
+                    result.ExistingProperties = new List<string>();
+                }
             }
 
             return result;

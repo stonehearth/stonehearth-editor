@@ -56,6 +56,8 @@ namespace StonehearthEditor
                 return;
             }
 
+            mSelectedNode = node;
+
             if (mNodePreview != null)
             {
                 if (!mNodePreview.TrySetFileDataFromTextbox())
@@ -71,8 +73,6 @@ namespace StonehearthEditor
 
             if (node != null)
             {
-                mSelectedNode = node;
-
                 // Add a text editor.
                 mNodePreview = new FilePreview(this, node.FileData);
                 mNodePreview.Dock = DockStyle.Fill;
@@ -80,9 +80,12 @@ namespace StonehearthEditor
                 UpdateValidationSchema();
                 mNodePreview.OnModifiedChanged += (bool isModified) =>
                 {
-                    mSelectedNode.IsModified = isModified;
-                    node.NodeData.UpdateGraphNode(mSelectedDNode.DrawingNode);
-                    graphViewer.Invalidate(mSelectedDNode);
+                    if (mSelectedNode?.FileData == mNodePreview.FileData)
+                    {
+                        mSelectedNode.IsModified = isModified;
+                        mSelectedNode.NodeData.UpdateGraphNode(mSelectedDNode.DrawingNode);
+                        graphViewer.Invalidate(mSelectedDNode);
+                    }
                 };
 
                 // Add some extra labels to the text editor toolbar.
@@ -121,7 +124,6 @@ namespace StonehearthEditor
             }
             else
             {
-                mSelectedNode = null;
                 copyGameMasterNode.Text = "Clone Node";
                 copyGameMasterNode.Enabled = false;
                 moveToArcMenuItem.Visible = false;

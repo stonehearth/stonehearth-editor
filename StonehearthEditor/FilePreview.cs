@@ -57,6 +57,11 @@ namespace StonehearthEditor
         /// </summary>
         private Indicator mFileIndicator => this.textBox.Indicators[kFileIndicator];
 
+        public FileData FileData
+        {
+            get { return mFileData; }
+        }
+
         public delegate void ModifiedChangedHandler(bool isModified);
 
         public event ModifiedChangedHandler OnModifiedChanged;
@@ -116,6 +121,12 @@ namespace StonehearthEditor
             // Translate mouse x,y to character position.
             var position = this.textBox.CharPositionFromPoint(x, y);
             var line = this.textBox.LineFromPosition(position);
+
+            // Sometimes CharPositionFromPoint() returns out of range values (looks like when replacing few lines with many).
+            if (position < 0 || position >= textBox.Text.Length)
+            {
+                return new Tuple<string, int>(null, kAnchorNone);
+            }
 
             // Are we are hovering over an error icon in the margin?
             var isInErrorMargin = x > textBox.Margins[0].Width && x <= textBox.Margins[0].Width + textBox.Margins[kErrorMarginNumber].Width;
@@ -819,9 +830,11 @@ namespace StonehearthEditor
         {
             module = null;
 
-            // Simple checks
-            if (text.StartsWith("i18n(") || text.IndexOfAny(new[] { ':', '/' }) == -1)
+            // Simple check
+            if (text.StartsWith("i18n("))
+            {
                 return false;
+            }
 
             var parent = System.IO.Path.GetDirectoryName(this.mFileData.Path);
             return ModuleDataManager.GetInstance().TryGetModuleFile(text, parent, out module);
