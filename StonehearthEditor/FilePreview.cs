@@ -192,8 +192,16 @@ namespace StonehearthEditor
                             var schemaDescriptions = new HashSet<string>(targetSchemas.Select(
                                 schema => JsonSchemaTools.DescribeSchema(schema) +
                                           (schema.Description != null ? "\n" + schema.Description : "")));
-                            var propertyName = context.Path.Last();
-                            var tipText = propertyName + "\n\n" + string.Join("\nOR\n", schemaDescriptions);
+                            var tipText = context.Path.Last();
+                            if (schemaDescriptions.Count == 1)
+                            {
+                                tipText += ": " + schemaDescriptions.First();
+                            }
+                            else
+                            {
+                                tipText += ", one of:\n- " + string.Join("\n- ", schemaDescriptions.Select(s => s.Replace("\n", "\n   ")));
+                            }
+
                             return new Tuple<string, int>(tipText, contextParsingPosition);
                         }
                     }

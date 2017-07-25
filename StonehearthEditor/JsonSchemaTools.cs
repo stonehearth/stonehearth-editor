@@ -104,6 +104,11 @@ namespace StonehearthEditor
         {
             switch (error.Kind)
             {
+                case ValidationErrorKind.AdditionalPropertiesNotValid:
+                case ValidationErrorKind.AdditionalItemNotValid:
+                case ValidationErrorKind.NotAllOf:
+                    // The child error gives all the relevant info for these. The parent error is just confusing.
+                    break;
                 case ValidationErrorKind.PatternMismatch:
                     yield return new ValidationError(error.LineNumber, string.Format("The value of '{0}' must match the regex pattern: {1}", error.Property, error.Schema.Pattern));
                     break;

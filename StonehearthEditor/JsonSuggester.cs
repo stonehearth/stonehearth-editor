@@ -412,8 +412,18 @@ namespace StonehearthEditor
                 // Add a comma after the value, if there isn't one already.
                 if (textboxWrapper.Text.ElementAtOrDefault(Parent.Fragment.End) != ',')
                 {
-                    valueAfterCursor += ",";
                     Text += ",";
+                    if (valueBeforeCursor.Length > 0 && valueAfterCursor.Length == 0)
+                    {
+                        // We are adding a value and the cursor is at the end. It is reasonable
+                        // to assume that the user is more likely to want togo on to the next
+                        // property now.
+                        valueBeforeCursor += ",";
+                    }
+                    else
+                    {
+                        valueAfterCursor += ",";
+                    }
                 }
 
                 // Replace the match.
