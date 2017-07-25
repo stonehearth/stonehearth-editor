@@ -77,7 +77,7 @@
          "type": "object",
          "properties": {
             "type": {"enum": ["destroy_tree"]},
-            "root": {"$ref": "node_ref.json"},
+            "root": {"$ref": "node.json"},
             "destroy_root": {"type": "boolean"},
             "pattern_match": {"type": "boolean"}
          },
