@@ -1,11 +1,14 @@
 {
    "$schema": "http://json-schema.org/draft-04/schema#",
    "id": "http://stonehearth.net/schemas/encounters/elements/point3.json",
+   "title": "3D Point",
+   "description": "A 3-dimensional point with X, Y, and Z coordinates.",
    "type": "object",
    "properties": {
       "x": {"type": "number"},
       "y": {"type": "number"},
       "z": {"type": "number"}
    },
+   "default": "{\"x\": 0\", \"y\": 0, \"z\": 0}",
    "additionalProperties": false
 }

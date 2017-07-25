@@ -1,11 +1,14 @@
 {
    "$schema": "http://json-schema.org/draft-04/schema#",
    "id": "http://stonehearth.net/schemas/encounters/elements/point2.json",
+   "title": "2D Point",
+   "description": "A 2-dimensional point with X and Y coordinates.",
    "type": "object",
    "properties": {
       "x": {"type": "number"},
       "y": {"type": "number"}
    },
+   "default": "{\"x\": 0\", \"y\": 0}",
    "required": ["x", "y"],
    "additionalProperties": false
 }

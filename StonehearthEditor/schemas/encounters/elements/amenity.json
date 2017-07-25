@@ -1,0 +1,7 @@
+{
+   "$schema": "http://json-schema.org/draft-04/schema#",
+   "id": "http://stonehearth.net/schemas/encounters/elements/amenity.json",
+   "title": "Amenity",
+   "description": "The amenity, or relationship, between factions. Hostile factions attack each other. Neutral ones don't interact. Enemies fight.",
+   "enum": ["hostile", "neutral", "friendly"]
+}

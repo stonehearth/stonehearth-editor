@@ -1,6 +1,8 @@
 {
    "$schema": "http://json-schema.org/draft-04/schema#",
    "id": "http://stonehearth.net/schemas/encounters/elements/duration.json",
+   "title": "Duration",
+   "description": "Game time duration, with an optional random element. E.g. 10d means '10 days'. 20h+40m means 'between 20 hours, and 20 hours and 40 minutes'.",
    "type": "string",
    "pattern": "^\\d+[YMdhms](\\+\\d+[YMdhms])?$"
 }

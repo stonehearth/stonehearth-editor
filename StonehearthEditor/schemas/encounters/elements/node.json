@@ -1,0 +1,7 @@
+{
+   "$schema": "http://json-schema.org/draft-04/schema#",
+   "id": "http://stonehearth.net/schemas/encounters/elements/node.json",
+   "title": "Node",
+   "description": "A reference to another node in the graph.",
+   "type": "string"
+}

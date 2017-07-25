@@ -1,0 +1,14 @@
+{
+   "$schema": "http://json-schema.org/draft-04/schema#",
+   "id": "http://stonehearth.net/schemas/encounters/encounter.json",
+   "title": "Encounter",
+   "description": "A base class for all encounters.",
+   "type": "object",
+   "properties": {
+      "mixins": { "$ref": "elements/file.json" },
+      "type": { "enum": ["encounter"] },
+      "in_edge": { "$ref": "elements/edge.json" },
+      "can_start": { "title": "TODO: Detailed schema" }
+   },
+   "required": [ "type", "in_edge" ]
+}

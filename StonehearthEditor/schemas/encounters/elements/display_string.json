@@ -1,0 +1,8 @@
+{
+   "$schema": "http://json-schema.org/draft-04/schema#",
+   "id": "http://stonehearth.net/schemas/encounters/elements/display_string.json",
+   "title": "Player-facing text",
+   "description": "Player-facing text that should be internationalized.",
+   "default": "\"i18n()\"",
+   "type": "string"
+}

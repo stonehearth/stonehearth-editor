@@ -1,11 +1,17 @@
 {
    "$schema": "http://json-schema.org/draft-04/schema#",
    "id": "http://stonehearth.net/schemas/encounters/elements/out_edge_spec.json",
+   "title": "Out edge specification",
+   "description": "A specification for triggering edges. Can be a single edge, a list of edges to trigger all, a sequence to trigger one at a time, a list to select from, or the special 'destroy_tree' option.",
    "anyOf": [
-      {"title": "Single Edge", "$ref": "edge.json"},
+      {
+         "title": "Single Edge",
+         "$ref": "edge.json"
+      },
       
       {
          "title": "Trigger Many",
+         "description": "Trigger all edges in a list each time.",
          "type": "object",
          "properties": {
             "type": {"enum": ["trigger_many"]},
@@ -20,6 +26,7 @@
       
       {
          "title": "Trigger One",
+         "description": "Trigger one of the edges in a list, selected randomly (with weighted choices).",
          "type": "object",
          "properties": {
             "type": {"enum": ["trigger_one"]},
@@ -50,6 +57,7 @@
       
       {
          "title": "Trigger Sequence",
+         "description": "Trigger a sequence of edges, one each time this out edge specification is triggered (then wrap around).",
          "type": "object",
          "properties": {
             "type": {"enum": ["trigger_sequence"]},
@@ -65,10 +73,11 @@
       
       {
          "title": "Destroy Tree",
+         "description": "Destroy the encounter subgraph starting at the node with the given name (or name pattern).",
          "type": "object",
          "properties": {
             "type": {"enum": ["destroy_tree"]},
-            "root": {"type": "string"},
+            "root": {"$ref": "node_ref.json"},
             "destroy_root": {"type": "boolean"},
             "pattern_match": {"type": "boolean"}
          },

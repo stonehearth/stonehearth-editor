@@ -1,6 +1,8 @@
 {
    "$schema": "http://json-schema.org/draft-04/schema#",
    "id": "http://stonehearth.net/schemas/encounters/elements/edge.json",
+   "title": "Edge",
+   "description": "The name of an edge in the encounter graph. Nodes with 'out' edges trigger nodes with matching 'in' edges.",
    "type": "string",
    "pattern": "^\\w+$"
 }

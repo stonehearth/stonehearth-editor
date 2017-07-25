@@ -1,5 +1,7 @@
 {
    "$schema": "http://json-schema.org/draft-04/schema#",
-   "id": "http://stonehearth.net/schemas/encounters/elements/file-ref.json",
+   "id": "http://stonehearth.net/schemas/encounters/elements/file.json",
+   "title": "File reference",
+   "description": "A reference to a file, either as file(<path>) or as an alias.",
    "type": "string"
 }
