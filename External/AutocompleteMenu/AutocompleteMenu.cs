@@ -534,7 +534,7 @@ namespace AutocompleteMenuNS
 
                 if (Control.ModifierKeys == Keys.Control && e.KeyCode == Keys.Space)
                 {
-                    ShowAutocomplete(true);
+                    ShowAutocomplete(false);
                     e.SuppressKeyPress = true;
                     return;
                 }
@@ -645,6 +645,10 @@ namespace AutocompleteMenuNS
             int selectedIndex = -1;
             //get fragment around caret
             Range fragment = GetFragment(SearchPattern);
+            if (fragment.Start == 0 && fragment.End == 0)
+            {
+                fragment.Start = fragment.End = TargetControlWrapper.SelectionStart;
+            }
             string text = fragment.Text;
             //
             if (sourceItems != null)
