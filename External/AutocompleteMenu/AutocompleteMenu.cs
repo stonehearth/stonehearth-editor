@@ -239,7 +239,7 @@ namespace AutocompleteMenuNS
         /// <summary>
         /// Regex pattern for serach fragment around caret
         /// </summary>
-        [Description("Regex pattern for serach fragment around caret")]
+        [Description("Regex pattern for search fragment before the caret")]
         [DefaultValue(@"[\w\.]")]
         public string SearchPattern { get; set; }
 
@@ -693,33 +693,17 @@ namespace AutocompleteMenuNS
         private Range GetFragment(string searchPattern)
         {
             var tb = TargetControlWrapper;
-
-            if (tb.SelectionLength > 0) return new Range(tb);
-
-            string text = tb.Text;
-            var regex = new Regex(searchPattern);
             var result = new Range(tb);
 
-            int startPos = tb.SelectionStart;
-            //go forward
-            int i = startPos;
-            while (i >= 0 && i < text.Length)
+            if (tb.SelectionLength == 0)
             {
-                if (!regex.IsMatch(text[i].ToString()))
-                    break;
-                i++;
+                var match = new Regex(searchPattern + "$").Match(tb.Text.Substring(0, tb.SelectionStart));
+                if (match.Success)
+                {
+                    result.Start = match.Index;
+                    result.End = tb.SelectionStart;
+                }
             }
-            result.End = i;
-
-            //go backward
-            i = startPos;
-            while (i > 0 && (i - 1) < text.Length)
-            {
-                if (!regex.IsMatch(text[i - 1].ToString()))
-                    break;
-                i--;
-            }
-            result.Start = i;
 
             return result;
         }
