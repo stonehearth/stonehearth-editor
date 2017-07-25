@@ -190,8 +190,8 @@ namespace StonehearthEditor
                         if (targetSchemas.Count > 0)
                         {
                             var schemaDescriptions = new HashSet<string>(targetSchemas.Select(
-                                schema => JsonSchemaTools.DescribeSchema(schema) +
-                                          (schema.Description != null ? "\n" + schema.Description : "")));
+                                annotated => JsonSchemaTools.DescribeSchema(annotated) +
+                                          (annotated.Description != null ? "\n" + annotated.Description : "")));
                             var tipText = context.Path.Last();
                             if (schemaDescriptions.Count == 1)
                             {

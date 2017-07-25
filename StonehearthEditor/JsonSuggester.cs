@@ -10,6 +10,7 @@ using Newtonsoft.Json.Linq;
 using NJsonSchema;
 using ScintillaNET;
 using System.Windows.Forms;
+using static StonehearthEditor.JsonSchemaTools;
 
 namespace StonehearthEditor
 {
@@ -71,16 +72,24 @@ namespace StonehearthEditor
             }
         }
 
-        private IEnumerable<AutocompleteItem> SuggestValues(ICollection<JsonSchema4> targetSchemas)
+        private IEnumerable<AutocompleteItem> SuggestValues(ICollection<AnnotatedSchema> annotatedSchemas)
         {
-            foreach (var targetSchema in targetSchemas)
+            var yieldedAny = false;
+            foreach (var annotatedSchema in annotatedSchemas)
             {
-                var yieldedAny = true;
+                // Add a divider between schema alternatives.
+                if (yieldedAny)
+                {
+                    yield return new DividerItem();
+                }
+
+                yieldedAny = true;
 
                 // Help text.
-                var title = targetSchema.Title ?? (targetSchema as JsonProperty)?.Name;
-                var description = targetSchema.Description ?? JsonSchemaTools.DescribeSchema(targetSchema);
+                var title = annotatedSchema.Title ?? annotatedSchema.Name;
+                var description = annotatedSchema.Description ?? JsonSchemaTools.DescribeSchema(annotatedSchema);
 
+                var targetSchema = annotatedSchema.Schema;
                 if (targetSchema.Id != null && customSourcesBySchemeId.ContainsKey(targetSchema.Id))
                 {
                     // Special handling for sources set by the environment (edge names, node names, files, etc.).
@@ -172,21 +181,22 @@ namespace StonehearthEditor
                 {
                     yieldedAny = false;
                 }
-
-                // Add a divider between schema alternatives.
-                if (targetSchema != targetSchemas.Last() && yieldedAny)
-                {
-                    yield return new DividerItem();
-                }
             }
         }
 
-        private IEnumerable<AutocompleteItem> SuggestProperties(Context context, ICollection<JsonSchema4> targetSchemas)
+        private IEnumerable<AutocompleteItem> SuggestProperties(Context context, ICollection<AnnotatedSchema> annotatedSchemas)
         {
-            foreach (var targetSchema in targetSchemas)
+            var yieldedAny = false;
+            foreach (var annotatedSchema in annotatedSchemas)
             {
-                var yieldedAny = false;
-                var curSchema = targetSchema;
+                if (yieldedAny)
+                {
+                    yield return new DividerItem();
+                }
+
+                yieldedAny = false;
+
+                var curSchema = annotatedSchema.Schema;
                 do
                 {
                     foreach (var propertyDef in curSchema.ActualProperties)
@@ -199,9 +209,10 @@ namespace StonehearthEditor
                     }
                 } while ((curSchema = curSchema.InheritedSchema) != null);
 
-                if (targetSchema != targetSchemas.Last() && yieldedAny)
+                if (!yieldedAny && annotatedSchema.Schema.PatternProperties.Count > 0)
                 {
-                    yield return new DividerItem();
+                    yield return new PropertySuggestItem("", annotatedSchema.Schema.PatternProperties.First().Value);
+                    yieldedAny = true;
                 }
             }
         }
@@ -348,7 +359,7 @@ namespace StonehearthEditor
         {
             public PropertySuggestItem(string name, JsonSchema4 schema)
             {
-                MenuText = name;
+                MenuText = string.IsNullOrEmpty(name) ? schema.Title : name;
                 ToolTipTitle = schema.Title ?? name;
                 ToolTipText = schema.Description ?? JsonSchemaTools.DescribeSchema(schema);
                 Text = "\"" + name + "\": ";

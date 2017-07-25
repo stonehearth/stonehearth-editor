@@ -30,6 +30,15 @@ namespace StonehearthEditor
             return ParseSchema(original.ToJson(), original.DocumentPath);
         }
 
+        public class AnnotatedSchema
+        {
+            public JsonSchema4 Schema;
+            public string Name;
+            public string Title;
+            public string Description;
+            public bool IsRequired;
+        }
+
         internal enum ValidationResult
         {
             Valid,
@@ -215,15 +224,24 @@ namespace StonehearthEditor
 
         public static string DescribeSchema(JsonSchema4 schema)
         {
-            // Due to schema cleanup (See GetSchemasForPath()), the required flags can sometimes be lost, so this isn't super reliable.
-            bool required = schema is JsonProperty && (schema as JsonProperty).IsRequired;
-            var prefix = required ? "[required] " : "";
+            AnnotatedSchema annotatedSchema = new AnnotatedSchema();
+            annotatedSchema.Schema = schema;
+            annotatedSchema.Title = schema.Title;
+            annotatedSchema.Description = schema.Description;
+            annotatedSchema.IsRequired = (schema as JsonProperty)?.IsRequired ?? false;
+            return DescribeSchema(annotatedSchema);
+        }
 
-            if (schema.Title != null)
+        public static string DescribeSchema(AnnotatedSchema annotatedSchema)
+        {
+            var prefix = annotatedSchema.IsRequired ? "[required] " : "";
+
+            if (annotatedSchema.Title != null)
             {
-                return prefix + schema.Title;
+                return prefix + annotatedSchema.Title;
             }
 
+            var schema = annotatedSchema.Schema;
             if (schema.AnyOf.Count > 0)
             {
                 return prefix + schema.AnyOf.Count + " possible formats";
@@ -291,10 +309,10 @@ namespace StonehearthEditor
             return o is string ? '"' + o.ToString() + '"' : JToken.FromObject(o).ToString();
         }
 
-        public static ICollection<JsonSchema4> GetSchemasForPath(JsonSchema4 schema, List<string> path)
+        public static ICollection<AnnotatedSchema> GetSchemasForPath(JsonSchema4 schema, List<string> path)
         {
             var currentSchemas = new List<JsonSchema4> { schema };
-            var result = new HashSet<JsonSchema4>();
+            var result = new Dictionary<JsonSchema4, AnnotatedSchema>();
 
             // Walk the path.
             foreach (var step in path)
@@ -302,7 +320,7 @@ namespace StonehearthEditor
                 currentSchemas = DescendIntoSchemas(currentSchemas, step);
                 if (currentSchemas.Count == 0)
                 {
-                    return result;
+                    return new HashSet<AnnotatedSchema>();
                 }
             }
 
@@ -312,26 +330,21 @@ namespace StonehearthEditor
                 var alternatives = (currentSchema.ActualSchema.AnyOf.Count > 0) ? currentSchema.ActualSchema.AnyOf : new JsonSchema4[] { currentSchema };
                 foreach (var alternative in alternatives)
                 {
-                    var cleanedSchema = alternative.ActualSchema;
-                    if (currentSchema.Title != null || currentSchema.Description != null)
+                    AnnotatedSchema entry = new AnnotatedSchema();
+                    entry.Schema = alternative.ActualSchema;
+                    entry.Title = currentSchema.Title ?? entry.Schema.Title;
+                    entry.Description = currentSchema.Description ?? entry.Schema.Description;
+                    if (currentSchema is JsonProperty)
                     {
-                        cleanedSchema = Clone(cleanedSchema);
-                        if (currentSchema.Title != null)
-                        {
-                            cleanedSchema.Title = currentSchema.Title;
-                        }
-
-                        if (currentSchema.Description != null)
-                        {
-                            cleanedSchema.Description = currentSchema.Description;
-                        }
+                        entry.Name = (currentSchema as JsonProperty).Name;
+                        entry.IsRequired = (currentSchema as JsonProperty).IsRequired;
                     }
 
-                    result.Add(cleanedSchema);
+                    result[alternative] = entry;
                 }
             }
 
-            return result;
+            return result.Values;
         }
 
         private static List<JsonSchema4> DescendIntoSchemas(List<JsonSchema4> roots, string property)

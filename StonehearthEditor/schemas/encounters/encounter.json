@@ -36,39 +36,8 @@
                "description": "How to compare the constant in the 'value' field with the variable or operation result from the 'item' field.",
                "enum": ["deny_if", "deny_if_not", "deny_if_less_than", "deny_if_greater_than", "deny_if_between", "deny_if_not_between"]
             }
-         },
-         "required": [ "item", "type", "value" ]
+         }
       },
-      "can_start_rule": {
-         "title": "Rule",
-         "description": "A test rule that runs a specific test.",
-         "type": "object",
-         "allOf": [
-            { "$ref": "#/definitions/can_start_rule_base" },
-            { "anyOf": [
-               {
-                  "title": "Kingdom check",
-                  "description": "Check the player's kingdom ID (e.g. Ascendancy vs Rayya's Children)",
-                  "type": "object",
-                  "properties": {
-                     "item": { "enum": ["kingdom"] },
-                     "value": { "$ref": "elements/kingdom.json" }
-                  }
-               },
-               {
-                  "title": "Net worth check",
-                  "description": "Check the player's net worth\nDEPRECATED: Use 'score' instead",
-                  "type": "object",
-                  "properties": {
-                     "item": { "enum": ["net_worth"] },
-                     "value": { "type": "number" }
-                  }
-               },
-               { "title": "TODO: Add the remaining ones."}
-            ]}
-         ]
-      }
-      ,
       "can_start_rule": {
          "title": "Rule",
          "description": "A test rule that runs a specific test.",
@@ -84,7 +53,8 @@
                      "properties": {
                         "item": { "enum": ["kingdom"] },
                         "value": { "$ref": "elements/kingdom.json" }
-                     }
+                     },
+                     "required": [ "item", "type", "value" ]
                   }
                ]
             },
@@ -98,7 +68,8 @@
                      "properties": {
                         "item": { "enum": ["net_worth"] },
                         "value": { "type": "number" }
-                     }
+                     },
+                     "required": [ "item", "type", "value" ]
                   }
                ]
             },
