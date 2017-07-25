@@ -105,13 +105,15 @@ namespace StonehearthEditor
         private void textBox_MouseMove(object sender, MouseEventArgs e)
         {
             var tooltip = GetTooltipAt(e.X, e.Y);
-            if (lastTipAnchor != tooltip.Item2)
+            var anchor = tooltip.Item2;
+            if (lastTipAnchor != anchor)
             {
-                lastTipAnchor = tooltip.Item2;
+                var tipText = tooltip.Item1;
+                lastTipAnchor = anchor;
                 textBox.CallTipCancel();
-                if (tooltip.Item2 != kAnchorNone)
+                if (anchor != kAnchorNone)
                 {
-                    textBox.CallTipShow(tooltip.Item2, tooltip.Item1);
+                    textBox.CallTipShow(anchor == kAnchorError ? textBox.CharPositionFromPoint(e.X, e.Y) : anchor, tipText);
                 }
             }
         }
