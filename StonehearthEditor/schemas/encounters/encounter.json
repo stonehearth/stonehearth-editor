@@ -10,7 +10,7 @@
       "in_edge": { "$ref": "elements/edge.json" },
       "can_start": {
          "title": "Starting requirements",
-         "description": "Requirements that must be satisfied before this node is allowed to start, an object whose keys are test set names (which are just for humans), and whose values are test sets. If ANY test set passes, the node can run.",
+         "description": "Requirements that must be satisfied before this node is allowed to start, an object whose keys are test set names (which can be used in game mode tuning overrides), and whose values are test sets. If ANY test set passes, the node can run.",
          "type": "object",
          "patternProperties": {
             "": { "$ref": "#/definitions/can_start_test_set" }
@@ -22,21 +22,17 @@
    "definitions": {
       "can_start_test_set": {
          "title": "Test set",
-         "description": "A set of tests. For each test set to pass, ALL of its entries must pass. The keys in this object are arbitrary (just for human readability).",
+         "description": "A set of tests. For each test set to pass, ALL of its entries must pass. The keys in this object are strings which can be used in game mode tuning overrides.",
          "type": "object",
          "patternProperties": {
             "": { "$ref": "#/definitions/can_start_rule" }
          }
       },
-      "can_start_rule_base": {
-         "type": "object",
-         "properties": {
-            "type": {
-               "title": "Comparison operator",
-               "description": "How to compare the constant in the 'value' field with the variable or operation result from the 'item' field.",
-               "enum": ["deny_if", "deny_if_not", "deny_if_less_than", "deny_if_greater_than", "deny_if_between", "deny_if_not_between"]
-            }
-         }
+      "comparison_operator": {
+         "title": "Comparison operator",
+         "description": "How to compare the constant in the 'value' field with the variable or operation result from the 'item' field.",
+         "enum": ["deny_if", "deny_if_not", "deny_if_less_than", "deny_if_greater_than", "deny_if_between", "deny_if_not_between"],
+         "default": "\"deny_if_not\""
       },
       "can_start_rule": {
          "title": "Rule",
@@ -46,34 +42,281 @@
             {
                "title": "Kingdom check",
                "description": "Check the player's kingdom ID (e.g. Ascendancy vs Rayya's Children)",
-               "allOf": [
-                  { "$ref": "#/definitions/can_start_rule_base" },
-                  {
-                     "type": "object",
-                     "properties": {
-                        "item": { "enum": ["kingdom"] },
-                        "value": { "$ref": "elements/kingdom.json" }
-                     },
-                     "required": [ "item", "type", "value" ]
-                  }
-               ]
+               "type": "object",
+               "properties": {
+                  "type": { "$ref": "#/definitions/comparison_operator" },
+                  "item": { "enum": ["kingdom"] },
+                  "value": { "$ref": "elements/kingdom.json" }
+               },
+               "required": [ "item", "type", "value" ],
+               "additionalProperties": false
             },
             {
                "title": "Net worth check",
                "description": "Check the player's net worth\nDEPRECATED: Use 'score' instead",
-               "allOf": [
-                  { "$ref": "#/definitions/can_start_rule_base" },
-                  {
-                     "type": "object",
-                     "properties": {
-                        "item": { "enum": ["net_worth"] },
-                        "value": { "type": "number" }
-                     },
-                     "required": [ "item", "type", "value" ]
-                  }
-               ]
+               "type": "object",
+               "properties": {
+                  "type": { "$ref": "#/definitions/comparison_operator" },
+                  "item": { "enum": ["net_worth"] },
+                  "value": { "anyOf": [{"type": "number"}, { "$ref": "elements/range.json" }] }
+               },
+               "required": [ "item", "type", "value" ],
+               "additionalProperties": false
             },
-            { "title": "TODO: Add the remaining ones."}
+            {
+               "title": "Score check",
+               "description": "Check one of the player's score fields",
+               "type": "object",
+               "properties": {
+                  "type": { "$ref": "#/definitions/comparison_operator" },
+                  "item": { "enum": ["score"] },
+                  "value": { "anyOf": [{"type": "number"}, { "$ref": "elements/range.json" }] },
+                  "score_type": { "type": "string", "title": "Score field", "description": "The score field to check. E.g. 'net_worth' or 'military_strength'." }
+               },
+               "required": [ "item", "type", "value" ],
+               "additionalProperties": false
+            },
+            {
+               "title": "Citizen count check",
+               "description": "The number of hearthlings in the player's town.",
+               "type": "object",
+               "properties": {
+                  "type": { "$ref": "#/definitions/comparison_operator" },
+                  "item": { "enum": ["num_citizens"] },
+                  "value": { "anyOf": [{"type": "number"}, { "$ref": "elements/range.json" }] }
+               },
+               "required": [ "item", "type", "value" ],
+               "additionalProperties": false
+            },
+            {
+               "title": "Days since game start check",
+               "description": "The number of game days elapsed since the start of the game.",
+               "type": "object",
+               "properties": {
+                  "type": { "$ref": "#/definitions/comparison_operator" },
+                  "item": { "enum": ["days_elapsed"] },
+                  "value": { "anyOf": [{"type": "number"}, { "$ref": "elements/range.json" }] }
+               },
+               "required": [ "item", "type", "value" ],
+               "additionalProperties": false
+            },
+            {
+               "title": "Citizen cap check",
+               "description": "Whether the player has enough hearthlings to reach the hearthling number cap.",
+               "type": "object",
+               "properties": {
+                  "type": { "$ref": "#/definitions/comparison_operator" },
+                  "item": { "enum": ["reached_citizen_cap"] },
+                  "value": { "type": "boolean" }
+               },
+               "required": [ "item", "type", "value" ],
+               "additionalProperties": false
+            },
+            {
+               "title": "Biome check",
+               "description": "Whether the world's biome matches a given ID.",
+               "type": "object",
+               "properties": {
+                  "type": { "$ref": "#/definitions/comparison_operator" },
+                  "item": { "enum": ["biome"] },
+                  "value": { "$ref": "elements/file.json" }
+               },
+               "required": [ "item", "type", "value" ],
+               "additionalProperties": false
+            },
+            {
+               "title": "Game mode (difficulty) check",
+               "type": "object",
+               "properties": {
+                  "type": { "$ref": "#/definitions/comparison_operator" },
+                  "item": { "enum": ["game_mode"] },
+                  "value": { "$ref": "elements/file.json" }
+               },
+               "required": [ "item", "type", "value" ],
+               "additionalProperties": false
+            },
+            {
+               "title": "Hostility check",
+               "description": "Whether the player is hostile to the npc_player_id in this node.",
+               "type": "object",
+               "properties": {
+                  "type": { "$ref": "#/definitions/comparison_operator" },
+                  "item": { "enum": ["hostility"] },
+                  "value": { "type": "boolean" }
+               },
+               "required": [ "item", "type", "value" ],
+               "additionalProperties": false
+            },
+            {
+               "title": "Time of day check",
+               "description": "Compare the current time of day [0,24).",
+               "type": "object",
+               "properties": {
+                  "type": { "$ref": "#/definitions/comparison_operator" },
+                  "item": { "enum": ["time_of_day"] },
+                  "value": { "anyOf": [{"type": "number", "minimum": 0, "maximum": 24}, { "$ref": "elements/range.json" }] }
+               },
+               "required": [ "item", "type", "value" ],
+               "additionalProperties": false
+            },
+            {
+               "title": "Placeable item existence check",
+               "description": "Checks whether a given placeable item (e.g. shrine) exists in the world and is owned by the player.",
+               "type": "object",
+               "properties": {
+                  "type": { "$ref": "#/definitions/comparison_operator" },
+                  "item": { "enum": ["exists_in_world"] },
+                  "uri": { "type": "string" },
+                  "value": { "type": "boolean" }
+               },
+               "required": [ "item", "type", "value", "uri" ],
+               "additionalProperties": false
+            },
+            {
+               "title": "Campaign completion check",
+               "description": "Checks whether the player has finished a given campaign.",
+               "type": "object",
+               "properties": {
+                  "type": { "$ref": "#/definitions/comparison_operator" },
+                  "item": { "enum": ["campaign_completed"] },
+                  "campaign_name": { "type": "string" },
+                  "value": { "type": "boolean" }
+               },
+               "required": [ "item", "type", "value", "campaign_name" ],
+               "additionalProperties": false
+            },
+            {
+               "title": "Custom Lua script check",
+               "description": "Runs the start() function of the specified Lua script and compares its return value to the specified 'value' field.",
+               "type": "object",
+               "properties": {
+                  "type": { "$ref": "#/definitions/comparison_operator" },
+                  "item": { "enum": ["script"] },
+                  "script": { "$ref": "elements/file.json" },
+                  "value": { }
+               },
+               "required": [ "item", "type", "value", "script" ],
+               "additionalProperties": false
+            },
+            {
+               "title": "Active node count check",
+               "description": "Check how many instances of the given node are currently active, i.e. how many times 'start_node' has been triggered minus how many times 'end_node' has triggered. If 'start_node' is unspecified, for some bizarre reason, it defaults to the value of 'in_edge'.",
+               "type": "object",
+               "properties": {
+                  "type": { "$ref": "#/definitions/comparison_operator" },
+                  "item": { "enum": ["number_active"] },
+                  "start_node": { "$ref": "elements/node.json" },
+                  "end_node": { "$ref": "elements/node.json" },
+                  "value": { "anyOf": [{"type": "number"}, { "$ref": "elements/range.json" }] }
+               },
+               "required": [ "item", "type", "value", "end_node" ],
+               "additionalProperties": false
+            },
+            {
+               "title": "Spawned node count check",
+               "description": "Check how many times a given node has been triggered.",
+               "type": "object",
+               "properties": {
+                  "type": { "$ref": "#/definitions/comparison_operator" },
+                  "item": { "enum": ["number_spawned"] },
+                  "node_name": { "$ref": "elements/node.json" },
+                  "value": { "anyOf": [{"type": "number"}, { "$ref": "elements/range.json" }] }
+               },
+               "required": [ "item", "type", "value", "node_name" ],
+               "additionalProperties": false
+            },
+            {
+               "title": "City tier check",
+               "description": "Check the player's city tier.",
+               "type": "object",
+               "properties": {
+                  "type": { "$ref": "#/definitions/comparison_operator" },
+                  "item": { "enum": ["city_tier"] },
+                  "value": { "anyOf": [{"type": "number"}, { "$ref": "elements/range.json" }] }
+               },
+               "required": [ "item", "type", "value" ],
+               "additionalProperties": false
+            },
+            {
+               "title": "Highest job check",
+               "description": "Check the level of the highest level hearthling in the player's town.",
+               "type": "object",
+               "properties": {
+                  "type": { "$ref": "#/definitions/comparison_operator" },
+                  "item": { "enum": ["highest_job_level"] },
+                  "value": { "anyOf": [{"type": "number"}, { "$ref": "elements/range.json" }] }
+               },
+               "required": [ "item", "type", "value" ],
+               "additionalProperties": false
+            },
+            {
+               "title": "Config variable check",
+               "description": "Compare the value of an arbitrary config file variable. These can be specified in stonehearth.json, user_settings.json, or on the command line.",
+               "type": "object",
+               "properties": {
+                  "type": { "$ref": "#/definitions/comparison_operator" },
+                  "item": { "enum": ["config"] },
+                  "key": { "type": "string" },
+                  "value": { }
+               },
+               "required": [ "item", "type", "value", "key" ],
+               "additionalProperties": false
+            },
+            {
+               "title": "AND check",
+               "description": "Returns true if ALL subtests pass.",
+               "type": "object",
+               "properties": {
+                  "type": { "$ref": "#/definitions/comparison_operator" },
+                  "item": { "enum": ["and"] },
+                  "tests": { "$ref": "#/definitions/can_start_test_set" },
+                  "value": { "type": "boolean" }
+               },
+               "required": [ "item", "type", "value", "tests" ],
+               "additionalProperties": false
+            },
+            {
+               "title": "OR check",
+               "description": "Returns true if ANY subtest pass.",
+               "type": "object",
+               "properties": {
+                  "type": { "$ref": "#/definitions/comparison_operator" },
+                  "item": { "enum": ["or"] },
+                  "tests": { "type": "object",
+                     "patternProperties": {
+                        "": { "$ref": "#/definitions/can_start_rule" }
+                     }
+                  },
+                  "value": { "type": "boolean" }
+               },
+               "required": [ "item", "type", "value", "tests" ],
+               "additionalProperties": false
+            },
+            {
+               "title": "Always true",
+               "description": "A check whose result is always true (before comparing to 'value'). Useful for modders who want to remove tests.",
+               "type": "object",
+               "properties": {
+                  "type": { "$ref": "#/definitions/comparison_operator" },
+                  "item": { "enum": ["none"] },
+                  "value": { "type": "boolean" }
+               },
+               "required": [ "item", "type", "value" ],
+               "additionalProperties": false
+            },
+            {
+               "title": "Alpha version check",
+               "description": "Check the current minor version number.\nWARNING: Currently ignores the 'alpha' field, and only returns true for alpha 2 & 20.",
+               "type": "object",
+               "properties": {
+                  "type": { "$ref": "#/definitions/comparison_operator" },
+                  "item": { "enum": ["alpha_version"] },
+                  "alpha": { "type": "number" },
+                  "value": { "type": "boolean" }
+               },
+               "required": [ "item", "type", "value", "alpha" ],
+               "additionalProperties": false
+            }
          ]
       }
    }
