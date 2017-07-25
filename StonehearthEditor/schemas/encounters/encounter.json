@@ -8,6 +8,7 @@
       "mixins": { "$ref": "elements/file.json" },
       "type": { "enum": ["encounter"] },
       "in_edge": { "$ref": "elements/edge.json" },
+      "out_edge": {"$ref": "elements/out_edge_spec.json"},
       "can_start": {
          "title": "Starting requirements",
          "description": "Requirements that must be satisfied before this node is allowed to start, an object whose keys are test set names (which can be used in game mode tuning overrides), and whose values are test sets. If ANY test set passes, the node can run.",
