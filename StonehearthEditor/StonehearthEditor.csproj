@@ -339,6 +339,7 @@
     <None Include="schemas\encounters\elements\edge.json" />
     <None Include="schemas\encounters\elements\faction.json" />
     <None Include="schemas\encounters\elements\file.json" />
+    <None Include="schemas\encounters\elements\kingdom.json" />
     <None Include="schemas\encounters\elements\node.json" />
     <None Include="schemas\encounters\elements\out_edge_spec.json" />
     <None Include="schemas\encounters\elements\point2.json" />

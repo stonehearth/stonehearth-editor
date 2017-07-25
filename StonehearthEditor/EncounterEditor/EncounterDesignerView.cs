@@ -146,10 +146,10 @@ namespace StonehearthEditor
                 return;
             }
 
-            var scriptFile = GameMasterDataManager.GetInstance().GetGenericScriptNode(encounterNode.EncounterType);
-            if (scriptFile?.Schema != null)
+            var schema = GameMasterDataManager.GetInstance().GetEncounterSchema(encounterNode.EncounterType);
+            if (schema != null)
             {
-                var suggester = mNodePreview.SetValidationSchema(scriptFile.Schema);
+                var suggester = mNodePreview.SetValidationSchema(schema);
                 suggester.AddCustomSource("http://stonehearth.net/schemas/encounters/elements/edge.json", GetAllEdges);
                 suggester.AddCustomSource("http://stonehearth.net/schemas/encounters/elements/node.json", GetAllNodes);
             }

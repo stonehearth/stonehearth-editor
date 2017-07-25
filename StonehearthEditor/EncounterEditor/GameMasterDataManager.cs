@@ -4,6 +4,7 @@ using System.Linq;
 using System.Windows.Forms;
 using Microsoft.Msagl.Drawing;
 using Microsoft.Msagl.Layout.Layered;
+using NJsonSchema;
 
 namespace StonehearthEditor
 {
@@ -24,6 +25,8 @@ namespace StonehearthEditor
         private Graph mGraph;
         private GameMasterNode mCurrentGraphRoot;
 
+        private JsonSchema4 mDefaultSchema;
+
         public GameMasterDataManager()
         {
             sInstance = this;
@@ -37,6 +40,11 @@ namespace StonehearthEditor
         public void Load()
         {
             ParseGenericEncounterScripts(MainForm.kModsDirectoryPath + "/stonehearth/services/server/game_master/controllers");
+            var defaultSchemaPath = Application.StartupPath + "/schemas/encounters/encounter.json";
+            using (StreamReader sr = new StreamReader(defaultSchemaPath, System.Text.Encoding.UTF8))
+            {
+                mDefaultSchema = JsonSchemaTools.ParseSchema(sr.ReadToEnd(), defaultSchemaPath);
+            }
 
             // get the game master index location
             foreach (Module module in ModuleDataManager.GetInstance().GetAllModules())
@@ -87,10 +95,10 @@ namespace StonehearthEditor
             return mGenericScriptNodes.Values;
         }
 
-        public EncounterScriptFile GetGenericScriptNode(string type)
+        public JsonSchema4 GetEncounterSchema(string type)
         {
             var key = type + "_encounter";
-            return mGenericScriptNodes.ContainsKey(key) ? mGenericScriptNodes[key] : null;
+            return (mGenericScriptNodes.ContainsKey(key) ? mGenericScriptNodes[key].Schema : null) ?? mDefaultSchema;
         }
 
         public ICollection<GameMasterNode> GetAllNodesOfType(GameMasterNodeType type)

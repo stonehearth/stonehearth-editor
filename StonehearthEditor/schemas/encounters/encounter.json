@@ -8,7 +8,102 @@
       "mixins": { "$ref": "elements/file.json" },
       "type": { "enum": ["encounter"] },
       "in_edge": { "$ref": "elements/edge.json" },
-      "can_start": { "title": "TODO: Detailed schema" }
+      "can_start": {
+         "title": "Starting requirements",
+         "description": "Requirements that must be satisfied before this node is allowed to start, an object whose keys are test set names (which are just for humans), and whose values are test sets. If ANY test set passes, the node can run.",
+         "type": "object",
+         "patternProperties": {
+            "": { "$ref": "#/definitions/can_start_test_set" }
+         }
+      }
    },
-   "required": [ "type", "in_edge" ]
+   "required": [ "type", "in_edge" ],
+
+   "definitions": {
+      "can_start_test_set": {
+         "title": "Test set",
+         "description": "A set of tests. For each test set to pass, ALL of its entries must pass. The keys in this object are arbitrary (just for human readability).",
+         "type": "object",
+         "patternProperties": {
+            "": { "$ref": "#/definitions/can_start_rule" }
+         }
+      },
+      "can_start_rule_base": {
+         "type": "object",
+         "properties": {
+            "type": {
+               "title": "Comparison operator",
+               "description": "How to compare the constant in the 'value' field with the variable or operation result from the 'item' field.",
+               "enum": ["deny_if", "deny_if_not", "deny_if_less_than", "deny_if_greater_than", "deny_if_between", "deny_if_not_between"]
+            }
+         },
+         "required": [ "item", "type", "value" ]
+      },
+      "can_start_rule": {
+         "title": "Rule",
+         "description": "A test rule that runs a specific test.",
+         "type": "object",
+         "allOf": [
+            { "$ref": "#/definitions/can_start_rule_base" },
+            { "anyOf": [
+               {
+                  "title": "Kingdom check",
+                  "description": "Check the player's kingdom ID (e.g. Ascendancy vs Rayya's Children)",
+                  "type": "object",
+                  "properties": {
+                     "item": { "enum": ["kingdom"] },
+                     "value": { "$ref": "elements/kingdom.json" }
+                  }
+               },
+               {
+                  "title": "Net worth check",
+                  "description": "Check the player's net worth\nDEPRECATED: Use 'score' instead",
+                  "type": "object",
+                  "properties": {
+                     "item": { "enum": ["net_worth"] },
+                     "value": { "type": "number" }
+                  }
+               },
+               { "title": "TODO: Add the remaining ones."}
+            ]}
+         ]
+      }
+      ,
+      "can_start_rule": {
+         "title": "Rule",
+         "description": "A test rule that runs a specific test.",
+         "type": "object",
+         "anyOf": [
+            {
+               "title": "Kingdom check",
+               "description": "Check the player's kingdom ID (e.g. Ascendancy vs Rayya's Children)",
+               "allOf": [
+                  { "$ref": "#/definitions/can_start_rule_base" },
+                  {
+                     "type": "object",
+                     "properties": {
+                        "item": { "enum": ["kingdom"] },
+                        "value": { "$ref": "elements/kingdom.json" }
+                     }
+                  }
+               ]
+            },
+            {
+               "title": "Net worth check",
+               "description": "Check the player's net worth\nDEPRECATED: Use 'score' instead",
+               "allOf": [
+                  { "$ref": "#/definitions/can_start_rule_base" },
+                  {
+                     "type": "object",
+                     "properties": {
+                        "item": { "enum": ["net_worth"] },
+                        "value": { "type": "number" }
+                     }
+                  }
+               ]
+            },
+            { "title": "TODO: Add the remaining ones."}
+         ]
+      }
+   }
 }
