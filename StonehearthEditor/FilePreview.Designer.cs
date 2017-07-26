@@ -167,10 +167,11 @@ namespace StonehearthEditor
             // 
             this.autocompleteMenu.AppearInterval = 200;
             this.autocompleteMenu.Colors = ((AutocompleteMenuNS.Colors)(resources.GetObject("autocompleteMenu.Colors")));
-            this.autocompleteMenu.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F);
+            this.autocompleteMenu.Font = new System.Drawing.Font("Consolas", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.autocompleteMenu.ImageList = null;
             this.autocompleteMenu.Items = new string[0];
             this.autocompleteMenu.LeftPadding = 0;
+            this.autocompleteMenu.MaximumSize = new System.Drawing.Size(300, 200);
             this.autocompleteMenu.MinFragmentLength = 1;
             this.autocompleteMenu.SearchPattern = "[:,{\\[]\\s*";
             this.autocompleteMenu.TargetControlWrapper = null;

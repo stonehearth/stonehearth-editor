@@ -118,6 +118,11 @@ namespace StonehearthEditor
             }
         }
 
+        private string WordWrapString(string errorMessage)
+        {
+            return Regex.Replace(errorMessage, @"(.{60,100}\s|\S{100})", "$1\n");
+        }
+
         private Tuple<string, int> GetTooltipAt(int x, int y)
         {
             // Translate mouse x,y to character position.
@@ -134,7 +139,7 @@ namespace StonehearthEditor
             var isInErrorMargin = x > textBox.Margins[0].Width && x <= textBox.Margins[0].Width + textBox.Margins[kErrorMarginNumber].Width;
             if (isInErrorMargin && validationErrors != null && validationErrors.ContainsKey(line))
             {
-                return new Tuple<string, int>(Regex.Replace(validationErrors[line], @"(.{60,100}\s|\S{100})", "$1\n"), kAnchorError);
+                return new Tuple<string, int>(WordWrapString(validationErrors[line]), kAnchorError);
             }
 
             // Are we hovering over an indicator?
@@ -208,7 +213,7 @@ namespace StonehearthEditor
                                 tipText += ", one of:\n- " + string.Join("\n- ", schemaDescriptions.Select(s => s.Replace("\n", "\n   ")));
                             }
 
-                            return new Tuple<string, int>(tipText, contextParsingPosition);
+                            return new Tuple<string, int>(WordWrapString(tipText), contextParsingPosition);
                         }
                     }
                 }
