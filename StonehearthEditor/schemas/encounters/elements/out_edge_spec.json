@@ -4,11 +4,8 @@
    "title": "Out edge specification",
    "description": "A specification for triggering edges. Can be a single edge, a list of edges to trigger all, a sequence to trigger one at a time, a list to select from, or the special 'destroy_tree' option.",
    "anyOf": [
-      {
-         "title": "Single Edge",
-         "$ref": "edge.json"
-      },
-      
+      { "$ref": "#/definitions/edge_or_finish" },
+
       {
          "title": "Trigger Many",
          "description": "Trigger all edges in a list each time.",
@@ -17,7 +14,7 @@
             "type": {"enum": ["trigger_many"]},
             "out_edges": {
                "type": "array",
-               "items": {"$ref": "edge.json"}
+               "items": {"$ref": "#/definitions/edge_or_finish"}
             }
          },
          "required": ["type", "out_edges"],
@@ -34,13 +31,13 @@
                "type": "array",
                "items": {
                   "anyOf": [
-                     { "title": "Single Edge", "$ref" : "edge.json" },
+                     { "title": "Single Edge", "$ref" : "#/definitions/edge_or_finish" },
                      {
                         "title": "Weighted Edge",
                         "type": "object",
                         "properties": {
                            "type": {"enum": ["weighted_edge"]},
-                           "out_edge": { "$ref": "edge.json" },
+                           "out_edge": { "$ref": "#/definitions/edge_or_finish" },
                            "weight": {"type": "number", "minimum": 0, "exclusiveMinimum": true}
                         },
                         "required": ["type", "out_edge", "weight"],
@@ -63,7 +60,7 @@
             "type": {"enum": ["trigger_sequence"]},
             "out_edges": {
                "type": "array",
-               "items": {"$ref": "edge.json"}
+               "items": {"$ref": "#/definitions/edge_or_finish"}
             },
             "repeat_last": {"type": "boolean"}
          },
@@ -83,12 +80,19 @@
          },
          "required": ["type", "root"],
          "additionalProperties": false
-      },
-      
-      {
-         "title": "Arc End",
-         "description": "Mark the arc as officially ended. Lets the parent campaign know it's OK to start another arc. Other encounters from this arc may still be around (waiting on boss death, etc) but they should resolve themselves on their own.",
-         "enum": ["arc:finish"]
       }
-   ]
+   ],
+
+   "definitions": {
+      "edge_or_finish": {
+         "anyOf": [
+            { "title": "Single Edge", "$ref": "edge.json" },
+            {
+               "title": "Arc End",
+               "description": "Mark the arc as officially ended. Lets the parent campaign know it's OK to start another arc. Other encounters from this arc may still be around (waiting on boss death, etc) but they should resolve themselves on their own.",
+               "enum": ["arc:finish"]
+            }
+         ]
+      }
+   }
 }
