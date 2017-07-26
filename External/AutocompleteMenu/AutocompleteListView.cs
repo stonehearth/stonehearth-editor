@@ -168,6 +168,8 @@ namespace AutocompleteMenuNS
 
         protected override void OnPaint(PaintEventArgs e)
         {
+            e.Graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
+
             bool rtl = RightToLeft == RightToLeft.Yes;
             AdjustScroll();
             int startI = VerticalScroll.Value/ItemHeight - 1;
