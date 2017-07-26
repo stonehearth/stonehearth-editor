@@ -5,6 +5,7 @@ using Microsoft.Msagl.Drawing;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Image = System.Drawing.Image;
+using System.Windows.Forms;
 
 namespace StonehearthEditor
 {
@@ -178,59 +179,60 @@ namespace StonehearthEditor
 
             var settings = graphNode.UserData as EncounterNodeRenderer.NodeDisplaySettings;
 
+            var iconBasePath = System.IO.Path.GetDirectoryName(Application.ExecutablePath);
             switch (mEncounterType)
             {
                 case "generator":
                     graphNode.Attr.FillColor = GameMasterNode.kOrange;
-                    settings.Icon = Image.FromFile("images/encounter_generator.png");
+                    settings.Icon = Image.FromFile(iconBasePath + "/images/encounter_generator.png");
                     break;
                 case "none":
                     graphNode.Attr.FillColor = GameMasterNode.kGrey;
                     break;
                 case "create_camp":
-                    settings.Icon = Image.FromFile("images/encounter_camp.png");
+                    settings.Icon = Image.FromFile(iconBasePath + "/images/encounter_camp.png");
                     break;
                 case "wait":
                 case "wait_for_event":
                 case "wait_for_net_worth":
                 case "wait_for_requirements_met":
                 case "wait_for_time_of_day":
-                    settings.Icon = Image.FromFile("images/encounter_wait.png");
+                    settings.Icon = Image.FromFile(iconBasePath + "/images/encounter_wait.png");
                     break;
                 case "dialog_tree":
                 case "donation_dialog":
-                    settings.Icon = Image.FromFile("images/encounter_dialog.png");
+                    settings.Icon = Image.FromFile(iconBasePath + "/images/encounter_dialog.png");
                     break;
                 case "script":
-                    settings.Icon = Image.FromFile("images/encounter_script.png");
+                    settings.Icon = Image.FromFile(iconBasePath + "/images/encounter_script.png");
                     break;
                 case "shop":
-                    settings.Icon = Image.FromFile("images/encounter_shop.png");
+                    settings.Icon = Image.FromFile(iconBasePath + "/images/encounter_shop.png");
                     break;
                 case "counter":
-                    settings.Icon = Image.FromFile("images/encounter_counter.png");
+                    settings.Icon = Image.FromFile(iconBasePath + "/images/encounter_counter.png");
                     break;
                 case "destroy_entity":
-                    settings.Icon = Image.FromFile("images/encounter_destroy.png");
+                    settings.Icon = Image.FromFile(iconBasePath + "/images/encounter_destroy.png");
                     break;
                 case "unlock_recipe":
-                    settings.Icon = Image.FromFile("images/encounter_recipe.png");
+                    settings.Icon = Image.FromFile(iconBasePath + "/images/encounter_recipe.png");
                     break;
                 case "collection_quest":
-                    settings.Icon = Image.FromFile("images/encounter_quest.png");
+                    settings.Icon = Image.FromFile(iconBasePath + "/images/encounter_quest.png");
                     break;
                 case "city_raid":
                 case "create_mission":
-                    settings.Icon = Image.FromFile("images/encounter_raid.png");
+                    settings.Icon = Image.FromFile(iconBasePath + "/images/encounter_raid.png");
                     break;
                 case "city_tier_quest":
-                    settings.Icon = Image.FromFile("images/encounter_tier_quest.png");
+                    settings.Icon = Image.FromFile(iconBasePath + "/images/encounter_tier_quest.png");
                     break;
                 case "city_tier_achieved":
-                    settings.Icon = Image.FromFile("images/encounter_tier_achieved.png");
+                    settings.Icon = Image.FromFile(iconBasePath + "/images/encounter_tier_achieved.png");
                     break;
                 case "donation":
-                    settings.Icon = Image.FromFile("images/encounter_loot.png");
+                    settings.Icon = Image.FromFile(iconBasePath + "/images/encounter_loot.png");
                     break;
             }
 
