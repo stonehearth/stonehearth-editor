@@ -243,11 +243,16 @@ namespace StonehearthEditor
                 settings.HasErrors = true;
             }
 
-            if (!settings.HasErrors && NodeFile.Json?["mixins"] == null)
+            if (!settings.HasErrors)
             {
-                // TODO: Allow validation to handle mixins.
                 var schema = GameMasterDataManager.GetInstance().GetEncounterSchema(mEncounterType);
-                settings.HasErrors = schema.Validate(NodeFile.FileData.FlatFileData).Count > 0;
+                var jsonFileData = NodeFile.FileData as JsonFileData;
+                if (jsonFileData.Json["mixins"] != null)
+                {
+                    jsonFileData = jsonFileData.CreateFileWithMixinsApplied();
+                }
+
+                settings.HasErrors = schema.Validate(jsonFileData.Json).Count > 0;
             }
         }
 

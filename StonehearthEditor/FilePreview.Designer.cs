@@ -43,6 +43,7 @@ namespace StonehearthEditor
             this.openFolder = new System.Windows.Forms.ToolStripButton();
             this.saveFile = new System.Windows.Forms.ToolStripButton();
             this.localizeFile = new System.Windows.Forms.ToolStripButton();
+            this.previewMixinsButton = new System.Windows.Forms.ToolStripButton();
             this.autocompleteMenu = new AutocompleteMenuNS.AutocompleteMenu();
             this.filePreviewContextMenu.SuspendLayout();
             this.toolStrip.SuspendLayout();
@@ -116,7 +117,8 @@ namespace StonehearthEditor
             this.openFile,
             this.openFolder,
             this.saveFile,
-            this.localizeFile});
+            this.localizeFile,
+            this.previewMixinsButton});
             this.toolStrip.Location = new System.Drawing.Point(0, 0);
             this.toolStrip.Name = "toolStrip";
             this.toolStrip.Size = new System.Drawing.Size(150, 25);
@@ -163,6 +165,16 @@ namespace StonehearthEditor
             this.localizeFile.Text = "Localize This File";
             this.localizeFile.Click += new System.EventHandler(this.localizeFile_Click);
             // 
+            // previewMixinsButton
+            // 
+            this.previewMixinsButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.previewMixinsButton.Image = ((System.Drawing.Image)(resources.GetObject("previewMixinsButton.Image")));
+            this.previewMixinsButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.previewMixinsButton.Name = "previewMixinsButton";
+            this.previewMixinsButton.Size = new System.Drawing.Size(23, 22);
+            this.previewMixinsButton.Text = "Preview With Mixins";
+            this.previewMixinsButton.Click += new System.EventHandler(this.previewMixinsButton_Click);
+            // 
             // autocompleteMenu
             // 
             this.autocompleteMenu.AppearInterval = 200;
@@ -205,5 +217,6 @@ namespace StonehearthEditor
       private System.Windows.Forms.ToolStripMenuItem editLocStringToolStripMenuItem;
         internal System.Windows.Forms.ToolStrip toolStrip;
         private AutocompleteMenuNS.AutocompleteMenu autocompleteMenu;
+        private System.Windows.Forms.ToolStripButton previewMixinsButton;
     }
 }

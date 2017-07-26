@@ -160,6 +160,16 @@
         AAAASUVORK5CYII=
 </value>
   </data>
+  <data name="previewMixinsButton.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAADySURBVDhP3dK9K8VRGAfw6zXFIAMJUVaDtyxsSpSyGVjs
+        BplsFmWy+weMDDaTCbEqIxlE3vKSgQx8vrebUtKd77c+y3M6zznP+f0KlZ0GhpikLYVy080a19xwxQe7
+        jPBvxjnnjgXSrIsxDnlgkRp+pYp5ntmhnVb2eGKOFjZ5ZIk6ikm3DV5YpYlkmk++uE1BasnmN9Yp3iQn
+        nXJGXwqlTJHZ0+AyhVJ6uOCI5hRy/RRPyMPNUk0WM07mTrOkkwMyxiDZ+5MOtrhnmxlGGWCCFdLsmH7+
+        TD3D7JP5X8lp7+STLpPHLCuN5PT8SL0pVGQKhW9FMzGwgL85yQAAAABJRU5ErkJggg==
+</value>
+  </data>
   <metadata name="autocompleteMenu.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>412, 17</value>
   </metadata>

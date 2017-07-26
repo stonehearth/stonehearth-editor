@@ -12,6 +12,7 @@ using NJsonSchema;
 using NJsonSchema.Validation;
 using ScintillaNET;
 using Color = System.Drawing.Color;
+using System.IO;
 
 namespace StonehearthEditor
 {
@@ -74,6 +75,9 @@ namespace StonehearthEditor
             mOwner = owner;
 
             this.configureScintilla();
+
+            localizeFile.Visible = textBox.Lexer == ScintillaNET.Lexer.Json;
+            previewMixinsButton.Visible = (textBox.Lexer == ScintillaNET.Lexer.Json) && (mFileData as JsonFileData)?.Json.SelectToken("mixins") != null;
         }
 
         public string GetText()
@@ -914,6 +918,85 @@ namespace StonehearthEditor
         {
             this.textBox.CallTipCancel();
             lastTipAnchor = kAnchorNone;
+        }
+
+        private void previewMixinsButton_Click(object sender, EventArgs args)
+        {
+            if (!TrySetFileDataFromTextbox())
+            {
+                return;
+            }
+
+            Dictionary<string, string> annotations;
+            JsonFileData mixinsFile;
+            try
+            {
+                mixinsFile = (mFileData as JsonFileData).CreateFileWithMixinsApplied(out annotations);
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("Could not generate mixin preview. Error: " + e.Message);
+                return;
+            }
+
+            var newPreview = new FilePreview(mOwner, mixinsFile);
+            newPreview.Dock = DockStyle.Fill;
+            newPreview.toolStrip.Visible = false;
+            if (jsonValidationSchema != null)
+            {
+                newPreview.SetValidationSchema(jsonValidationSchema);
+            }
+
+            var form = new Form();
+            form.Width = 800;
+            form.Height = 600;
+            form.SizeGripStyle = SizeGripStyle.Show;
+            form.Controls.Add(newPreview);
+            form.Icon = ParentForm.Icon;
+            form.Text = "Mixin preview: " + mFileData.FileName;
+            // StartPosition doesn't work unless modal. :(
+            form.Show();
+            form.Location = new System.Drawing.Point(ParentForm.Location.X + ParentForm.Width / 2  - form.Width / 2,
+                                                     ParentForm.Location.Y + ParentForm.Height / 2 - form.Height / 2);
+
+            newPreview.ApplySourceAnnotations(annotations);
+            newPreview.textBox.ReadOnly = true;
+        }
+
+        private void ApplySourceAnnotations(Dictionary<string, string> annotations)
+        {
+            var annotationsByLine = new Dictionary<int, string>();
+            (mFileData as JsonFileData).Json.Annotation<string>();
+            var reader = new JsonTextReader(new StringReader(textBox.Text));
+            while (reader.Read())
+            {
+                var path = reader.Path;
+                while (!annotations.ContainsKey(path))
+                {
+                    var lastPeriod = path.LastIndexOf('.');
+                    if (lastPeriod >= 0)
+                    {
+                        path = path.Substring(0, lastPeriod);
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+
+                if (annotations.ContainsKey(path))
+                {
+                    annotationsByLine[reader.LineNumber - 1] = annotations[path];
+                }
+            }
+
+            foreach (var pair in annotationsByLine)
+            {
+                var line = textBox.Lines[pair.Key];
+                var position = line.EndPosition - 2;  // - 2 because of \r\n.
+                var padding = new string(' ', Math.Max(2, 60 - line.Length));
+                textBox.InsertText(position, padding + "// from " + Path.GetFileNameWithoutExtension(pair.Value));
+            }
         }
     }
 }

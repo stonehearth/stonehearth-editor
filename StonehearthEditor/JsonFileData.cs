@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using Newtonsoft.Json.Linq;
+using System.Linq;
+using System.IO;
 
 namespace StonehearthEditor
 {
@@ -346,6 +348,7 @@ namespace StonehearthEditor
             {
                 JObject json = JObject.Parse(newData);
                 newFlatFileData = JsonHelper.GetFormattedJsonString(json);
+                mJson = json;
             }
             catch (Exception e)
             {
@@ -852,6 +855,134 @@ namespace StonehearthEditor
 
                 LinkedAliases.Add(linkedAlias);
                 linkedAlias.AddReference(GetAliasOrFlatName(), this);
+            }
+        }
+
+        internal JsonFileData CreateFileWithMixinsApplied()
+        {
+            Dictionary<string, string> unusedPropertySourceByPath;
+            return CreateFileWithMixinsApplied(out unusedPropertySourceByPath);
+        }
+
+        public JsonFileData CreateFileWithMixinsApplied(out Dictionary<string, string> propertySourceByPath)
+        {
+            propertySourceByPath = new Dictionary<string, string>();
+
+            string newFilePath = System.IO.Path.GetTempPath() + Guid.NewGuid().ToString() + ".json";
+            using (StreamWriter writer = new StreamWriter(newFilePath, false, System.Text.Encoding.UTF8))
+            {
+                writer.Write(ParseNodeMixin(Json, Directory, propertySourceByPath).ToString());
+            }
+
+            JsonFileData result = new JsonFileData(newFilePath);
+            result.Load();
+            return result;
+        }
+
+        // WARNING: Keep in sync with ResourceManager2::ParseNodeMixin() in the SH codebase!
+        private static JObject ParseNodeMixin(JObject json, string contextFolder, Dictionary<string, string> propertySourceByPath)
+        {
+            var mixins = json.SelectToken("mixins");
+            List<string> mixinsArray;
+            if (mixins != null && mixins.Type == JTokenType.String)
+            {
+                mixinsArray = new List<string> { mixins.ToString() };
+            }
+            else
+            {
+                mixinsArray = (mixins as JArray)?.Select(t => t.ToString()).ToList();
+            }
+
+            if (mixinsArray != null && mixinsArray.Count > 0)
+            {
+                // This iteration order is probably not what the user wants, but it matches ResourceManager2::ParseNodeMixin().
+                // TODO: Find out the reason behind this, and document it.
+                foreach (var mixin in mixinsArray)
+                {
+                    json = ApplyMixin(json, mixin, contextFolder, propertySourceByPath);
+                }
+            }
+
+            return json;
+        }
+
+        // WARNING: Keep in sync with ResourceManager2::ApplyMixin() in the SH codebase!
+        private static JObject ApplyMixin(JObject primaryJson, string mixinJsonPathOrAlias, string contextFolder, Dictionary<string, string> propertySourceByPath)
+        {
+            ModuleFile moduleFile;
+            var foundMixin = ModuleDataManager.GetInstance().TryGetModuleFile(mixinJsonPathOrAlias, contextFolder, out moduleFile);
+            if (!foundMixin)
+            {
+                throw new Exception("Could not find mixin: " + mixinJsonPathOrAlias);
+            }
+
+            moduleFile.TryLoad();
+            JsonFileData mixinJsonFile = moduleFile.FileData as JsonFileData;
+            var mixinJson = ParseNodeMixin(mixinJsonFile.Json, mixinJsonFile.Directory, propertySourceByPath).DeepClone();
+            primaryJson = primaryJson.DeepClone() as JObject;
+            (primaryJson as JObject)?.Remove("mixins");
+            return ExtendNode(mixinJson, primaryJson, mixinJsonFile.Path, propertySourceByPath) as JObject;
+        }
+
+        // WARNING: Keep in sync with ResourceManager2::ExtendNode() in the SH codebase!
+        private static JToken ExtendNode(JToken baseJson, JToken overrideJson, string baseSourceName, Dictionary<string, string> propertySourceByPath)
+        {
+            switch (baseJson.Type)
+            {
+                case JTokenType.Object:
+                    if (overrideJson.Type != JTokenType.Object)
+                    {
+                        throw new Exception("Trying to mixin a non-object into an object.");
+                    }
+
+                    var overrideObject = overrideJson as JObject;
+                    if (overrideObject.Property("mixintypes") != null)
+                    {
+                        throw new Exception("Mixin preview does not support 'mixintypes'.");
+                    }
+
+                    foreach (var item in baseJson as JObject)
+                    {
+                        var name = item.Key;
+                        var current = overrideObject.Property(name);
+                        if (current != null)
+                        {
+                            current.Value = ExtendNode(item.Value, current.Value, baseSourceName, propertySourceByPath);
+                        }
+                        else
+                        {
+                            if (!propertySourceByPath.ContainsKey(item.Value.Path))
+                            {
+                                propertySourceByPath[item.Value.Path] = baseSourceName;
+                            }
+
+                            overrideObject.Add(name, item.Value);
+                        }
+                    }
+
+                    return overrideJson;
+                case JTokenType.Array:
+                    foreach (var item in baseJson as JArray)
+                    {
+                        if (!propertySourceByPath.ContainsKey(item.Path))
+                        {
+                            propertySourceByPath[item.Path] = baseSourceName;
+                        }
+                    }
+
+                    foreach (var item in overrideJson as JArray)
+                    {
+                        (baseJson as JArray).Add(item);
+                    }
+
+                    return baseJson;
+                default:
+                    if (propertySourceByPath.ContainsKey(overrideJson.Path))
+                    {
+                        propertySourceByPath.Remove(overrideJson.Path);
+                    }
+
+                    return overrideJson;
             }
         }
     }
