@@ -149,7 +149,7 @@ namespace StonehearthEditor
                     EncounterNodeData nodeData = file.NodeData as EncounterNodeData;
                     if (nodeData.IsStartNode)
                     {
-                        graph.AddEdge(NodeFile.Id, file.Id);
+                        graph.AddEdge(NodeFile.Id, file.Id).UserData = "start";
                     }
                 }
             }

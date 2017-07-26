@@ -350,13 +350,13 @@ namespace StonehearthEditor
                                 Node choiceNode = graph.AddNode(NodeFile.Id + "#" + choice);
                                 choiceNode.LabelText = '"' + choice + '"';
                                 MakeNodePrivate(choiceNode);
-                                graph.AddEdge(NodeFile.Id, choiceNode.Id);
-                                graph.AddEdge(choiceNode.Id, linkedEncounters[0].Id);
+                                graph.AddEdge(NodeFile.Id, choiceNode.Id).UserData = inEdgeName;
+                                graph.AddEdge(choiceNode.Id, linkedEncounters[0].Id).UserData = inEdgeName;
                             }
                         }
                         else
                         {
-                            graph.AddEdge(NodeFile.Id, linkedEncounters[0].Id);
+                            graph.AddEdge(NodeFile.Id, linkedEncounters[0].Id).UserData = inEdgeName;
                         }
                     }
                     else
@@ -371,18 +371,18 @@ namespace StonehearthEditor
                                 Node choiceNode = graph.AddNode(NodeFile.Id + "#" + choice);
                                 choiceNode.LabelText = '"' + choice + '"';
                                 MakeNodePrivate(choiceNode);
-                                graph.AddEdge(NodeFile.Id, choiceNode.Id);
-                                graph.AddEdge(choiceNode.Id, arcOutNode.Id);
+                                graph.AddEdge(NodeFile.Id, choiceNode.Id).UserData = inEdgeName;
+                                graph.AddEdge(choiceNode.Id, arcOutNode.Id).UserData = inEdgeName;
                             }
                         }
                         else
                         {
-                            graph.AddEdge(NodeFile.Id, arcOutNode.Id);
+                            graph.AddEdge(NodeFile.Id, arcOutNode.Id).UserData = inEdgeName;
                         }
 
                         foreach (GameMasterNode linkedEncounter in linkedEncounters)
                         {
-                            graph.AddEdge(arcOutNode.Id, linkedEncounter.Id);
+                            graph.AddEdge(arcOutNode.Id, linkedEncounter.Id).UserData = inEdgeName;
                         }
                     }
                 }

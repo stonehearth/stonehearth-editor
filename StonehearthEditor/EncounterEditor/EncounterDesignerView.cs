@@ -19,10 +19,13 @@ namespace StonehearthEditor
         private FilePreview mNodePreview = null;
         private string mSelectedNewScriptNode = null;
         private DNode mHoveredDNode = null;
+        private DEdge mHoveredDEdge = null;
+        private ToolTip mHoveredEdgeTooltip = new ToolTip();
 
         public EncounterDesignerView()
         {
             InitializeComponent();
+            mHoveredEdgeTooltip.InitialDelay = 0;
         }
 
         public void Initialize()
@@ -163,6 +166,7 @@ namespace StonehearthEditor
             }
 
             SortedSet<string> allEdges = new SortedSet<string>();
+            allEdges.Add("start");
             foreach (var node in graphViewer.Graph.Nodes)
             {
                 GameMasterNode nodeData = GameMasterDataManager.GetInstance().GetGameMasterNode(node.Id);
@@ -416,6 +420,7 @@ namespace StonehearthEditor
             }
             else if (e.Button == System.Windows.Forms.MouseButtons.None)
             {
+                // Update hovered node.
                 var dNode = graphViewer.ObjectUnderMouseCursor as DNode;
                 if (mHoveredDNode != dNode)
                 {
@@ -433,6 +438,27 @@ namespace StonehearthEditor
                             mHoveredDNode = dNode;
                             SetBranchHighlighted(mHoveredDNode, true);
                         }
+                    }
+                }
+
+                // Update hovered edge.
+                var dEdge = graphViewer.ObjectUnderMouseCursor as DEdge;
+                if (mHoveredDEdge != dEdge)
+                {
+                    if (mHoveredDEdge != null)
+                    {
+                        mHoveredDEdge.DrawingEdge.Attr.LineWidth -= 2;
+                        graphViewer.Invalidate(mHoveredDEdge);
+                        mHoveredDEdge = null;
+                        graphViewer.SetToolTip(mHoveredEdgeTooltip, "");
+                    }
+
+                    if (dEdge != null)
+                    {
+                        dEdge.DrawingEdge.Attr.LineWidth += 2;
+                        graphViewer.Invalidate(dEdge);
+                        mHoveredDEdge = dEdge;
+                        graphViewer.SetToolTip(mHoveredEdgeTooltip, mHoveredDEdge.Edge.UserData as string);
                     }
                 }
             }
@@ -465,7 +491,7 @@ namespace StonehearthEditor
 
                             mSelectedDNode = dNode;
                             SetBranchFocused(mSelectedDNode, true);
-                            mSelectedDNode.DrawingNode.Attr.LineWidth = 7;
+                            mSelectedDNode.DrawingNode.Attr.LineWidth = 5;
                             graphViewer.Invalidate(mSelectedDNode);
 
                             UpdateSelectedNodeInfo(nodeData);
