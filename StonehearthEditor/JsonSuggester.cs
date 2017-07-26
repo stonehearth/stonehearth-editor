@@ -19,13 +19,15 @@ namespace StonehearthEditor
         private string filePath;
         private JsonSchema4 schema;
         private Scintilla textBox;
+        private AutocompleteMenu menu;
         private Dictionary<string, Func<IEnumerable<string>>> customSourcesBySchemeId;
 
-        public JsonSuggester(JsonSchema4 schema, Scintilla textBox, string filePath)
+        public JsonSuggester(JsonSchema4 schema, Scintilla textBox, AutocompleteMenu menu, string filePath)
         {
             this.filePath = filePath;
             this.schema = schema;
             this.textBox = textBox;
+            this.menu = menu;
             customSourcesBySchemeId = new Dictionary<string, Func<IEnumerable<string>>>();
         }
 
@@ -58,7 +60,7 @@ namespace StonehearthEditor
 
         private IEnumerable<AutocompleteItem> BuildList()
         {
-            var context = ParseOutContext(textBox.CurrentPosition);
+            var context = ParseOutContext(menu.Fragment.Start + 1);
             if (!context.IsValid)
             {
                 yield break;
@@ -249,6 +251,16 @@ namespace StonehearthEditor
                 if (items.Count > 0)
                 {
                     sections.Add(new KeyValuePair<AnnotatedSchema, List<AutocompleteItem>>(annotatedSchema, items));
+                }
+            }
+
+            // Filter to match any partially entered name.
+            var partial = Regex.Match(menu.Fragment.Text, @"\w+$");
+            if (partial.Success)
+            {
+                foreach (var section in sections)
+                {
+                    section.Value.RemoveAll(item => !item.MenuText.StartsWith(partial.Value));
                 }
             }
 
@@ -481,14 +493,15 @@ namespace StonehearthEditor
             {
                 // Construct the replacement text.
                 var textboxWrapper = Parent.TargetControlWrapper as ScintillaWrapper;
-                var result = Parent.Fragment.Text;
-                if (!Regex.IsMatch(Parent.Fragment.Text, @"\n\s*$"))
+                var fragmentText = Regex.Replace(Parent.Fragment.Text, @"\w+$", "");
+                var result = fragmentText;
+                if (!Regex.IsMatch(fragmentText, @"\n\s*$"))
                 {
                     // Not already indented. Auto-indent.
                     var textbox = textboxWrapper.target;
                     var curLineText = textbox.Lines[textbox.CurrentLine].Text;
                     result += "\n" + Regex.Match(curLineText, @"^[ \t]*").Value;
-                    if (Regex.IsMatch(Parent.Fragment.Text, @"[{\[]\s*$"))
+                    if (Regex.IsMatch(fragmentText, @"[{\[]\s*$"))
                     {
                         result += "   ";
                     }
