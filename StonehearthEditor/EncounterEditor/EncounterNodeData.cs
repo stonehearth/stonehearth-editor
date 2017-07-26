@@ -337,9 +337,9 @@ namespace StonehearthEditor
         protected override void UpdateOutEdges(Graph graph)
         {
             GameMasterNode arcFile = NodeFile.Owner;
-            if (arcFile != null)
+            ArcNodeData arc = arcFile?.NodeData as ArcNodeData;
+            if (arc != null)
             {
-                ArcNodeData arc = arcFile.NodeData as ArcNodeData;
                 foreach (string inEdgeName in mOutEdgeStrings)
                 {
                     List<GameMasterNode> linkedEncounters = arc.GetEncountersWithInEdge(inEdgeName);
