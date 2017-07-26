@@ -5,7 +5,16 @@
    "description": "A base class for all encounters.",
    "type": "object",
    "properties": {
-      "mixins": { "$ref": "elements/file.json" },
+      "mixins": {
+         "anyOf": [
+            { "$ref": "elements/file.json" },
+            {
+               "title": "Multiple mixins",
+               "type": "array",
+               "items": {"$ref": "elements/file.json" }
+            }
+         ]
+      },
       "type": { "enum": ["encounter"] },
       "in_edge": { "$ref": "elements/edge.json" },
       "out_edge": {"$ref": "elements/out_edge_spec.json"},
