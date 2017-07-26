@@ -676,7 +676,14 @@ namespace AutocompleteMenuNS
             if (foundSelected)
                 Host.ListView.SelectedItemIndex = selectedIndex;
             else
-                Host.ListView.SelectedItemIndex = 0;
+            {
+                var index = 0;
+                while (index < visibleItems.Count && !visibleItems[index].CanBeSelected())
+                {
+                    index++;
+                }
+                Host.ListView.SelectedItemIndex = index;
+            }
 
             Host.ListView.HighlightedItemIndex = -1;
 
