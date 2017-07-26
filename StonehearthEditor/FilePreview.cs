@@ -118,9 +118,9 @@ namespace StonehearthEditor
             }
         }
 
-        private string WordWrapString(string errorMessage)
+        private string WordWrapString(string str)
         {
-            return Regex.Replace(errorMessage, @"(.{60,100}\s|\S{100})", "$1\n");
+            return Regex.Replace(str, @"([^\n]{80,100}[ \t]|\S{100})", "$1\n");
         }
 
         private Tuple<string, int> GetTooltipAt(int x, int y)
