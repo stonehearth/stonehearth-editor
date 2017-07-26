@@ -693,7 +693,7 @@ namespace StonehearthEditor
 
             attachEdgeMenuItem.Enabled = mSelectedNode != null && mHoveredDEdge != null && mHoveredDEdge.Edge.UserData is string;
             attachEdgeMenuItem.Text = "Set as in_edge" + (attachEdgeMenuItem.Enabled ? " of " + mSelectedNode.Name : "");
-            attachEdgeMenuItem.Tag = mHoveredDEdge.Edge.UserData;  // Lame. Things are unhovered when we click, so remember our target.
+            attachEdgeMenuItem.Tag = mHoveredDEdge?.Edge.UserData;  // Lame. Things are unhovered when we click, so remember our target.
         }
 
         private void encounterGraphContextMenu_Closed(object sender, ToolStripDropDownClosedEventArgs e)
