@@ -35,6 +35,7 @@
             this.addNewGameMasterNode = new System.Windows.Forms.ToolStripMenuItem();
             this.moveToArcMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteNodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.attachEdgeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveNewEncounterNodeDialog = new System.Windows.Forms.SaveFileDialog();
             this.i18nTooltip = new System.Windows.Forms.ToolTip(this.components);
             this.encounterTreeView = new System.Windows.Forms.TreeView();
@@ -58,9 +59,13 @@
             this.copyGameMasterNode,
             this.addNewGameMasterNode,
             this.moveToArcMenuItem,
-            this.deleteNodeToolStripMenuItem});
+            this.deleteNodeToolStripMenuItem,
+            this.attachEdgeMenuItem});
             this.encounterGraphContextMenu.Name = "encounterGraphContextMenu";
-            this.encounterGraphContextMenu.Size = new System.Drawing.Size(156, 92);
+            this.encounterGraphContextMenu.Size = new System.Drawing.Size(156, 136);
+            this.encounterGraphContextMenu.Closed += new System.Windows.Forms.ToolStripDropDownClosedEventHandler(this.encounterGraphContextMenu_Closed);
+            this.encounterGraphContextMenu.Opening += new System.ComponentModel.CancelEventHandler(this.encounterGraphContextMenu_Opening);
+            this.encounterGraphContextMenu.MouseEnter += new System.EventHandler(this.encounterGraphContextMenu_MouseEnter);
             // 
             // copyGameMasterNode
             // 
@@ -91,6 +96,13 @@
             this.deleteNodeToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
             this.deleteNodeToolStripMenuItem.Text = "Delete";
             this.deleteNodeToolStripMenuItem.Click += new System.EventHandler(this.deleteNodeToolStripMenuItem_Click);
+            // 
+            // attachEdgeMenuItem
+            // 
+            this.attachEdgeMenuItem.Name = "attachEdgeMenuItem";
+            this.attachEdgeMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.attachEdgeMenuItem.Text = "Set as in_edge";
+            this.attachEdgeMenuItem.Click += new System.EventHandler(this.attachEdgeMenuItem_Click);
             // 
             // saveNewEncounterNodeDialog
             // 
@@ -242,5 +254,6 @@
         private System.Windows.Forms.SplitContainer editorInfoSplitter;
         private System.Windows.Forms.ListBox fileDetailsListBox;
         private System.Windows.Forms.ToolStripMenuItem moveToArcMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem attachEdgeMenuItem;
     }
 }

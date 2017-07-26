@@ -82,7 +82,7 @@ namespace StonehearthEditor
 
         public GameMasterNode GetGameMasterNode(string nodeId)
         {
-            if (mGameMasterNodes.ContainsKey(nodeId))
+            if (nodeId != null && mGameMasterNodes.ContainsKey(nodeId))
             {
                 return mGameMasterNodes[nodeId];
             }

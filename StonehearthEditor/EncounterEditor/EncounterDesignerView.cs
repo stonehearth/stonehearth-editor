@@ -99,38 +99,12 @@ namespace StonehearthEditor
                 nodePathLabel.Enabled = false;
                 nodePathLabel.Alignment = ToolStripItemAlignment.Right;
 
-                // Set up context menu.
-                copyGameMasterNode.Text = "Clone " + node.Name;
-                copyGameMasterNode.Enabled = true;
-                deleteNodeToolStripMenuItem.Visible = true;
-                if (node.Owner == null)
-                {
-                    moveToArcMenuItem.Visible = true;
-                    moveToArcMenuItem.DropDownItems.Clear();
-                    var dm = GameMasterDataManager.GetInstance();
-                    foreach (var arc in dm.GetAllNodesOfType(GameMasterNodeType.ARC))
-                    {
-                        if (arc.Owner == dm.GraphRoot)
-                        {
-                            moveToArcMenuItem.DropDownItems.Add(arc.Name).Tag = arc;
-                        }
-                    }
-                }
-                else
-                {
-                    moveToArcMenuItem.Visible = false;
-                }
-
                 // Set up the details panel.
                 PopulateFileDetails(node);
                 editorInfoSplitter.Panel2Collapsed = fileDetailsListBox.Items.Count == 0;
             }
             else
             {
-                copyGameMasterNode.Text = "Clone Node";
-                copyGameMasterNode.Enabled = false;
-                moveToArcMenuItem.Visible = false;
-                deleteNodeToolStripMenuItem.Visible = false;
                 PopulateFileDetails(null);
                 editorInfoSplitter.Panel2Collapsed = true;
             }
@@ -420,46 +394,51 @@ namespace StonehearthEditor
             }
             else if (e.Button == System.Windows.Forms.MouseButtons.None)
             {
-                // Update hovered node.
-                var dNode = graphViewer.ObjectUnderMouseCursor as DNode;
-                if (mHoveredDNode != dNode)
-                {
-                    if (mHoveredDNode != null)
-                    {
-                        SetBranchHighlighted(mHoveredDNode, false);
-                        mHoveredDNode = null;
-                    }
+                UpdateHoveredObjects(graphViewer.ObjectUnderMouseCursor);
+            }
+        }
 
-                    if (dNode != null)
-                    {
-                        GameMasterNode nodeData = GameMasterDataManager.GetInstance().GetGameMasterNode(dNode.DrawingNode.Id);
-                        if (nodeData != null)
-                        {
-                            mHoveredDNode = dNode;
-                            SetBranchHighlighted(mHoveredDNode, true);
-                        }
-                    }
+        private void UpdateHoveredObjects(IViewerObject hoveredObject)
+        {
+            // Update hovered node.
+            var dNode = hoveredObject as DNode;
+            if (mHoveredDNode != dNode)
+            {
+                if (mHoveredDNode != null)
+                {
+                    SetBranchHighlighted(mHoveredDNode, false);
+                    mHoveredDNode = null;
                 }
 
-                // Update hovered edge.
-                var dEdge = graphViewer.ObjectUnderMouseCursor as DEdge;
-                if (mHoveredDEdge != dEdge)
+                if (dNode != null)
                 {
-                    if (mHoveredDEdge != null)
+                    GameMasterNode nodeData = GameMasterDataManager.GetInstance().GetGameMasterNode(dNode.DrawingNode.Id);
+                    if (nodeData != null)
                     {
-                        mHoveredDEdge.DrawingEdge.Attr.LineWidth -= 2;
-                        graphViewer.Invalidate(mHoveredDEdge);
-                        mHoveredDEdge = null;
-                        graphViewer.SetToolTip(mHoveredEdgeTooltip, "");
+                        mHoveredDNode = dNode;
+                        SetBranchHighlighted(mHoveredDNode, true);
                     }
+                }
+            }
 
-                    if (dEdge != null)
-                    {
-                        dEdge.DrawingEdge.Attr.LineWidth += 2;
-                        graphViewer.Invalidate(dEdge);
-                        mHoveredDEdge = dEdge;
-                        graphViewer.SetToolTip(mHoveredEdgeTooltip, mHoveredDEdge.Edge.UserData as string);
-                    }
+            // Update hovered edge.
+            var dEdge = hoveredObject as DEdge;
+            if (mHoveredDEdge != dEdge)
+            {
+                if (mHoveredDEdge != null)
+                {
+                    mHoveredDEdge.DrawingEdge.Attr.LineWidth -= 2;
+                    graphViewer.Invalidate(mHoveredDEdge);
+                    mHoveredDEdge = null;
+                    graphViewer.SetToolTip(mHoveredEdgeTooltip, "");
+                }
+
+                if (dEdge != null)
+                {
+                    dEdge.DrawingEdge.Attr.LineWidth += 2;
+                    graphViewer.Invalidate(dEdge);
+                    mHoveredDEdge = dEdge;
+                    graphViewer.SetToolTip(mHoveredEdgeTooltip, mHoveredDEdge.Edge.UserData as string);
                 }
             }
         }
@@ -677,6 +656,65 @@ namespace StonehearthEditor
                 SetBranchHighlighted(mHoveredDNode, false);
                 mHoveredDNode = null;
             }
+
+            if (mHoveredDEdge != null)
+            {
+                mHoveredDEdge.DrawingEdge.Attr.LineWidth -= 2;
+                graphViewer.Invalidate(mHoveredDEdge);
+                mHoveredDEdge = null;
+                graphViewer.SetToolTip(mHoveredEdgeTooltip, "");
+            }
+        }
+
+        private void encounterGraphContextMenu_Opening(object sender, CancelEventArgs e)
+        {
+            UpdateHoveredObjects(graphViewer.ObjectUnderMouseCursor);
+
+            GameMasterNode hoveredNode = GameMasterDataManager.GetInstance().GetGameMasterNode(mHoveredDNode?.DrawingNode.Id);
+
+            deleteNodeToolStripMenuItem.Enabled = mHoveredDNode != null;
+
+            copyGameMasterNode.Enabled = mHoveredDNode != null;
+            copyGameMasterNode.Text = "Clone " + (mHoveredDNode != null ? hoveredNode.Name : "Node");
+
+            moveToArcMenuItem.Enabled = mHoveredDNode != null && hoveredNode.Owner == null;
+            moveToArcMenuItem.DropDownItems.Clear();
+            if (moveToArcMenuItem.Enabled)
+            {
+                var dm = GameMasterDataManager.GetInstance();
+                foreach (var arc in dm.GetAllNodesOfType(GameMasterNodeType.ARC))
+                {
+                    if (arc.Owner == dm.GraphRoot)
+                    {
+                        moveToArcMenuItem.DropDownItems.Add(arc.Name).Tag = arc;
+                    }
+                }
+            }
+
+            attachEdgeMenuItem.Enabled = mSelectedNode != null && mHoveredDEdge != null && mHoveredDEdge.Edge.UserData is string;
+            attachEdgeMenuItem.Text = "Set as in_edge" + (attachEdgeMenuItem.Enabled ? " of " + mSelectedNode.Name : "");
+            attachEdgeMenuItem.Tag = mHoveredDEdge.Edge.UserData;  // Lame. Things are unhovered when we click, so remember our target.
+        }
+
+        private void encounterGraphContextMenu_Closed(object sender, ToolStripDropDownClosedEventArgs e)
+        {
+            // We might have left the graph by now, but encounterGraphContextMenu_MouseEnter applied hover
+            // styles which graphViewer_MouseLeave didn't get a chance to undo.
+            UpdateHoveredObjects(graphViewer.ObjectUnderMouseCursor);
+        }
+
+        private void encounterGraphContextMenu_MouseEnter(object sender, EventArgs e)
+        {
+            // Undo the deselection done by graphViewer_MouseLeave, but don't select new things if something is already selected on subsequence MouseEnters.
+            UpdateHoveredObjects((IViewerObject)mHoveredDNode ?? mHoveredDEdge ?? graphViewer.ObjectUnderMouseCursor);
+        }
+
+        private void attachEdgeMenuItem_Click(object sender, EventArgs e)
+        {
+            mSelectedNode.NodeData.NodeFile.Json["in_edge"] = attachEdgeMenuItem.Tag as string;
+            mSelectedNode.IsModified = true;
+            GameMasterDataManager.GetInstance().SaveModifiedFiles();
+            GameMasterDataManager.GetInstance().RefreshGraph(this);
         }
     }
 }
