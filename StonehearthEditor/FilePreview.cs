@@ -198,7 +198,7 @@ namespace StonehearthEditor
 
                 if (contextParsingPosition >= 0 && textBox.Text[contextParsingPosition] == ':')
                 {
-                    var context = jsonSuggester.ParseOutContext(contextParsingPosition + 1);
+                    var context = jsonSuggester.ParseOutContext(contextParsingPosition + 1, 0);
                     if (context.IsValid)
                     {
                         var targetSchemas = JsonSchemaTools.GetSchemasForPath(jsonValidationSchema, context.Path, context.ObjectAroundCursor, context.ActivePropertyName);

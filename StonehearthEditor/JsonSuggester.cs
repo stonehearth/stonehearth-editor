@@ -60,7 +60,7 @@ namespace StonehearthEditor
 
         private IEnumerable<AutocompleteItem> BuildList()
         {
-            var context = ParseOutContext(menu.Fragment.Start + 1);
+            var context = ParseOutContext(menu.Fragment.Start + 1, menu.Fragment.Text.Length - 1);
             if (!context.IsValid)
             {
                 yield break;
@@ -265,17 +265,25 @@ namespace StonehearthEditor
             }
 
             // Sort properties with hardcoded values (e.g. type: foo) first within each section.
+            // Also, sort already existing properties later.
             foreach (var section in sections)
             {
                 section.Value.Sort((a, b) =>
                 {
-                    if (a.MenuText.Contains(':') == b.MenuText.Contains(':'))
+                    var pa = a as PropertySuggestItem;
+                    var pb = b as PropertySuggestItem;
+
+                    if (pa.isAlreadyExisting != pb.isAlreadyExisting)
                     {
-                        return a.MenuText.CompareTo(b.MenuText);
+                        return pa.isAlreadyExisting ? 1 : -1;
+                    }
+                    if (a.MenuText.Contains(':') != b.MenuText.Contains(':'))
+                    {
+                        return a.MenuText.Contains(':') ? -1 : 1;
                     }
                     else
                     {
-                        return a.MenuText.Contains(':') ? -1 : 1;
+                        return a.MenuText.CompareTo(b.MenuText);
                     }
                 });
             }
@@ -292,35 +300,31 @@ namespace StonehearthEditor
             {
                 foreach (var propertyDef in curSchema.ActualProperties)
                 {
-                    if (contextObject.Property(propertyDef.Key) == null)
-                    {
-                        yield return new PropertySuggestItem(propertyDef.Key, propertyDef.Value.ActualPropertySchema);
-                        yieldedAny = true;
-                    }
+                    yield return new PropertySuggestItem(propertyDef.Key, propertyDef.Value.ActualPropertySchema, contextObject.Property(propertyDef.Key) != null);
+                    yieldedAny = true;
                 }
             } while ((curSchema = curSchema.InheritedSchema) != null);
 
             if (!yieldedAny && annotatedSchema.Schema.PatternProperties.Count > 0)
             {
-                yield return new PropertySuggestItem("", annotatedSchema.Schema.PatternProperties.First().Value);
+                yield return new PropertySuggestItem("", annotatedSchema.Schema.PatternProperties.First().Value, false);
             }
         }
 
-        public Context ParseOutContext(int position)
+        public Context ParseOutContext(int contextPosition, int toSkip)
         {
             var result = default(Context);
-            result.IsValid = true;
 
             // Parse JSON until the the current position (or until earlier failure), constructing a path.
-            result.Path = new List<string>();
+            var path = new List<string>();
             var currentJsonStack = new List<JToken>();
             string lastProperty = null;
             var lastPosition = 0;
-            var reader = new JsonTextReader(new StringReader(textBox.Text.Substring(0, position)));
+            var reader = new JsonTextReader(new StringReader(textBox.Text.Substring(0, contextPosition) + ' ' + textBox.Text.Substring(contextPosition + toSkip)));
+            var isDone = false;
             while (true)
             {
-                // TODO: To see existing properties beyond the cursor, we need to skip the
-                //       invoking characters and continue parsing until the end of the current object.
+                // Read the next JSON token.
                 try
                 {
                     if (!reader.Read())
@@ -331,30 +335,33 @@ namespace StonehearthEditor
                 catch (JsonReaderException)
                 {
                     // It's natural that sometimes the JSON will be broken.
-                    // However, if it's before the current line, we can't trust our context.
-                    var readerLineNumber = reader.LineNumber - 1;  // Convert to 0-based to match textBox.
-                    if (readerLineNumber < textBox.CurrentLine)
+                    // However, if it's before the caret line, we can't trust our context.
+                    if (!isDone)
                     {
-                        result.IsValid = false;
-                        return result;
-                    }
-                    else
-                    {
-                        // Make sure we aren't within a string.
-                        var unparsed = textBox.Text.Substring(lastPosition, position - lastPosition);
-                        if (unparsed.Count(c => c == '"') % 2 == 1)
+                        var readerLineNumber = reader.LineNumber - 1;  // Convert to 0-based to match textBox.
+                        if (readerLineNumber < textBox.CurrentLine)
                         {
-                            // An odd number of quotes means we are probably inside a string (they could be escaped, but this is good enough).
                             result.IsValid = false;
-                            return result;
+                        }
+                        else
+                        {
+                            // Make sure we aren't within a string.
+                            var unparsed = textBox.Text.Substring(lastPosition, contextPosition - lastPosition);
+                            if (unparsed.Count(c => c == '"') % 2 == 1)
+                            {
+                                // An odd number of quotes means we are probably inside a string (they could be escaped, but this is good enough).
+                                result.IsValid = false;
+                            }
                         }
                     }
 
                     break;
                 }
 
+                // Remember the location until which we've read.
                 lastPosition = textBox.Lines[reader.LineNumber - 1].Position + reader.LinePosition;
 
+                // The first time we enter, we create the top level object.
                 if (result.KnownJson == null)
                 {
                     if (reader.TokenType == JsonToken.StartObject)
@@ -366,12 +373,13 @@ namespace StonehearthEditor
                     {
                         // We only allow objects at the top level.
                         result.IsValid = false;
-                        return result;
+                        break;
                     }
 
                     continue;
                 }
 
+                // Helper to set the value in the current object or array.
                 Action<JToken> addNewEntryToCurrentObjectOrArray = (value) =>
                 {
                     var target = currentJsonStack.Last();
@@ -385,20 +393,21 @@ namespace StonehearthEditor
                     }
                 };
 
+                // Token-specific logic.
                 switch (reader.TokenType)
                 {
                     case JsonToken.StartObject:
                         var newObject = new JObject();
                         addNewEntryToCurrentObjectOrArray(newObject);
                         currentJsonStack.Add(newObject);
-                        result.Path.Add(lastProperty ?? "0");
+                        path.Add(lastProperty ?? "0");
                         lastProperty = null;
                         break;
                     case JsonToken.StartArray:
                         var newArray = new JArray();
                         addNewEntryToCurrentObjectOrArray(newArray);
                         currentJsonStack.Add(newArray);
-                        result.Path.Add(lastProperty ?? "0");
+                        path.Add(lastProperty ?? "0");
                         lastProperty = null;
                         break;
                     case JsonToken.PropertyName:
@@ -412,8 +421,13 @@ namespace StonehearthEditor
                         break;
                     case JsonToken.EndObject:
                     case JsonToken.EndArray:
+                        if (isDone)
+                        {
+                            return result;
+                        }
+
                         currentJsonStack.RemoveAt(currentJsonStack.Count - 1);
-                        result.Path.RemoveAt(result.Path.Count - 1);
+                        path.RemoveAt(path.Count - 1);
                         break;
                     case JsonToken.Integer:
                     case JsonToken.Float:
@@ -439,23 +453,31 @@ namespace StonehearthEditor
                     default:
                         break;
                 }
-            }
 
-            result.ObjectAroundCursor = currentJsonStack.Count > 0 ? currentJsonStack.Last() : null;
-            result.IsSuggestingValue = Regex.IsMatch(textBox.Text.Substring(0, position), @":\s*$") || currentJsonStack.Last() is JArray;
-            if (result.IsSuggestingValue)
-            {
-                if (lastProperty != null)
+                // As soon as we pass the context location, set our result. We continue just so that ObjectAroundCursor can be filled.
+                if (!isDone && lastPosition >= contextPosition)
                 {
-                    result.ActivePropertyName = lastProperty;
-                }
-                else if (currentJsonStack.Last() is JArray)
-                {
-                    result.ActivePropertyName = "0";  // We assume arrays are homogeneous, so all items are equivalent to [0].
-                }
-                else
-                {
-                    result.IsValid = false;
+                    result.Path = new List<string>(path);
+                    result.ObjectAroundCursor = currentJsonStack.Count > 0 ? currentJsonStack.Last() : null;
+                    result.IsSuggestingValue = Regex.IsMatch(textBox.Text.Substring(0, contextPosition), @":\s*$") || currentJsonStack.Last() is JArray;
+                    result.IsValid = true;
+                    if (result.IsSuggestingValue)
+                    {
+                        if (lastProperty != null)
+                        {
+                            result.ActivePropertyName = lastProperty;
+                        }
+                        else if (currentJsonStack.Last() is JArray)
+                        {
+                            result.ActivePropertyName = "0";  // We assume arrays are homogeneous, so all items are equivalent to [0].
+                        }
+                        else
+                        {
+                            result.IsValid = false;
+                        }
+                    }
+
+                    isDone = true;
                 }
             }
 
@@ -475,10 +497,13 @@ namespace StonehearthEditor
         // A suggest list entry for the property of an object.
         internal class PropertySuggestItem : AutocompleteItem
         {
-            public PropertySuggestItem(string name, JsonSchema4 schema)
+            internal bool isAlreadyExisting;
+
+            public PropertySuggestItem(string name, JsonSchema4 schema, bool isAlreadyExisting)
             {
+                this.isAlreadyExisting = isAlreadyExisting;
                 MenuText = string.IsNullOrEmpty(name) ? schema.Title : name;
-                ToolTipTitle = schema.Title ?? name;
+                ToolTipTitle = (schema.Title ?? name) + (isAlreadyExisting ? " (already exists)" : "");
                 ToolTipText = schema.Description ?? JsonSchemaTools.DescribeSchema(schema);
                 Text = "\"" + name + "\": ";
                 if (schema.Enumeration.Count == 1)
@@ -486,6 +511,15 @@ namespace StonehearthEditor
                     var value = JsonSchemaTools.FormatEnumValue(schema.Enumeration.First());
                     MenuText += ": " + value;
                     Text += value;
+                }
+            }
+
+            public override void OnPaint(PaintItemEventArgs e)
+            {
+                var color = isAlreadyExisting ? System.Drawing.Color.Gray : e.IsSelected ? e.Colors.SelectedForeColor : e.Colors.ForeColor;
+                using (var brush = new System.Drawing.SolidBrush(color))
+                {
+                    e.Graphics.DrawString(ToString(), e.Font, brush, e.TextRect, e.StringFormat);
                 }
             }
 
