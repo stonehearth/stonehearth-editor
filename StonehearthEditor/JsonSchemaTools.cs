@@ -339,16 +339,22 @@ namespace StonehearthEditor
             return CleanAndDedupeSchemas(currentSchemas);
         }
 
-        public static ICollection<AnnotatedSchema> CleanAndDedupeSchemas(List<JsonSchema4> schemas)
+        public static ICollection<AnnotatedSchema> CleanAndDedupeSchemas(ICollection<JsonSchema4> schemas)
         {
             var result = new Dictionary<JsonSchema4, AnnotatedSchema>();
             foreach (var currentSchema in schemas)
             {
-                var alternatives = (currentSchema.ActualSchema.AnyOf.Count > 0) ? currentSchema.ActualSchema.AnyOf : new JsonSchema4[] { currentSchema };
-                foreach (var alternative in alternatives)
+                if (currentSchema.ActualSchema.AnyOf.Count > 0)
+                {
+                    foreach (var alternativeResult in CleanAndDedupeSchemas(currentSchema.ActualSchema.AnyOf))
+                    {
+                        result[alternativeResult.Schema] = alternativeResult;
+                    }
+                }
+                else
                 {
                     AnnotatedSchema entry = new AnnotatedSchema();
-                    entry.Schema = alternative.ActualSchema;
+                    entry.Schema = currentSchema.ActualSchema;
                     entry.Title = currentSchema.Title ?? entry.Schema.Title;
                     entry.Description = currentSchema.Description ?? entry.Schema.Description;
                     if (currentSchema is JsonProperty)
