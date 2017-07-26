@@ -172,24 +172,26 @@ namespace StonehearthEditor
                     if (multiError != null)
                     {
                         int minNumSubErrors = int.MaxValue;
-                        ICollection<NJSValidationError> bestSubErrorsList = null;
+                        var bestSubErrors = new List<NJSValidationError>();
                         foreach (var subErrors in multiError.Errors)
                         {
-                            if (subErrors.Value.Count <= minNumSubErrors)
+                            if (subErrors.Value.Count < minNumSubErrors)
                             {
-                                bestSubErrorsList = subErrors.Value;
-                                minNumSubErrors = bestSubErrorsList.Count;
+                                bestSubErrors.Clear();
+                                bestSubErrors.AddRange(subErrors.Value);
+                                minNumSubErrors = subErrors.Value.Count;
+                            }
+                            else if (subErrors.Value.Count == minNumSubErrors)
+                            {
+                                bestSubErrors.AddRange(subErrors.Value);
                             }
                         }
 
-                        if (bestSubErrorsList != null)
+                        foreach (var rawSubError in bestSubErrors)
                         {
-                            foreach (var rawSubError in bestSubErrorsList)
+                            foreach (var subError in GenerateErrorMessages(rawSubError))
                             {
-                                foreach (var subError in GenerateErrorMessages(rawSubError))
-                                {
-                                    yield return subError;
-                                }
+                                yield return subError;
                             }
                         }
                     }

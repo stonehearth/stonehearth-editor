@@ -70,164 +70,227 @@ namespace StonehearthEditor
                 yield break;
             }
 
-            if (context.IsSuggestingValue)
+            List<KeyValuePair<AnnotatedSchema, List<AutocompleteItem>>> sections =
+                context.IsSuggestingValue ? SuggestValues(targetSchemas) :
+                                            SuggestProperties(context.ObjectAroundCursor as JObject ?? new JObject(), targetSchemas);
+
+            if (sections.Count == 1 || sections.All(p => p.Value.Count == 1))
             {
-                foreach (var item in SuggestValues(targetSchemas))
+                // No headers/dividers required.
+                foreach (var section in sections)
                 {
-                    yield return item;
+                    foreach (var item in section.Value)
+                    {
+                        yield return item;
+                    }
                 }
             }
             else
             {
-                foreach (var item in SuggestProperties(context.ObjectAroundCursor as JObject ?? new JObject(), targetSchemas))
+                // Add headers to sections.
+                foreach (var section in sections)
                 {
-                    yield return item;
+                    if (section.Value.Count == 1)
+                    {
+                        yield return section.Value.First();
+                    }
+                    else
+                    {
+                        yield return new HeaderItem(section.Key.Title);
+                        foreach (var item in section.Value)
+                        {
+                            item.MenuText = "   " + item.MenuText;
+                            yield return item;
+                        }
+                    }
                 }
             }
         }
 
-        private IEnumerable<AutocompleteItem> SuggestValues(ICollection<AnnotatedSchema> annotatedSchemas)
+        private List<KeyValuePair<AnnotatedSchema, List<AutocompleteItem>>> SuggestValues(ICollection<AnnotatedSchema> annotatedSchemas)
         {
-            var yieldedAny = false;
+            var sections = new List<KeyValuePair<AnnotatedSchema, List<AutocompleteItem>>>();
             foreach (var annotatedSchema in annotatedSchemas)
             {
-                // Add a divider between schema alternatives.
-                if (yieldedAny)
+                var items = SuggestValues(annotatedSchema).ToList();
+                if (items.Count > 0)
                 {
-                    yield return new DividerItem();
+                    sections.Add(new KeyValuePair<AnnotatedSchema, List<AutocompleteItem>>(annotatedSchema, items));
+                }
+            }
+            return sections;
+        }
+
+        private IEnumerable<AutocompleteItem> SuggestValues(AnnotatedSchema annotatedSchema)
+        {
+            // Help text.
+            var title = annotatedSchema.Title ?? annotatedSchema.Name;
+            var description = annotatedSchema.Description ?? JsonSchemaTools.DescribeSchema(annotatedSchema);
+
+            var targetSchema = annotatedSchema.Schema;
+            if (targetSchema.Id != null && customSourcesBySchemeId.ContainsKey(targetSchema.Id))
+            {
+                // Special handling for sources set by the environment (edge names, node names, files, etc.).
+                foreach (var value in customSourcesBySchemeId[targetSchema.Id]())
+                {
+                    yield return new ValueSuggestItem(value, title != null ? title + ": " + value : value, description);
+                }
+            }
+            else if (targetSchema.Id == "http://stonehearth.net/schemas/encounters/elements/file.json")
+            {
+                // Special handling for files (alias or file insertion prompts).
+                yield return new AliasSuggestItem(title, description);
+                yield return new FileSuggestItem(title, description, filePath);
+            }
+            else if (targetSchema.Enumeration.Count > 0)
+            {
+                // Suggest enumeration alternatives.
+                foreach (var alternative in targetSchema.Enumeration)
+                {
+                    yield return new ValueSuggestItem(JsonSchemaTools.FormatEnumValue(alternative), title, description);
+                }
+            }
+            else if (targetSchema.Type == JsonObjectType.Boolean)
+            {
+                // Suggest the two alternatives of bool.
+                yield return new ValueSuggestItem("true", title, description);
+                yield return new ValueSuggestItem("false", title, description);
+            }
+            else if (targetSchema.Default != null)
+            {
+                // If there's a default value, suggest that.
+                yield return new ValueSuggestItem(JsonSchemaTools.FormatEnumValue(targetSchema.Default), title, description);
+            }
+            else if (targetSchema.Type == JsonObjectType.Object || targetSchema.ActualProperties.Count > 0)
+            {
+                // Construct as much of an object as required.
+                var left = "{\n   ";
+                var right = "\n}";
+                var addedAnyToLeft = false;
+                foreach (var property in targetSchema.ActualProperties)
+                {
+                    if (property.Value.IsRequired)
+                    {
+                        if (addedAnyToLeft) left += ",\n   ";
+                        left += "\"" + property.Key + "\": ";
+
+                        if (property.Value.Default != null)
+                        {
+                            left += JsonSchemaTools.FormatEnumValue(property.Value.Default);
+                        }
+                        else if (property.Value.Enumeration.Count == 1)
+                        {
+                            left += JsonSchemaTools.FormatEnumValue(property.Value.Enumeration.First());
+                        }
+                        else if (property.Value.Type == JsonObjectType.Number || property.Value.Type == JsonObjectType.Integer)
+                        {
+                            left += "0";
+                        }
+                        else if (property.Value.Type == JsonObjectType.Boolean)
+                        {
+                            left += "false";
+                        }
+                        else if (property.Value.Type == JsonObjectType.Null)
+                        {
+                            left += "null";
+                        }
+                        else if (property.Value.Type == JsonObjectType.Object)
+                        {
+                            left += "{}";
+                        }
+                        else if (property.Value.Type == JsonObjectType.Array)
+                        {
+                            left += "[]";
+                        }
+                        else if (property.Value.Type == JsonObjectType.String)
+                        {
+                            left += "\"\"";
+                        }
+
+                        addedAnyToLeft = true;
+                    }
                 }
 
-                yieldedAny = true;
-
-                // Help text.
-                var title = annotatedSchema.Title ?? annotatedSchema.Name;
-                var description = annotatedSchema.Description ?? JsonSchemaTools.DescribeSchema(annotatedSchema);
-
-                var targetSchema = annotatedSchema.Schema;
-                if (targetSchema.Id != null && customSourcesBySchemeId.ContainsKey(targetSchema.Id))
+                if (addedAnyToLeft)
                 {
-                    // Special handling for sources set by the environment (edge names, node names, files, etc.).
-                    yieldedAny = false;
-                    foreach (var value in customSourcesBySchemeId[targetSchema.Id]())
+                    right = "," + right;
+                }
+
+                yield return new ValueSuggestItem(left, right, title, description);
+            }
+            else if (targetSchema.Type == JsonObjectType.Array)
+            {
+                // Trivial array form.
+                yield return new ValueSuggestItem("[\n   ", "\n]", title, description);
+            }
+            else if (targetSchema.Type == JsonObjectType.String)
+            {
+                // Trivial string form.
+                yield return new ValueSuggestItem("\"", "\"", title ?? "\"...\"", description);
+            }
+            else if (targetSchema.Type == JsonObjectType.Number || targetSchema.Type == JsonObjectType.Integer)
+            {
+                // Trivial number.
+                yield return new ValueSuggestItem((targetSchema.Minimum ?? 0).ToString(), title, description);
+            }
+            else if (targetSchema.Type == JsonObjectType.Null)
+            {
+                // Null has only one option.
+                yield return new ValueSuggestItem("null", title, description);
+            }
+        }
+
+        private List<KeyValuePair<AnnotatedSchema, List<AutocompleteItem>>> SuggestProperties(JObject contextObject, ICollection<AnnotatedSchema> annotatedSchemas)
+        {
+            var sections = new List<KeyValuePair<AnnotatedSchema, List<AutocompleteItem>>>();
+            foreach (var annotatedSchema in annotatedSchemas)
+            {
+                var items = SuggestProperties(contextObject, annotatedSchema).ToList();
+                if (items.Count > 0)
+                {
+                    sections.Add(new KeyValuePair<AnnotatedSchema, List<AutocompleteItem>>(annotatedSchema, items));
+                }
+            }
+
+            // Sort properties with hardcoded values (e.g. type: foo) first within each section.
+            foreach (var section in sections)
+            {
+                section.Value.Sort((a, b) =>
+                {
+                    if (a.MenuText.Contains(':') == b.MenuText.Contains(':'))
                     {
-                        yield return new ValueSuggestItem(value, title != null ? title + ": " + value : value, description);
+                        return a.MenuText.CompareTo(b.MenuText);
+                    }
+                    else
+                    {
+                        return a.MenuText.Contains(':') ? -1 : 1;
+                    }
+                });
+            }
+
+            return sections;
+        }
+
+        private IEnumerable<AutocompleteItem> SuggestProperties(JObject contextObject, AnnotatedSchema annotatedSchema)
+        {
+            var yieldedAny = false;
+
+            var curSchema = annotatedSchema.Schema;
+            do
+            {
+                foreach (var propertyDef in curSchema.ActualProperties)
+                {
+                    if (contextObject.Property(propertyDef.Key) == null)
+                    {
+                        yield return new PropertySuggestItem(propertyDef.Key, propertyDef.Value.ActualPropertySchema);
                         yieldedAny = true;
                     }
                 }
-                else if (targetSchema.Id == "http://stonehearth.net/schemas/encounters/elements/file.json")
-                {
-                    // Special handling for files (alias or file insertion prompts).
-                    yield return new AliasSuggestItem(title, description);
-                    yield return new FileSuggestItem(title, description, filePath);
-                }
-                else if (targetSchema.Enumeration.Count > 0)
-                {
-                    // Suggest enumeration alternatives.
-                    foreach (var alternative in targetSchema.Enumeration)
-                    {
-                        yield return new ValueSuggestItem(JsonSchemaTools.FormatEnumValue(alternative), title, description);
-                    }
-                }
-                else if (targetSchema.Type == JsonObjectType.Boolean)
-                {
-                    // Suggest the two alternatives of bool.
-                    yield return new ValueSuggestItem("true", title, description);
-                    yield return new ValueSuggestItem("false", title, description);
-                }
-                else if (targetSchema.Default != null)
-                {
-                    // If there's a default value, suggest that.
-                    yield return new ValueSuggestItem(JsonSchemaTools.FormatEnumValue(targetSchema.Default), title, description);
-                }
-                else if (targetSchema.Type == JsonObjectType.Object || targetSchema.ActualProperties.Count > 0)
-                {
-                    // Construct as much of an object as required.
-                    var left = "{\n   ";
-                    var right = "\n}";
-                    var addedAnyToLeft = false;
-                    var toAddOnLeft = 1;
-                    foreach (var property in targetSchema.ActualProperties)
-                    {
-                        if (property.Value.IsRequired)
-                        {
-                            var propertyText = "\"" + property.Key + "\": ";
-                            if (property.Value.Enumeration.Count == 1)
-                            {
-                                propertyText += JsonSchemaTools.FormatEnumValue(property.Value.Enumeration.First());
-                                toAddOnLeft++;  // Keep adding required properties before the cursor.
-                            }
+            } while ((curSchema = curSchema.InheritedSchema) != null);
 
-                            if (toAddOnLeft > 0)
-                            {
-                                addedAnyToLeft = true;
-                                toAddOnLeft--;
-                                left += propertyText;
-                                if (toAddOnLeft > 0)
-                                {
-                                    left += ",\n   ";
-                                }
-                            }
-                            else
-                            {
-                                right = "\n   " + propertyText + "," + right;
-                            }
-                        }
-                    }
-
-                    if (addedAnyToLeft)
-                    {
-                        right = "," + right;
-                    }
-
-                    yield return new ValueSuggestItem(left, right, title, description);
-                }
-                else if (targetSchema.Type == JsonObjectType.Array)
-                {
-                    // Trivial array form.
-                    yield return new ValueSuggestItem("[\n   ", "\n]", title, description);
-                }
-                else if (targetSchema.Type == JsonObjectType.String)
-                {
-                    // Trivial string form.
-                    yield return new ValueSuggestItem("\"", "\"", title ?? "\"...\"", description);
-                }
-                else
-                {
-                    yieldedAny = false;
-                }
-            }
-        }
-
-        private IEnumerable<AutocompleteItem> SuggestProperties(JObject contextObject, ICollection<AnnotatedSchema> annotatedSchemas)
-        {
-            var yieldedAny = false;
-            foreach (var annotatedSchema in annotatedSchemas)
+            if (!yieldedAny && annotatedSchema.Schema.PatternProperties.Count > 0)
             {
-                if (yieldedAny)
-                {
-                    yield return new DividerItem();
-                }
-
-                yieldedAny = false;
-
-                var curSchema = annotatedSchema.Schema;
-                do
-                {
-                    foreach (var propertyDef in curSchema.ActualProperties)
-                    {
-                        if (contextObject.Property(propertyDef.Key) == null)
-                        {
-                            yield return new PropertySuggestItem(propertyDef.Key, propertyDef.Value.ActualPropertySchema);
-                            yieldedAny = true;
-                        }
-                    }
-                } while ((curSchema = curSchema.InheritedSchema) != null);
-
-                if (!yieldedAny && annotatedSchema.Schema.PatternProperties.Count > 0)
-                {
-                    yield return new PropertySuggestItem("", annotatedSchema.Schema.PatternProperties.First().Value);
-                    yieldedAny = true;
-                }
+                yield return new PropertySuggestItem("", annotatedSchema.Schema.PatternProperties.First().Value);
             }
         }
 
@@ -328,6 +391,12 @@ namespace StonehearthEditor
                         break;
                     case JsonToken.PropertyName:
                         lastProperty = reader.Value as string;
+                        if (lastProperty.Length == 0)
+                        {
+                            result.IsValid = false;
+                            return result;
+                        }
+
                         break;
                     case JsonToken.EndObject:
                     case JsonToken.EndArray:
@@ -360,7 +429,7 @@ namespace StonehearthEditor
                 }
             }
 
-            result.ObjectAroundCursor = result.KnownJson.SelectToken(string.Join(".", result.Path));
+            result.ObjectAroundCursor = currentJsonStack.Count > 0 ? currentJsonStack.Last() : null;
             result.IsSuggestingValue = Regex.IsMatch(textBox.Text.Substring(0, position), @":\s*$") || currentJsonStack.Last() is JArray;
             if (result.IsSuggestingValue)
             {
@@ -588,13 +657,25 @@ namespace StonehearthEditor
             }
         }
 
-        // A suggest list entry with no text to divide between sections.
-        internal class DividerItem : AutocompleteItem
+        // An unselectable suggest list entry used as a header for sections.
+        internal class HeaderItem : AutocompleteItem
         {
-            public DividerItem()
+            private const int kLength = 40;
+            private const char kLineChar = '═';  // ASCII 205, double horizontal line.
+
+            public HeaderItem()
+                : this(null)
             {
-                MenuText = "---------------------------------------";
+            }
+
+            public HeaderItem(string title)
+            {
                 ToolTipTitle = ToolTipText = Text = null;
+                MenuText = new string(kLineChar, kLength);
+                if (title != null)
+                {
+                    MenuText = new string(kLineChar, (kLength - 2 - title.Length) / 2) + ' ' + title + ' ' + MenuText;
+                }
             }
 
             public override bool CanBeSelected()
