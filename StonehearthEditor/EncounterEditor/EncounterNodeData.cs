@@ -5,7 +5,6 @@ using Microsoft.Msagl.Drawing;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Image = System.Drawing.Image;
-using static StonehearthEditor.EncounterNodeRenderer;
 
 namespace StonehearthEditor
 {
@@ -177,7 +176,7 @@ namespace StonehearthEditor
         {
             base.UpdateGraphNode(graphNode);
 
-            NodeDisplaySettings settings = graphNode.UserData as NodeDisplaySettings;
+            var settings = graphNode.UserData as EncounterNodeRenderer.NodeDisplaySettings;
 
             switch (mEncounterType)
             {

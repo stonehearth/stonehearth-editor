@@ -20,6 +20,8 @@ namespace StonehearthEditor
             public System.Drawing.Image Icon;
             public bool HasUnsavedChanges;
             public bool HasErrors;
+            public bool IsHighlighted;
+            public bool IsFadedOut;
         }
 
         public static void SetupNodeRendering(DrawingNode node)
@@ -62,9 +64,9 @@ namespace StonehearthEditor
             var x = (float)(node.GeometryNode.Center.X - (node.GeometryNode.Width / 2) + (node.Attr.LabelMargin / 2));
             var y = (float)(node.GeometryNode.Center.Y - (kIconSize / 2));
 
-            // Apply foreground color alpha to the icon.
+            // Apply fade-out alpha to the icon.
             ColorMatrix colorMatrix = new ColorMatrix();
-            colorMatrix.Matrix33 = node.Attr.Color.A / 255.0f;
+            colorMatrix.Matrix33 = settings.IsFadedOut ? 0.5f : 1.0f;
             ImageAttributes imageAttributes = new ImageAttributes();
             imageAttributes.SetColorMatrix(colorMatrix);
 
@@ -76,7 +78,16 @@ namespace StonehearthEditor
         private static void DrawLabel(Graphics g, DrawingNode node)
         {
             var label = node.Label;
-            var brush = new SolidBrush(Draw.MsaglColorToDrawingColor(label.FontColor));
+            var settings = node.UserData as NodeDisplaySettings;
+
+            var labelColor = Draw.MsaglColorToDrawingColor(label.FontColor);
+            if (settings.IsFadedOut)
+            {
+                labelColor = Color.FromArgb(128, labelColor.R, labelColor.G, labelColor.B);
+            }
+
+            var brush = new SolidBrush(labelColor);
+
             var font = new Font(label.FontName, (float)label.FontSize, (System.Drawing.FontStyle)(int)label.FontStyle);
             var bbox = node.GeometryNode.BoundingBox;
             var rect = new RectangleF((float)bbox.Left, (float)bbox.Bottom - node.Attr.LabelMargin, (float)bbox.Width, (float)bbox.Height);
@@ -142,27 +153,69 @@ namespace StonehearthEditor
 
         private static void DrawBox(Graphics g, DrawingNode drNode)
         {
-            var settings = drNode.UserData as NodeDisplaySettings;
-            var pen = new Pen(settings.HasErrors ? Color.Red : Draw.MsaglColorToDrawingColor(drNode.Attr.Color),
-                              (float)drNode.Attr.LineWidth + (settings.HasErrors ? 2 : 0));
             NodeAttr nodeAttr = drNode.Attr;
+            var settings = drNode.UserData as NodeDisplaySettings;
+
+            // Create the shape.
             var width = (float)drNode.Width;
             var height = (float)drNode.Height;
             var xRadius = (float)nodeAttr.XRadius;
             var yRadius = (float)nodeAttr.YRadius;
             var path = new GraphicsPath();
             FillTheGraphicsPath(drNode, width, height, ref xRadius, ref yRadius, path);
-            Brush brush;
-            Color fc = Draw.MsaglColorToDrawingColor(nodeAttr.FillColor);
-            if (settings.HasUnsavedChanges)
+
+            // Select line width.
+            var lineWidth = (float)drNode.Attr.LineWidth;
+            if (settings.HasErrors)
             {
-                brush = new HatchBrush(HatchStyle.DiagonalCross, Color.FromArgb(160, 160, 165), fc);
+                lineWidth += 2;
+            }
+
+            if (settings.IsHighlighted)
+            {
+                lineWidth += 2;
+            }
+
+            // Set up line pen.
+            Color lineColor;
+            if (settings.HasErrors)
+            {
+                lineColor = Color.Red;
+            }
+            else if (settings.IsHighlighted)
+            {
+                lineColor = Color.Blue;
             }
             else
             {
-                brush = new SolidBrush(fc);
+                lineColor = Draw.MsaglColorToDrawingColor(drNode.Attr.Color);
             }
 
+            if (settings.IsFadedOut)
+            {
+                lineColor = Color.FromArgb(128, lineColor.R, lineColor.G, lineColor.B);
+            }
+
+            var pen = new Pen(lineColor, lineWidth);
+
+            // Set up fill brush.
+            Brush brush;
+            Color fillColor = Draw.MsaglColorToDrawingColor(nodeAttr.FillColor);
+            if (settings.IsFadedOut)
+            {
+                fillColor = Color.FromArgb(128, fillColor.R, fillColor.G, fillColor.B);
+            }
+
+            if (settings.HasUnsavedChanges)
+            {
+                brush = new HatchBrush(HatchStyle.DiagonalCross, Color.FromArgb(160, 160, 165), fillColor);
+            }
+            else
+            {
+                brush = new SolidBrush(fillColor);
+            }
+
+            // Paint.
             g.FillPath(brush, path);
             g.DrawPath(pen, path);
         }

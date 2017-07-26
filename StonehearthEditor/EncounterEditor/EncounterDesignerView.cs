@@ -329,33 +329,22 @@ namespace StonehearthEditor
 
         private void SetBranchFocused(DNode root, bool highlighted)
         {
-            // TODO: The specific styling choices should be handled by EncounterNodeRenderer (and an EncounterEdgeRenderer)
-            //       rather than set explicitly here.
+            // TODO: Apply edge styles via an EncounterEdgeRenderer.
             // Fade out (or restore) all nodes and edges that are not in the focused branch.
             var toHighlight = FindAllConnectedObjects(root);
-            var desiredAlpha = highlighted ? (byte)128 : (byte)255;
             foreach (var edgeOrNode in graphViewer.Entities)
             {
                 if (!toHighlight.Contains(edgeOrNode))
                 {
                     if (edgeOrNode is IViewerNode)
                     {
-                        Color color = (edgeOrNode as IViewerNode).Node.Attr.FillColor;
-                        color.A = desiredAlpha;
-                        (edgeOrNode as IViewerNode).Node.Attr.FillColor = color;
-
-                        color = (edgeOrNode as IViewerNode).Node.Attr.Color;
-                        color.A = desiredAlpha;
-                        (edgeOrNode as IViewerNode).Node.Attr.Color = color;
-
-                        color = (edgeOrNode as IViewerNode).Node.Label.FontColor;
-                        color.A = desiredAlpha;
-                        (edgeOrNode as IViewerNode).Node.Label.FontColor = color;
+                        var settings = (edgeOrNode as IViewerNode).Node.UserData as EncounterNodeRenderer.NodeDisplaySettings;
+                        settings.IsFadedOut = highlighted;
                     }
                     else if (edgeOrNode is IViewerEdge)
                     {
                         Color color = (edgeOrNode as IViewerEdge).Edge.Attr.Color;
-                        color.A = desiredAlpha;
+                        color.A = highlighted ? (byte)128 : (byte)255;
                         (edgeOrNode as IViewerEdge).Edge.Attr.Color = color;
                     }
                 }
@@ -368,24 +357,20 @@ namespace StonehearthEditor
         {
             // Highlight (or restore) all nodes and edges that are not in the highlighted branch.
             var toHighlight = FindAllConnectedObjects(root);
-            var lineWidthDelta = highlighted ? +2 : -2;
-            var desiredBlueChannelValue = highlighted ? (byte)255 : (byte)0;
             foreach (var edgeOrNode in graphViewer.Entities)
             {
                 if (toHighlight.Contains(edgeOrNode))
                 {
                     if (edgeOrNode is IViewerNode)
                     {
-                        (edgeOrNode as IViewerNode).Node.Attr.LineWidth += lineWidthDelta;
-                        var color = (edgeOrNode as IViewerNode).Node.Attr.Color;
-                        color.B = desiredBlueChannelValue;
-                        (edgeOrNode as IViewerNode).Node.Attr.Color = color;
+                        var settings = (edgeOrNode as IViewerNode).Node.UserData as EncounterNodeRenderer.NodeDisplaySettings;
+                        settings.IsHighlighted = highlighted;
                     }
                     else if (edgeOrNode is IViewerEdge)
                     {
-                        (edgeOrNode as IViewerEdge).Edge.Attr.LineWidth += lineWidthDelta;
+                        (edgeOrNode as IViewerEdge).Edge.Attr.LineWidth += highlighted ? +2 : -2;
                         var color = (edgeOrNode as IViewerEdge).Edge.Attr.Color;
-                        color.B = desiredBlueChannelValue;
+                        color.B = highlighted ? (byte)255 : (byte)0;
                         (edgeOrNode as IViewerEdge).Edge.Attr.Color = color;
                     }
                 }
