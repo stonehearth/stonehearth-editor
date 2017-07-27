@@ -25,6 +25,10 @@
          "patternProperties": {
             "": { "$ref": "#/definitions/can_start_test_set" }
          }
+      },
+      "rarity": {
+         "title": "[NOT CURRENTLY USED] The rarity of the encounter. 'rare' encounters are half as likely to be selected as 'common' ones when picking randomly from a node list.",
+         "type": "string"
       }
    },
    "required": [ "type", "in_edge" ],
@@ -254,9 +258,10 @@
                "properties": {
                   "type": { "$ref": "#/definitions/comparison_operator" },
                   "item": { "enum": ["highest_job_level"] },
+                  "job_alias": { "$ref": "elements/file.json" },
                   "value": { "anyOf": [{"type": "number"}, { "$ref": "elements/range.json" }] }
                },
-               "required": [ "item", "type", "value" ],
+               "required": [ "item", "type", "value", "job_alias" ],
                "additionalProperties": false
             },
             {
