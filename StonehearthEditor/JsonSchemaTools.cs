@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NJsonSchema;
+using NJsonSchema.Validation;
 using ChildSchemaValidationError = NJsonSchema.Validation.ChildSchemaValidationError;
 using NJSValidationError = NJsonSchema.Validation.ValidationError;
 using ValidationErrorKind = NJsonSchema.Validation.ValidationErrorKind;
@@ -89,7 +90,7 @@ namespace StonehearthEditor
                                 var zeroBasedLine = error.LineNumber - 1;
                                 if (errors.ContainsKey(zeroBasedLine))
                                 {
-                                    errors[zeroBasedLine] += '\n' + error.Message;
+                                    errors[zeroBasedLine] = error.Message + '\n' + errors[zeroBasedLine];
                                 }
                                 else
                                 {
@@ -155,7 +156,8 @@ namespace StonehearthEditor
                     break;
                 case ValidationErrorKind.NotAnyOf:
                     string validFormats = " Valid formats:";
-                    foreach (var alternativeSchema in error.Schema.AnyOf)
+                    var cleanedAlternatives = CleanAndDedupeSchemas(error.Schema.AnyOf);
+                    foreach (var alternativeSchema in cleanedAlternatives)
                     {
                         validFormats += "\n  ";
                         validFormats += DescribeSchema(alternativeSchema);
@@ -163,7 +165,7 @@ namespace StonehearthEditor
 
                     yield return new ValidationError(error.LineNumber, string.Format(
                         "None of the {0} valid formats for {1} match.{2}",
-                        error.Schema.AnyOf.Count,
+                        cleanedAlternatives.Count,
                         string.IsNullOrEmpty(error.Property) ? "the element" : ("'" + error.Property + "'"),
                         validFormats));
 
@@ -171,17 +173,18 @@ namespace StonehearthEditor
                     var multiError = error as ChildSchemaValidationError;
                     if (multiError != null)
                     {
-                        int minNumSubErrors = int.MaxValue;
+                        var minSubErrorsScore = float.PositiveInfinity;
                         var bestSubErrors = new List<NJSValidationError>();
                         foreach (var subErrors in multiError.Errors)
                         {
-                            if (subErrors.Value.Count < minNumSubErrors)
+                            var curScore = ScoreErrors(subErrors.Value);
+                            if (curScore < minSubErrorsScore)
                             {
                                 bestSubErrors.Clear();
                                 bestSubErrors.AddRange(subErrors.Value);
-                                minNumSubErrors = subErrors.Value.Count;
+                                minSubErrorsScore = curScore;
                             }
-                            else if (subErrors.Value.Count == minNumSubErrors)
+                            else if (curScore == minSubErrorsScore)
                             {
                                 bestSubErrors.AddRange(subErrors.Value);
                             }
@@ -468,21 +471,90 @@ namespace StonehearthEditor
             }
         }
 
-        private static int ScoreSchemaMatch(JsonSchema4 schema, JToken contextObject)
+        private static float ScoreSchemaMatch(JsonSchema4 schema, JToken contextObject)
         {
             if (contextObject is JObject && (schema.Type == JsonObjectType.Object || schema.Type == JsonObjectType.None))
             {
                 var errors = schema.Validate(contextObject).Where(e => e.Kind != ValidationErrorKind.PropertyRequired);
-                return 100 - errors.Count();
+                return 100.0f - ScoreErrors(errors.ToList());
             }
             else if (schema.Type == JsonObjectType.Array && (contextObject is JArray))
             {
-                return 100 - schema.Validate(contextObject).Count;
+                return 100.0f - ScoreErrors(schema.Validate(contextObject));
             }
             else
             {
-                return 0;  // Non-objects can't match.
+                return 0.0f;  // Non-objects can't match.
             }
+        }
+
+        // Lower values mean that it's more likely to be the least "severe" error, i.e. the one closest to the player intent.
+        private static float ScoreErrors(ICollection<NJSValidationError> errors, float weight = 1.0f)
+        {
+            var result = 0.0f;
+            foreach (var error in errors)
+            {
+                var multiError = error as ChildSchemaValidationError;
+                if (multiError != null)
+                {
+                    var subScores = new List<float>();
+                    foreach (var subErrorList in multiError.Errors.Values)
+                    {
+                        subScores.Add(ScoreErrors(subErrorList, weight * 0.5f));
+                    }
+
+                    result += error.Kind == ValidationErrorKind.NotAnyOf ? subScores.Min() * 2.0f : subScores.Sum();
+                }
+                else
+                {
+                    switch (error.Kind)
+                    {
+                        case ValidationErrorKind.IntegerNotMultipleOf:
+                        case ValidationErrorKind.IntegerTooBig:
+                        case ValidationErrorKind.NumberNotMultipleOf:
+                        case ValidationErrorKind.NumberTooBig:
+                        case ValidationErrorKind.NumberTooSmall:
+                        case ValidationErrorKind.PatternMismatch:
+                        case ValidationErrorKind.StringTooLong:
+                        case ValidationErrorKind.StringTooShort:
+                            // These are very specific mistakes, so we're probably on the right path.
+                            weight *= 0.1f;
+                            break;
+                        case ValidationErrorKind.ItemsNotUnique:
+                        case ValidationErrorKind.TooFewItems:
+                        case ValidationErrorKind.TooFewProperties:
+                        case ValidationErrorKind.TooManyItems:
+                        case ValidationErrorKind.TooManyItemsInTuple:
+                        case ValidationErrorKind.TooManyProperties:
+                        case ValidationErrorKind.PropertyRequired:
+                            // These are pretty specific, so it's promising.
+                            weight *= 0.25f;
+                            break;
+                        case ValidationErrorKind.ArrayExpected:
+                        case ValidationErrorKind.BooleanExpected:
+                        case ValidationErrorKind.IntegerExpected:
+                        case ValidationErrorKind.NumberExpected:
+                        case ValidationErrorKind.ObjectExpected:
+                        case ValidationErrorKind.StringExpected:
+                            // Top level type mismatch likely means that this might be irrelevant.
+                            weight *= 2.0f;
+                            break;
+                        case ValidationErrorKind.NotInEnumeration:
+                            if (error.Schema.ActualSchema.Enumeration.Count == 1)
+                            {
+                                // Exact mismatch is less likely to be the error the user is looking for,
+                                // as it is usually an indication of badly matching an alternated type.
+                                weight *= 3.0f;
+                            }
+
+                            break;
+                    }
+
+                    result += weight;
+                }
+            }
+
+            return result;
         }
 
         private static List<JsonSchema4> GuessIntendedSchemas(List<JsonSchema4> schemas, JToken contextObject)
@@ -492,7 +564,7 @@ namespace StonehearthEditor
                 return schemas;
             }
 
-            var bestScore = 0;
+            var bestScore = 0.0f;
             var bestSchemas = new List<JsonSchema4>();
             foreach (var schema in schemas)
             {

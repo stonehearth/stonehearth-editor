@@ -313,9 +313,8 @@ namespace StonehearthEditor
 
         public Context ParseOutContext(int contextPosition, int toSkip)
         {
-            var result = default(Context);
-
             // Parse JSON until the the current position (or until earlier failure), constructing a path.
+            var result = default(Context);
             var path = new List<string>();
             var currentJsonStack = new List<JToken>();
             string lastProperty = null;
@@ -338,10 +337,11 @@ namespace StonehearthEditor
                     // However, if it's before the caret line, we can't trust our context.
                     if (!isDone)
                     {
+                        var isValid = true;
                         var readerLineNumber = reader.LineNumber - 1;  // Convert to 0-based to match textBox.
                         if (readerLineNumber < textBox.CurrentLine)
                         {
-                            result.IsValid = false;
+                            isValid = false;
                         }
                         else
                         {
@@ -350,8 +350,13 @@ namespace StonehearthEditor
                             if (unparsed.Count(c => c == '"') % 2 == 1)
                             {
                                 // An odd number of quotes means we are probably inside a string (they could be escaped, but this is good enough).
-                                result.IsValid = false;
+                                isValid = false;
                             }
+                        }
+
+                        if (isValid && lastPosition >= contextPosition)
+                        {
+                            result = MakeContextResult(contextPosition, currentJsonStack.FirstOrDefault(), path, currentJsonStack, lastProperty);
                         }
                     }
 
@@ -361,18 +366,23 @@ namespace StonehearthEditor
                 // Remember the location until which we've read.
                 lastPosition = textBox.Lines[reader.LineNumber - 1].Position + reader.LinePosition;
 
+                // As soon as we pass the context location, set our result. We continue just so that ObjectAroundCursor can be filled.
+                if (!isDone && lastPosition > contextPosition)
+                {
+                    result = MakeContextResult(contextPosition, currentJsonStack.FirstOrDefault(), path, currentJsonStack, lastProperty);
+                    isDone = true;
+                }
+
                 // The first time we enter, we create the top level object.
-                if (result.KnownJson == null)
+                if (currentJsonStack.Count == 0)
                 {
                     if (reader.TokenType == JsonToken.StartObject)
                     {
-                        result.KnownJson = new JObject();
-                        currentJsonStack.Add(result.KnownJson);
+                        currentJsonStack.Add(new JObject());
                     }
                     else
                     {
                         // We only allow objects at the top level.
-                        result.IsValid = false;
                         break;
                     }
 
@@ -414,8 +424,7 @@ namespace StonehearthEditor
                         lastProperty = reader.Value as string;
                         if (lastProperty.Length == 0)
                         {
-                            result.IsValid = false;
-                            return result;
+                            return default(Context);
                         }
 
                         break;
@@ -447,37 +456,37 @@ namespace StonehearthEditor
                     case JsonToken.StartConstructor:
                     case JsonToken.EndConstructor:
                         // We don't expect to ever see these in valid SH JSON.
-                        result.IsValid = false;
-                        return result;
+                        return default(Context);
                     case JsonToken.Comment:
                     default:
                         break;
                 }
+            }
 
-                // As soon as we pass the context location, set our result. We continue just so that ObjectAroundCursor can be filled.
-                if (!isDone && lastPosition >= contextPosition)
+            return result;
+        }
+
+        private Context MakeContextResult(int contextPosition, JToken topLevelObject, List<string> path, List<JToken> currentJsonStack, string lastProperty)
+        {
+            var result = default(Context);
+            result.KnownJson = topLevelObject as JObject ?? new JObject();
+            result.Path = new List<string>(path);
+            result.ObjectAroundCursor = currentJsonStack.Count > 0 ? currentJsonStack.Last() : null;
+            result.IsSuggestingValue = Regex.IsMatch(textBox.Text.Substring(0, contextPosition), @":\s*$") || currentJsonStack.Last() is JArray;
+            result.IsValid = true;
+            if (result.IsSuggestingValue)
+            {
+                if (lastProperty != null)
                 {
-                    result.Path = new List<string>(path);
-                    result.ObjectAroundCursor = currentJsonStack.Count > 0 ? currentJsonStack.Last() : null;
-                    result.IsSuggestingValue = Regex.IsMatch(textBox.Text.Substring(0, contextPosition), @":\s*$") || currentJsonStack.Last() is JArray;
-                    result.IsValid = true;
-                    if (result.IsSuggestingValue)
-                    {
-                        if (lastProperty != null)
-                        {
-                            result.ActivePropertyName = lastProperty;
-                        }
-                        else if (currentJsonStack.Last() is JArray)
-                        {
-                            result.ActivePropertyName = "0";  // We assume arrays are homogeneous, so all items are equivalent to [0].
-                        }
-                        else
-                        {
-                            result.IsValid = false;
-                        }
-                    }
-
-                    isDone = true;
+                    result.ActivePropertyName = lastProperty;
+                }
+                else if (currentJsonStack.Last() is JArray)
+                {
+                    result.ActivePropertyName = "0";  // We assume arrays are homogeneous, so all items are equivalent to [0].
+                }
+                else
+                {
+                    result.IsValid = false;
                 }
             }
 
