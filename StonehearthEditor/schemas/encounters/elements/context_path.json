@@ -1,0 +1,7 @@
+{
+   "$schema": "http://json-schema.org/draft-04/schema#",
+   "id": "http://stonehearth.net/schemas/encounters/elements/context_path.json",
+   "title": "Context Path",
+   "description": "A reference to an object from another node. E.g. 'create_blue_tier_camp.entities.loot_chest'.",
+   "type": "string"
+}
