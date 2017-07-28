@@ -94,7 +94,7 @@ namespace StonehearthEditor
 
             if (mFileData.TrySetFlatFileData(textBox.Text))
             {
-                OnModifiedChanged?.Invoke(true);
+                OnModifiedChanged?.Invoke(ModuleDataManager.GetInstance().ModifiedFiles.Contains(mFileData));
                 return true;
             }
 
@@ -245,14 +245,14 @@ namespace StonehearthEditor
             mFileData.TrySaveFile();
 
             this.textBox.SetSavePoint();
-            OnModifiedChanged?.Invoke(false);
+            int caretPosition = textBox.SelectionStart;
+            textBox.Text = mFileData.FlatFileData;
+            textBox.SelectionStart = caretPosition;
+            textBox.ScrollCaret();
+            OnModifiedChanged?.Invoke(ModuleDataManager.GetInstance().ModifiedFiles.Contains(mFileData));
             TabPage parentControl = Parent as TabPage;
             if (parentControl != null)
             {
-                int caretPosition = textBox.SelectionStart;
-                textBox.Text = mFileData.FlatFileData;
-                textBox.SelectionStart = caretPosition;
-                textBox.ScrollCaret();
                 parentControl.Text = mFileData.FileName;
             }
         }
