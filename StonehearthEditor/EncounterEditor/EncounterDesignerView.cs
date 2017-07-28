@@ -39,7 +39,22 @@ namespace StonehearthEditor
             {
                 if (scriptFile.DefaultJson.Length > 0 || scriptFile.Schema != null)
                 {
-                    addNewGameMasterNode.DropDownItems.Add(scriptFile.Name);
+                    var item = addNewGameMasterNode.DropDownItems.Add(scriptFile.Name);
+                    if (scriptFile.Schema != null)
+                    {
+                        if (!string.IsNullOrEmpty(scriptFile.Schema.Title) && !string.IsNullOrEmpty(scriptFile.Schema.Description))
+                        {
+                            item.ToolTipText = scriptFile.Schema.Title + "\n\n" + scriptFile.Schema.Description;
+                        }
+                        else if (!string.IsNullOrEmpty(scriptFile.Schema.Title))
+                        {
+                            item.ToolTipText = scriptFile.Schema.Title;
+                        }
+                        else if (!string.IsNullOrEmpty(scriptFile.Schema.Description))
+                        {
+                            item.ToolTipText = scriptFile.Schema.Description;
+                        }
+                    }
                 }
             }
 
