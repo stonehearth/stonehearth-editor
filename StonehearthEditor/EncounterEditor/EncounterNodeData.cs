@@ -197,6 +197,7 @@ namespace StonehearthEditor
                 case "wait_for_net_worth":
                 case "wait_for_requirements_met":
                 case "wait_for_time_of_day":
+                case "item_threshold":
                     settings.Icon = Image.FromFile(iconBasePath + "/images/encounter_wait.png");
                     break;
                 case "dialog_tree":

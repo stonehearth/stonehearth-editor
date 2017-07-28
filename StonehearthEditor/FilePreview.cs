@@ -180,9 +180,10 @@ namespace StonehearthEditor
             {
                 var contextParsingPosition = position;
 
-                // Find a following (or as a fallback, preceding) colon on the same line so we can parse out the property.
-                // Could fail for colons embedded in strings, but that's good enough for now.
-                while (contextParsingPosition < textBox.Lines[line].EndPosition && textBox.Text[contextParsingPosition] != ':')
+                // Find a following (or as a fallback, preceding) colon or open square bracket on the same line.
+                // Could fail for colons/brackets embedded in strings, but that's good enough for now.
+                while (contextParsingPosition < textBox.Lines[line].EndPosition &&
+                       (textBox.Text[contextParsingPosition] != ':' && textBox.Text[contextParsingPosition] != '['))
                 {
                     contextParsingPosition++;
                 }
@@ -190,13 +191,14 @@ namespace StonehearthEditor
                 if (contextParsingPosition == textBox.Lines[line].EndPosition)
                 {
                     contextParsingPosition = position;
-                    while (contextParsingPosition >= textBox.Lines[line].Position && textBox.Text[contextParsingPosition] != ':')
+                    while (contextParsingPosition >= textBox.Lines[line].Position &&
+                       (textBox.Text[contextParsingPosition] != ':' && textBox.Text[contextParsingPosition] != '['))
                     {
                         contextParsingPosition--;
                     }
                 }
 
-                if (contextParsingPosition >= 0 && textBox.Text[contextParsingPosition] == ':')
+                if (contextParsingPosition >= 0 && (textBox.Text[contextParsingPosition] != ':' || textBox.Text[contextParsingPosition] != '['))
                 {
                     var context = jsonSuggester.ParseOutContext(contextParsingPosition + 1, 0);
                     if (context.IsValid)
@@ -207,14 +209,15 @@ namespace StonehearthEditor
                             var schemaDescriptions = new HashSet<string>(targetSchemas.Select(
                                 annotated => JsonSchemaTools.DescribeSchema(annotated) +
                                           (annotated.Description != null ? "\n" + annotated.Description : "")));
-                            var tipText = context.ActivePropertyName ?? context.Path.Last();
+                            var tipText = context.ActivePropertyName ?? context.Path.LastOrDefault() ?? "0";
                             if (schemaDescriptions.Count == 1)
                             {
-                                tipText += ": " + schemaDescriptions.First();
+                                tipText = (tipText == "0" ? "" : tipText + ": ") + schemaDescriptions.First();
                             }
                             else
                             {
-                                tipText += ", one of:\n- " + string.Join("\n- ", schemaDescriptions.Select(s => s.Replace("\n", "\n   ")));
+                                tipText = (tipText == "0" ? "One" : tipText + ", one") +
+                                          " of:\n- " + string.Join("\n- ", schemaDescriptions.Select(s => s.Replace("\n", "\n   ")));
                             }
 
                             return new Tuple<string, int>(WordWrapString(tipText), contextParsingPosition);

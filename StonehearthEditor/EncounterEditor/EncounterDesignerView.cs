@@ -37,7 +37,7 @@ namespace StonehearthEditor
             addNewGameMasterNode.DropDownItems.Clear();
             foreach (EncounterScriptFile scriptFile in GameMasterDataManager.GetInstance().GetGenericScriptNodes())
             {
-                if (scriptFile.DefaultJson.Length > 0)
+                if (scriptFile.DefaultJson.Length > 0 || scriptFile.Schema != null)
                 {
                     addNewGameMasterNode.DropDownItems.Add(scriptFile.Name);
                 }

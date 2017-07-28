@@ -475,7 +475,7 @@ namespace StonehearthEditor
         {
             if (contextObject is JObject && (schema.Type == JsonObjectType.Object || schema.Type == JsonObjectType.None))
             {
-                var errors = schema.Validate(contextObject).Where(e => e.Kind != ValidationErrorKind.PropertyRequired);
+                var errors = schema.Validate(contextObject);
                 return 100.0f - ScoreErrors(errors.ToList());
             }
             else if (schema.Type == JsonObjectType.Array && (contextObject is JArray))
