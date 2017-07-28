@@ -1,0 +1,97 @@
+{
+   "$schema": "http://json-schema.org/draft-04/schema#",
+   "id": "http://stonehearth.net/schemas/encounters/elements/mission.json",
+   "title": "Mission",
+   "description": "A mission undertaken by NPCs. E.g. wandering around or pillaging.",
+   
+   "anyOf": [
+      { "$ref": "#/definitions/raid_stockpiles_mission" },
+      { "$ref": "#/definitions/pillage_mission" },
+      { "$ref": "#/definitions/spawn_enemies_mission" },
+      { "$ref": "#/definitions/wander_mission" }
+   ],
+
+   "definitions": {
+      "mission_base": {
+         "type": "object",
+         "properties": {
+            "npc_player_id" : { "$ref": "faction.json" },
+            "sighted_bulletin": { "$ref": "bulletin.json" },
+            "combat_bulletin": { "$ref": "bulletin.json" },
+            "offset": { "$ref": "point3.json" },
+            "use_wait_entity_location": {
+               "type": "boolean",
+               "description": "If true, override enemy location to place new party where the previous (wait) encounter's entity was. Example: wait event on enemy destroyed, use the source location to place a new monster where the old one was destroyed."
+            },
+            "raid_timeout_minutes": { "type": "number", "description": "Defaults to 4300 (3 days)." },
+            "raid_timeout_variance_minutes": { "type": "number", "description": "Defaults to 0." },
+            "members": {
+               "type": "object",
+               "patternProperties": {
+                  "": { "$ref": "party_member.json" }
+               }
+            }
+         }
+      },
+      "raid_stockpiles_mission": {
+         "title": "Raid Stockpiles",
+         "allOf": [
+            { "$ref": "#/definitions/mission_base" },
+            {
+               "type": "object",
+               "properties": {
+                  "role": { "enum": [ "raid_stockpiles"] },
+                  "require_free_stockpile_space": {"type": "boolean"}
+               },
+               "required": ["role", "offset", "members"]
+            }
+         ]
+      },
+      "pillage_mission": {
+         "title": "Pillage",
+         "allOf": [
+            { "$ref": "#/definitions/mission_base" },
+            {
+               "type": "object",
+               "properties": {
+                  "role": { "enum": [ "pillage"] },
+                  "pillage_radius": { "$ref": "range.json" }
+               },
+               "required": ["role", "offset", "members", "pillage_radius"]
+            }
+         ]
+      },
+      "spawn_enemies_mission": {
+         "title": "Spawn Enemies",
+         "allOf": [
+            { "$ref": "#/definitions/mission_base" },
+            {
+               "type": "object",
+               "properties": {
+                  "role": { "enum": [ "spawn_enemies"] },
+                  "spawn_effect": { "$ref": "file.json" }
+               },
+               "required": ["role", "offset", "members"]
+            }
+         ]
+      },
+      "wander_mission": {
+         "title": "Wander",
+         "allOf": [
+            { "$ref": "#/definitions/mission_base" },
+            {
+               "type": "object",
+               "properties": {
+                  "role": { "enum": [ "wander"] },
+                  "wander_radius": { "$ref": "range.json" },
+                  "walk_interval": { "$ref": "duration.json", "description": "Defaults to 30m." }
+               },
+               "required": ["role", "offset", "members", "wander_radius"]
+            }
+         ]
+      },
+      "bulletin": {
+         // TODO
+      }
+   }
+}

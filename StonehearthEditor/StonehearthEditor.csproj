@@ -334,14 +334,18 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="schemas\encounters\elements\amenity.json" />
+    <None Include="schemas\encounters\elements\bulletin.json" />
     <None Include="schemas\encounters\elements\display_string.json" />
     <None Include="schemas\encounters\elements\duration.json" />
     <None Include="schemas\encounters\elements\edge.json" />
     <None Include="schemas\encounters\elements\faction.json" />
     <None Include="schemas\encounters\elements\file.json" />
     <None Include="schemas\encounters\elements\kingdom.json" />
+    <None Include="schemas\encounters\elements\loot_table.json" />
+    <None Include="schemas\encounters\elements\mission.json" />
     <None Include="schemas\encounters\elements\node.json" />
     <None Include="schemas\encounters\elements\out_edge_spec.json" />
+    <None Include="schemas\encounters\elements\party_member.json" />
     <None Include="schemas\encounters\elements\point2.json" />
     <None Include="schemas\encounters\elements\point3.json" />
     <None Include="schemas\encounters\elements\range.json" />

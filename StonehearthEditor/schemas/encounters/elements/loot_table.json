@@ -1,0 +1,77 @@
+{
+   "$schema": "http://json-schema.org/draft-04/schema#",
+   "id": "http://stonehearth.net/schemas/encounters/elements/range.json",
+   "title": "Loot Table",
+   "description": "Selects items to generate and drop on the ground.",
+   "type": "object",
+   "properties": {
+      "entries": {
+         "title": "Loot Table Entries List",
+         "description": "A dictionary of loot table entries. ALL the entries are rolled for each drop.",
+         "type": "object",
+         "patternProperties": {
+            "": {
+               "title": "Loot Table Entry",
+               "description": "A loot table entry. ALL the entries are rolled for each drop. SOME of the items within an entry are chosen, based on roll_type and num_rolls.",
+               "type": "object",
+               "properties": {
+                  "roll_type": {
+                     "description": "'each_of' will cause each item spec to be generated num_rolls times. 'some_of' will roll num_rolls times, generating one of the item specs each time. If omitted, defaults to 'some_of'.",
+                     "enum": ["some_of", "each_of"]
+                  },
+                  "num_rolls": {
+                     "description": "How many random rolls to perform on this entry (accumulating all results). Defaults to 1 if omitted.",
+                     "anyOf": [{"type": "integer"}, { "$ref": "range.json" }]
+                  },
+                  "items": {
+                     "title": "Rolled Items List",
+                     "description": "Entries with an empty property name, the property name 'none', or an empty string as the URI are interepreted as empty (i.e. if selected, produce no items).",
+                     "type": "object",
+                     "patternProperties": {
+                        "": {
+                           "title": "Rolled Item Spec",
+                           "description": "A rolled item spec. SOME of the items within an entry are chosen, based on the entry's roll_type and num_rolls.",
+                           "type": "object",
+                           "properties": {
+                              "type": {
+                                 "description": "'item' means the URI is for an item entity (a chair, a bed, a weapon). 'bag' means the URI is for another loot table. If omitted, defaults to 'item'.",
+                                 "enum": ["item", "bag"]
+                              },
+                              "uri": { "$ref": "file.json" },
+                              "weight": {
+                                 "description": "A multiplier for the relative probabiity of this item within its entry. Unused if the parent entry has an 'each_of' roll_type",
+                                 "type": "number",
+                                 "minimum": 0,
+                                 "default": 1
+                              },
+                              "num_rolls": {
+                                 "description": "How many copies of this item (or bag) to generate.",
+                                 "anyOf": [{"type": "integer"}, { "$ref": "range.json" }]
+                              }
+                           },
+                           "required": ["uri"],
+                           "additionalProperties": false
+                        }
+                     }
+                  }
+               },
+               "required": ["items"],
+               "additionalProperties": false
+            }
+         }
+      }
+   },
+   "required": ["entries"],
+   "default": {
+      "entries": {
+         "all_the_gold": {
+            "items": {
+               "phat_lutez": {
+                  "uri": "stonehearth:toys:plushie_toy_rabbit"
+               }
+            }
+         }
+      }
+   },
+   "additionalProperties": false
+}

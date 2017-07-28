@@ -27,8 +27,12 @@
          }
       },
       "rarity": {
-         "title": "[NOT CURRENTLY USED] The rarity of the encounter. 'rare' encounters are half as likely to be selected as 'common' ones when picking randomly from a node list.",
+         "description": "[CURRENTLY UNUSED] The rarity of the encounter. 'rare' encounters are half as likely to be selected as 'common' ones when picking randomly from a node list.",
          "type": "string"
+      },
+      "unique": {
+         "description": "If true, no more than one instance of the encounter can be active at a time.",
+         "type": "boolean"
       }
    },
    "required": [ "type", "in_edge" ],

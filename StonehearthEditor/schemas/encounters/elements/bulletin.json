@@ -1,0 +1,19 @@
+{
+   "$schema": "http://json-schema.org/draft-04/schema#",
+   "id": "http://stonehearth.net/schemas/encounters/elements/range.json",
+   "title": "Bulletin",
+   "description": "The contents of a choice-less popup window shown to the user.",
+   "type": "object",
+   "properties": {
+      "title": { "$ref": "display_string.json" },
+      "dialog_title": { "$ref": "display_string.json" },
+      "portrait": { "$ref": "file.json" },
+      "message": {
+         "anyOf": [
+            { "$ref": "display_string.json" },
+            { "type": "array", "items": { "$ref": "display_string.json" }}
+         ]
+      }
+   },
+   "required": ["title"]
+}

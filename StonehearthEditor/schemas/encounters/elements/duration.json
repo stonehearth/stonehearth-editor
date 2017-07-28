@@ -4,5 +4,5 @@
    "title": "Duration",
    "description": "Game time duration, with an optional random element. E.g. 10d means '10 days'. 20h+40m means 'between 20 hours, and 20 hours and 40 minutes'.",
    "type": "string",
-   "pattern": "^\\d+[YMdhms](\\+\\d+[YMdhms])?$"
+   "pattern": "^\\d+[YMdhms](\\s*\\+\\s*(\\d+[YMdhms])+)?$"
 }

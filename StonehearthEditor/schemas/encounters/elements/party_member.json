@@ -1,0 +1,95 @@
+{
+   "$schema": "http://json-schema.org/draft-04/schema#",
+   "id": "http://stonehearth.net/schemas/encounters/elements/party_member.json",
+   "title": "Party Member",
+   "description": "A template for creating NPC party members.",
+   "anyOf": [
+      {
+         "title": "Party Member from Population",
+         "description": "A template for creating NPC party members, based on a mob population specification.",
+         "allOf": [
+            { "$ref": "#/definitions/party_member_base" },
+            {
+               "type": "object",
+               "properties": {
+                  "from_population": {
+                     "type": "object",
+                     "properties": {
+                        "role": { "type": "string" },
+                        "location": { "$ref": "point3.json" },
+                        "min": { "type": "integer", "minimum": 0, "title": "Minimum spawn count." },
+                        "max": { "type": "integer", "minimum": 0, "title": "Maximum spawn count." },
+                        "range": { "type": "number", "minimum": 0 },
+                        "scale_with_run": {
+                           "type": "object",
+                           "properties": {
+                              "encounter_cap": { "type": "integer", "minimum": 0 },
+                              "scale_factor": { "type": "number", "minimum": 0, "exclusiveMinimum": true },
+                           },
+                           "additionalProperties": false
+                        },
+                        "gender": { "enum": ["male", "female"] }
+                     },
+                     "additionalProperties": false
+                  }
+               },
+               "required": ["from_population"]
+            }
+         ]
+      },
+      {
+         "title": "Party Member from Node Context",
+         "description": "A template for creating NPC party members, from a reference to a citizen previously created by another node.",
+         "allOf": [
+            { "$ref": "#/definitions/party_member_base" },
+            {
+               "type": "object",
+               "properties": {
+                  "from_ctx": { "type": "string" }
+               },
+               "required": ["from_ctx"]
+            }
+         ]
+      }
+   ],
+
+   "definitions": {
+      "party_member_base": {
+         "type": "object",
+         "properties": {
+            "tuning": { "$ref": "file.json" },
+            "job": { "$ref": "file.json" },
+            "scale": { "type": "number", "minimum": 0, "exclusiveMinimum": true },
+            "equipment": {
+               "type": "object",
+               "patternProperties": {
+                  "": {
+                     "anyOf": [
+                        { "$ref": "file.json" },
+                        { "type": "array", "items": { "$ref": "file.json" } }
+                     ]
+                  }
+               }
+            },
+            "loot_drops": { "$ref": "loot_table.json" },
+            "equipment_scale": { "type": "number", "minimum": 0, "exclusiveMinimum": true },
+            "unit_info": { "type": "object" },
+            "combat_leash_range": { "type": "number", "minimum": 0 },
+            "attributes": {
+               "type": "object",
+               "patternProperties": {
+                  "": { "type": "number" }
+               }
+            },
+            "render_info": {
+               "type": "object",
+               "properties": {
+                  "color_map": { "type": "string" },
+                  "material_maps": { "type": "string" }
+               },
+               "additionalProperties": false
+            }
+         }
+      }
+   }
+}
