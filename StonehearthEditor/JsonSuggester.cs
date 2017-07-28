@@ -422,11 +422,6 @@ namespace StonehearthEditor
                         break;
                     case JsonToken.PropertyName:
                         lastProperty = reader.Value as string;
-                        if (lastProperty.Length == 0)
-                        {
-                            return default(Context);
-                        }
-
                         break;
                     case JsonToken.EndObject:
                     case JsonToken.EndArray:
