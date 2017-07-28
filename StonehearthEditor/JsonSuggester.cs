@@ -695,7 +695,7 @@ namespace StonehearthEditor
                 dialog.Multiselect = false;
                 dialog.FileOk += (sender, args) =>
                 {
-                    string relativePath = new Uri(dialog.FileName).MakeRelativeUri(new Uri(currentFilePath)).ToString();
+                    string relativePath = new Uri(currentFilePath).MakeRelativeUri(new Uri(dialog.FileName)).ToString();
                     var replacement = "\"file(" + relativePath + ")\"";
                     textbox.InsertText(textbox.SelectionStart, replacement);
                     textbox.SelectionStart = textbox.SelectionEnd + replacement.Length;
