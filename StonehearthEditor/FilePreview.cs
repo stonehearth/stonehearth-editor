@@ -347,7 +347,9 @@ namespace StonehearthEditor
             textBox.Styles[Style.LineNumber].BackColor = Color.LightGreen;
             if (result.Item1 == JsonSchemaTools.ValidationResult.Valid)
             {
-                var hasBespokeSchema = jsonValidationSchema != null && jsonValidationSchema != GameMasterDataManager.GetInstance().GetEncounterSchema(null);
+                var hasBespokeSchema = jsonValidationSchema != null &&
+                                       ((mFileData as JsonFileData).Json.Value<string>("encounter_type") == "none" ||
+                                        jsonValidationSchema != GameMasterDataManager.GetInstance().GetEncounterSchema(null));
                 textBox.Styles[Style.LineNumber].BackColor = hasBespokeSchema ? Color.LightGreen : Color.LightGray;
             }
             else
