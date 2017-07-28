@@ -9,19 +9,6 @@ namespace StonehearthEditor
       /// </summary>
       private System.ComponentModel.IContainer components = null;
 
-      /// <summary> 
-      /// Clean up any resources being used.
-      /// </summary>
-      /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-      protected override void Dispose(bool disposing)
-      {
-         if (disposing && (components != null))
-         {
-            components.Dispose();
-         }
-         base.Dispose(disposing);
-      }
-
       #region Component Designer generated code
 
       /// <summary> 
@@ -72,6 +59,7 @@ namespace StonehearthEditor
             this.textBox.SavePointLeft += new System.EventHandler<System.EventArgs>(this.textBox_SavePointLeft);
             this.textBox.SavePointReached += new System.EventHandler<System.EventArgs>(this.textBox_SavePointReached);
             this.textBox.TextChanged += new System.EventHandler(this.textBox_TextChanged);
+            this.textBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBox_KeyDown);
             this.textBox.Leave += new System.EventHandler(this.textBox_Leave);
             this.textBox.MouseLeave += new System.EventHandler(this.textBox_MouseLeave);
             this.textBox.MouseMove += new System.Windows.Forms.MouseEventHandler(this.textBox_MouseMove);

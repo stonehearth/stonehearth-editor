@@ -2,17 +2,16 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
-using AutocompleteMenuNS;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NJsonSchema;
-using NJsonSchema.Validation;
 using ScintillaNET;
+using ScintillaNET_FindReplaceDialog;
 using Color = System.Drawing.Color;
-using System.IO;
 
 namespace StonehearthEditor
 {
@@ -48,6 +47,10 @@ namespace StonehearthEditor
         private Dictionary<int, string> validationErrors;
         private Timer validationDelayTimer;
 
+        // Tool dialogs.
+        private FindReplace findReplaceDialog;
+        private GoTo gotoLineDialog;
+
         /// <summary>
         /// Indicator for i18n()
         /// </summary>
@@ -74,10 +77,36 @@ namespace StonehearthEditor
             textBox.Text = mFileData.FlatFileData;
             mOwner = owner;
 
+            gotoLineDialog = new GoTo(textBox);
+            findReplaceDialog = new FindReplace(textBox);
+            findReplaceDialog.KeyPressed += findReplaceDialog_KeyPressed;
+
             this.configureScintilla();
 
             localizeFile.Visible = textBox.Lexer == ScintillaNET.Lexer.Json;
             previewMixinsButton.Visible = (textBox.Lexer == ScintillaNET.Lexer.Json) && (mFileData as JsonFileData)?.Json.SelectToken("mixins") != null;
+        }
+
+        /// <summary> 
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+
+            if (findReplaceDialog.Window.Visible)
+            {
+                findReplaceDialog.Window.Hide();
+            }
+
+            findReplaceDialog.Dispose();
+            findReplaceDialog = null;
+
+            base.Dispose(disposing);
         }
 
         public string GetText()
@@ -1002,6 +1031,59 @@ namespace StonehearthEditor
                 var padding = new string(' ', Math.Max(2, 60 - line.Length));
                 textBox.InsertText(position, padding + "// from " + Path.GetFileNameWithoutExtension(pair.Value));
             }
+        }
+
+        private void textBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Control && e.KeyCode == Keys.F)
+            {
+                findReplaceDialog.Window.SuspendLayout();
+                findReplaceDialog.ShowFind();
+                CenterFormInParent(findReplaceDialog.Window);
+                findReplaceDialog.Window.ResumeLayout();
+                e.SuppressKeyPress = true;
+            }
+            else if (e.Shift && e.KeyCode == Keys.F3)
+            {
+                findReplaceDialog.Window.FindPrevious();
+                e.SuppressKeyPress = true;
+            }
+            else if (e.KeyCode == Keys.F3)
+            {
+                findReplaceDialog.Window.FindNext();
+                e.SuppressKeyPress = true;
+            }
+            else if (e.Control && e.KeyCode == Keys.H)
+            {
+                findReplaceDialog.Window.SuspendLayout();
+                findReplaceDialog.ShowReplace();
+                CenterFormInParent(findReplaceDialog.Window);
+                findReplaceDialog.Window.ResumeLayout();
+                e.SuppressKeyPress = true;
+            }
+            else if (e.Control && e.KeyCode == Keys.I)
+            {
+                findReplaceDialog.ShowIncrementalSearch();
+                e.SuppressKeyPress = true;
+            }
+            else if (e.Control && e.KeyCode == Keys.G)
+            {
+                gotoLineDialog.ShowGoToDialog();
+                e.SuppressKeyPress = true;
+            }
+        }
+
+        private void CenterFormInParent(Form form)
+        {
+            var parentSize = this.ParentForm.Size;
+            var childSize = form.Size;
+            form.Location = MainForm.ActiveForm.PointToScreen(new System.Drawing.Point(
+                (parentSize.Width - childSize.Width) / 2, (parentSize.Height - childSize.Height) / 2));
+        }
+
+        private void findReplaceDialog_KeyPressed(object sender, KeyEventArgs e)
+        {
+            textBox_KeyDown(sender, e);
         }
     }
 }
