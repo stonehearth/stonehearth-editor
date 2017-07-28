@@ -544,8 +544,9 @@
   <Import Project="..\packages\cef.redist.x86.3.2883.1552\build\cef.redist.x86.targets" Condition="Exists('..\packages\cef.redist.x86.3.2883.1552\build\cef.redist.x86.targets')" />
   <Import Project="..\packages\CefSharp.Common.55.0.0\build\CefSharp.Common.targets" Condition="Exists('..\packages\CefSharp.Common.55.0.0\build\CefSharp.Common.targets')" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy /y /e "$(ProjectDir)scripts\*" "$(ProjectDir)$(OutDir)scripts\*"
-xcopy /y /e "$(ProjectDir)images\*" "$(ProjectDir)$(OutDir)images\*"
-xcopy /y /e "$(ProjectDir)schemas\*" "$(ProjectDir)$(OutDir)schemas\*"</PostBuildEvent>
+    <PostBuildEvent>robocopy /mir "$(ProjectDir)scripts" "$(ProjectDir)$(OutDir)scripts"
+robocopy /mir "$(ProjectDir)images" "$(ProjectDir)$(OutDir)images"
+robocopy /mir "$(ProjectDir)schemas" "$(ProjectDir)$(OutDir)schemas"
+IF %25ERRORLEVEL%25 LEQ 4 exit 0  # https://superuser.com/questions/280425/getting-robocopy-to-return-a-proper-exit-code</PostBuildEvent>
   </PropertyGroup>
 </Project>
