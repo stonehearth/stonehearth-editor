@@ -507,7 +507,7 @@ namespace StonehearthEditor
             public PropertySuggestItem(string name, JsonSchema4 schema, bool isAlreadyExisting)
             {
                 this.isAlreadyExisting = isAlreadyExisting;
-                MenuText = string.IsNullOrEmpty(name) ? schema.Title ?? "" : name;
+                MenuText = string.IsNullOrEmpty(name) ? schema.Title ?? "\"\":" : name;
                 ToolTipTitle = (schema.Title ?? name) + (isAlreadyExisting ? " (already exists)" : "");
                 ToolTipText = schema.Description ?? JsonSchemaTools.DescribeSchema(schema);
                 Text = "\"" + name + "\": ";
