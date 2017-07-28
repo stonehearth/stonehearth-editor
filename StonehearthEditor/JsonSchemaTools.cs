@@ -330,7 +330,7 @@ namespace StonehearthEditor
             }
 
             // Discard less likely schemas.
-            currentSchemas = GuessIntendedSchemas(CleanAndDedupeSchemas(currentSchemas).Select(a => a.Schema).ToList(), contextObject);
+            currentSchemas = GuessIntendedSchemas(CleanAndDedupeSchemas(currentSchemas).Select(a => a.Schema).ToList(), contextObject, activeProperty);
 
             // Descend one last time if we are suggesting a property value, after we've finished filtering.
             if (activeProperty != null)
@@ -471,12 +471,18 @@ namespace StonehearthEditor
             }
         }
 
-        private static float ScoreSchemaMatch(JsonSchema4 schema, JToken contextObject)
+        private static float ScoreSchemaMatch(JsonSchema4 schema, JToken contextObject, string activeProperty)
         {
             if (contextObject is JObject && (schema.Type == JsonObjectType.Object || schema.Type == JsonObjectType.None))
             {
                 var errors = schema.Validate(contextObject);
-                return 100.0f - ScoreErrors(errors.ToList());
+                var score = 100.0f - ScoreErrors(errors.ToList());
+                if (activeProperty != null && schema.ActualProperties.ContainsKey(activeProperty))
+                {
+                    score += 5;
+                }
+
+                return score;
             }
             else if (schema.Type == JsonObjectType.Array && (contextObject is JArray))
             {
@@ -557,7 +563,7 @@ namespace StonehearthEditor
             return result;
         }
 
-        private static List<JsonSchema4> GuessIntendedSchemas(List<JsonSchema4> schemas, JToken contextObject)
+        private static List<JsonSchema4> GuessIntendedSchemas(List<JsonSchema4> schemas, JToken contextObject, string activeProperty)
         {
             if (schemas.Count <= 1 || contextObject == null)
             {
@@ -568,7 +574,7 @@ namespace StonehearthEditor
             var bestSchemas = new List<JsonSchema4>();
             foreach (var schema in schemas)
             {
-                var score = ScoreSchemaMatch(schema, contextObject);
+                var score = ScoreSchemaMatch(schema, contextObject, activeProperty);
                 if (score > bestScore)
                 {
                     bestScore = score;
