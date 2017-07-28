@@ -88,7 +88,13 @@ namespace StonehearthEditor
 
             var brush = new SolidBrush(labelColor);
 
-            var font = new Font(label.FontName, (float)label.FontSize, (System.Drawing.FontStyle)(int)label.FontStyle);
+            var fontStyle = (System.Drawing.FontStyle)(int)label.FontStyle;
+            if (settings.HasUnsavedChanges)
+            {
+                fontStyle = System.Drawing.FontStyle.Bold;
+            }
+            var font = new Font(label.FontName, (float)label.FontSize, fontStyle);
+
             var bbox = node.GeometryNode.BoundingBox;
             var rect = new RectangleF((float)bbox.Left, (float)bbox.Bottom - node.Attr.LabelMargin, (float)bbox.Width, (float)bbox.Height);
             if ((node.UserData as NodeDisplaySettings).Icon != null)
@@ -208,7 +214,10 @@ namespace StonehearthEditor
 
             if (settings.HasUnsavedChanges)
             {
-                brush = new HatchBrush(HatchStyle.DiagonalCross, Color.FromArgb(160, 160, 165), fillColor);
+                var hashColor = Color.FromArgb((int)(fillColor.R * 0.9f + 128 * 0.1f),
+                                               (int)(fillColor.G * 0.9f + 128 * 0.1f),
+                                               (int)(fillColor.B * 0.9f + 128 * 0.1f));
+                brush = new HatchBrush(HatchStyle.WideUpwardDiagonal, hashColor, fillColor);
             }
             else
             {
