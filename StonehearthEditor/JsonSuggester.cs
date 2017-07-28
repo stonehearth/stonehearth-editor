@@ -328,6 +328,7 @@ namespace StonehearthEditor
                 {
                     if (!reader.Read())
                     {
+                        result = MakeContextResult(contextPosition, currentJsonStack.FirstOrDefault(), path, currentJsonStack, lastProperty);
                         break;
                     }
                 }
