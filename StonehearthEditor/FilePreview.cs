@@ -98,12 +98,12 @@ namespace StonehearthEditor
                 components.Dispose();
             }
 
-            if (findReplaceDialog.Window.Visible)
+            if (findReplaceDialog?.Window?.Visible == true)
             {
                 findReplaceDialog.Window.Hide();
             }
 
-            findReplaceDialog.Dispose();
+            findReplaceDialog?.Dispose();
             findReplaceDialog = null;
 
             base.Dispose(disposing);
