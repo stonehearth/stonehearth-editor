@@ -148,7 +148,7 @@ namespace StonehearthEditor
             JToken aliases = mManifestJson[manifestEntryType];
             if (aliases == null)
             {
-                mManifestJson.Add(manifestEntryType, null);
+                mManifestJson.Add(manifestEntryType, new JObject());
                 aliases = mManifestJson[manifestEntryType];
             }
 
