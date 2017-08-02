@@ -289,7 +289,7 @@ namespace StonehearthEditor
             // tree nodes that must be navigated to reach the selected tree node
             string[] path = selected.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
 
-            if (path.Length <= 2)
+            if (path.Length <= 2 || !mModules.ContainsKey(path[0]))
             {
                 return null;
             }
