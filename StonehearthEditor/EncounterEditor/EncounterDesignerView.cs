@@ -88,6 +88,7 @@ namespace StonehearthEditor
 
                 editorInfoSplitter.Panel1.Controls.Remove(mNodePreview);
                 mNodePreview.Dispose();
+                mNodePreview = null;
             }
 
             if (node != null)
