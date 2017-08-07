@@ -726,7 +726,8 @@ namespace StonehearthEditor
                 MenuText = new string(kLineChar, kLength);
                 if (title != null)
                 {
-                    MenuText = new string(kLineChar, (kLength - 2 - title.Length) / 2) + ' ' + title + ' ' + MenuText;
+                    var lineLength = Math.Max(2, (kLength - 2 - title.Length) / 2);
+                    MenuText = new string(kLineChar, lineLength) + ' ' + title + ' ' + MenuText;
                 }
             }
 
