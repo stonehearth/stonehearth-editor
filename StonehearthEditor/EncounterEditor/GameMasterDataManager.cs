@@ -361,6 +361,7 @@ namespace StonehearthEditor
             }
 
             CampaignNodeData currentCampaignData = null;
+            List<GameMasterNode> orphanedNodes = new List<GameMasterNode>();
             foreach (GameMasterNode node in addedNodes.Values)
             {
                 if (node.NodeType == GameMasterNodeType.CAMPAIGN)
@@ -370,8 +371,17 @@ namespace StonehearthEditor
                 }
                 else if (node.Owner == null)
                 {
-                    currentCampaignData.OrphanedNodes.Add(node);
+                    orphanedNodes.Add(node);
                 }
+            }
+
+            if (currentCampaignData != null)
+            {
+                currentCampaignData.OrphanedNodes.AddRange(orphanedNodes);
+            }
+            else
+            {
+                MessageBox.Show("Could not find root campaign node in: " + folderPath);
             }
 
             mGameMasterNodes = mGameMasterNodes.Concat(addedNodes).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
