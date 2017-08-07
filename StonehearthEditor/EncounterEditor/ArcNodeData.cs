@@ -15,7 +15,7 @@ namespace StonehearthEditor
         {
             mEncounters = new Dictionary<string, string>();
             mEncounterFiles = new List<GameMasterNode>();
-            mRarity = NodeFile.Json["rarity"].ToString();
+            mRarity = NodeFile.Json["rarity"]?.ToString();
             mEncounters = JsonConvert.DeserializeObject<Dictionary<string, string>>(NodeFile.Json["encounters"].ToString());
             int lastIndexOfSlash = NodeFile.Path.LastIndexOf('/');
             string nodeFilePathWithoutFileName = NodeFile.Path.Substring(0, lastIndexOfSlash);
