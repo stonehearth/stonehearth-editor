@@ -173,6 +173,7 @@ namespace StonehearthEditor
             this.autocompleteMenu.LeftPadding = 0;
             this.autocompleteMenu.MaximumSize = new System.Drawing.Size(500, 200);
             this.autocompleteMenu.MinFragmentLength = 1;
+            this.autocompleteMenu.MinimumSize = new System.Drawing.Size(80, 0);
             this.autocompleteMenu.SearchPattern = "(:|[,{\\[]\\s*\"?[\\w]*)\\s*";
             this.autocompleteMenu.TargetControlWrapper = null;
             this.autocompleteMenu.ToolTipDuration = 9999999;
