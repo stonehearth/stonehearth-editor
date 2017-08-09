@@ -723,11 +723,14 @@ namespace StonehearthEditor
             public HeaderItem(string title)
             {
                 ToolTipTitle = ToolTipText = Text = null;
-                MenuText = new string(kLineChar, kLength);
                 if (title != null)
                 {
                     var lineLength = Math.Max(2, (kLength - 2 - title.Length) / 2);
-                    MenuText = new string(kLineChar, lineLength) + ' ' + title + ' ' + MenuText;
+                    MenuText = new string(kLineChar, lineLength) + ' ' + title + ' ' + new string(kLineChar, lineLength);
+                }
+                else
+                {
+                    MenuText = new string(kLineChar, kLength);
                 }
             }
 

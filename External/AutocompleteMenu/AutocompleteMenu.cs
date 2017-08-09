@@ -36,6 +36,7 @@ namespace AutocompleteMenuNS
         [Browsable(false)]
         public IList<AutocompleteItem> VisibleItems { get { return Host.ListView.VisibleItems; } private set { Host.ListView.VisibleItems = value;} }
         private Size maximumSize;
+        private Size minimumSize;
 
         /// <summary>
         /// Duration (ms) of tooltip showing
@@ -57,6 +58,7 @@ namespace AutocompleteMenuNS
             Enabled = true;
             AppearInterval = 500;
             timer.Tick += timer_Tick;
+            MinimumSize = new Size(180, 200);
             MaximumSize = new Size(180, 200);
             AutoPopup = true;
 
@@ -153,8 +155,23 @@ namespace AutocompleteMenuNS
             set { 
                 maximumSize = value;
                 (Host.ListView as Control).MaximumSize = maximumSize;
-                (Host.ListView as Control).Size = maximumSize;
-                Host.CalcSize();
+                Update();
+            }
+        }
+
+        /// <summary>
+        /// Minimum size of popup menu
+        /// </summary>
+        [DefaultValue(typeof(Size), "180, 200")]
+        [Description("Minimum size of popup menu")]
+        public Size MinimumSize
+        {
+            get { return minimumSize; }
+            set
+            {
+                minimumSize = value;
+                (Host.ListView as Control).MinimumSize = minimumSize;
+                Update();
             }
         }
 
@@ -296,6 +313,7 @@ namespace AutocompleteMenuNS
                     ctrl.RightToLeft = RightToLeft;
                     ctrl.Font = Font;
                     ctrl.MaximumSize = MaximumSize;
+                    ctrl.MinimumSize = MinimumSize;
                 }
                 Host.ListView = value;
                 Host.ListView.ItemSelected += new EventHandler(ListView_ItemSelected);
@@ -311,6 +329,24 @@ namespace AutocompleteMenuNS
         /// </summary>
         public void Update()
         {
+            int maxWidth = minimumSize.Width;
+            foreach (var item in VisibleItems)
+            {
+                var width = System.Windows.Forms.TextRenderer.MeasureText(item.MenuText, (Host.ListView as Control).Font).Width;
+                if (width > maxWidth)
+                {
+                    maxWidth = width;
+                    if (maxWidth >= maximumSize.Width)
+                    {
+                        maxWidth = maximumSize.Width;
+                        break;
+                    }
+                }
+            }
+            var size = (Host.ListView as Control).Size;
+            size.Width = maxWidth;
+            (Host.ListView as Control).Size = size;
+
             Host.CalcSize();
         }
 
@@ -687,7 +723,7 @@ namespace AutocompleteMenuNS
 
             Host.ListView.HighlightedItemIndex = -1;
 
-            Host.CalcSize();
+            Update();
         }
 
         internal void OnOpening(CancelEventArgs args)

@@ -171,7 +171,7 @@ namespace StonehearthEditor
             this.autocompleteMenu.ImageList = null;
             this.autocompleteMenu.Items = new string[0];
             this.autocompleteMenu.LeftPadding = 0;
-            this.autocompleteMenu.MaximumSize = new System.Drawing.Size(300, 200);
+            this.autocompleteMenu.MaximumSize = new System.Drawing.Size(500, 200);
             this.autocompleteMenu.MinFragmentLength = 1;
             this.autocompleteMenu.SearchPattern = "(:|[,{\\[]\\s*\"?[\\w]*)\\s*";
             this.autocompleteMenu.TargetControlWrapper = null;
