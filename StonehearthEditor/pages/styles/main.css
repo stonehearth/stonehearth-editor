@@ -9,14 +9,15 @@
     background-color: red;
 }
 .encompassing-group-property-header {
-    border-bottom: 1px solid rgb(51, 195, 240);
+    border-bottom: 3px solid rgb(52, 97, 160);
     margin-bottom: 5px;
     padding-left: 5px;
     color: black;
     text-transform: capitalize;
 }
+
 .app {
-    background-color: #fff;
+    background-color: #808080;
 }
 .color-picker-div {
     position: absolute;
@@ -27,6 +28,7 @@
 }
 .sub-group-property {
     margin: 3px 5px;
+    background-color: #ababab;
 }
 .sub-group-property-header {
     text-transform: capitalize;
@@ -43,6 +45,14 @@
     text-align: center;
     margin-top: -3px;
 }
+.origin-property{
+    background-color: #ababab;
+}
+
+.level2-parameter-property {
+    background-color: #ababab;
+}
+
 .level3-parameter-property {
     margin: 7px 0px 7px 5px;
     min-height: 38px;
@@ -130,5 +140,5 @@ td {
 }
 
 body {
-    font-family: 'Raleway', sans-serif;
+    font-family: 'Arial', sans-serif;
 }
