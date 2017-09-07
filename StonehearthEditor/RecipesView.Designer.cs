@@ -38,10 +38,17 @@
             // 
             // recipesGridView
             // 
+            this.recipesGridView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.recipesGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.recipesGridView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.recipesGridView.ContextMenuStrip = this.recipesCellContextMenu;
             this.recipesGridView.Location = new System.Drawing.Point(0, 0);
             this.recipesGridView.Name = "recipesGridView";
+            this.recipesGridView.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.AutoSizeToAllHeaders;
+            this.recipesGridView.RowTemplate.ContextMenuStrip = this.recipesCellContextMenu;
+            this.recipesGridView.RowTemplate.Height = 30;
+            this.recipesGridView.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.True;
             this.recipesGridView.Size = new System.Drawing.Size(758, 546);
             this.recipesGridView.TabIndex = 0;
             this.recipesGridView.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.recipeGridView_CellMouseClick);
@@ -66,7 +73,7 @@
             this.AutoSize = true;
             this.Controls.Add(this.recipesGridView);
             this.Name = "RecipesView";
-            this.Size = new System.Drawing.Size(758, 546);
+            this.Size = new System.Drawing.Size(761, 549);
             ((System.ComponentModel.ISupportInitialize)(this.recipesGridView)).EndInit();
             this.recipesCellContextMenu.ResumeLayout(false);
             this.ResumeLayout(false);

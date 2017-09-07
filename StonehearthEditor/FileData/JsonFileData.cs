@@ -272,6 +272,22 @@ namespace StonehearthEditor
             return fileName;
         }
 
+        public string FindImageForFile()
+        {
+            foreach (FileData openedFile in OpenedFiles)
+            {
+                foreach (KeyValuePair<string, FileData> linkedFile in openedFile.LinkedFileData)
+                {
+                    if ((linkedFile.Value is ImageFileData) && System.IO.File.Exists(linkedFile.Value.Path))
+                    {
+                        return linkedFile.Value.Path;
+                    }
+                }
+            }
+
+            return string.Empty;
+        }
+
         public void SetModuleFile(ModuleFile moduleFile)
         {
             mOwner = moduleFile;

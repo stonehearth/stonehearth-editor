@@ -80,18 +80,23 @@ namespace StonehearthEditor
                             {
                                 JsonFileData linked = linkedAlias.FileData as JsonFileData;
                                 row["Net Worth"] = linked.NetWorth;
-                                
 
                                 // TODO refactor this
-                                foreach (KeyValuePair<string, FileData> imageFileData in linked.LinkedFileData)
+                                foreach (KeyValuePair<string, FileData> fd in linked.LinkedFileData)
                                 {
-                                    if (imageFileData.Value is ImageFileData)
+                                    string path = "";
+                                    if (fd.Value is JsonFileData)
                                     {
-                                        if (System.IO.File.Exists(imageFileData.Value.Path))
-                                        {
-                                            row["Icon"] = ThumbnailCache.GetThumbnail(imageFileData.Value.Path);
-                                            break;
-                                        }
+                                        path = (fd.Value as JsonFileData).FindImageForFile();
+                                    } else if (fd.Value is ImageFileData)
+                                    {
+                                        path = fd.Value.Path;
+                                    }
+
+                                    if (path != "" && System.IO.File.Exists(path))
+                                    {
+                                        row["Icon"] = ThumbnailCache.GetThumbnail(path);
+                                        break;
                                     }
                                 }
                             }
