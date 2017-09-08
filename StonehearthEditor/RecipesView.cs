@@ -13,6 +13,16 @@ namespace StonehearthEditor
 {
     public partial class RecipesView : UserControl
     {
+        private const string kIcon = "Icon";
+        private const string kAlias = "Alias";
+        private const string kDisplayName = "Display Name";
+        private const string kLvlReq = "Lvl Req";
+        private const string kNetWorth = "Net Worth";
+        private const string kEffort = "Effort";
+
+        private const string kName = "Name";
+        private const string kAmount = "Amount";
+
         DataTable mDataTable = new DataTable();
         int mIngredientColumns = 0;
 
@@ -28,12 +38,12 @@ namespace StonehearthEditor
 
         private void SetColumnsData()
         {
-            mDataTable.Columns.Add(new DataColumn("Icon", typeof(Image)));
-            mDataTable.Columns.Add(new DataColumn("Alias", typeof(string)));
-            mDataTable.Columns.Add(new DataColumn("Display Name", typeof(string)));
-            mDataTable.Columns.Add(new DataColumn("Lvl Req", typeof(int)));
-            mDataTable.Columns.Add(new DataColumn("Net Worth", typeof(int)));
-            mDataTable.Columns.Add(new DataColumn("Effort", typeof(int)));
+            mDataTable.Columns.Add(new DataColumn(kIcon, typeof(Image)));
+            mDataTable.Columns.Add(new DataColumn(kAlias, typeof(string)));
+            mDataTable.Columns.Add(new DataColumn(kDisplayName, typeof(string)));
+            mDataTable.Columns.Add(new DataColumn(kLvlReq, typeof(int)));
+            mDataTable.Columns.Add(new DataColumn(kNetWorth, typeof(int)));
+            mDataTable.Columns.Add(new DataColumn(kEffort, typeof(int)));
 
 
             AddIngredientColumn();
@@ -53,9 +63,6 @@ namespace StonehearthEditor
             foreach (KeyValuePair<string, FileData> recipe in recipeFileData)
             {
                 DataRow row = mDataTable.NewRow();
-                //row["Display Name"] = recipeJson.SelectToken("recipe_name");
-                //row["C1 Name"] = "bob";
-                //row["C1 Amount"] = 3;
 
                 JsonFileData jsonFileData = recipe.Value as JsonFileData;
                 JObject recipeJson = jsonFileData.Json;
@@ -63,8 +70,8 @@ namespace StonehearthEditor
                 JArray productArray = recipeJson["produces"] as JArray;
 
                 JToken lvlReq = recipeJson["level_requirement"];
-                row["Lvl Req"] = lvlReq == null ? 0 : lvlReq.ToObject<int>();
-                row["Effort"] = recipeJson["work_units"].ToObject<int>();
+                row[kLvlReq] = lvlReq == null ? 0 : lvlReq.ToObject<int>();
+                row[kEffort] = recipeJson["work_units"].ToObject<int>();
 
                 foreach (JToken product in productArray)
                 {
@@ -72,22 +79,29 @@ namespace StonehearthEditor
                     if (item != null)
                     {
                         string alias = item.ToString();
-                        row["Alias"] = alias;
+                        row[kAlias] = alias;
 
+                        // Check aliases linked by recipe file
                         foreach (ModuleFile linkedAlias in jsonFileData.LinkedAliases)
                         {
                             if (linkedAlias.FullAlias.Equals(alias))
                             {
                                 JsonFileData linked = linkedAlias.FileData as JsonFileData;
-                                row["Net Worth"] = linked.NetWorth;
+                                row[kNetWorth] = linked.NetWorth;
 
                                 // TODO refactor this
                                 foreach (KeyValuePair<string, FileData> fd in linked.LinkedFileData)
                                 {
+                                    // Get image
                                     string path = "";
                                     if (fd.Value is JsonFileData)
                                     {
                                         path = (fd.Value as JsonFileData).FindImageForFile();
+                                        JToken displayName = (fd.Value as JsonFileData).Json.SelectToken("entity_data.stonehearth:catalog.display_name");
+                                        if (displayName != null)
+                                        {
+                                            row[kDisplayName] = displayName.ToString();
+                                        }
                                     } else if (fd.Value is ImageFileData)
                                     {
                                         path = fd.Value.Path;
@@ -95,28 +109,68 @@ namespace StonehearthEditor
 
                                     if (path != "" && System.IO.File.Exists(path))
                                     {
-                                        row["Icon"] = ThumbnailCache.GetThumbnail(path);
+                                        row[kIcon] = ThumbnailCache.GetThumbnail(path);
                                         break;
                                     }
                                 }
                             }
                         }
-                        // TODO: get net worth, display name, icon
-
-                        
                     }
                 }
 
                 int ingredientCount = 1;
                 foreach (JToken ingredient in ingredientArray)
                 {
+                    if (ingredientCount > mIngredientColumns)
+                    {
+                        AddIngredientColumn();
+                    }
+
                     JToken uri = ingredient["uri"];
                     JToken material = ingredient["material"];
                     JToken count = ingredient["count"];
 
                     string prefix = GetIngredientPrefix(ingredientCount);
-                    row[prefix + "Name"] = uri != null ? uri.ToString() : material.ToString();
-                    row[prefix + "Amount"] = count.ToObject<int>();
+                    string alias = uri != null ? uri.ToString() : material.ToString();
+                    row[prefix + kName] = alias;
+                    row[prefix + kAmount] = count.ToObject<int>();
+
+                    // TODO: look in a different place for icons if it is a material
+
+                    foreach (ModuleFile linkedAlias in jsonFileData.LinkedAliases)
+                    {
+                        if (linkedAlias.FullAlias.Equals(alias))
+                        {
+                            JsonFileData linked = linkedAlias.FileData as JsonFileData;
+                            JToken displayName = linked.Json.SelectToken("entity_data.stonehearth:catalog.display_name");
+                            if (displayName != null)
+                            {
+                                row[prefix + kName] = displayName.ToString();
+                            }
+
+                            // TODO refactor this
+                            foreach (KeyValuePair<string, FileData> fd in linked.LinkedFileData)
+                            {
+                                string path = "";
+                                if (fd.Value is JsonFileData)
+                                {
+                                    path = (fd.Value as JsonFileData).FindImageForFile();
+                                }
+                                else if (fd.Value is ImageFileData)
+                                {
+                                    path = fd.Value.Path;
+                                }
+
+                                if (path != "" && System.IO.File.Exists(path))
+                                {
+                                    row[prefix + kIcon] = ThumbnailCache.GetThumbnail(path);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    ingredientCount++;
                 }
 
                 mDataTable.Rows.Add(row);
@@ -130,9 +184,9 @@ namespace StonehearthEditor
         {
             mIngredientColumns++;
             string prefix = GetIngredientPrefix(mIngredientColumns);
-            mDataTable.Columns.Add(new DataColumn(prefix + "Icon", typeof(Image)));
-            mDataTable.Columns.Add(new DataColumn(prefix + "Name", typeof(string)));
-            mDataTable.Columns.Add(new DataColumn(prefix + "Amount", typeof(int)));
+            mDataTable.Columns.Add(new DataColumn(prefix + kIcon, typeof(Image)));
+            mDataTable.Columns.Add(new DataColumn(prefix + kName, typeof(string)));
+            mDataTable.Columns.Add(new DataColumn(prefix + kAmount, typeof(int)));
         }
 
         private void RemoveIngredientColumn()
