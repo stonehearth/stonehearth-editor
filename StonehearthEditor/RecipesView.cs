@@ -23,8 +23,12 @@ namespace StonehearthEditor
         private const string kName = "Name";
         private const string kAmount = "Amount";
 
-        DataTable mDataTable = new DataTable();
-        int mIngredientColumns = 0;
+        private const int kRecipeColCount = 6;
+        private const int kIngredientColCount = 3;
+
+        private DataTable mDataTable = new DataTable();
+        private int mIngredientColumns = 0;
+        private bool includeAllMods = false;
 
         public RecipesView()
         {
@@ -33,10 +37,10 @@ namespace StonehearthEditor
 
         public void Initialize()
         {
-            SetColumnsData();
+            LoadColumnsData();
         }
 
-        private void SetColumnsData()
+        private void LoadColumnsData()
         {
             mDataTable.Columns.Add(new DataColumn(kIcon, typeof(Image)));
             mDataTable.Columns.Add(new DataColumn(kAlias, typeof(string)));
@@ -44,17 +48,6 @@ namespace StonehearthEditor
             mDataTable.Columns.Add(new DataColumn(kLvlReq, typeof(int)));
             mDataTable.Columns.Add(new DataColumn(kNetWorth, typeof(int)));
             mDataTable.Columns.Add(new DataColumn(kEffort, typeof(int)));
-
-
-            AddIngredientColumn();
-            // populateColums
-
-            //dt.Columns["colStatus"].Expression = String.Format("IIF(colBestBefore < #{0}#, 'Ok','Not ok')", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
-            //dt.Rows.Add(DateTime.Now.AddDays(-1));
-            //dt.Rows.Add(DateTime.Now.AddDays(1));
-            //dt.Rows.Add(DateTime.Now.AddDays(2));
-            //dt.Rows.Add(DateTime.Now.AddDays(-2));
-
 
             ModuleFile m = ModuleDataManager.GetInstance().GetModuleFile("stonehearth:jobs:engineer");
             JsonFileData f = ModuleDataManager.GetInstance().GetSelectedFileData("stonehearth\\aliases\\jobs:engineer\\recipes") as JsonFileData;
@@ -81,39 +74,21 @@ namespace StonehearthEditor
                         string alias = item.ToString();
                         row[kAlias] = alias;
 
+                        var foundLinked = false;
                         // Check aliases linked by recipe file
                         foreach (ModuleFile linkedAlias in jsonFileData.LinkedAliases)
                         {
                             if (linkedAlias.FullAlias.Equals(alias))
                             {
                                 JsonFileData linked = linkedAlias.FileData as JsonFileData;
-                                row[kNetWorth] = linked.NetWorth;
-
-                                // TODO refactor this
-                                foreach (KeyValuePair<string, FileData> fd in linked.LinkedFileData)
-                                {
-                                    // Get image
-                                    string path = "";
-                                    if (fd.Value is JsonFileData)
-                                    {
-                                        path = (fd.Value as JsonFileData).FindImageForFile();
-                                        JToken displayName = (fd.Value as JsonFileData).Json.SelectToken("entity_data.stonehearth:catalog.display_name");
-                                        if (displayName != null)
-                                        {
-                                            row[kDisplayName] = displayName.ToString();
-                                        }
-                                    } else if (fd.Value is ImageFileData)
-                                    {
-                                        path = fd.Value.Path;
-                                    }
-
-                                    if (path != "" && System.IO.File.Exists(path))
-                                    {
-                                        row[kIcon] = ThumbnailCache.GetThumbnail(path);
-                                        break;
-                                    }
-                                }
+                                PopulationRecipeRow(row, linked);
+                                foundLinked = true;
                             }
+                        }
+
+                        if (!foundLinked)
+                        {
+                            PopulationRecipeRow(row, jsonFileData);
                         }
                     }
                 }
@@ -121,6 +96,7 @@ namespace StonehearthEditor
                 int ingredientCount = 1;
                 foreach (JToken ingredient in ingredientArray)
                 {
+                    // If we don't have enough columns for this ingredient, add a new set of columns
                     if (ingredientCount > mIngredientColumns)
                     {
                         AddIngredientColumn();
@@ -135,48 +111,86 @@ namespace StonehearthEditor
                     row[prefix + kName] = alias;
                     row[prefix + kAmount] = count.ToObject<int>();
 
-                    // TODO: look in a different place for icons if it is a material
-
-                    foreach (ModuleFile linkedAlias in jsonFileData.LinkedAliases)
+                    if (uri != null)
                     {
-                        if (linkedAlias.FullAlias.Equals(alias))
+                        var foundLinked = false;
+                        foreach (ModuleFile linkedAlias in jsonFileData.LinkedAliases)
                         {
-                            JsonFileData linked = linkedAlias.FileData as JsonFileData;
-                            JToken displayName = linked.Json.SelectToken("entity_data.stonehearth:catalog.display_name");
-                            if (displayName != null)
+                            if (linkedAlias.FullAlias.Equals(alias))
                             {
-                                row[prefix + kName] = displayName.ToString();
-                            }
-
-                            // TODO refactor this
-                            foreach (KeyValuePair<string, FileData> fd in linked.LinkedFileData)
-                            {
-                                string path = "";
-                                if (fd.Value is JsonFileData)
-                                {
-                                    path = (fd.Value as JsonFileData).FindImageForFile();
-                                }
-                                else if (fd.Value is ImageFileData)
-                                {
-                                    path = fd.Value.Path;
-                                }
-
-                                if (path != "" && System.IO.File.Exists(path))
-                                {
-                                    row[prefix + kIcon] = ThumbnailCache.GetThumbnail(path);
-                                    break;
-                                }
+                                JsonFileData linked = linkedAlias.FileData as JsonFileData;
+                                PopulateIngredientRow(row, linked, prefix);
+                                foundLinked = true;
                             }
                         }
-                    }
 
-                    ingredientCount++;
+                        if (!foundLinked)
+                        {
+                            PopulateIngredientRow(row, jsonFileData, prefix);
+                        }
+
+                        ingredientCount++;
+                    }
                 }
 
                 mDataTable.Rows.Add(row);
             }
 
             this.recipesGridView.DataSource = mDataTable;
+
+            // Remove [x] broken image icons
+            foreach (var column in this.recipesGridView.Columns)
+            {
+                if (column is DataGridViewImageColumn)
+                {
+                    (column as DataGridViewImageColumn).DefaultCellStyle.NullValue = null;
+                }
+            }
+        }
+
+        private void PopulateIngredientRow(DataRow row, JsonFileData jsonFileData, string prefix)
+        {
+            row[prefix + kName] = GetTranslatedName(GetDisplayName(jsonFileData));
+            row[prefix + kIcon] = GetIcon(jsonFileData);
+        }
+
+        private void PopulationRecipeRow(DataRow row, JsonFileData jsonFileData)
+        {
+            row[kNetWorth] = jsonFileData.NetWorth;
+            row[kDisplayName] = GetTranslatedName(GetDisplayName(jsonFileData));
+            row[kIcon] = GetIcon(jsonFileData);
+        }
+
+        private string GetDisplayName(JsonFileData jsonFileData)
+        {
+            JsonFileData mixinsFile = jsonFileData.CreateFileWithMixinsApplied();
+            JToken displayName = mixinsFile.Json.SelectToken("entity_data.stonehearth:catalog.display_name");
+            return displayName.ToString();
+
+        }
+
+        private Image GetIcon(JsonFileData jsonFileData)
+        {
+            foreach (KeyValuePair<string, FileData> kv in jsonFileData.LinkedFileData)
+            {
+                FileData fileData = kv.Value;
+                string path = "";
+                if (fileData is JsonFileData)
+                {
+                    path = (fileData as JsonFileData).FindImageForFile();
+                }
+                else if (fileData is ImageFileData)
+                {
+                    path = fileData.Path;
+                }
+
+                if (path != "" && System.IO.File.Exists(path))
+                {
+                    return ThumbnailCache.GetThumbnail(path);
+                }
+            }
+
+            return null;
         }
 
         // Add a single ingredient column
@@ -191,17 +205,26 @@ namespace StonehearthEditor
 
         private void RemoveIngredientColumn()
         {
-            int recipeColumnCount = 6; // TODO: put the column names in a table, and get the count from there
-            int ingredientsColumnCount = 3;
-            for (int i = mDataTable.Columns.Count; i > mDataTable.Columns.Count - ingredientsColumnCount; i--)
+            for (int i = mDataTable.Columns.Count; i > mDataTable.Columns.Count - kIngredientColCount; i--)
             {
                 mDataTable.Columns.RemoveAt(i);
             }
         }
 
+        // TODO: implement
+        private FileData GetFileDataForCell(int row, int column)
+        {
+            throw new NotImplementedException();
+        }
+
         private string GetIngredientPrefix(int columnNum)
         {
             return "C" + columnNum + " ";
+        }
+
+        private string GetTranslatedName(string locKey)
+        {
+            return ModuleDataManager.GetInstance().LocalizeString(locKey, true);
         }
 
         private void recipeGridView_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
