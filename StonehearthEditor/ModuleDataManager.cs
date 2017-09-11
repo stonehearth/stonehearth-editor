@@ -411,8 +411,15 @@ namespace StonehearthEditor
             return mModules[modName];
         }
 
-        public string LocalizeString(string key)
+        public string LocalizeString(string key, bool trimKey = false)
         {
+            // Strip the i18n() from the key
+            if (trimKey)
+            {
+                int i18nLength = "i18n(".Length;
+                key = key.Substring(i18nLength, key.Length - i18nLength - 1);
+            }
+
             string[] split = key.Split(':');
             string modName = "stonehearth";
             if (split.Length > 1)
