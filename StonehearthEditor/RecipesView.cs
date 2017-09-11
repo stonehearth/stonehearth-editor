@@ -28,7 +28,7 @@ namespace StonehearthEditor
 
         private DataTable mDataTable = new DataTable();
         private int mIngredientColumns = 0;
-        private bool includeAllMods = false;
+        private bool mBaseModsOnly = true;
 
         public RecipesView()
         {
@@ -42,6 +42,7 @@ namespace StonehearthEditor
 
         private void LoadColumnsData()
         {
+            // Add recipe columns
             mDataTable.Columns.Add(new DataColumn(kIcon, typeof(Image)));
             mDataTable.Columns.Add(new DataColumn(kAlias, typeof(string)));
             mDataTable.Columns.Add(new DataColumn(kDisplayName, typeof(string)));
@@ -49,10 +50,56 @@ namespace StonehearthEditor
             mDataTable.Columns.Add(new DataColumn(kNetWorth, typeof(int)));
             mDataTable.Columns.Add(new DataColumn(kEffort, typeof(int)));
 
-            ModuleFile m = ModuleDataManager.GetInstance().GetModuleFile("stonehearth:jobs:engineer");
-            JsonFileData f = ModuleDataManager.GetInstance().GetSelectedFileData("stonehearth\\aliases\\jobs:engineer\\recipes") as JsonFileData;
+            foreach (Module module in ModuleDataManager.GetInstance().GetAllModules())
+            {
+                bool shouldIncludeMod = mBaseModsOnly ? (module.Name == "stonehearth" || module.Name == "rayyas_children") : true;
+                ModuleFile jobsIndex = module.GetAliasFile("jobs:index");
+                if (shouldIncludeMod && jobsIndex != null)
+                {
+                    JObject jobIndexJson = (jobsIndex.FileData as JsonFileData).Json;
+                    JObject jobs = jobIndexJson["jobs"] as JObject;
+
+                    foreach (JProperty job in jobs.Properties())
+                    {
+                        LoadRecipesForJob(job.Value["description"].ToString());
+                    }
+                }
+            }
+
             //"stonehearth: data: resource_constants"
-            Dictionary<string, FileData> recipeFileData = f.LinkedFileData;
+
+            this.recipesGridView.DataSource = mDataTable;
+            ClearBrokenImages();
+        }
+
+        // Remove [x] broken image icons
+        private void ClearBrokenImages()
+        {
+
+            foreach (var column in this.recipesGridView.Columns)
+            {
+                if (column is DataGridViewImageColumn)
+                {
+                    (column as DataGridViewImageColumn).DefaultCellStyle.NullValue = null;
+                }
+            }
+        }
+
+        private void LoadRecipesForJob(string jobAlias)
+        {
+            string modName = jobAlias.Split(':')[0];
+            int index = jobAlias.IndexOf(':');
+            string jobKey = jobAlias.Substring(index + 1);
+            char sep = System.IO.Path.DirectorySeparatorChar;
+            string recipeFileDataKey = modName + sep + "aliases" + sep + jobKey + sep + "recipes";
+
+            JsonFileData recipesIndex = ModuleDataManager.GetInstance().GetSelectedFileData(recipeFileDataKey) as JsonFileData;
+
+            // Non-crafter jobs will not have recipes
+            if (recipesIndex == null)
+                return;
+
+            Dictionary<string, FileData> recipeFileData = recipesIndex.LinkedFileData;
             foreach (KeyValuePair<string, FileData> recipe in recipeFileData)
             {
                 DataRow row = mDataTable.NewRow();
@@ -134,17 +181,6 @@ namespace StonehearthEditor
                 }
 
                 mDataTable.Rows.Add(row);
-            }
-
-            this.recipesGridView.DataSource = mDataTable;
-
-            // Remove [x] broken image icons
-            foreach (var column in this.recipesGridView.Columns)
-            {
-                if (column is DataGridViewImageColumn)
-                {
-                    (column as DataGridViewImageColumn).DefaultCellStyle.NullValue = null;
-                }
             }
         }
 

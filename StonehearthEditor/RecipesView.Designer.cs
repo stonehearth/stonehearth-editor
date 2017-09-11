@@ -47,6 +47,7 @@
             this.recipesGridView.ContextMenuStrip = this.recipesCellContextMenu;
             this.recipesGridView.Location = new System.Drawing.Point(0, 0);
             this.recipesGridView.Name = "recipesGridView";
+            this.recipesGridView.RowHeadersVisible = false;
             this.recipesGridView.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.AutoSizeToAllHeaders;
             this.recipesGridView.RowTemplate.ContextMenuStrip = this.recipesCellContextMenu;
             this.recipesGridView.RowTemplate.Height = 30;
