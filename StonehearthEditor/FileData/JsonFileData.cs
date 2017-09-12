@@ -272,7 +272,7 @@ namespace StonehearthEditor
             return fileName;
         }
 
-        public string FindImageForFile()
+        public string GetImageForFile()
         {
             foreach (FileData openedFile in OpenedFiles)
             {

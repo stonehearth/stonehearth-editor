@@ -16,6 +16,7 @@ namespace StonehearthEditor
         private const string kIcon = "Icon";
         private const string kAlias = "Alias";
         private const string kDisplayName = "Display Name";
+        private const string kCrafter = "Crafter";
         private const string kLvlReq = "Lvl Req";
         private const string kNetWorth = "Net Worth";
         private const string kEffort = "Effort";
@@ -23,7 +24,7 @@ namespace StonehearthEditor
         private const string kName = "Name";
         private const string kAmount = "Amount";
 
-        private const int kRecipeColCount = 6;
+        private const int kRecipeColCount = 7;
         private const int kIngredientColCount = 3;
 
         private DataTable mDataTable = new DataTable();
@@ -46,6 +47,7 @@ namespace StonehearthEditor
             mDataTable.Columns.Add(new DataColumn(kIcon, typeof(Image)));
             mDataTable.Columns.Add(new DataColumn(kAlias, typeof(string)));
             mDataTable.Columns.Add(new DataColumn(kDisplayName, typeof(string)));
+            mDataTable.Columns.Add(new DataColumn(kCrafter, typeof(string)));
             mDataTable.Columns.Add(new DataColumn(kLvlReq, typeof(int)));
             mDataTable.Columns.Add(new DataColumn(kNetWorth, typeof(int)));
             mDataTable.Columns.Add(new DataColumn(kEffort, typeof(int)));
@@ -112,6 +114,7 @@ namespace StonehearthEditor
                 JToken lvlReq = recipeJson["level_requirement"];
                 row[kLvlReq] = lvlReq == null ? 0 : lvlReq.ToObject<int>();
                 row[kEffort] = recipeJson["work_units"].ToObject<int>();
+                row[kCrafter] = jobAlias;
 
                 foreach (JToken product in productArray)
                 {
@@ -213,7 +216,7 @@ namespace StonehearthEditor
                 string path = "";
                 if (fileData is JsonFileData)
                 {
-                    path = (fileData as JsonFileData).FindImageForFile();
+                    path = (fileData as JsonFileData).GetImageForFile();
                 }
                 else if (fileData is ImageFileData)
                 {

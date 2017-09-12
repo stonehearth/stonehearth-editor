@@ -50,7 +50,7 @@ namespace StonehearthEditor
                         continue;
                     }
 
-                    string imageFile = data.FindImageForFile();
+                    string imageFile = data.GetImageForFile();
                     if (string.IsNullOrEmpty(imageFile))
                     {
                         Console.WriteLine("file " + data.FileName + " has no icon!");
@@ -131,7 +131,7 @@ namespace StonehearthEditor
                     for (int j = 0; j < count; j++)
                     {
                         JsonFileData data = list[j];
-                        string imageFile = data.FindImageForFile();
+                        string imageFile = data.GetImageForFile();
                         if (string.IsNullOrEmpty(imageFile))
                         {
                             Console.WriteLine("file " + data.FileName + " has no icon!");
