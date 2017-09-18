@@ -27,9 +27,10 @@ namespace StonehearthEditor
         private const int kRecipeColCount = 7;
         private const int kIngredientColCount = 3;
 
-        private DataTable mDataTable = new DataTable();
         private int mIngredientColumns = 0;
         private bool mBaseModsOnly = true;
+        private DataTable mDataTable = new DataTable();
+        private Dictionary<string, Image> mMaterialImages = new Dictionary<string, Image>();
 
         public RecipesView()
         {
@@ -52,23 +53,45 @@ namespace StonehearthEditor
             mDataTable.Columns.Add(new DataColumn(kNetWorth, typeof(int)));
             mDataTable.Columns.Add(new DataColumn(kEffort, typeof(int)));
 
-            foreach (Module module in ModuleDataManager.GetInstance().GetAllModules())
+            // TODO refactor
+            Module sh = ModuleDataManager.GetInstance().GetMod("stonehearth");
+            ModuleFile resourceConstants = sh.GetAliasFile("data:resource_constants");
+            if (resourceConstants != null)
             {
-                bool shouldIncludeMod = mBaseModsOnly ? (module.Name == "stonehearth" || module.Name == "rayyas_children") : true;
-                ModuleFile jobsIndex = module.GetAliasFile("jobs:index");
-                if (shouldIncludeMod && jobsIndex != null)
-                {
-                    JObject jobIndexJson = (jobsIndex.FileData as JsonFileData).Json;
-                    JObject jobs = jobIndexJson["jobs"] as JObject;
+                JsonFileData jsonFileData = resourceConstants.FileData as JsonFileData;
+                JObject resourceConstantsJson = jsonFileData.Json;
+                JObject resourceJson = resourceConstantsJson["resources"] as JObject;
 
-                    foreach (JProperty job in jobs.Properties())
+                foreach (JProperty resource in resourceJson.Properties())
+                {
+                    string name = resource.Name;
+                    string iconLocation = resource.Value["icon"].ToString();
+                    string path = JsonHelper.GetFileFromFileJson(iconLocation, jsonFileData.Directory);
+                    if (path != "" && System.IO.File.Exists(path))
                     {
-                        LoadRecipesForJob(job.Value["description"].ToString());
+                        mMaterialImages.Add(name, ThumbnailCache.GetThumbnail(path));
                     }
                 }
             }
 
-            //"stonehearth: data: resource_constants"
+            foreach (Module module in ModuleDataManager.GetInstance().GetAllModules())
+            {
+                bool shouldIncludeMod = mBaseModsOnly ? (module.Name == "stonehearth" || module.Name == "rayyas_children") : true;
+                if (shouldIncludeMod)
+                {
+                    ModuleFile jobsIndex = module.GetAliasFile("jobs:index");
+                    if (jobsIndex != null)
+                    {
+                        JObject jobIndexJson = (jobsIndex.FileData as JsonFileData).Json;
+                        JObject jobs = jobIndexJson["jobs"] as JObject;
+
+                        foreach (JProperty job in jobs.Properties())
+                        {
+                            LoadRecipesForJob(job.Value["description"].ToString());
+                        }
+                    }
+                }
+            }
 
             this.recipesGridView.DataSource = mDataTable;
             ClearBrokenImages();
@@ -161,7 +184,16 @@ namespace StonehearthEditor
                     row[prefix + kName] = alias;
                     row[prefix + kAmount] = count.ToObject<int>();
 
-                    if (uri != null)
+                    if (material != null)
+                    {
+                        Image icon;
+                        mMaterialImages.TryGetValue(material.ToString(), out icon);
+                        if (icon != null)
+                        {
+                            row[prefix + kIcon] = icon;
+                        }
+                    }
+                    else if (uri != null)
                     {
                         var foundLinked = false;
                         foreach (ModuleFile linkedAlias in jsonFileData.LinkedAliases)
