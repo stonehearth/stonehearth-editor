@@ -6,6 +6,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Newtonsoft.Json.Linq;
@@ -40,8 +41,16 @@ namespace StonehearthEditor
 
         public void Initialize()
         {
+            MakeDoubleBuffered();
             LoadMaterialImages();
             LoadColumnsData();
+        }
+
+        // Helps address DataGridView's slow repaint time. See https://www.codeproject.com/Tips/654101/Double-Buffering-a-DataGridview
+        private void MakeDoubleBuffered()
+        {
+            BindingFlags bindings = BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.SetProperty;
+            typeof(DataGridView).InvokeMember("DoubleBuffered", bindings, null, recipesGridView, new object[] { true });
         }
 
         private void LoadColumnsData()
@@ -56,13 +65,13 @@ namespace StonehearthEditor
             mDataTable.Columns.Add(new DataColumn(kEffort, typeof(int)));
 
             LoadAllRecipes();
-            this.recipesGridView.DataSource = mDataTable;
+            recipesGridView.DataSource = mDataTable;
             ConfigureColumns();
         }
 
         private void ConfigureColumns()
         {
-            foreach (DataGridViewColumn column in this.recipesGridView.Columns)
+            foreach (DataGridViewColumn column in recipesGridView.Columns)
             {
                 // Remove [x] broken image icons
                 if (column is DataGridViewImageColumn)
@@ -84,7 +93,7 @@ namespace StonehearthEditor
 
             }
 
-            this.recipesGridView.Columns[kAlias].ReadOnly = true;
+            recipesGridView.Columns[kAlias].ReadOnly = true;
         }
 
         private void LoadAllRecipes()
@@ -323,7 +332,14 @@ namespace StonehearthEditor
             return ModuleDataManager.GetInstance().LocalizeString(locKey, true);
         }
 
-        private void recipeGridView_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        private void searchButton_Click(object sender, EventArgs e)
+        {
+            string searchTerm = searchBox.Text;
+            searchBox.BackColor = Color.Gold;
+            // TODO: filter
+        }
+
+        private void recipesGridView_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
             {
