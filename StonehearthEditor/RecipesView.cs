@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Data;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Newtonsoft.Json.Linq;
@@ -39,6 +40,7 @@ namespace StonehearthEditor
 
         public void Initialize()
         {
+            LoadMaterialImages();
             LoadColumnsData();
         }
 
@@ -48,32 +50,45 @@ namespace StonehearthEditor
             mDataTable.Columns.Add(new DataColumn(kIcon, typeof(Image)));
             mDataTable.Columns.Add(new DataColumn(kAlias, typeof(string)));
             mDataTable.Columns.Add(new DataColumn(kDisplayName, typeof(string)));
+            mDataTable.Columns.Add(new DataColumn(kNetWorth, typeof(int)));
             mDataTable.Columns.Add(new DataColumn(kCrafter, typeof(string)));
             mDataTable.Columns.Add(new DataColumn(kLvlReq, typeof(int)));
-            mDataTable.Columns.Add(new DataColumn(kNetWorth, typeof(int)));
             mDataTable.Columns.Add(new DataColumn(kEffort, typeof(int)));
 
-            // TODO refactor
-            Module sh = ModuleDataManager.GetInstance().GetMod("stonehearth");
-            ModuleFile resourceConstants = sh.GetAliasFile("data:resource_constants");
-            if (resourceConstants != null)
-            {
-                JsonFileData jsonFileData = resourceConstants.FileData as JsonFileData;
-                JObject resourceConstantsJson = jsonFileData.Json;
-                JObject resourceJson = resourceConstantsJson["resources"] as JObject;
+            LoadAllRecipes();
+            this.recipesGridView.DataSource = mDataTable;
+            ConfigureColumns();
+        }
 
-                foreach (JProperty resource in resourceJson.Properties())
+        private void ConfigureColumns()
+        {
+            foreach (DataGridViewColumn column in this.recipesGridView.Columns)
+            {
+                // Remove [x] broken image icons
+                if (column is DataGridViewImageColumn)
                 {
-                    string name = resource.Name;
-                    string iconLocation = resource.Value["icon"].ToString();
-                    string path = JsonHelper.GetFileFromFileJson(iconLocation, jsonFileData.Directory);
-                    if (path != "" && System.IO.File.Exists(path))
-                    {
-                        mMaterialImages.Add(name, ThumbnailCache.GetThumbnail(path));
-                    }
+                    (column as DataGridViewImageColumn).DefaultCellStyle.NullValue = null;
                 }
+
+                // Color ingredient columns
+                Regex matchOdd = new Regex("C[13579]");
+                Regex matchEven = new Regex("C[02468]");
+                if (matchOdd.IsMatch(column.Name))
+                {
+                    column.DefaultCellStyle.BackColor = Color.LemonChiffon;
+                }
+                else if (matchEven.IsMatch(column.Name))
+                {
+                    column.DefaultCellStyle.BackColor = Color.LightBlue;
+                }
+
             }
 
+            this.recipesGridView.Columns[kAlias].ReadOnly = true;
+        }
+
+        private void LoadAllRecipes()
+        {
             foreach (Module module in ModuleDataManager.GetInstance().GetAllModules())
             {
                 bool shouldIncludeMod = mBaseModsOnly ? (module.Name == "stonehearth" || module.Name == "rayyas_children") : true;
@@ -90,22 +105,6 @@ namespace StonehearthEditor
                             LoadRecipesForJob(job.Value["description"].ToString());
                         }
                     }
-                }
-            }
-
-            this.recipesGridView.DataSource = mDataTable;
-            ClearBrokenImages();
-        }
-
-        // Remove [x] broken image icons
-        private void ClearBrokenImages()
-        {
-
-            foreach (var column in this.recipesGridView.Columns)
-            {
-                if (column is DataGridViewImageColumn)
-                {
-                    (column as DataGridViewImageColumn).DefaultCellStyle.NullValue = null;
                 }
             }
         }
@@ -221,7 +220,8 @@ namespace StonehearthEditor
 
         private void PopulateIngredientRow(DataRow row, JsonFileData jsonFileData, string prefix)
         {
-            row[prefix + kName] = GetTranslatedName(GetDisplayName(jsonFileData));
+            //row[prefix + kName] = GetTranslatedName(GetDisplayName(jsonFileData));
+            row[prefix + kName] = jsonFileData.GetModuleFile().FullAlias;
             row[prefix + kIcon] = GetIcon(jsonFileData);
         }
 
@@ -279,6 +279,31 @@ namespace StonehearthEditor
             for (int i = mDataTable.Columns.Count; i > mDataTable.Columns.Count - kIngredientColCount; i--)
             {
                 mDataTable.Columns.RemoveAt(i);
+            }
+        }
+
+        // Load the material constants from the stonehearth mod. This needs to be done before the data columns
+        // are populated,since they use this map to fill in data grid for material ingredients
+        private void LoadMaterialImages()
+        {
+            Module sh = ModuleDataManager.GetInstance().GetMod("stonehearth");
+            ModuleFile resourceConstants = sh.GetAliasFile("data:resource_constants");
+            if (resourceConstants != null)
+            {
+                JsonFileData jsonFileData = resourceConstants.FileData as JsonFileData;
+                JObject resourceConstantsJson = jsonFileData.Json;
+                JObject resourceJson = resourceConstantsJson["resources"] as JObject;
+
+                foreach (JProperty resource in resourceJson.Properties())
+                {
+                    string name = resource.Name;
+                    string iconLocation = resource.Value["icon"].ToString();
+                    string path = JsonHelper.GetFileFromFileJson(iconLocation, jsonFileData.Directory);
+                    if (path != "" && System.IO.File.Exists(path))
+                    {
+                        mMaterialImages.Add(name, ThumbnailCache.GetThumbnail(path));
+                    }
+                }
             }
         }
 
