@@ -338,6 +338,24 @@ namespace StonehearthEditor
             return ModuleDataManager.GetInstance().LocalizeString(locKey, true);
         }
 
+        private DataGridViewCell GetStartSelectedCell()
+        {
+            if (recipesGridView.SelectedCells.Count == 0)
+                return null;
+
+            int rowIndex = recipesGridView.Rows.Count - 1;
+            int colIndex = recipesGridView.Columns.Count - 1;
+            foreach (DataGridViewCell cell in recipesGridView.SelectedCells)
+            {
+                if (cell.RowIndex < rowIndex)
+                    rowIndex = cell.RowIndex;
+                if (cell.ColumnIndex < colIndex)
+                    colIndex = cell.ColumnIndex;
+            }
+
+            return recipesGridView[colIndex, rowIndex];
+        }
+
         private string GetColFilterString(string colName, string searchTerm)
         {
             return string.Format("Convert([{0}], 'System.String') LIKE '%{1}%'", colName, searchTerm);
@@ -396,6 +414,57 @@ namespace StonehearthEditor
         private void recipesGridView_CellValidating(object sender, DataGridViewCellValidatingEventArgs e)
         {
 
+        }
+
+        private void recipesGridView_KeyDown(object sender, KeyEventArgs e)
+        {
+            // Paste multiple cells
+            // TODO: repeat last clipboard value row if columns selected exceeds clipboard columns
+            if (e.Control && e.KeyCode == Keys.V)
+            {
+                if (recipesGridView.SelectedCells.Count == 0)
+                {
+                    return;
+                }
+
+                DataGridViewCell startCell = GetStartSelectedCell();
+                int row = startCell.RowIndex;
+                int col = startCell.ColumnIndex;
+
+                string s = Clipboard.GetText();
+                string[] lines = s.Split(new string[] { System.Environment.NewLine }, StringSplitOptions.None);
+                foreach (var line in lines)
+                {
+                    if (row <= (recipesGridView.Rows.Count - 1))
+                    {
+                        string[] cells = line.Split('\t');
+                        int colIndex = col;
+                        for (int i = 0; i < cells.Length && colIndex <= (recipesGridView.Columns.Count - 1); i++)
+                        {
+                            try
+                            {
+                                if (recipesGridView.Columns[colIndex].ValueType == typeof(int))
+                                {
+                                    recipesGridView[colIndex, row].Value = int.Parse(cells[i]);
+                                }
+                                else
+                                {
+                                    recipesGridView[colIndex, row].Value = cells[i];
+                                }
+                            }
+                            catch (Exception exception)
+                            {
+                                MessageBox.Show("Unable to paste cells. Error: " + exception.Message);
+                                return;
+                            }
+
+                            colIndex++;
+                        }
+
+                        row++;
+                    }
+                }
+            }
         }
     }
 }

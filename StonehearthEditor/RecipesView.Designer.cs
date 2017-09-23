@@ -51,6 +51,7 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.recipesGridView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
+            this.recipesGridView.ClipboardCopyMode = System.Windows.Forms.DataGridViewClipboardCopyMode.EnableWithoutHeaderText;
             this.recipesGridView.ContextMenuStrip = this.recipesCellContextMenu;
             this.recipesGridView.Location = new System.Drawing.Point(0, 31);
             this.recipesGridView.Name = "recipesGridView";
@@ -62,6 +63,7 @@
             this.recipesGridView.TabIndex = 0;
             this.recipesGridView.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.recipesGridView_CellMouseClick);
             this.recipesGridView.CellValidating += new System.Windows.Forms.DataGridViewCellValidatingEventHandler(this.recipesGridView_CellValidating);
+            this.recipesGridView.KeyDown += new System.Windows.Forms.KeyEventHandler(this.recipesGridView_KeyDown);
             // 
             // recipesCellContextMenu
             // 
