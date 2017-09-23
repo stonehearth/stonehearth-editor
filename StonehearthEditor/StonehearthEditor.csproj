@@ -401,6 +401,8 @@
     <None Include="images\action_add_16xSM.png" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="bin\x86\Debug\images\Find_5650.png" />
+    <None Include="images\Find_5650.png" />
     <Content Include="pages\scripts\complex-property.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

@@ -37,13 +37,18 @@ namespace StonehearthEditor
         public RecipesView()
         {
             InitializeComponent();
+            filterByColumn.SelectedIndex = 0;
         }
 
         public void Initialize()
         {
+            DateTime mStart = DateTime.Now;
             MakeDoubleBuffered();
             LoadMaterialImages();
             LoadColumnsData();
+
+            double endTime = (DateTime.Now - mStart).TotalMilliseconds;
+            int i = 1;
         }
 
         // Helps address DataGridView's slow repaint time. See https://www.codeproject.com/Tips/654101/Double-Buffering-a-DataGridview
@@ -65,7 +70,9 @@ namespace StonehearthEditor
             mDataTable.Columns.Add(new DataColumn(kEffort, typeof(int)));
 
             LoadAllRecipes();
+
             recipesGridView.DataSource = mDataTable;
+
             ConfigureColumns();
         }
 
@@ -80,8 +87,8 @@ namespace StonehearthEditor
                 }
 
                 // Color ingredient columns
-                Regex matchOdd = new Regex("C[13579]");
-                Regex matchEven = new Regex("C[02468]");
+                Regex matchOdd = new Regex("Ing[13579]");
+                Regex matchEven = new Regex("Ing[02468]");
                 if (matchOdd.IsMatch(column.Name))
                 {
                     column.DefaultCellStyle.BackColor = Color.LemonChiffon;
@@ -90,7 +97,6 @@ namespace StonehearthEditor
                 {
                     column.DefaultCellStyle.BackColor = Color.LightBlue;
                 }
-
             }
 
             recipesGridView.Columns[kAlias].ReadOnly = true;
@@ -324,7 +330,7 @@ namespace StonehearthEditor
 
         private string GetIngredientPrefix(int columnNum)
         {
-            return "C" + columnNum + " ";
+            return "Ing" + columnNum + " ";
         }
 
         private string GetTranslatedName(string locKey)
@@ -332,11 +338,51 @@ namespace StonehearthEditor
             return ModuleDataManager.GetInstance().LocalizeString(locKey, true);
         }
 
-        private void searchButton_Click(object sender, EventArgs e)
+        private string GetColFilterString(string colName, string searchTerm)
         {
-            string searchTerm = searchBox.Text;
-            searchBox.BackColor = Color.Gold;
-            // TODO: filter
+            return string.Format("Convert([{0}], 'System.String') LIKE '%{1}%'", colName, searchTerm);
+        }
+
+        private void searchBox_Filter(object sender, EventArgs e)
+        {
+            string searchTerm = searchBox.Text.ToString();
+            string colFilter = filterByColumn.Text;
+            if (searchTerm != "")
+            {
+                searchBox.BackColor = Color.Gold;
+            }
+            else
+            {
+                searchBox.BackColor = Color.White;
+            }
+
+            StringBuilder sb = new StringBuilder();
+            // Filter by all columns or all ingredient columns
+            if (colFilter == "All Columns" || colFilter.Contains("Ing "))
+            {
+                Regex matchIng = new Regex("Ing\\d");
+                for (int i = 0; i < recipesGridView.Columns.Count; i++)
+                {
+                    DataGridViewColumn column = recipesGridView.Columns[i];
+                    bool isText = column.ValueType == typeof(string) || column.ValueType == typeof(int);
+                    bool match = colFilter.Contains("Ing ") ? matchIng.IsMatch(column.Name) : isText;
+                    if (match)
+                    {
+                        sb.Append(GetColFilterString(column.Name, searchTerm));
+                        if (i < recipesGridView.Columns.Count - 1)
+                        {
+                            sb.Append(" OR ");
+                        }
+                    }
+                }
+            }
+            else
+            {
+                // Filter by specific columns
+                sb.Append(GetColFilterString(colFilter, searchTerm));
+            }
+
+            mDataTable.DefaultView.RowFilter = sb.ToString();
         }
 
         private void recipesGridView_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
@@ -345,6 +391,11 @@ namespace StonehearthEditor
             {
                 recipesCellContextMenu.Show(recipesGridView, new Point(e.X, e.Y));
             }
+        }
+
+        private void recipesGridView_CellValidating(object sender, DataGridViewCellValidatingEventArgs e)
+        {
+
         }
     }
 }
