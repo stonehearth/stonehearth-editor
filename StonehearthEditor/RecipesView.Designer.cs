@@ -63,6 +63,7 @@
             this.recipesGridView.TabIndex = 0;
             this.recipesGridView.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.recipesGridView_CellMouseClick);
             this.recipesGridView.CellValidating += new System.Windows.Forms.DataGridViewCellValidatingEventHandler(this.recipesGridView_CellValidating);
+            this.recipesGridView.EditingControlShowing += new System.Windows.Forms.DataGridViewEditingControlShowingEventHandler(this.recipesGridView_EditingControlShowing);
             this.recipesGridView.KeyDown += new System.Windows.Forms.KeyEventHandler(this.recipesGridView_KeyDown);
             // 
             // recipesCellContextMenu

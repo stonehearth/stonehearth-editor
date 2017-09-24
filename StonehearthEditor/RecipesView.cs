@@ -22,7 +22,6 @@ namespace StonehearthEditor
         private const string kLvlReq = "Lvl Req";
         private const string kNetWorth = "Net Worth";
         private const string kEffort = "Effort";
-
         private const string kName = "Name";
         private const string kAmount = "Amount";
 
@@ -32,6 +31,8 @@ namespace StonehearthEditor
         private int mIngredientColumns = 0;
         private bool mBaseModsOnly = true;
         private DataTable mDataTable = new DataTable();
+
+        // Cached data
         private Dictionary<string, Image> mMaterialImages = new Dictionary<string, Image>();
 
         public RecipesView()
@@ -361,6 +362,35 @@ namespace StonehearthEditor
             return string.Format("Convert([{0}], 'System.String') LIKE '%{1}%'", colName, searchTerm);
         }
 
+        private AutoCompleteStringCollection GetAutoCompleteCollection(string colName)
+        {
+            AutoCompleteStringCollection autoCompleteStrings = new AutoCompleteStringCollection();
+
+            if (colName.Contains(" Name"))
+            {
+                // Add materials
+                foreach (KeyValuePair<string, Image> kv in mMaterialImages)
+                {
+                    autoCompleteStrings.Add(kv.Key);
+                }
+
+                ModuleDataManager mdm = ModuleDataManager.GetInstance();
+                Dictionary<string, JsonFileData> itemJsons = mdm.GetJsonsByTerm("entity_data.stonehearth:net_worth");
+                foreach (KeyValuePair<string, JsonFileData> kv in itemJsons)
+                {
+                    string modName = mdm.GetModNameFromAlias(kv.Key);
+                    bool shouldIncludeMod = mBaseModsOnly ? (modName == "stonehearth" || modName == "rayyas_children") : true;
+                    if (shouldIncludeMod)
+                    {
+                        autoCompleteStrings.Add(kv.Key);
+                    }
+                }
+            }
+            
+
+            return autoCompleteStrings;
+        }
+
         private void searchBox_Filter(object sender, EventArgs e)
         {
             string searchTerm = searchBox.Text.ToString();
@@ -465,6 +495,17 @@ namespace StonehearthEditor
                     }
                 }
             }
+        }
+
+        private void recipesGridView_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
+        {
+            int colIndex = recipesGridView.CurrentCell.ColumnIndex;
+            string colName = recipesGridView.Columns[colIndex].HeaderText;
+            TextBox autoText = e.Control as TextBox;
+            autoText.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+            autoText.AutoCompleteSource = AutoCompleteSource.CustomSource;
+            AutoCompleteStringCollection autoCompleteStrings = GetAutoCompleteCollection(colName);
+            autoText.AutoCompleteCustomSource = autoCompleteStrings;
         }
     }
 }
