@@ -47,6 +47,7 @@
             // 
             this.recipesGridView.AllowUserToAddRows = false;
             this.recipesGridView.AllowUserToDeleteRows = false;
+            this.recipesGridView.AllowUserToResizeRows = false;
             this.recipesGridView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
@@ -62,7 +63,7 @@
             this.recipesGridView.Size = new System.Drawing.Size(758, 518);
             this.recipesGridView.TabIndex = 0;
             this.recipesGridView.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.recipesGridView_CellMouseClick);
-            this.recipesGridView.CellValidating += new System.Windows.Forms.DataGridViewCellValidatingEventHandler(this.recipesGridView_CellValidating);
+            this.recipesGridView.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.recipesGridView_CellValueChanged);
             this.recipesGridView.EditingControlShowing += new System.Windows.Forms.DataGridViewEditingControlShowingEventHandler(this.recipesGridView_EditingControlShowing);
             this.recipesGridView.KeyDown += new System.Windows.Forms.KeyEventHandler(this.recipesGridView_KeyDown);
             // 
@@ -122,16 +123,6 @@
             // filterByColumn
             // 
             this.filterByColumn.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.filterByColumn.Items.AddRange(new object[] {
-            "All Columns",
-            "Alias",
-            "Display Name",
-            "Crafter",
-            "Lvl Req",
-            "Net Worth",
-            "Effort",
-            "Ing Name",
-            "Ing Amount"});
             this.filterByColumn.Name = "filterByColumn";
             this.filterByColumn.Size = new System.Drawing.Size(121, 25);
             this.filterByColumn.ToolTipText = "Select column to filter by";

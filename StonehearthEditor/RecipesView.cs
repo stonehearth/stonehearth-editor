@@ -18,26 +18,40 @@ namespace StonehearthEditor
         private const string kIcon = "Icon";
         private const string kAlias = "Alias";
         private const string kDisplayName = "Display Name";
-        private const string kCrafter = "Crafter";
-        private const string kLvlReq = "Lvl Req";
         private const string kNetWorth = "Net Worth";
-        private const string kEffort = "Effort";
+        private const string kCrafter = "R Crafter";
+        private const string kLvlReq = "R Lvl Req";
+        private const string kEffort = "R Effort";
+        private const string kIngr = "Ingr";
         private const string kName = "Name";
         private const string kAmount = "Amount";
+        private const string kAllCol = "All Columns";
 
         private const int kRecipeColCount = 7;
         private const int kIngredientColCount = 3;
 
         private int mIngredientColumns = 0;
         private bool mBaseModsOnly = true;
+
+        private HashSet<DataGridViewRow> mModifiedRows = new HashSet<DataGridViewRow>();
         private DataTable mDataTable = new DataTable();
 
         // Cached data
         private Dictionary<string, Image> mMaterialImages = new Dictionary<string, Image>();
+        private List<string> mJobAliases = new List<string>();
 
         public RecipesView()
         {
             InitializeComponent();
+            filterByColumn.Items.Add(kAllCol);
+            filterByColumn.Items.Add(kAlias);
+            filterByColumn.Items.Add(kDisplayName);
+            filterByColumn.Items.Add(kCrafter);
+            filterByColumn.Items.Add(kLvlReq);
+            filterByColumn.Items.Add(kNetWorth);
+            filterByColumn.Items.Add(kEffort);
+            filterByColumn.Items.Add(kIngr + " " + kName);
+            filterByColumn.Items.Add(kIngr + " " + kAmount);
             filterByColumn.SelectedIndex = 0;
         }
 
@@ -47,9 +61,6 @@ namespace StonehearthEditor
             MakeDoubleBuffered();
             LoadMaterialImages();
             LoadColumnsData();
-
-            double endTime = (DateTime.Now - mStart).TotalMilliseconds;
-            int i = 1;
         }
 
         // Helps address DataGridView's slow repaint time. See https://www.codeproject.com/Tips/654101/Double-Buffering-a-DataGridview
@@ -88,8 +99,8 @@ namespace StonehearthEditor
                 }
 
                 // Color ingredient columns
-                Regex matchOdd = new Regex("Ing[13579]");
-                Regex matchEven = new Regex("Ing[02468]");
+                Regex matchOdd = new Regex(kIngr + "[13579]");
+                Regex matchEven = new Regex(kIngr + "[02468]");
                 if (matchOdd.IsMatch(column.Name))
                 {
                     column.DefaultCellStyle.BackColor = Color.LemonChiffon;
@@ -118,7 +129,9 @@ namespace StonehearthEditor
 
                         foreach (JProperty job in jobs.Properties())
                         {
-                            LoadRecipesForJob(job.Value["description"].ToString());
+                            string jobAlias = job.Value["description"].ToString();
+                            mJobAliases.Add(jobAlias);
+                            LoadRecipesForJob(jobAlias);
                         }
                     }
                 }
@@ -331,7 +344,7 @@ namespace StonehearthEditor
 
         private string GetIngredientPrefix(int columnNum)
         {
-            return "Ing" + columnNum + " ";
+            return kIngr + columnNum + " ";
         }
 
         private string GetTranslatedName(string locKey)
@@ -365,8 +378,7 @@ namespace StonehearthEditor
         private AutoCompleteStringCollection GetAutoCompleteCollection(string colName)
         {
             AutoCompleteStringCollection autoCompleteStrings = new AutoCompleteStringCollection();
-
-            if (colName.Contains(" Name"))
+            if (new Regex(kIngr + "\\d" + kName).IsMatch(colName))
             {
                 // Add materials
                 foreach (KeyValuePair<string, Image> kv in mMaterialImages)
@@ -386,7 +398,10 @@ namespace StonehearthEditor
                     }
                 }
             }
-            
+            else if (colName == kCrafter)
+            {
+                autoCompleteStrings.AddRange(mJobAliases.ToArray());
+            }
 
             return autoCompleteStrings;
         }
@@ -406,14 +421,14 @@ namespace StonehearthEditor
 
             StringBuilder sb = new StringBuilder();
             // Filter by all columns or all ingredient columns
-            if (colFilter == "All Columns" || colFilter.Contains("Ing "))
+            if (colFilter == kAllCol || colFilter.Contains(kIngr))
             {
-                Regex matchIng = new Regex("Ing\\d");
+                Regex matchIng = new Regex(kIngr + "\\d");
                 for (int i = 0; i < recipesGridView.Columns.Count; i++)
                 {
                     DataGridViewColumn column = recipesGridView.Columns[i];
                     bool isText = column.ValueType == typeof(string) || column.ValueType == typeof(int);
-                    bool match = colFilter.Contains("Ing ") ? matchIng.IsMatch(column.Name) : isText;
+                    bool match = colFilter.Contains(kIngr) ? matchIng.IsMatch(column.Name) : isText;
                     if (match)
                     {
                         sb.Append(GetColFilterString(column.Name, searchTerm));
@@ -439,11 +454,6 @@ namespace StonehearthEditor
             {
                 recipesCellContextMenu.Show(recipesGridView, new Point(e.X, e.Y));
             }
-        }
-
-        private void recipesGridView_CellValidating(object sender, DataGridViewCellValidatingEventArgs e)
-        {
-
         }
 
         private void recipesGridView_KeyDown(object sender, KeyEventArgs e)
@@ -506,6 +516,13 @@ namespace StonehearthEditor
             autoText.AutoCompleteSource = AutoCompleteSource.CustomSource;
             AutoCompleteStringCollection autoCompleteStrings = GetAutoCompleteCollection(colName);
             autoText.AutoCompleteCustomSource = autoCompleteStrings;
+        }
+
+        private void recipesGridView_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            int rowIndex = recipesGridView.CurrentCell.RowIndex;
+            mModifiedRows.Add(recipesGridView.Rows[rowIndex]);
+            // TODO: update modified rows on save
         }
     }
 }
