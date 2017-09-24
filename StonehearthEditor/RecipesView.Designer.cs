@@ -47,6 +47,7 @@
             // 
             this.recipesGridView.AllowUserToAddRows = false;
             this.recipesGridView.AllowUserToDeleteRows = false;
+            this.recipesGridView.AllowUserToResizeColumns = false;
             this.recipesGridView.AllowUserToResizeRows = false;
             this.recipesGridView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 

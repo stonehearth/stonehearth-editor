@@ -34,6 +34,7 @@ namespace StonehearthEditor
         private bool mBaseModsOnly = true;
 
         private HashSet<DataGridViewRow> mModifiedRows = new HashSet<DataGridViewRow>();
+        private HashSet<int> comboBoxColumns = new HashSet<int>();
         private DataTable mDataTable = new DataTable();
 
         // Cached data
@@ -90,8 +91,27 @@ namespace StonehearthEditor
 
         private void ConfigureColumns()
         {
-            foreach (DataGridViewColumn column in recipesGridView.Columns)
+            for (int i = 0; i < recipesGridView.Columns.Count; i++)
             {
+                var column = recipesGridView.Columns[i];
+
+                // Add combo boxes for columns that have a predetermined set of valid values
+                if ((column.Name.StartsWith(kIngr) && column.Name.EndsWith(kName)) ||
+                    (column.Name == kCrafter))
+                {
+                    var newColumn = new DataGridViewComboBoxColumn();
+                    newColumn.Name = column.Name;
+                    newColumn.DataPropertyName = column.DataPropertyName;
+                    newColumn.AutoComplete = false;
+                    newColumn.DisplayStyle = DataGridViewComboBoxDisplayStyle.Nothing;
+                    newColumn.DataSource = GetAutoCompleteStrings(newColumn.Name);
+
+                    recipesGridView.Columns.RemoveAt(i);
+                    recipesGridView.Columns.Insert(i, newColumn);
+                    comboBoxColumns.Add(i);
+                    column = newColumn;
+                }
+
                 // Remove [x] broken image icons
                 if (column is DataGridViewImageColumn)
                 {
@@ -108,6 +128,9 @@ namespace StonehearthEditor
                 else if (matchEven.IsMatch(column.Name))
                 {
                     column.DefaultCellStyle.BackColor = Color.LightBlue;
+                } else if (column.Name.StartsWith("R "))
+                {
+                    column.DefaultCellStyle.BackColor = Color.Azure;
                 }
             }
 
@@ -249,7 +272,6 @@ namespace StonehearthEditor
 
         private void PopulateIngredientRow(DataRow row, JsonFileData jsonFileData, string prefix)
         {
-            //row[prefix + kName] = GetTranslatedName(GetDisplayName(jsonFileData));
             row[prefix + kName] = jsonFileData.GetModuleFile().FullAlias;
             row[prefix + kIcon] = GetIcon(jsonFileData);
         }
@@ -266,7 +288,6 @@ namespace StonehearthEditor
             JsonFileData mixinsFile = jsonFileData.CreateFileWithMixinsApplied();
             JToken displayName = mixinsFile.Json.SelectToken("entity_data.stonehearth:catalog.display_name");
             return displayName.ToString();
-
         }
 
         private Image GetIcon(JsonFileData jsonFileData)
@@ -375,15 +396,15 @@ namespace StonehearthEditor
             return string.Format("Convert([{0}], 'System.String') LIKE '%{1}%'", colName, searchTerm);
         }
 
-        private AutoCompleteStringCollection GetAutoCompleteCollection(string colName)
+        private List<string> GetAutoCompleteStrings(string colName)
         {
-            AutoCompleteStringCollection autoCompleteStrings = new AutoCompleteStringCollection();
-            if (new Regex(kIngr + "\\d" + kName).IsMatch(colName))
+            List<string> strings = new List<string>();
+            if (colName.StartsWith(kIngr) && colName.EndsWith(kName))
             {
                 // Add materials
                 foreach (KeyValuePair<string, Image> kv in mMaterialImages)
                 {
-                    autoCompleteStrings.Add(kv.Key);
+                    strings.Add(kv.Key);
                 }
 
                 ModuleDataManager mdm = ModuleDataManager.GetInstance();
@@ -394,16 +415,16 @@ namespace StonehearthEditor
                     bool shouldIncludeMod = mBaseModsOnly ? (modName == "stonehearth" || modName == "rayyas_children") : true;
                     if (shouldIncludeMod)
                     {
-                        autoCompleteStrings.Add(kv.Key);
+                        strings.Add(kv.Key);
                     }
                 }
             }
             else if (colName == kCrafter)
             {
-                autoCompleteStrings.AddRange(mJobAliases.ToArray());
+                strings.AddRange(mJobAliases.ToArray());
             }
 
-            return autoCompleteStrings;
+            return strings;
         }
 
         private void searchBox_Filter(object sender, EventArgs e)
@@ -509,13 +530,24 @@ namespace StonehearthEditor
 
         private void recipesGridView_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
         {
-            int colIndex = recipesGridView.CurrentCell.ColumnIndex;
-            string colName = recipesGridView.Columns[colIndex].HeaderText;
-            TextBox autoText = e.Control as TextBox;
-            autoText.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
-            autoText.AutoCompleteSource = AutoCompleteSource.CustomSource;
-            AutoCompleteStringCollection autoCompleteStrings = GetAutoCompleteCollection(colName);
-            autoText.AutoCompleteCustomSource = autoCompleteStrings;
+            if (comboBoxColumns.Contains(recipesGridView.CurrentCell.ColumnIndex))
+                            {
+                ComboBox cbx = (ComboBox)e.Control;
+                cbx.DropDownStyle = ComboBoxStyle.DropDown;
+                cbx.AutoCompleteSource = AutoCompleteSource.ListItems;
+                cbx.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+                if ((string)cbx.Tag != "seen")
+                {
+                    cbx.Tag = "seen";
+                    cbx.KeyDown += (s, a) =>
+                    {
+                        if (cbx.DroppedDown)
+                        {
+                            cbx.DroppedDown = false;
+                        }
+                    };
+                }
+            }
         }
 
         private void recipesGridView_CellValueChanged(object sender, DataGridViewCellEventArgs e)
