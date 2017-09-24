@@ -13,11 +13,13 @@ namespace StonehearthEditor
         private string mPath;
         private string mName;
         private JObject mManifestJson;
-        private Dictionary<string, Dictionary<string, ModuleFile>> mModuleFiles = new Dictionary<string, Dictionary<string, ModuleFile>>();
         private FileSystemWatcher mFileWatcher;
         private DateTime mLastReadTime = DateTime.MinValue;
         private JObject mEnglishLocalizationJson;
         private bool mShowingManifestModifiedDialog = false;
+
+        // dictionary of aliases, components, and controllers
+        private Dictionary<string, Dictionary<string, ModuleFile>> mModuleFiles = new Dictionary<string, Dictionary<string, ModuleFile>>();
 
         public Module(string modPath)
         {

@@ -239,7 +239,7 @@ namespace StonehearthEditor
             Dictionary<string, FileData> dependencies = new Dictionary<string, FileData>();
             foreach (ModuleFile dependency in LinkedAliases)
             {
-                string alias = dependency.Module.Name + ":" + dependency.Name;
+                string alias = dependency.Module.Name + ":" + dependency.Alias;
                 if (!dependencies.ContainsKey(alias))
                 {
                     dependencies.Add(alias, dependency.FileData);

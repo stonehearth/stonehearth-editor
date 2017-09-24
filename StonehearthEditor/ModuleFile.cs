@@ -32,11 +32,11 @@ namespace StonehearthEditor
             mAlias = alias;
             mOriginalFilePath = filePath;
             mRootFile = JsonHelper.GetFileFromFileJson(filePath, module.Path);
-            int lastColon = Name.LastIndexOf(':');
-            mShortName = lastColon > -1 ? Name.Substring(lastColon + 1) : Name;
+            int lastColon = Alias.LastIndexOf(':');
+            mShortName = lastColon > -1 ? Alias.Substring(lastColon + 1) : Alias;
             if (mShortName.Equals("fine"))
             {
-                string oneBefore = Name.Substring(0, lastColon);
+                string oneBefore = Alias.Substring(0, lastColon);
                 int secondToLastColon = oneBefore.LastIndexOf(':');
                 oneBefore = secondToLastColon > -1 ? oneBefore.Substring(secondToLastColon + 1) : oneBefore;
                 mShortName = oneBefore;
@@ -98,7 +98,7 @@ namespace StonehearthEditor
 
         public TreeNode GetTreeNode(string filter)
         {
-            TreeNode treeNode = new TreeNode(Name);
+            TreeNode treeNode = new TreeNode(Alias);
             if (mFileData != null)
             {
                 bool matchesFilter = mFileData.UpdateTreeNode(treeNode, filter);
@@ -111,7 +111,8 @@ namespace StonehearthEditor
             return null;
         }
 
-        public string Name
+        // Relative aliases, does not include mod name prefix
+        public string Alias
         {
             get { return mAlias; }
         }
@@ -206,6 +207,7 @@ namespace StonehearthEditor
             get { return mShortName; }
         }
 
+        // Includes mod name prefix
         public string FullAlias
         {
             get { return mModule.Name + ':' + mAlias; }
@@ -362,7 +364,7 @@ namespace StonehearthEditor
         private void FixupLootTables()
         {
             // Fixup loot tables
-            if (Name == "mining:base_loot_table")
+            if (Alias == "mining:base_loot_table")
             {
                 JsonFileData jsonFileData = FileData as JsonFileData;
 
