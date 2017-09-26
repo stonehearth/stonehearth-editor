@@ -357,6 +357,35 @@ namespace StonehearthEditor
             }
         }
 
+        private void SetGridValue(int col, int row, string value)
+        {
+            try
+            {
+                if (recipesGridView.Columns[col].ValueType == typeof(int))
+                {
+                    recipesGridView[col, row].Value = int.Parse(value);
+                }
+                else
+                {
+                    bool valid = true;
+                    if (recipesGridView.Columns[col] is DataGridViewComboBoxColumn)
+                    {
+                        List<string> autoCompleteStrings = (recipesGridView.Columns[col] as DataGridViewComboBoxColumn).DataSource as List<string>;
+                        if (!autoCompleteStrings.Contains(value))
+                            valid = false;
+                    }
+
+                    if (valid)
+                        recipesGridView[col, row].Value = value;
+                }
+            }
+            catch (Exception exception)
+            {
+                MessageBox.Show(string.Format("Unable to set grid value for (%d, %d). Error: %s", col, row, exception.Message));
+                return;
+            }
+        }
+
         // TODO: implement
         private FileData GetFileDataForCell(int row, int column)
         {
@@ -373,22 +402,32 @@ namespace StonehearthEditor
             return ModuleDataManager.GetInstance().LocalizeString(locKey, true);
         }
 
-        private DataGridViewCell GetStartSelectedCell()
+        private Tuple<DataGridViewCell, DataGridViewCell> GetSelectedCellsBoundaries()
         {
             if (recipesGridView.SelectedCells.Count == 0)
                 return null;
 
-            int rowIndex = recipesGridView.Rows.Count - 1;
-            int colIndex = recipesGridView.Columns.Count - 1;
+            int startRow = recipesGridView.Rows.Count - 1; ;
+            int startCol = recipesGridView.Columns.Count - 1; ;
+            int endRow = 0;
+            int endCol = 0;
+
             foreach (DataGridViewCell cell in recipesGridView.SelectedCells)
             {
-                if (cell.RowIndex < rowIndex)
-                    rowIndex = cell.RowIndex;
-                if (cell.ColumnIndex < colIndex)
-                    colIndex = cell.ColumnIndex;
+                // Get smallest row/col
+                if (cell.RowIndex < startRow)
+                    startRow = cell.RowIndex;
+                if (cell.ColumnIndex < startCol)
+                    startCol = cell.ColumnIndex;
+
+                // Get largest row/col
+                if (cell.RowIndex > endRow)
+                    endRow = cell.RowIndex;
+                if (cell.ColumnIndex > endCol)
+                    endCol = cell.ColumnIndex;
             }
 
-            return recipesGridView[colIndex, rowIndex];
+            return Tuple.Create<DataGridViewCell, DataGridViewCell>(recipesGridView[startCol, startRow], recipesGridView[endCol, endRow]);
         }
 
         private string GetColFilterString(string colName, string searchTerm)
@@ -488,41 +527,43 @@ namespace StonehearthEditor
                     return;
                 }
 
-                DataGridViewCell startCell = GetStartSelectedCell();
-                int row = startCell.RowIndex;
-                int col = startCell.ColumnIndex;
+                Tuple<DataGridViewCell, DataGridViewCell> boundaryCells = GetSelectedCellsBoundaries();
+                DataGridViewCell startCell = boundaryCells.Item1;
+                DataGridViewCell endCell = boundaryCells.Item2;
+                int startRow = startCell.RowIndex;
+                int startCol = startCell.ColumnIndex;
 
+                int rowIndex = startRow;
                 string s = Clipboard.GetText();
                 string[] lines = s.Split(new string[] { System.Environment.NewLine }, StringSplitOptions.None);
-                foreach (var line in lines)
+                int lineIndex = 0;
+                while (lineIndex < lines.Count())
                 {
-                    if (row <= (recipesGridView.Rows.Count - 1))
+                    string line = lines[lineIndex];
+                    if (rowIndex < recipesGridView.Rows.Count)
                     {
                         string[] cells = line.Split('\t');
-                        int colIndex = col;
-                        for (int i = 0; i < cells.Length && colIndex <= (recipesGridView.Columns.Count - 1); i++)
+                        int colIndex = startCol;
+                        for (int i = 0; i < cells.Length && colIndex < recipesGridView.Columns.Count; i++)
                         {
-                            try
-                            {
-                                if (recipesGridView.Columns[colIndex].ValueType == typeof(int))
-                                {
-                                    recipesGridView[colIndex, row].Value = int.Parse(cells[i]);
-                                }
-                                else
-                                {
-                                    recipesGridView[colIndex, row].Value = cells[i];
-                                }
-                            }
-                            catch (Exception exception)
-                            {
-                                MessageBox.Show("Unable to paste cells. Error: " + exception.Message);
-                                return;
-                            }
-
+                            SetGridValue(colIndex, rowIndex, cells[i]);
                             colIndex++;
                         }
 
-                        row++;
+                        rowIndex++;
+                    }
+
+                    lineIndex++;
+
+                    // Repeat last line in clipboard if selected rows exceeds rows in clipboard
+                    if (lineIndex == lines.Count())
+                    {
+                        int selectedRowCount = Math.Abs(startCell.RowIndex - endCell.RowIndex) + 1;
+                        int clipboardRowCount = Math.Abs((rowIndex - 1) - startRow) + 1;
+                        if (selectedRowCount > clipboardRowCount)
+                        {
+                            lineIndex--;
+                        }
                     }
                 }
             }
@@ -555,6 +596,12 @@ namespace StonehearthEditor
             int rowIndex = recipesGridView.CurrentCell.RowIndex;
             mModifiedRows.Add(recipesGridView.Rows[rowIndex]);
             // TODO: update modified rows on save
+        }
+
+        private void recipesGridView_DataError(object sender, DataGridViewDataErrorEventArgs e)
+        {
+            e.ThrowException = false;
+            e.Cancel = true;
         }
     }
 }
