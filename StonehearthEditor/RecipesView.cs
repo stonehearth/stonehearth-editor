@@ -179,25 +179,26 @@ namespace StonehearthEditor
             Dictionary<string, FileData> recipeFileData = recipesIndex.LinkedFileData;
             foreach (KeyValuePair<string, FileData> recipe in recipeFileData)
             {
-                DataRow row = mDataTable.NewRow();
-                RowMetadata rmd = new RowMetadata();
-                mRowFileDataIndex[row] = rmd;
-
-                rmd.RecipeList = recipesIndex;
-
                 JsonFileData jsonFileData = recipe.Value as JsonFileData;
-                rmd.Recipe = jsonFileData;
                 JObject recipeJson = jsonFileData.Json;
                 JArray ingredientArray = recipeJson["ingredients"] as JArray;
                 JArray productArray = recipeJson["produces"] as JArray;
 
-                JToken lvlReq = recipeJson["level_requirement"];
-                row[kLvlReq] = lvlReq == null ? 0 : lvlReq.ToObject<int>();
-                row[kEffort] = recipeJson["work_units"].ToObject<int>();
-                row[kCrafter] = jobAlias;
-
                 foreach (JToken product in productArray)
                 {
+                    DataRow row = mDataTable.NewRow();
+                    RowMetadata rowMetaData = new RowMetadata();
+                    mRowFileDataIndex[row] = rowMetaData;
+
+                    rowMetaData.RecipeList = recipesIndex;
+                    rowMetaData.Recipe = jsonFileData;
+
+                    JToken lvlReq = recipeJson["level_requirement"];
+                    row[kLvlReq] = lvlReq == null ? 0 : lvlReq.ToObject<int>();
+                    row[kEffort] = recipeJson["work_units"].ToObject<int>();
+                    row[kCrafter] = jobAlias;
+
+                    // TODO: make a row for each fine item?
                     JToken item = product["item"];
                     if (item != null)
                     {
@@ -211,80 +212,80 @@ namespace StonehearthEditor
                             if (linkedAlias.FullAlias.Equals(alias))
                             {
                                 JsonFileData linked = linkedAlias.FileData as JsonFileData;
-                                PopulationRecipeRow(row, linked);
-                                rmd.AddItem(linked);
+                                PopulationRowRecipe(row, linked);
+                                rowMetaData.AddItem(linked);
                                 foundLinked = true;
                             }
                         }
 
                         if (!foundLinked)
                         {
-                            PopulationRecipeRow(row, jsonFileData);
-                            rmd.AddItem(jsonFileData);
+                            PopulationRowRecipe(row, jsonFileData);
+                            rowMetaData.AddItem(jsonFileData);
                         }
                     }
-                }
 
-                int ingredientCount = 1;
-                foreach (JToken ingredient in ingredientArray)
-                {
-                    // If we don't have enough columns for this ingredient, add a new set of columns
-                    if (ingredientCount > mIngredientColumns)
+                    int ingredientCount = 1;
+                    foreach (JToken ingredient in ingredientArray)
                     {
-                        AddIngredientColumn();
-                    }
-
-                    JToken uri = ingredient["uri"];
-                    JToken material = ingredient["material"];
-                    JToken count = ingredient["count"];
-
-                    string prefix = GetIngredientPrefix(ingredientCount);
-                    string alias = uri != null ? uri.ToString() : material.ToString();
-                    row[prefix + kName] = alias;
-                    row[prefix + kAmount] = count.ToObject<int>();
-
-                    if (material != null)
-                    {
-                        Image icon;
-                        mMaterialImages.TryGetValue(material.ToString(), out icon);
-                        if (icon != null)
+                        // If we don't have enough columns for this ingredient, add a new set of columns
+                        if (ingredientCount > mIngredientColumns)
                         {
-                            row[prefix + kIcon] = icon;
+                            AddIngredientColumn();
                         }
-                    }
-                    else if (uri != null)
-                    {
-                        var foundLinked = false;
-                        foreach (ModuleFile linkedAlias in jsonFileData.LinkedAliases)
+
+                        JToken uri = ingredient["uri"];
+                        JToken material = ingredient["material"];
+                        JToken count = ingredient["count"];
+
+                        string prefix = GetIngredientPrefix(ingredientCount);
+                        string alias = uri != null ? uri.ToString() : material.ToString();
+                        row[prefix + kName] = alias;
+                        row[prefix + kAmount] = count.ToObject<int>();
+
+                        if (material != null)
                         {
-                            if (linkedAlias.FullAlias.Equals(alias))
+                            Image icon;
+                            mMaterialImages.TryGetValue(material.ToString(), out icon);
+                            if (icon != null)
                             {
-                                JsonFileData linked = linkedAlias.FileData as JsonFileData;
-                                PopulateIngredientRow(row, linked, prefix);
-                                foundLinked = true;
+                                row[prefix + kIcon] = icon;
                             }
                         }
-
-                        if (!foundLinked)
+                        else if (uri != null)
                         {
-                            PopulateIngredientRow(row, jsonFileData, prefix);
+                            var foundLinked = false;
+                            foreach (ModuleFile linkedAlias in jsonFileData.LinkedAliases)
+                            {
+                                if (linkedAlias.FullAlias.Equals(alias))
+                                {
+                                    JsonFileData linked = linkedAlias.FileData as JsonFileData;
+                                    PopulateRowIngredient(row, linked, prefix);
+                                    foundLinked = true;
+                                }
+                            }
+
+                            if (!foundLinked)
+                            {
+                                PopulateRowIngredient(row, jsonFileData, prefix);
+                            }
+
+                            ingredientCount++;
                         }
-
-                        ingredientCount++;
                     }
-                }
 
-                mDataTable.Rows.Add(row);
+                    mDataTable.Rows.Add(row);
+                }
             }
         }
 
-        private void PopulateIngredientRow(DataRow row, JsonFileData jsonFileData, string prefix)
+        private void PopulateRowIngredient(DataRow row, JsonFileData jsonFileData, string prefix)
         {
             row[prefix + kName] = jsonFileData.GetModuleFile().FullAlias;
             row[prefix + kIcon] = GetIcon(jsonFileData);
         }
 
-        private void PopulationRecipeRow(DataRow row, JsonFileData jsonFileData)
+        private void PopulationRowRecipe(DataRow row, JsonFileData jsonFileData)
         {
             row[kNetWorth] = jsonFileData.NetWorth;
             row[kDisplayName] = GetTranslatedName(GetDisplayName(jsonFileData));
