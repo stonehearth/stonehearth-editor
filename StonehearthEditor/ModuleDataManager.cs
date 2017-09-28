@@ -605,6 +605,63 @@ namespace StonehearthEditor
             return modName;
         }
 
+        public bool ChangeEnglishLocValue(string locKey, string newValue)
+        {
+            string key = locKey;
+            string[] split = key.Split(':');
+            string modName = "stonehearth"; // default mod name
+
+            if (split.Length > 1)
+            {
+                modName = split[0];
+                key = split[1];
+            }
+
+            Module mod = ModuleDataManager.GetInstance().GetMod(modName);
+            if (mod == null)
+            {
+                MessageBox.Show("Could not change loc key. There is no mod named " + modName);
+                return true;
+            }
+
+            JValue token = mod.EnglishLocalizationJson.SelectToken(key) as JValue;
+            if (token == null)
+            {
+                // No such localization key. Try to add it.
+                string[] tokenSplit = key.Split('.');
+                JObject parent = mod.EnglishLocalizationJson;
+                for (int i = 0; i < tokenSplit.Length - 1; ++i)
+                {
+                    if (parent == null)
+                    {
+                        break;
+                    }
+
+                    if (parent[tokenSplit[i]] == null)
+                    {
+                        parent[tokenSplit[i]] = new JObject();
+                    }
+
+                    parent = parent[tokenSplit[i]] as JObject;
+                }
+
+                if (parent == null)
+                {
+                    MessageBox.Show("Could not insert localization token " + locKey);
+                    return true;
+                }
+
+                parent.Add(tokenSplit[tokenSplit.Length - 1], newValue);
+            }
+            else
+            {
+                token.Value = newValue;
+            }
+
+            mod.WriteEnglishLocalizationToFile();
+            return true;
+        }
+
         public void Dispose()
         {
             foreach (Module module in mModules.Values)
