@@ -33,9 +33,10 @@ namespace StonehearthEditor
         private int mIngredientColumns = 0;
         private bool mBaseModsOnly = true;
 
+        private DataTable mDataTable = new DataTable();
         private HashSet<DataGridViewRow> mModifiedRows = new HashSet<DataGridViewRow>();
         private HashSet<int> comboBoxColumns = new HashSet<int>();
-        private DataTable mDataTable = new DataTable();
+        private new Dictionary<DataRow, RowMetadata> mRowFileDataIndex = new Dictionary<DataRow, RowMetadata>();
 
         // Cached data
         private Dictionary<string, Image> mMaterialImages = new Dictionary<string, Image>();
@@ -179,8 +180,13 @@ namespace StonehearthEditor
             foreach (KeyValuePair<string, FileData> recipe in recipeFileData)
             {
                 DataRow row = mDataTable.NewRow();
+                RowMetadata rmd = new RowMetadata();
+                mRowFileDataIndex[row] = rmd;
+
+                rmd.RecipeList = recipesIndex;
 
                 JsonFileData jsonFileData = recipe.Value as JsonFileData;
+                rmd.Recipe = jsonFileData;
                 JObject recipeJson = jsonFileData.Json;
                 JArray ingredientArray = recipeJson["ingredients"] as JArray;
                 JArray productArray = recipeJson["produces"] as JArray;
@@ -206,6 +212,7 @@ namespace StonehearthEditor
                             {
                                 JsonFileData linked = linkedAlias.FileData as JsonFileData;
                                 PopulationRecipeRow(row, linked);
+                                rmd.AddItem(linked);
                                 foundLinked = true;
                             }
                         }
@@ -213,6 +220,7 @@ namespace StonehearthEditor
                         if (!foundLinked)
                         {
                             PopulationRecipeRow(row, jsonFileData);
+                            rmd.AddItem(jsonFileData);
                         }
                     }
                 }
@@ -386,9 +394,12 @@ namespace StonehearthEditor
             }
         }
 
-        // TODO: implement
-        private FileData GetFileDataForCell(int row, int column)
+        private FileData GetFileDataForCell(int rowIndex, int colIndex)
         {
+            DataGridViewRow row = recipesGridView.Rows[rowIndex];
+            DataRow dataRow = (row.DataBoundItem as DataRowView).Row;
+            // TODO: implement
+
             throw new NotImplementedException();
         }
 
@@ -603,5 +614,20 @@ namespace StonehearthEditor
             e.ThrowException = false;
             e.Cancel = true;
         }
+    }
+
+    internal class RowMetadata
+    {
+        public JsonFileData RecipeList { get; set; }
+
+        public JsonFileData Recipe { get; set; }
+
+        public List<JsonFileData> Items { get; } = new List<JsonFileData>();
+
+        public void AddItem(JsonFileData item)
+        {
+            Items.Add(item);
+        }
+
     }
 }
