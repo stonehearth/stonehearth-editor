@@ -20,11 +20,7 @@
     background-color: #808080;
 }
 .color-picker-div {
-    position: absolute;
-    left: 470px;
-    width: 62px;
     text-align: center;
-    margin-top: -3px;
 }
 .sub-group-property {
     margin: 3px 5px;
@@ -43,42 +39,78 @@
     left: 470px;
     width: 30px;
     text-align: center;
-    margin-top: -3px;
+    margin-top: 0px;
 }
-.origin-property{
+
+.origin-parameter-property {
     background-color: #ababab;
+    border: 5px solid #9c9c9c;
+    padding: 5px;
+}
+
+.burst-parameter-property {
+    background-color: #ababab;
+    border: 5px solid #9c9c9c;
+    padding: 5px;
+}
+.burst-parameter-property-header-text {
+    width: 110px;
+    display: inline-block;
+    text-align: left;
+    margin-left: 15px;
 }
 
 .level2-parameter-property {
     background-color: #ababab;
+    border: 5px solid #9c9c9c;
+    padding: 5px;
 }
 
 .level3-parameter-property {
     margin: 7px 0px 7px 5px;
     min-height: 38px;
+    background-color: #ababab;
+    border: 5px solid #9c9c9c;
+    padding: 5px;
 }
 .level3-parameter-property-expand-button {
     position: absolute;
     left: 470px;
+    bottom: 5px;
     width: 30px;
     text-align: center;
-    margin-top: -3px;
+    margin-top: 0px;
 }
 .level3-parameter-property-header-text {
     width: 110px;
     display: inline-block;
+    text-align: left;
+    margin-left: 15px;
 }
 .level3-parameter-property-select {
     width: 250px;
 }
-.parameter-property-label {
+.origin-parameter-property-header-text {
     width: 110px;
+    display: inline-block;
+    text-align: left;
+    margin-left: 15px;
+}
+.origin-parameter-property-select {
+    width: 250px;
+}
+.parameter-property-label {
+    width: 125px;
     display: inline-block;
     text-align: right;
     font-style: italic;
 }
+.parameter-property-label-color {
+    display: inline-block;
+    text-align: center;
+}
 .sh-numeric-input {
-    width: 100px;
+    width: 75px;
 }
 
 .sh-checkbox-input {
@@ -108,11 +140,6 @@
     color: green;
 }
 
-button {
-    margin-bottom: 1.5rem;
-    background-color: #fff;
-}
-
 .curve-editor {
     width: 520px;
     height: 170px;
@@ -122,21 +149,54 @@ button {
 .curve-table {
 }
 
+.curve-rgbTable {
+}
+
 .curve-input {
-    width: 176px;
+    width: 75px;
+    text-align: center;
 }
 
 .curve-button {
+    color: #000;
+    width: 37.5px;
 }
 
 .curve-warning {
-   max-width: 220px;
+    width: 125px;
+}
+
+button {
+    margin-bottom: 1.5rem;
+    text-align: center;
+    width: 75px;
+    padding: 0px;
+    background-color: #fff;
+}
+
+.button-primary-curve {
+    margin-bottom: 1.5rem;
+    text-align: center;
+    width: 75px;
+    padding: 0px;
+    color: #FFF;
+    background-color: #3461a0;
+}
+
+.button-primary {
+    margin-bottom: 1.5rem;
+    text-align: center;
+    width: 75px;
+    padding: 0px;
+    color: #FFF;
+    background-color: #3461a0;
 }
 
 td {
     border: 0px;
-    padding: 2px;
-    margin: 2px;
+    padding: 1px;
+    margin: 1px;
+    text-align: center;
 }
 
 body {
