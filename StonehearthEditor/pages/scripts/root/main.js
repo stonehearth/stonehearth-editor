@@ -3,8 +3,13 @@
 
 CsApi = {};
 
-App.OriginPropertyComponent = Ember.Component.extend({
-    surfaceOptions: ['POINT', 'RECTANGLE'],
+App.OriginParameterPropertyComponent = Ember.Component.extend({
+    classNames: ['origin-parameter-property'],
+    actions: {
+        toggleMissing: function () {
+            this.set('model.isMissing', !this.get('model.isMissing'));
+        },
+    },
 });
 
 App.BlockPropertyComponent = Ember.Component.extend({
@@ -42,6 +47,25 @@ App.Level2ParameterPropertyComponent = Ember.Component.extend({
     },
 });
 
+App.BurstParameterPropertyComponent = Ember.Component.extend({
+    classNames: ['burst-parameter-property'],
+    actions: {
+        toggleMissing: function () {
+            this.set('model.isMissing', !this.get('model.isMissing'));
+        },
+        add: function () {
+            console.log("got here");
+            this.model.parameter.curve.points.pushObject(Point_Burst.create({}));
+        },
+        addAbove: function (index) {
+            this.model.parameter.curve.points.insertAt(index, Point_Burst.create({}));
+        },
+        delete: function (index) {
+            this.model.parameter.curve.points.removeAt(index);
+        },
+    },
+});
+
 App.EqHelper = function (a) {
     return a[0] === a[1];
 };
@@ -61,6 +85,20 @@ App.CurveXComponent = Ember.Component.extend({
         },
         addAbove: function (index) {
             this.model.points.insertAt(index, Point.create({}));
+        },
+        delete: function (index) {
+            this.model.points.removeAt(index);
+        },
+    },
+});
+
+App.CurveRgbComponent = Ember.Component.extend({
+    actions: {
+        add: function () {
+            this.model.points.pushObject(PointRgb.create({}));
+        },
+        addAbove: function (index) {
+            this.model.points.insertAt(index, PointRgb.create({}));
         },
         delete: function (index) {
             this.model.points.removeAt(index);

@@ -25,6 +25,8 @@
 
     <script src="scripts/effect-property.js"></script>
     <script src="scripts/string-property.js"></script>
+    <script src="scripts/origin-property.js"></script>
+    <script src="scripts/burst-property.js"></script>
     <script src="scripts/complex-property.js"></script>
     <script type="text/x-handlebars" data-template-name="index">
         <div class="tools">
@@ -98,8 +100,7 @@
         {{ else }}
             <select onchange={{ action (mut model.kind) value="target.value" }} class="level3-parameter-property-select">
                 {{#each model.kindOptionNames as |kindChoice| }}
-                <option value={{ kindChoice }}
-                        selected={{ eq model.kind kindChoice }}>
+                <option value={{ kindChoice }} selected={{ eq model.kind kindChoice }}>
                     {{ kindChoice }}
                 </option>
                 {{/each }}
@@ -138,9 +139,9 @@
         {{#if model.optional }}
             <button class="level3-parameter-property-expand-button" {{ action 'toggleMissing' }}>
                 {{#if model.isMissing }}
-                    <span class="glyphicon glyphicon-plus"></span>
+                    ➕
                 {{ else }}
-                    <span class="glyphicon glyphicon-remove"></span>
+                    ❌
                 {{/if }}
             </button>
         {{/if }}
@@ -150,39 +151,93 @@
         {{ component model.parameter.componentName model=model.parameter }}
         {{/if }}
     </script>
-    <script type="text/x-handlebars" data-template-name="components/origin-property">
-        {{#block-property model=model }}
-            <table>
+    <script type="text/x-handlebars" data-template-name="components/origin-parameter-property">
+        <span class="origin-parameter-property-header-text">
+            {{ model.name }}
+        </span>
+        {{#if model.isMissing }}
+        {{ else }}
+            <select onchange={{ action (mut model.surface) value="target.value" }} class="origin-parameter-property-select">
+                {{#each model.surfaceOptionNames as |surfaceChoice| }}
+                <option value={{ surfaceChoice }}
+                        selected={{ eq model.surface surfaceChoice }}>
+                    {{ surfaceChoice }}
+                </option>
+                {{/each }}
+            </select>
+        {{/if }}
+        {{#if model.optional }}
+            <button class="origin-parameter-property-expand-button" {{ action 'toggleMissing' }}>
+                {{#if model.isMissing }}
+                    ➕
+                {{ else }}
+                    ❌
+                {{/if }}
+            </button>
+        {{/if }}
+        <br />
+        {{#if model.isMissing }}
+        {{ else }}
+        {{ component model.parameter.componentName model=model.parameter }}
+        {{/if }}
+    </script>
+    <script type="text/x-handlebars" data-template-name="components/emission-parameter-property">
+        <span class="level3-parameter-property-header-text">
+            {{ model.name }}
+        </span>
+        {{#if model.isMissing }}
+        {{ else }}
+            <select onchange={{ action (mut model.kind) value="target.value" }} class="level3-parameter-property-select">
+                {{#each model.kindOptionNames as |kindChoice| }}
+                <option value={{ kindChoice }}
+                        selected={{ eq model.kind kindChoice }}>
+                    {{ kindChoice }}
+                </option>
+                {{/each }}
+            </select>
+        {{/if }}
+        {{#if model.optional }}
+            <button class="level3-parameter-property-expand-button" {{ action 'toggleMissing' }}>
+                {{#if model.isMissing }}
+                ➕
+                {{ else }}
+                ❌
+                {{/if }}
+            </button>
+        {{/if }}
+        <br />
+        {{#if model.isMissing }}
+        {{ else }}
+        {{ component model.parameter.componentName model=model.parameter }}
+        {{/if }}
+    </script>
+    <script type="text/x-handlebars" data-template-name="components/burst-parameter-property">
+        {{#if model.isMissing }}
+        {{ else }}
+        <span class="burst-parameter-property-header-text">{{ model.name }}</span>
+        <table class="curve-rgbTable">
+            <tr>
+                <td><div class="curve-warning">{{ warning-icon message=model.errorMap.[-1] }}</div></td>
+                <td></td>
+                <td></td>
+                <td>time</td>
+                <td>burst</td>
+            </tr>
+            {{#each model.parameter.curve.points as |point index| }}
                 <tr>
-                    <td>Surface</td>
-                    <td>
-                        <select onchange={{ action (mut model.surface) value="target.value" }}>
-                            {{#each surfaceOptions as |surfaceChoice| }}
-                                <option
-                                    value={{ surfaceChoice }}
-                                    selected={{ eq model.surface surfaceChoice }}>
-                                    {{ surfaceChoice }}
-                                </option>
-                            {{/each }}
-                        </select>
-                    </td>
+                    <td><div class="curve-warning">{{ warning-icon message=(get model.errorMap (tostr index)) }}</div></td>
+                    <td><button class="curve-button" {{ action 'addAbove' index }}><img src="styles/add_above.png" /></button></td>
+                    <td><button class="curve-button" {{ action 'delete' index }}>✖️</button></td>
+                    <td>{{ input class="curve-input" type="text" value=point.time }}</td>
+                    <td>{{ input class="curve-input" type="text" value=point.burst }}</td>
                 </tr>
-                <tr>
-                    <td>Value 1</td>
-                    <td>
-                        {{ input type="text" value=model.value1 }}
-                        {{ warning-icon message=model.invalidValue1Message }}
-                    </td>
-                </tr>
-                <tr>
-                    <td>Value 2</td>
-                    <td>
-                        {{ input type="text" value=model.value2 }}
-                        {{ warning-icon message=model.invalidValue2Message }}
-                    </td>
-                </tr>
-            </table>
-        {{/block-property }}
+            {{/each }}
+            <tr>
+                <td></td>
+                <td><button class="curve-button" {{ action 'add' }}><img src="styles/add_above.png" /></button></td>
+            </tr>
+        </table>
+        {{/if }}
     </script>
     <script type="text/x-handlebars" data-template-name="components/block-property">
         {{#if model.isRoot }}
@@ -217,10 +272,12 @@
         {{ rgba-x model=model.rgba name="color1"}}
     </script>
     <script type="text/x-handlebars" data-template-name="components/random-between-rgba-parameter">
-        <div class="random-between-type-header">Color 1</div>
+        <div class="random-between-type-header"><span class="parameter-property-label">Color 1</span>
             {{ rgba-x model=model.rgba1 name="color1"}}
-        <div class="random-between-type-header">Color 2</div>
+        </div>
+        <div class="random-between-type-header"><span class="parameter-property-label">Color 2</span>
             {{ rgba-x model=model.rgba2 name="color2"}}
+        </div>
     </script>
     <script type="text/x-handlebars" data-template-name="components/random-between-scalar-parameter">
         <span class="parameter-property-label">min</span>
@@ -235,69 +292,116 @@
         {{ curve-x model=model.curve }}
     </script>
     <script type="text/x-handlebars" data-template-name="components/random-between-curves-scalar-parameter">
-        <div class="random-between-type-header">Curve 1</div>
-        {{ curve-x model=model.curve1 }}
-        <div class="random-between-type-header">Curve 2</div>
-        {{ curve-x model=model.curve2 }}
+        <div class="random-between-type-header"><span class="parameter-property-label">Curve 1</span>
+        {{ curve-x model=model.curve1 }}</div>
+        <div class="random-between-type-header"><span class="parameter-property-label">Curve 2</span>
+        {{ curve-x model=model.curve2 }}</div>
     </script>
     <script type="text/x-handlebars" data-template-name="components/curve-x">
         <table class="curve-table">
-            <thead>
+            <tr>
+                <td><div class="curve-warning">{{ warning-icon message=model.errorMap.[-1] }}</div></td>
+                <td></td>
+                <td></td>
+                <td>Time</td>
+                <td>Value</td>
+                <td></td>
+            </tr>
+            {{#each model.points as |point index| }}
                 <tr>
-                    <td></td>
-                    <td>Time</td>
-                    <td>Value</td>
-                    <td>{{ warning-icon message=model.errorMap.[-1] }}</td>
+                    <td><div class="curve-warning">{{ warning-icon message=(get model.errorMap (tostr index)) }}</div></td>
+                    <td><button class="curve-button" {{ action 'addAbove' index }}><img src="styles/add_above.png" /></button></td>
+                    <td><button class="curve-button" {{ action 'delete' index }}>✖️</button></td>
+                    <td>{{ input class="curve-input" type="text" value=point.time }}</td>
+                    <td>{{ input class="curve-input" type="text" value=point.value }}</td>
                 </tr>
-            </thead>
-            <tbody>
-                {{#each model.points as |point index| }}
-                    <tr>
-                        <td>
-                            <button class="curve-button" {{ action 'addAbove' index }}>
-                                <img src="styles/add_above.png" />
-                            </button>
-                            <button class="curve-button" {{ action 'delete' index }}>✖️
-                            </button>
-                        </td>
-                        <td>{{ input class="curve-input" type="text" value=point.time }}</td>
-                        <td>{{ input class="curve-input" type="text" value=point.value }}</td>
-                        <td class="curve-warning">{{ warning-icon message=(get model.errorMap (tostr index)) }}</td>
-                    </tr>
-                {{/each }}
-                <tr>
-                    <td>
-                        <button class="button-primary" {{ action 'add' }}>Add row</button>
-                    </td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-            </tbody>
+            {{/each }}
+            <tr>
+                <td></td>
+                <td><button class="curve-button" {{ action 'add' }}><img src="styles/add_above.png" /></button></td>
+            </tr>
         </table>
     </script>
+    <script type="text/x-handlebars" data-template-name="components/curve-rgb-parameter">
+        {{ curve-rgb model=model.curveRGB }}
+    </script>
+    <script type="text/x-handlebars" data-template-name="components/random-between-curves-rgb-parameter">
+        <div class="random-between-type-header"><span class="parameter-property-label">Curve 1</span>
+        {{ curve-rgb model=model.curveRGB1 }}</div>
+        <div class="random-between-type-header"><span class="parameter-property-label">Curve 2</span>
+        {{ curve-rgb model=model.curveRGB2 }}</div>
+    </script>
+    <script type="text/x-handlebars" data-template-name="components/curve-rgb">
+        <table class="curve-rgbTable">
+            <tr>
+                <td><div class="curve-warning">{{ warning-icon message=model.errorMap.[-1] }}</div></td>
+                <td></td>
+                <td></td>
+                <td>Time</td>
+                <td>R</td>
+                <td>G</td>
+                <td>B</td>
 
+            </tr>
+            {{#each model.points as |point index| }}
+                <tr>
+                    <td><div class="curve-warning">{{ warning-icon message=(get model.errorMap (tostr index)) }}</div></td>
+                    <td><button class="curve-button" {{ action 'addAbove' index }}><img src="styles/add_above.png" /></button></td>
+                    <td><button class="curve-button" {{ action 'delete' index }}>✖️</button></td>
+                    <td>{{ input class="curve-input" type="text" value=point.time }}</td>
+                    <td>{{ input class="curve-input" type="text" value=point.rValue }}</td>
+                    <td>{{ input class="curve-input" type="text" value=point.gValue }}</td>
+                    <td>{{ input class="curve-input" type="text" value=point.bValue }}</td>
+                    
+                </tr>
+            {{/each }}
+            <tr>
+                <td></td>
+                <td><button class="curve-button" {{ action 'add' }}><img src="styles/add_above.png" /></button></td>
+            </tr>
+        </table>
+    </script>
+        <!-- Removed these from a total of 4 places, the other two are in string-property -->
+    <!-- <td><span class="parameter-property-label-color">Picker</span></td> -->
+        <!-- this line goes at the end of the first table row -->
+    <!-- <td><div id={{ name }} class="color-picker-div"><input type="text" class="color-picker" /></div></td> -->
+        <!-- this line goes at the end of the each statement -->
     <script type="text/x-handlebars" data-template-name="components/rgba-x">
-        <div id={{ name }} class="color-picker-div">
-            <input type="text" class="color-picker" />
-        </div>
-        <span class="parameter-property-label">R</span>
-        {{ input class="sh-input sh-numeric-input" type="text" value=model.rValue }}
-        {{ warning-icon message=model.invalidRValueMessage }}
-        <br />
-        <span class="parameter-property-label">G</span>
-        {{ input class="sh-input sh-numeric-input" type="text" value=model.gValue }}
-        {{ warning-icon message=model.invalidGValueMessage }}
-        <br />
-        <span class="parameter-property-label">B</span>
-        {{ input class="sh-input sh-numeric-input" type="text" value=model.bValue }}
-        {{ warning-icon message=model.invalidBValueMessage }}
-        <br />
-        {{#if model.hasA }}
-            <span class="parameter-property-label">A</span>
-            {{ input class="sh-input sh-numeric-input" type="text" value=model.aValue }}
-            {{ warning-icon message=model.invalidAValueMessage }}
-        {{/if }}
+        <table class="curve-rgbTable">
+            <tr>
+                <td>
+                    <div class="curve-warning">
+                        {{ warning-icon message=model.invalidRValueMessage }}
+                        {{ warning-icon message=model.invalidGValueMessage }}
+                        {{ warning-icon message=model.invalidBValueMessage }}
+                        {{#if model.hasA }}
+                            {{ warning-icon message=model.invalidAValueMessage }}
+                        {{/if }}
+                    </div>
+                </td>
+                <td><span class="parameter-property-label-color">R</span></td>
+                <td><span class="parameter-property-label-color">G</span></td>
+                <td><span class="parameter-property-label-color">B</span></td>
+                <td>{{#if model.hasA }}
+                        <span class="parameter-property-label-color">A</span>
+                    {{/if }}
+                </td>
+                <td><span class="parameter-property-label-color">Picker</span></td>
+            </tr>
+            <tr>
+                <td>
+                </td>
+                <td>{{ input class="sh-input sh-numeric-input" type="text" value=model.rValue }}</td>
+                <td>{{ input class="sh-input sh-numeric-input" type="text" value=model.gValue }}</td>
+                <td>{{ input class="sh-input sh-numeric-input" type="text" value=model.bValue }}</td>
+                <td>
+                    {{#if model.hasA }}
+                        {{ input class="sh-input sh-numeric-input" type="text" value=model.aValue }}
+                    {{/if }}
+                </td>
+                <td><div id={{ name }} class="color-picker-div"><input type="text" class="color-picker" /></div></td>
+            </tr>
+        </table>
     </script>
 
     <script type="text/x-handlebars" data-template-name="components/parameter-property">
@@ -312,6 +416,70 @@
             </select>
             {{ component model.parameter.componentName model=model.parameter }}
         {{/block-property }}
+    </script>
+    <script type="text/x-handlebars" data-template-name="components/point-parameter-property">
+    </script>
+    <script type="text/x-handlebars" data-template-name="components/rectangle-scalar-parameter">
+        <span class="parameter-property-label">width</span>
+        {{ input class="sh-input sh-numeric-input" type="text" value=model.width }}
+        <span class="parameter-property-label">length</span>
+        {{ input class="sh-input sh-numeric-input" type="text" value=model.length }}
+        <br />
+        <span class="parameter-property-label">innerWidth</span>
+        {{ input class="sh-input sh-numeric-input" type="text" value=model.innerWidth }}
+        <span class="parameter-property-label">innerLength</span>
+        {{ input class="sh-input sh-numeric-input" type="text" value=model.innerLength }}
+        {{ warning-icon message=model.invalidValueMessage }}
+    </script>
+    <script type="text/x-handlebars" data-template-name="components/cuboid-scalar-parameter">
+        <span class="parameter-property-label">width</span>
+        {{ input class="sh-input sh-numeric-input" type="text" value=model.width }}
+        <span class="parameter-property-label">length</span>
+        {{ input class="sh-input sh-numeric-input" type="text" value=model.length }}
+        <span class="parameter-property-label">depth</span>
+        {{ input class="sh-input sh-numeric-input" type="text" value=model.depth }}
+        <br />
+        <span class="parameter-property-label">innerWidth</span>
+        {{ input class="sh-input sh-numeric-input" type="text" value=model.innerWidth }}
+        <span class="parameter-property-label">innerLength</span>
+        {{ input class="sh-input sh-numeric-input" type="text" value=model.innerLength }}
+        <span class="parameter-property-label">innerDepth</span>
+        {{ input class="sh-input sh-numeric-input" type="text" value=model.innerDepth }}
+        {{ warning-icon message=model.invalidValueMessage }}
+    </script>
+    <script type="text/x-handlebars" data-template-name="components/sphere-scalar-parameter">
+        <span class="parameter-property-label">radius</span>
+        {{ input class="sh-input sh-numeric-input" type="text" value=model.radius }}
+        <span class="parameter-property-label">angle</span>
+        {{ input class="sh-input sh-numeric-input" type="text" value=model.angle }}
+        {{ warning-icon message=model.invalidValueMessage }}
+        <br />
+        <span class="parameter-property-label">innerRadius</span>
+        {{ input class="sh-input sh-numeric-input" type="text" value=model.innerRadius }}
+    </script>
+    <script type="text/x-handlebars" data-template-name="components/cylinder-scalar-parameter">
+        <span class="parameter-property-label">height</span>
+        {{ input class="sh-input sh-numeric-input" type="text" value=model.height }}
+        <span class="parameter-property-label">radius</span>
+        {{ input class="sh-input sh-numeric-input" type="text" value=model.radius }}
+        <br />
+        <span class="parameter-property-label">innerRadius</span>
+        {{ input class="sh-input sh-numeric-input" type="text" value=model.innerRadius }}
+        <span class="parameter-property-label">angle</span>
+        {{ input class="sh-input sh-numeric-input" type="text" value=model.angle }}
+        {{ warning-icon message=model.invalidValueMessage }}
+    </script>
+    <script type="text/x-handlebars" data-template-name="components/cone-scalar-parameter">
+        <span class="parameter-property-label">radius</span>
+        {{ input class="sh-input sh-numeric-input" type="text" value=model.radius }}
+        <span class="parameter-property-label">angle</span>
+        {{ input class="sh-input sh-numeric-input" type="text" value=model.angle }}
+        <br />
+        <span class="parameter-property-label">innerRadius</span>
+        {{ input class="sh-input sh-numeric-input" type="text" value=model.innerRadius }}
+        <span class="parameter-property-label">innerAngle</span>
+        {{ input class="sh-input sh-numeric-input" type="text" value=model.innerAngle }}
+        {{ warning-icon message=model.invalidValueMessage }}
     </script>
 </head>
 <body>
