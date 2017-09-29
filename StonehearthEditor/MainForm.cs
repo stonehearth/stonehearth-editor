@@ -77,6 +77,8 @@ namespace StonehearthEditor
             entityBrowserView.Reload();
             encounterDesignerView.Reload();
             effectsEditorView.Reload();
+            recipesView.Reload();
+
             if (mNetWorthVisualizer != null && !mNetWorthVisualizer.IsDisposed)
             {
                 mNetWorthVisualizer.UpdateNetWorthData();
