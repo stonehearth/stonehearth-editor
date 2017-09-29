@@ -110,11 +110,22 @@ ConstantRgbaParameterKind = ParameterKind.extend({
     hasA: true,
     rgba: null,
     colorPicker: null,
+    nameId: 0,
     _onInit: function () {
         var self = this;
+
+        if (this.get('nameId') == 0) {
+            this.set('nameId', Math.random());
+        }
+
         this.set('rgba', Rgba.create({ hasA: this.get('hasA') }));
+        
+    }.on('init'),
+    updateColorPicker: function()
+    {
+        var self = this;
         Ember.run.scheduleOnce('afterRender', this, function () {
-            var picker = $('#color1 .color-picker');
+            var picker = $('#' + self.get('nameId') + ' .color-picker');
             self.set('colorPicker', picker);
             picker.spectrum({
                 color: "#ff0000",
@@ -127,7 +138,8 @@ ConstantRgbaParameterKind = ParameterKind.extend({
                 }
             });
         });
-    }.on('init'),
+    }.observes('nameId'),
+
     updateColor: function (color) {
         var floatVals = Utils.convertRgbaToFloat(color._r, color._g, color._b, color._a);
         this.get('rgba').setRgba(floatVals.r, floatVals.g, floatVals.b, floatVals.a);
@@ -241,25 +253,25 @@ CurveRgbParameterKind = ParameterKind.extend({
     _onInit: function () {
         var self = this;
         this.set('curveRGB', CurveRgb.create({ hasA: this.get('hasA') }));
-        Ember.run.scheduleOnce('afterRender', this, function () {
-            var picker = $('#color1 .color-picker');
-            self.set('colorPicker', picker);
-            picker.spectrum({
-                color: "#ff0000",
-                showAlpha: this.get('hasA'),
-                showInput: true,
-                showInitial: true,
-                preferredFormat: "rgb",
-                change: function (color) {
-                    self.updateColor(color);
-                }
-            });
-        });
+        // Ember.run.scheduleOnce('afterRender', this, function () {
+        //     var picker = $('#color1 .color-picker');
+        //     self.set('colorPicker', picker);
+        //     picker.spectrum({
+        //         color: "#ff0000",
+        //         showAlpha: this.get('hasA'),
+        //         showInput: true,
+        //         showInitial: true,
+        //         preferredFormat: "rgb",
+        //         change: function (color) {
+        //             self.updateColor(color);
+        //         }
+        //     });
+        // });
     }.on('init'),
-    updateColor: function (color) {
-        var floatVals = Utils.convertRgbaToFloat(color._r, color._g, color._b, color._a);
-        this.get('rgba').setRgba(floatVals.r, floatVals.g, floatVals.b, floatVals.a);
-    },
+    // updateColor: function (color) {
+    //     var floatVals = Utils.convertRgbaToFloat(color._r, color._g, color._b, color._a);
+    //     this.get('rgba').setRgba(floatVals.r, floatVals.g, floatVals.b, floatVals.a);
+    // },
     fromJson: function (json) {
         var curveRGB = CurveRgb.create({});
         var self = this;
