@@ -244,12 +244,15 @@
       <DependentUpon>FilePreview.cs</DependentUpon>
     </Compile>
     <Compile Include="FileData\QubicleFileData.cs" />
+    <Compile Include="Recipes\ColumnBehavior.cs" />
+    <Compile Include="Recipes\RecipeHelper.cs" />
+    <Compile Include="Recipes\RowMetadata.cs" />
     <Compile Include="ThumbnailCache.cs" />
     <Compile Include="EncounterEditor\UnknownNodeData.cs" />
-    <Compile Include="RecipesView.cs">
+    <Compile Include="Recipes\RecipesView.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="RecipesView.Designer.cs">
+    <Compile Include="Recipes\RecipesView.Designer.cs">
       <DependentUpon>RecipesView.cs</DependentUpon>
     </Compile>
     <EmbeddedResource Include="Dialogs\AliasSelectionDialog.resx">
@@ -300,7 +303,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <EmbeddedResource Include="RecipesView.resx">
+    <EmbeddedResource Include="Recipes\RecipesView.resx">
       <DependentUpon>RecipesView.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="App_Readme\Handlebarsjs_LICENSE" />

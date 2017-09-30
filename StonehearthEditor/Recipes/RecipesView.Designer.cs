@@ -63,6 +63,8 @@
             this.recipesGridView.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.True;
             this.recipesGridView.Size = new System.Drawing.Size(758, 518);
             this.recipesGridView.TabIndex = 0;
+            this.recipesGridView.CellBeginEdit += new System.Windows.Forms.DataGridViewCellCancelEventHandler(this.recipesGridView_CellBeginEdit);
+            this.recipesGridView.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.recipesGridView_CellEndEdit);
             this.recipesGridView.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.recipesGridView_CellMouseClick);
             this.recipesGridView.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.recipesGridView_CellValueChanged);
             this.recipesGridView.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.recipesGridView_DataError);

@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Drawing;
 using System.Data;
+using System.Drawing;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Newtonsoft.Json.Linq;
@@ -25,7 +25,7 @@ namespace StonehearthEditor
         public const string kIngr = "Ingr";
         public const string kName = "Name";
         public const string kAmount = "Amount";
-        private const string kAllCol = "All Columns";
+        public const string kAllCol = "All Columns";
 
         private int mIngredientColumns = 0;
         private bool mBaseModsOnly = true;
@@ -710,97 +710,19 @@ namespace StonehearthEditor
             e.ThrowException = false;
             e.Cancel = true;
         }
-    }
 
-    internal class RowMetadata
-    {
-        public JsonFileData RecipeList { get; set; }
-
-        public JsonFileData Recipe { get; set; }
-
-        public JsonFileData Item { get; set; }
-    }
-
-    internal class ColumnBehavior
-    {
-        public virtual JsonFileData GetSourceFileData(RowMetadata rowMetadata)
+        private void recipesGridView_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
         {
-            return null;
+            DataGridViewCell cell = recipesGridView[e.ColumnIndex, e.RowIndex];
+            DataGridViewCellStyle style = new DataGridViewCellStyle();
+            style.BackColor = Color.Gold;
+            cell.Style = style;
         }
 
-        public virtual void OnCellChanged(DataGridView dataGridView, DataGridViewCellEventArgs e)
+        private void recipesGridView_CellEndEdit(object sender, DataGridViewCellEventArgs e)
         {
-        }
-    }
-
-    internal class ItemColumnBehavior : ColumnBehavior
-    {
-        public override JsonFileData GetSourceFileData(RowMetadata rowMetadata)
-        {
-            return rowMetadata.Item;
-        }
-    }
-
-    internal class IngrIconColumnBehavior : ColumnBehavior
-    {
-        public override JsonFileData GetSourceFileData(RowMetadata rowMetadata)
-        {
-            return rowMetadata.Recipe;
-        }
-    }
-
-    internal class IngrNameColumnBehavior : ColumnBehavior
-    {
-        private int mIngrId = 0;
-
-        public IngrNameColumnBehavior(int ingrId)
-        {
-            mIngrId = ingrId;
-        }
-
-        public void OnCellChanged(DataGridView dataGridView, DataGridViewCellEventArgs e)
-        {
-            // grab col and change the image
-            DataRow row = (dataGridView.DataSource as DataTable).Rows[e.RowIndex];
-            string ingrIconColName = RecipesView.GetIngredientPrefix(mIngrId) + RecipesView.kName;
-            row[]
-        }
-
-        public override JsonFileData GetSourceFileData(RowMetadata rowMetadata)
-        {
-            return rowMetadata.Recipe;
-        }
-    }
-
-    internal class IngrAmountColumnBehavior : ColumnBehavior
-    {
-        public override JsonFileData GetSourceFileData(RowMetadata rowMetadata)
-        {
-            return rowMetadata.Recipe;
-        }
-    }
-
-    internal class CrafterColumnBehavior : ColumnBehavior
-    {
-        public override JsonFileData GetSourceFileData(RowMetadata rowMetadata)
-        {
-            return rowMetadata.RecipeList;
-        }
-    }
-
-    internal class LvlReqColumnBehavior : ColumnBehavior
-    {
-        public override JsonFileData GetSourceFileData(RowMetadata rowMetadata)
-        {
-            return rowMetadata.Recipe;
-        }
-    }
-
-    internal class EffortColumnBehavior : ColumnBehavior
-    {
-        public override JsonFileData GetSourceFileData(RowMetadata rowMetadata)
-        {
-            return rowMetadata.Recipe;
+            DataGridViewCell cell = recipesGridView[e.ColumnIndex, e.RowIndex];
+            cell.Style = null;
         }
     }
 }
