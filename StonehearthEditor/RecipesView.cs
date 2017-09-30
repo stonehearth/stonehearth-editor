@@ -15,16 +15,16 @@ namespace StonehearthEditor
 {
     public partial class RecipesView : UserControl
     {
-        private const string kIcon = "Icon";
-        private const string kAlias = "Alias";
-        private const string kDisplayName = "Display Name";
-        private const string kNetWorth = "Net Worth";
-        private const string kCrafter = "R Crafter";
-        private const string kLvlReq = "R Lvl Req";
-        private const string kEffort = "R Effort";
-        private const string kIngr = "Ingr";
-        private const string kName = "Name";
-        private const string kAmount = "Amount";
+        public const string kIcon = "Icon";
+        public const string kAlias = "Alias";
+        public const string kDisplayName = "Display Name";
+        public const string kNetWorth = "Net Worth";
+        public const string kCrafter = "R Crafter";
+        public const string kLvlReq = "R Lvl Req";
+        public const string kEffort = "R Effort";
+        public const string kIngr = "Ingr";
+        public const string kName = "Name";
+        public const string kAmount = "Amount";
         private const string kAllCol = "All Columns";
 
         private int mIngredientColumns = 0;
@@ -34,6 +34,7 @@ namespace StonehearthEditor
         private HashSet<DataGridViewCell> mModifiedCells = new HashSet<DataGridViewCell>();
         private HashSet<int> mComboBoxColumns = new HashSet<int>();
         private Dictionary<DataRow, RowMetadata> mRowMetadataIndex = new Dictionary<DataRow, RowMetadata>();
+        private Dictionary<string, ColumnBehavior> mColumnBehaviorIndex = new Dictionary<string, ColumnBehavior>();
 
         // Cached data
         private Dictionary<string, string> mMaterialImages = new Dictionary<string, string>();
@@ -51,6 +52,11 @@ namespace StonehearthEditor
             filterByColumn.Items.Add(kIngr + " " + kName);
             filterByColumn.Items.Add(kIngr + " " + kAmount);
             filterByColumn.SelectedIndex = 0;
+        }
+
+        public static string GetIngredientPrefix(int columnNum)
+        {
+            return kIngr + columnNum + " ";
         }
 
         public void SaveModifiedFiles()
@@ -118,14 +124,15 @@ namespace StonehearthEditor
         {
             // Disable render while adding rows
             recipesGridView.DataSource = null;
-            mDataTable.Clear();
+            mDataTable.Rows.Clear();
+            mDataTable.Columns.Clear();
             mIngredientColumns = 0;
             mModifiedCells.Clear();
             mComboBoxColumns.Clear();
             mRowMetadataIndex.Clear();
-            mMaterialImages.Clear();
+            //mMaterialImages.Clear();
 
-            LoadMaterialImages();
+            //LoadMaterialImages();
             LoadColumnsData();
         }
 
@@ -139,13 +146,25 @@ namespace StonehearthEditor
         private void LoadColumnsData()
         {
             // Add recipe columns
-            AddColumn(kIcon, typeof(Image));
-            AddColumn(kAlias, typeof(string));
-            AddColumn(kDisplayName, typeof(string));
-            AddColumn(kNetWorth, typeof(int));
-            AddColumn(kCrafter, typeof(string));
-            AddColumn(kLvlReq, typeof(int));
-            AddColumn(kEffort, typeof(int));
+            AddDataColumn(kIcon, typeof(Image));
+
+            AddDataColumn(kAlias, typeof(string));
+            mColumnBehaviorIndex.Add(kAlias, new ItemColumnBehavior());
+
+            AddDataColumn(kDisplayName, typeof(string));
+            mColumnBehaviorIndex.Add(kDisplayName, new ItemColumnBehavior());
+
+            AddDataColumn(kNetWorth, typeof(int));
+            mColumnBehaviorIndex.Add(kNetWorth, new ItemColumnBehavior());
+
+            AddDataColumn(kCrafter, typeof(string));
+            mColumnBehaviorIndex.Add(kCrafter, new CrafterColumnBehavior());
+
+            AddDataColumn(kLvlReq, typeof(int));
+            mColumnBehaviorIndex.Add(kLvlReq, new LvlReqColumnBehavior());
+
+            AddDataColumn(kEffort, typeof(int));
+            mColumnBehaviorIndex.Add(kEffort, new EffortColumnBehavior());
 
             LoadAllRecipes();
 
@@ -154,12 +173,11 @@ namespace StonehearthEditor
             ConfigureColumns();
         }
 
-        private void AddColumn(string name, Type valueType)
+        private DataColumn AddDataColumn(string name, Type valueType)
         {
-            if (mDataTable.Columns[name] == null)
-            {
-                mDataTable.Columns.Add(new DataColumn(name, valueType));
-            }
+            DataColumn dataColumn = new DataColumn(name, valueType);
+            mDataTable.Columns.Add(dataColumn);
+            return dataColumn;
         }
 
         private void ConfigureColumns()
@@ -200,7 +218,8 @@ namespace StonehearthEditor
                 else if (matchEven.IsMatch(column.Name))
                 {
                     column.DefaultCellStyle.BackColor = Color.LightBlue;
-                } else if (column.Name.StartsWith("R "))
+                }
+                else if (column.Name.StartsWith("R "))
                 {
                     column.DefaultCellStyle.BackColor = Color.Azure;
                 }
@@ -316,13 +335,7 @@ namespace StonehearthEditor
 
                         if (material != null)
                         {
-                            string path;
-                            Image icon;
-                            mMaterialImages.TryGetValue(material.ToString(), out path);
-                            if (path != null)
-                            {
-                                row[prefix + kIcon] = ThumbnailCache.GetThumbnail(path);
-                            }
+                            row[prefix + kIcon] = GetIcon(material.ToString());
                         }
                         else if (uri != null)
                         {
@@ -395,14 +408,32 @@ namespace StonehearthEditor
             return null;
         }
 
+        private Image GetIcon(string material)
+        {
+            string path;
+            mMaterialImages.TryGetValue(material, out path);
+            if (path != null)
+            {
+                return ThumbnailCache.GetThumbnail(path);
+            }
+
+            return null;
+        }
+
         // Add a single ingredient column
         private void AddIngredientColumn()
         {
             mIngredientColumns++;
             string prefix = GetIngredientPrefix(mIngredientColumns);
-            AddColumn(prefix + kIcon, typeof(Image));
-            AddColumn(prefix + kName, typeof(string));
-            AddColumn(prefix + kAmount, typeof(int));
+
+            AddDataColumn(prefix + kIcon, typeof(Image));
+            mColumnBehaviorIndex.Add(prefix + kIcon, new IngrIconColumnBehavior());
+
+            AddDataColumn(prefix + kName, typeof(string));
+            mColumnBehaviorIndex.Add(prefix + kName, new IngrNameColumnBehavior(mIngredientColumns));
+
+            AddDataColumn(prefix + kAmount, typeof(int));
+            mColumnBehaviorIndex.Add(prefix + kAmount, new IngrAmountColumnBehavior());
         }
 
         // Load the material constants from the stonehearth mod. This needs to be done before the data columns
@@ -430,68 +461,45 @@ namespace StonehearthEditor
             }
         }
 
-        private void SetGridValue(int col, int row, string value)
+        private void SetGridValue(int colIndex, int rowIndex, string value)
         {
             try
             {
-                if (recipesGridView.Columns[col].ValueType == typeof(int))
+                if (recipesGridView.Columns[colIndex].ValueType == typeof(int))
                 {
-                    recipesGridView[col, row].Value = int.Parse(value);
+                    recipesGridView[colIndex, rowIndex].Value = int.Parse(value);
                 }
                 else
                 {
                     bool valid = true;
-                    if (recipesGridView.Columns[col] is DataGridViewComboBoxColumn)
+                    if (recipesGridView.Columns[colIndex] is DataGridViewComboBoxColumn)
                     {
-                        List<string> autoCompleteStrings = (recipesGridView.Columns[col] as DataGridViewComboBoxColumn).DataSource as List<string>;
+                        List<string> autoCompleteStrings = (recipesGridView.Columns[colIndex] as DataGridViewComboBoxColumn).DataSource as List<string>;
                         if (!autoCompleteStrings.Contains(value))
                             valid = false;
                     }
 
                     if (valid)
-                        recipesGridView[col, row].Value = value;
+                        recipesGridView[colIndex, rowIndex].Value = value;
                 }
 
-                mModifiedCells.Add(recipesGridView[col, row]);
+                mModifiedCells.Add(recipesGridView[colIndex, rowIndex]);
             }
             catch (Exception exception)
             {
-                MessageBox.Show(string.Format("Unable to set grid value for (%d, %d). Error: %s", col, row, exception.Message));
+                MessageBox.Show(string.Format("Unable to set grid value for (%d, %d). Error: %s", colIndex, rowIndex, exception.Message));
                 return;
             }
         }
 
         private JsonFileData GetFileDataForCell(DataGridViewCell cell)
         {
-            DataGridViewRow row = recipesGridView.Rows[cell.RowIndex];
             DataGridViewColumn column = recipesGridView.Columns[cell.ColumnIndex];
-            DataRow dataRow = (row.DataBoundItem as DataRowView).Row;
+            DataRow dataRow = mDataTable.Rows[cell.RowIndex];
             RowMetadata rowMetaData = mRowMetadataIndex[dataRow];
-            string colName = column.Name;
+            ColumnBehavior colBehavior = mColumnBehaviorIndex[column.Name];
 
-            if (colName == kNetWorth)
-            {
-                return rowMetaData.Item;
-            }
-            else if (colName == kDisplayName)
-            {
-                return rowMetaData.Item;
-            }
-            else if (colName == kEffort)
-            {
-                return rowMetaData.Recipe;
-            }
-            else if (colName == kLvlReq)
-            {
-                return rowMetaData.Recipe;
-            }
-
-            return null;
-        }
-
-        private string GetIngredientPrefix(int columnNum)
-        {
-            return kIngr + columnNum + " ";
+            return colBehavior.GetSourceFileData(rowMetaData);
         }
 
         private string GetTranslatedName(string locKey)
@@ -666,7 +674,7 @@ namespace StonehearthEditor
         private void recipesGridView_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
         {
             if (mComboBoxColumns.Contains(recipesGridView.CurrentCell.ColumnIndex))
-                            {
+            {
                 ComboBox cbx = (ComboBox)e.Control;
                 cbx.DropDownStyle = ComboBoxStyle.DropDown;
                 cbx.AutoCompleteSource = AutoCompleteSource.ListItems;
@@ -689,6 +697,12 @@ namespace StonehearthEditor
         {
             DataGridViewCell cell = recipesGridView[e.ColumnIndex, e.RowIndex];
             mModifiedCells.Add(cell);
+
+            string colName = recipesGridView.Columns[e.ColumnIndex].Name;
+            ColumnBehavior colBehavior = mColumnBehaviorIndex[colName];
+            colBehavior.OnCellChanged(recipesGridView, e);
+
+            // TODO: if is ingredient column and ingredient name changed, update the image
         }
 
         private void recipesGridView_DataError(object sender, DataGridViewDataErrorEventArgs e)
@@ -705,5 +719,88 @@ namespace StonehearthEditor
         public JsonFileData Recipe { get; set; }
 
         public JsonFileData Item { get; set; }
+    }
+
+    internal class ColumnBehavior
+    {
+        public virtual JsonFileData GetSourceFileData(RowMetadata rowMetadata)
+        {
+            return null;
+        }
+
+        public virtual void OnCellChanged(DataGridView dataGridView, DataGridViewCellEventArgs e)
+        {
+        }
+    }
+
+    internal class ItemColumnBehavior : ColumnBehavior
+    {
+        public override JsonFileData GetSourceFileData(RowMetadata rowMetadata)
+        {
+            return rowMetadata.Item;
+        }
+    }
+
+    internal class IngrIconColumnBehavior : ColumnBehavior
+    {
+        public override JsonFileData GetSourceFileData(RowMetadata rowMetadata)
+        {
+            return rowMetadata.Recipe;
+        }
+    }
+
+    internal class IngrNameColumnBehavior : ColumnBehavior
+    {
+        private int mIngrId = 0;
+
+        public IngrNameColumnBehavior(int ingrId)
+        {
+            mIngrId = ingrId;
+        }
+
+        public void OnCellChanged(DataGridView dataGridView, DataGridViewCellEventArgs e)
+        {
+            // grab col and change the image
+            DataRow row = (dataGridView.DataSource as DataTable).Rows[e.RowIndex];
+            string ingrIconColName = RecipesView.GetIngredientPrefix(mIngrId) + RecipesView.kName;
+            row[]
+        }
+
+        public override JsonFileData GetSourceFileData(RowMetadata rowMetadata)
+        {
+            return rowMetadata.Recipe;
+        }
+    }
+
+    internal class IngrAmountColumnBehavior : ColumnBehavior
+    {
+        public override JsonFileData GetSourceFileData(RowMetadata rowMetadata)
+        {
+            return rowMetadata.Recipe;
+        }
+    }
+
+    internal class CrafterColumnBehavior : ColumnBehavior
+    {
+        public override JsonFileData GetSourceFileData(RowMetadata rowMetadata)
+        {
+            return rowMetadata.RecipeList;
+        }
+    }
+
+    internal class LvlReqColumnBehavior : ColumnBehavior
+    {
+        public override JsonFileData GetSourceFileData(RowMetadata rowMetadata)
+        {
+            return rowMetadata.Recipe;
+        }
+    }
+
+    internal class EffortColumnBehavior : ColumnBehavior
+    {
+        public override JsonFileData GetSourceFileData(RowMetadata rowMetadata)
+        {
+            return rowMetadata.Recipe;
+        }
     }
 }
