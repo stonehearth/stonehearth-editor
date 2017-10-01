@@ -36,13 +36,15 @@ namespace StonehearthEditor
     internal class IngrNameColumnBehavior : ColumnBehavior
     {
         private int mIngrId = 0;
+        private RecipesView mRecipesView = null;
 
-        public IngrNameColumnBehavior(int ingrId)
+        public IngrNameColumnBehavior(RecipesView recipesView, int ingrId)
         {
             mIngrId = ingrId;
+            mRecipesView = recipesView;
         }
 
-        public void OnCellChanged(DataGridView dataGridView, DataGridViewCellEventArgs e)
+        public override void OnCellChanged(DataGridView dataGridView, DataGridViewCellEventArgs e)
         {
             // grab col and change the image
             DataRow row = (dataGridView.DataSource as DataTable).Rows[e.RowIndex];

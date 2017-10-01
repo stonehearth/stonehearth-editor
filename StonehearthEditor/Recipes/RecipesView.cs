@@ -408,7 +408,7 @@ namespace StonehearthEditor
             return null;
         }
 
-        private Image GetIcon(string material)
+        public Image GetIcon(string material)
         {
             string path;
             mMaterialImages.TryGetValue(material, out path);
@@ -430,7 +430,7 @@ namespace StonehearthEditor
             mColumnBehaviorIndex.Add(prefix + kIcon, new IngrIconColumnBehavior());
 
             AddDataColumn(prefix + kName, typeof(string));
-            mColumnBehaviorIndex.Add(prefix + kName, new IngrNameColumnBehavior(mIngredientColumns));
+            mColumnBehaviorIndex.Add(prefix + kName, new IngrNameColumnBehavior(this, mIngredientColumns));
 
             AddDataColumn(prefix + kAmount, typeof(int));
             mColumnBehaviorIndex.Add(prefix + kAmount, new IngrAmountColumnBehavior());
