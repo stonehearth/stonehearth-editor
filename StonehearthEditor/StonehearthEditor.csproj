@@ -245,8 +245,10 @@
     </Compile>
     <Compile Include="FileData\QubicleFileData.cs" />
     <Compile Include="Recipes\ColumnBehavior.cs" />
-    <Compile Include="Recipes\RecipeHelper.cs" />
-    <Compile Include="Recipes\RowMetadata.cs" />
+    <Compile Include="Recipes\Ingredient.cs" />
+    <Compile Include="Recipes\IngredientColumnGroup.cs" />
+    <Compile Include="Recipes\RecipeRow.cs" />
+    <Compile Include="Recipes\RecipeTable.cs" />
     <Compile Include="ThumbnailCache.cs" />
     <Compile Include="EncounterEditor\UnknownNodeData.cs" />
     <Compile Include="Recipes\RecipesView.cs">

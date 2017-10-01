@@ -1,4 +1,4 @@
-﻿namespace StonehearthEditor
+﻿namespace StonehearthEditor.Recipes
 {
     partial class RecipesView
     {
@@ -66,7 +66,6 @@
             this.recipesGridView.CellBeginEdit += new System.Windows.Forms.DataGridViewCellCancelEventHandler(this.recipesGridView_CellBeginEdit);
             this.recipesGridView.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.recipesGridView_CellEndEdit);
             this.recipesGridView.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.recipesGridView_CellMouseClick);
-            this.recipesGridView.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.recipesGridView_CellValueChanged);
             this.recipesGridView.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.recipesGridView_DataError);
             this.recipesGridView.EditingControlShowing += new System.Windows.Forms.DataGridViewEditingControlShowingEventHandler(this.recipesGridView_EditingControlShowing);
             this.recipesGridView.KeyDown += new System.Windows.Forms.KeyEventHandler(this.recipesGridView_KeyDown);

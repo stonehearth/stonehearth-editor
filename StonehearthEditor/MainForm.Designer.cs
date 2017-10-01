@@ -1,3 +1,5 @@
+using StonehearthEditor.Recipes;
+
 namespace StonehearthEditor
 {
     partial class MainForm
@@ -39,7 +41,7 @@ namespace StonehearthEditor
             this.effectsEditorTab = new System.Windows.Forms.TabPage();
             this.effectsEditorView = new StonehearthEditor.EffectsEditorView();
             this.recipesTab = new System.Windows.Forms.TabPage();
-            this.recipesView = new StonehearthEditor.RecipesView();
+            this.recipesView = new StonehearthEditor.Recipes.RecipesView();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mainFormMenu = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
