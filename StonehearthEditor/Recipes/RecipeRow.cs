@@ -11,8 +11,14 @@ namespace StonehearthEditor.Recipes
 {
     class RecipeRow : DataRow
     {
-        internal RecipeRow(DataRowBuilder builder) : base(builder)
+        private List<Ingredient> mIngredients = new List<Ingredient>();
+
+        public ReadOnlyCollection<Ingredient> Ingredients { get; private set; }
+
+        internal RecipeRow(DataRowBuilder builder)
+            : base(builder)
         {
+            this.Ingredients = new ReadOnlyCollection<Ingredient>(mIngredients);
         }
 
         public JsonFileData RecipeList { get; set; }
@@ -56,18 +62,23 @@ namespace StonehearthEditor.Recipes
             this[RecipeTable.kIcon] = value;
         }
 
-        private List<Ingredient> ingredients = new List<Ingredient>();
-
         public Ingredient NewIngredient()
         {
-            Ingredient ingr = new Ingredient(this, ((RecipeTable)Table).GetIngredientColumnGroup(ingredients.Count));
-            ingredients.Add(ingr);
+            Ingredient ingr = new Ingredient(this, ((RecipeTable)Table).GetIngredientColumnGroup(mIngredients.Count));
+            mIngredients.Add(ingr);
             return ingr;
         }
 
         public Ingredient GetIngredient(IngredientColumnGroup group)
         {
-            return ingredients.Single(i => i.Group == group);
+            while (!mIngredients.Any(i => i.Group == group))
+            {
+                Ingredient ingredientData = NewIngredient();
+                ingredientData.Amount = 1;
+                ingredientData.Name = "";
+            }
+
+            return mIngredients.Single(i => i.Group == group);
         }
     }
 }

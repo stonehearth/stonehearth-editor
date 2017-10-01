@@ -9,6 +9,8 @@ namespace StonehearthEditor.Recipes
 {
     internal class ColumnBehavior
     {
+        public virtual bool IsIngredientColumn => false;
+
         public virtual void OnCellChanged(DataColumnChangeEventArgs e)
         {
         }
@@ -26,17 +28,26 @@ namespace StonehearthEditor.Recipes
             JsonFileData jsonFileData = row.Item;
             foreach (JsonFileData file in jsonFileData.OpenedFiles)
             {
-                JObject fileJson = file.Json;
-                JValue nameToken = fileJson.SelectToken("entity_data.stonehearth:catalog.display_name") as JValue;
+                JObject json = file.Json;
+                JValue nameToken = json.SelectToken("entity_data.stonehearth:catalog.display_name") as JValue;
                 if (nameToken != null)
                 {
                     string locKey = nameToken.Value.ToString();
-                    int i18nLength = "i18n(".Length;
-                    locKey = locKey.Substring(i18nLength, locKey.Length - i18nLength - 1);
-                    ModuleDataManager.GetInstance().ChangeEnglishLocValue(locKey, (string)value);
+
+                    if (!locKey.Contains(":"))
+                    {
+                        nameToken.Value = (string)value;
+                        jsonFileData.TrySetFlatFileData(json.ToString());
+                        jsonFileData.TrySaveFile();
+                    }
+                    else
+                    {
+                        int i18nLength = "i18n(".Length;
+                        locKey = locKey.Substring(i18nLength, locKey.Length - i18nLength - 1);
+                        ModuleDataManager.GetInstance().ChangeEnglishLocValue(locKey, (string)value);
+                    }
                 }
             }
-            jsonFileData.TrySaveFile();
         }
     }
 
@@ -81,6 +92,7 @@ namespace StonehearthEditor.Recipes
 
     internal class IngrIconColumnBehavior : ColumnBehavior
     {
+        public override bool IsIngredientColumn => true;
     }
 
     internal class IngrNameColumnBehavior : ColumnBehavior
@@ -94,26 +106,35 @@ namespace StonehearthEditor.Recipes
             this.recipesView = recipesView;
         }
 
+        public override bool IsIngredientColumn => true;
+
         public override void OnCellChanged(DataColumnChangeEventArgs e)
         {
             // grab col and change the image
             RecipeRow row = (RecipeRow)e.Row;
+            string newName = (string)e.ProposedValue ?? "";
             Ingredient ingredient = row.GetIngredient(columnGroup);
-            string newName = (string)e.ProposedValue;
+
             if (newName.Contains(":"))
             {
                 JsonFileData jsonFileData = (JsonFileData)ModuleDataManager.GetInstance().GetModuleFile(newName).FileData;
-                ingredient.SetIcon(recipesView.GetIcon(jsonFileData));
+                ingredient.Icon = recipesView.GetIcon(jsonFileData);
             }
             else
             {
-                ingredient.SetIcon(recipesView.GetIcon(newName));
+                ingredient.Icon = recipesView.GetIcon(newName);
+            }
+
+            if (newName == "")
+            {
+                ingredient.Amount = null;
             }
         }
     }
 
     internal class IngrAmountColumnBehavior : ColumnBehavior
     {
+        public override bool IsIngredientColumn => true;
     }
 
     internal class CrafterColumnBehavior : ColumnBehavior

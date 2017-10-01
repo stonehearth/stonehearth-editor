@@ -20,19 +20,53 @@ namespace StonehearthEditor.Recipes
             this.columnGroup = columnGroup;
         }
 
-        public void SetName(string value)
+        public string Name
         {
-            this.row[columnGroup.NameColumnKey] = value;
+            get
+            {
+                object value = this.row[columnGroup.NameColumnKey];
+                return value == DBNull.Value ? "" : (string)value;
+            }
+
+            set
+            {
+                this.row[columnGroup.NameColumnKey] = value;
+            }
         }
 
-        public void SetIcon(Image value)
+        public Image Icon
         {
-            this.row[columnGroup.IconColumnKey] = value;
+            get
+            {
+                object value = this.row[columnGroup.IconColumnKey];
+                return value == DBNull.Value ? null : (Image)value;
+            }
+
+            set
+            {
+                this.row[columnGroup.IconColumnKey] = value;
+            }
         }
 
-        public void SetAmount(int value)
+        public int? Amount
         {
-            this.row[columnGroup.AmountColumnKey] = value;
+            get
+            {
+                object value = this.row[columnGroup.AmountColumnKey];
+                return value == DBNull.Value ? 0 : (int)value;
+            }
+
+            set
+            {
+                if (value == null)
+                {
+                    this.row[columnGroup.AmountColumnKey] = DBNull.Value;
+                }
+                else
+                {
+                    this.row[columnGroup.AmountColumnKey] = value;
+                }
+            }
         }
     }
 }

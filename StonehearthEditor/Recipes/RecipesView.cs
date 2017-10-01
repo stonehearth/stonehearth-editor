@@ -19,8 +19,10 @@ namespace StonehearthEditor.Recipes
 
         private bool mBaseModsOnly = true;
 
-        private struct Cell {
+        private struct Cell
+        {
             public RecipeRow Row { get; private set; }
+
             public DataColumn Column { get; private set; }
 
             public Cell(RecipeRow row, DataColumn column)
@@ -59,6 +61,19 @@ namespace StonehearthEditor.Recipes
             {
                 ColumnBehavior behavior = mDataTable.GetColumnBehavior(cell.Column);
                 behavior.SaveCell(cell.Row, cell.Row[cell.Column]);
+            }
+
+            // Save ingredient rows all at once instead of once per cell to avoid unnecessary calculation
+            var ingredientRows =
+                mModifiedCells
+                .Where(e => mDataTable.GetColumnBehavior(e.Column).IsIngredientColumn)
+                .Select(e => e.Row)
+                .Distinct()
+                .ToList();
+
+            foreach (var row in ingredientRows)
+            {
+                SaveIngredients(row);
             }
 
             mModifiedCells.Clear();
@@ -235,24 +250,11 @@ namespace StonehearthEditor.Recipes
                         string alias = item.ToString();
                         row.SetAlias(alias);
 
-                        var foundLinked = false;
                         // Check aliases linked by recipe file
-                        foreach (ModuleFile linkedAlias in jsonFileData.LinkedAliases)
-                        {
-                            if (linkedAlias.FullAlias.Equals(alias))
-                            {
-                                JsonFileData linked = (JsonFileData)linkedAlias.FileData;
-                                PopulateFromItem(row, linked);
-                                foundLinked = true;
-                            }
-                        }
-
-                        if (!foundLinked)
-                        {
-                            PopulateFromItem(row, jsonFileData);
-                        }
+                        JsonFileData itemFileData = FindJsonFileMatchingAlias(jsonFileData, alias);
+                        PopulateFromItem(row, itemFileData);
                     }
-                    
+
                     foreach (JToken ingredient in ingredientArray)
                     {
                         JToken uri = ingredient["uri"];
@@ -263,30 +265,17 @@ namespace StonehearthEditor.Recipes
 
                         string alias = uri != null ? uri.ToString() : material.ToString();
 
-                        ingredientData.SetAmount(count.ToObject<int>());
+                        ingredientData.Amount = count.ToObject<int>();
 
                         if (material != null)
                         {
-                            ingredientData.SetName(alias);
-                            ingredientData.SetIcon(GetIcon(material.ToString()));
+                            ingredientData.Name = alias;
+                            ingredientData.Icon = GetIcon(material.ToString());
                         }
                         else if (uri != null)
                         {
-                            var foundLinked = false;
-                            foreach (ModuleFile linkedAlias in jsonFileData.LinkedAliases)
-                            {
-                                if (linkedAlias.FullAlias.Equals(alias))
-                                {
-                                    JsonFileData linked = linkedAlias.FileData as JsonFileData;
-                                    PopulateRowIngredient(ingredientData, linked);
-                                    foundLinked = true;
-                                }
-                            }
-
-                            if (!foundLinked)
-                            {
-                                PopulateRowIngredient(ingredientData, jsonFileData);
-                            }
+                            JsonFileData ingrJsonFileData = FindJsonFileMatchingAlias(jsonFileData, alias);
+                            PopulateRowIngredient(ingredientData, ingrJsonFileData);
                         }
                     }
 
@@ -295,10 +284,47 @@ namespace StonehearthEditor.Recipes
             }
         }
 
+        private JsonFileData FindJsonFileMatchingAlias(JsonFileData jsonFileData, String alias)
+        {
+            foreach (ModuleFile linkedModule in jsonFileData.LinkedAliases)
+            {
+                if (linkedModule.FullAlias.Equals(alias))
+                {
+                    return (JsonFileData)linkedModule.FileData;
+                }
+            }
+
+            return jsonFileData;
+        }
+
         private void PopulateRowIngredient(Ingredient ingredient, JsonFileData jsonFileData)
         {
-            ingredient.SetName(jsonFileData.GetModuleFile().FullAlias);
-            ingredient.SetIcon(GetIcon(jsonFileData));
+            ingredient.Name = jsonFileData.GetModuleFile().FullAlias;
+            ingredient.Icon = GetIcon(jsonFileData);
+        }
+
+        private void SaveIngredients(RecipeRow row)
+        {
+            JsonFileData jsonFileData = row.Recipe;
+            JObject json = jsonFileData.Json;
+
+            JArray newIngrArray = new JArray();
+            foreach (Ingredient ingredient in row.Ingredients)
+            {
+                if (!string.IsNullOrEmpty(ingredient.Name))
+                {
+                    string ingrKey = ingredient.Name.Contains(':') ? "uri" : "material";
+                    JObject newIngr = new JObject(
+                        new JProperty(ingrKey, ingredient.Name),
+                        new JProperty("count", ingredient.Amount));
+
+                    newIngrArray.Add(newIngr);
+                }
+            }
+
+            json["ingredients"] = newIngrArray;
+            jsonFileData.TrySetFlatFileData(json.ToString());
+            jsonFileData.TrySaveFile();
         }
 
         private string GetDisplayName(JsonFileData jsonFileData)
@@ -390,8 +416,6 @@ namespace StonehearthEditor.Recipes
                     if (valid)
                         recipesGridView[colIndex, rowIndex].Value = value;
                 }
-                // TODO: check if this is already handled by handler
-                mModifiedCells.Add(new Cell((RecipeRow)mDataTable.Rows[rowIndex], mDataTable.Columns[colIndex]));
             }
             catch (Exception exception)
             {
@@ -402,7 +426,14 @@ namespace StonehearthEditor.Recipes
 
         private string GetTranslatedName(string locKey)
         {
-            return ModuleDataManager.GetInstance().LocalizeString(locKey, true);
+            if (locKey.Contains(':'))
+            {
+                return ModuleDataManager.GetInstance().LocalizeString(locKey, true);
+            }
+            else
+            {
+                return locKey;
+            }
         }
 
         private Tuple<DataGridViewCell, DataGridViewCell> GetSelectedCellsBoundaries()
@@ -443,6 +474,8 @@ namespace StonehearthEditor.Recipes
             List<string> strings = new List<string>();
             if (colName.StartsWith(IngredientColumnGroup.kIngr) && colName.EndsWith(IngredientColumnGroup.kName))
             {
+                strings.Add("");
+
                 // Add materials
                 strings.AddRange(mMaterialImages.Keys);
 
