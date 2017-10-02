@@ -47,6 +47,11 @@
         <span class="inline-property-label">{{ model.name }}</span>
         {{ input class="sh-input" type='text' value=model.value }}
     </script>
+    <script type="text/x-handlebars" data-template-name="components/material-property">
+        <span class="inline-property-label">{{ model.name }}</span>
+        {{ input class="sh-material-input" type='text' value=model.value }}
+        <span class="material-warning" >(Materials only update on reload.)</span>
+    </script>
     <script type="text/x-handlebars" data-template-name="components/boolean-property">
         <label>
             <span class="inline-property-label checkbox-property-label">{{ model.name }}</span>

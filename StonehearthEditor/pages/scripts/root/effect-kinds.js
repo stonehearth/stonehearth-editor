@@ -12,6 +12,14 @@
                     name: "duration",
                 }),
 
+                MaterialProperty.create({
+                    name: "material",
+                }),
+
+                BooleanProperty.create({
+                    name: "loops",
+                }),
+
                 ComplexProperty.create({
                     name: "emission",
                     componentName: "encompassing-group-property",

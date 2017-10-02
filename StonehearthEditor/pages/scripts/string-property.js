@@ -19,6 +19,27 @@
     }
 });
 
+MaterialProperty = EffectProperty.extend({
+    componentName: 'material-property',
+    value: '', // string
+    isMissing: Ember.computed('value', function () {
+        return this.get('value') === undefined;
+    }),
+    isValid: function () {
+        return true;
+    }.property(),
+    toJson: function () {
+        return this.get('value');
+    },
+    fromJson: function (json) {
+        Utils.assert(Utils.isUndefinedOrTypeOf("string", json));
+        if (json === undefined) {
+            json = 'materials/cubemitter.material.json';
+        }
+        this.set('value', json);
+    }
+});
+
 IntProperty = EffectProperty.extend({
     componentName: 'int-property',
     value: '', // string, undefined, null
@@ -112,7 +133,6 @@ ConstantRgbaParameterKind = ParameterKind.extend({
     colorPicker: null,
     _onInit: function () {
         var self = this;
-
         this.set('rgba', Rgba.create({ hasA: this.get('hasA') }));
         Ember.run.scheduleOnce('afterRender', this, function () {
             var picker = $('#color1 .color-picker');

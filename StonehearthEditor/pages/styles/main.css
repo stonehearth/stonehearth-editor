@@ -108,8 +108,18 @@
     display: inline-block;
     text-align: center;
 }
+.inline-property-label {
+    width: 135px;
+    display: inline-block;
+    text-align: center;
+}
 .sh-numeric-input {
     width: 75px;
+}
+.sh-material-input {
+    width: 400px;
+}
+.material-warning {
 }
 
 .sh-checkbox-input {
