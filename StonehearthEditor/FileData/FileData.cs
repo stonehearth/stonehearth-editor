@@ -14,12 +14,21 @@ namespace StonehearthEditor
         private bool isDisposing = false;
         private string mErrors = null;
 
+        // Aliases that this file links to in its Json
         public List<ModuleFile> LinkedAliases { get; } = new List<ModuleFile>();
 
+        // Files that this file links to by path in its Json
         public Dictionary<string, FileData> LinkedFileData { get; } = new Dictionary<string, FileData>();
 
+        // This FileData, ghost form, iconic form, and recipes
         public List<FileData> OpenedFiles { get; } = new List<FileData>();
 
+        /* If we are an:
+         * ImageFileData or QubicleFileData: this contains any file that referenced us and vice versa
+         * JsonFileData: 
+         *     if we are a recipes list json, this contains all recipes we reference
+         *     if we are a recipe json, this contains the recipes list that referenced us
+         */
         public List<FileData> RelatedFiles { get; } = new List<FileData>();
 
         public Dictionary<string, FileData> ReferencedByFileData { get; } = new Dictionary<string, FileData>();

@@ -246,6 +246,12 @@
     <Compile Include="FileData\QubicleFileData.cs" />
     <Compile Include="ThumbnailCache.cs" />
     <Compile Include="EncounterEditor\UnknownNodeData.cs" />
+    <Compile Include="RecipesView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="RecipesView.Designer.cs">
+      <DependentUpon>RecipesView.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="Dialogs\AliasSelectionDialog.resx">
       <DependentUpon>AliasSelectionDialog.cs</DependentUpon>
     </EmbeddedResource>
@@ -294,6 +300,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="RecipesView.resx">
+      <DependentUpon>RecipesView.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="App_Readme\Handlebarsjs_LICENSE" />
     <None Include="App_Readme\Handlebarsjs_README.md" />
     <None Include="pages\styles\bootstrap-theme.css.map">
