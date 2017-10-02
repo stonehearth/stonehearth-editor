@@ -43,14 +43,6 @@ namespace StonehearthEditor.Recipes
         public RecipesView()
         {
             mDataTable = new RecipeTable(this);
-            mDataTable.ColumnChanged +=
-                (sender, e) =>
-                {
-                    RecipeRow row = (RecipeRow)e.Row;
-                    mModifiedCells.Add(new Cell(row, e.Column));
-
-                    mDataTable.GetColumnBehavior(e.Column).OnCellChanged(e);
-                };
 
             InitializeComponent();
 
@@ -89,6 +81,7 @@ namespace StonehearthEditor.Recipes
             }
 
             mModifiedCells.Clear();
+            unsavedFilesLabel.Visible = false;
         }
 
         public void Initialize()
@@ -97,6 +90,17 @@ namespace StonehearthEditor.Recipes
             MakeDoubleBuffered();
             LoadMaterialImages();
             LoadColumnsData();
+
+            // Attach event listener after all data has been populated
+            mDataTable.ColumnChanged +=
+                (sender, e) =>
+                {
+                    RecipeRow row = (RecipeRow)e.Row;
+                    mModifiedCells.Add(new Cell(row, e.Column));
+                    unsavedFilesLabel.Visible = true;
+
+                    mDataTable.GetColumnBehavior(e.Column).OnCellChanged(e);
+                };
         }
 
         public void Reload()
@@ -141,12 +145,13 @@ namespace StonehearthEditor.Recipes
                 // Add combo boxes for columns that have a predetermined set of valid values
                 if (column.Name.StartsWith(IngredientColumnGroup.kIngr) && column.Name.EndsWith(IngredientColumnGroup.kName))
                 {
-                    var newColumn = new DataGridViewComboBoxColumn();
+                    DataGridViewComboBoxColumn newColumn = new DataGridViewComboBoxColumn();
                     newColumn.Name = column.Name;
                     newColumn.DataPropertyName = column.DataPropertyName;
                     newColumn.AutoComplete = false;
                     newColumn.DisplayStyle = DataGridViewComboBoxDisplayStyle.Nothing;
                     newColumn.DataSource = GetAutoCompleteStrings(newColumn.Name);
+                    newColumn.SortMode = DataGridViewColumnSortMode.Automatic;
 
                     recipesGridView.Columns.RemoveAt(i);
                     recipesGridView.Columns.Insert(i, newColumn);
@@ -607,7 +612,6 @@ namespace StonehearthEditor.Recipes
         {
             if (mCmbxColumns.Contains(recipesGridView.CurrentCell.ColumnIndex))
             {
-                int row = recipesGridView.CurrentCell.RowIndex;
                 ComboBox cbx = (ComboBox)e.Control;
                 cbx.DropDownStyle = ComboBoxStyle.DropDown;
                 cbx.AutoCompleteSource = AutoCompleteSource.ListItems;
@@ -659,7 +663,10 @@ namespace StonehearthEditor.Recipes
         {
             if (e.Button == MouseButtons.Right)
             {
-                recipesGridView.CurrentCell = this.recipesGridView[e.ColumnIndex, e.RowIndex];
+                if (e.ColumnIndex > 0 && e.RowIndex > 0)
+                {
+                    recipesGridView.CurrentCell = this.recipesGridView[e.ColumnIndex, e.RowIndex];
+                }
             }
         }
 

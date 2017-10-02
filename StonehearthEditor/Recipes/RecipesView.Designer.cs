@@ -40,6 +40,7 @@
             this.searchButton = new System.Windows.Forms.ToolStripButton();
             this.filterCmbx = new System.Windows.Forms.ToolStripComboBox();
             this.helpButton = new System.Windows.Forms.ToolStripButton();
+            this.unsavedFilesLabel = new System.Windows.Forms.ToolStripLabel();
             ((System.ComponentModel.ISupportInitialize)(this.recipesGridView)).BeginInit();
             this.recipesCellContextMenu.SuspendLayout();
             this.searchPanel.SuspendLayout();
@@ -111,7 +112,8 @@
             this.searchBox,
             this.searchButton,
             this.filterCmbx,
-            this.helpButton});
+            this.helpButton,
+            this.unsavedFilesLabel});
             this.toolStrip.Location = new System.Drawing.Point(0, 0);
             this.toolStrip.Name = "toolStrip";
             this.toolStrip.Size = new System.Drawing.Size(761, 25);
@@ -155,6 +157,14 @@
             this.helpButton.Text = "Help";
             this.helpButton.Click += new System.EventHandler(this.helpButton_Click);
             // 
+            // unsavedFilesLabel
+            // 
+            this.unsavedFilesLabel.ForeColor = System.Drawing.SystemColors.MenuHighlight;
+            this.unsavedFilesLabel.Name = "unsavedFilesLabel";
+            this.unsavedFilesLabel.Size = new System.Drawing.Size(106, 22);
+            this.unsavedFilesLabel.Text = "Unsaved Changes*";
+            this.unsavedFilesLabel.Visible = false;
+            // 
             // RecipesView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -186,5 +196,6 @@
         private System.Windows.Forms.ToolStripComboBox filterCmbx;
         private System.Windows.Forms.ToolStripMenuItem removeIngredientToolStripMenuItem;
         private System.Windows.Forms.ToolStripButton helpButton;
+        private System.Windows.Forms.ToolStripLabel unsavedFilesLabel;
     }
 }
