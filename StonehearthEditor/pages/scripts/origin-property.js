@@ -128,7 +128,7 @@ ConstantSphereOriginSurface = OriginSurface.extend({
     componentName: 'sphere-scalar-parameter',
     radius: '1',
     innerRadius: '0',
-    angle: '0',
+    angle: '360',
     fromJson: function (json) {
         this.set('radius', Utils.getEffectValueOrDefault(json, 0, "0"));
         this.set('innerRadius', Utils.getEffectValueOrDefault(json, 1, "0"));
@@ -162,9 +162,9 @@ ConstantSphereOriginSurface = OriginSurface.extend({
 ConstantCylinderOriginSurface = OriginSurface.extend({
     componentName: 'cylinder-scalar-parameter',
     height: '1',
-    radius: '360',
+    radius: '2',
     innerRadius: '0',
-    angle: '0',
+    angle: '360',
     fromJson: function (json) {
         this.set('height', Utils.getEffectValueOrDefault(json, 0, "0"));
         this.set('radius', Utils.getEffectValueOrDefault(json, 1, "0"));

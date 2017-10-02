@@ -3,15 +3,6 @@
 
 CsApi = {};
 
-App.OriginParameterPropertyComponent = Ember.Component.extend({
-    classNames: ['origin-parameter-property'],
-    actions: {
-        toggleMissing: function () {
-            this.set('model.isMissing', !this.get('model.isMissing'));
-        },
-    },
-});
-
 App.BlockPropertyComponent = Ember.Component.extend({
     actions: {
         toggleMissing: function () {
@@ -47,21 +38,20 @@ App.Level2ParameterPropertyComponent = Ember.Component.extend({
     },
 });
 
-App.BurstParameterPropertyComponent = Ember.Component.extend({
-    classNames: ['burst-parameter-property'],
+App.Level2ParameterPropertyEmissionComponent = Ember.Component.extend({
+    classNames: ['level2-parameter-property-emission'],
     actions: {
         toggleMissing: function () {
             this.set('model.isMissing', !this.get('model.isMissing'));
         },
-        add: function () {
-            console.log("got here");
-            this.model.parameter.curve.points.pushObject(Point_Burst.create({}));
-        },
-        addAbove: function (index) {
-            this.model.parameter.curve.points.insertAt(index, Point_Burst.create({}));
-        },
-        delete: function (index) {
-            this.model.parameter.curve.points.removeAt(index);
+    },
+});
+
+App.OriginParameterPropertyComponent = Ember.Component.extend({
+    classNames: ['origin-parameter-property'],
+    actions: {
+        toggleMissing: function () {
+            this.set('model.isMissing', !this.get('model.isMissing'));
         },
     },
 });
@@ -95,10 +85,24 @@ App.CurveXComponent = Ember.Component.extend({
 App.CurveRgbComponent = Ember.Component.extend({
     actions: {
         add: function () {
-            this.model.points.pushObject(PointRgb.create({}));
+            this.model.pointsRGB.pushObject(PointRgb.create({}));
         },
         addAbove: function (index) {
-            this.model.points.insertAt(index, PointRgb.create({}));
+            this.model.pointsRGB.insertAt(index, PointRgb.create({}));
+        },
+        delete: function (index) {
+            this.model.pointsRGB.removeAt(index);
+        },
+    },
+});
+
+App.BurstParameterPropertyComponent = Ember.Component.extend({
+    actions: {
+        add: function () {
+            this.model.points.pushObject(Point_Burst.create({}));
+        },
+        addAbove: function (index) {
+            this.model.points.insertAt(index, Point_Burst.create({}));
         },
         delete: function (index) {
             this.model.points.removeAt(index);

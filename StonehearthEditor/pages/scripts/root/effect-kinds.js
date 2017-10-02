@@ -22,13 +22,7 @@
                             componentName: "level2-parameter-property",
                             dimension: 'scalar',
                             timeVarying: true,
-                            optional: false,
-                        }),
-                        BurstProperty.create({
-                            name: 'bursts',
-                            componentName: "burst-parameter-property",
-                            dimension: 'scalar',
-                            timeVarying: true,
+                            bursts: true,
                             optional: false,
                         }),
                         ParameterProperty.create({
@@ -36,6 +30,7 @@
                             componentName: "level2-parameter-property",
                             dimension: 'scalar',
                             timeVarying: true,
+                            bursts: false,
                             optional: false,
                         }),
                         OriginProperty.create({
@@ -43,6 +38,7 @@
                             componentName: "origin-parameter-property",
                             dimension: 'scalar',
                             timeVarying: false,
+                            bursts: false,
                             optional: false,
                         }),
                         ParameterProperty.create({
@@ -50,6 +46,7 @@
                             componentName: "level2-parameter-property",
                             dimension: 'scalar',
                             timeVarying: true,
+                            bursts: false,
                             optional: true,
                         }),
                         ParameterProperty.create({
@@ -57,6 +54,7 @@
                             componentName: "level2-parameter-property",
                             dimension: 'scalar',
                             timeVarying: true,
+                            bursts: false,
                             optional: true,
                         }),
                         ParameterProperty.create({
@@ -64,6 +62,7 @@
                             componentName: "level2-parameter-property",
                             dimension: 'scalar',
                             timeVarying: true,
+                            bursts: false,
                             optional: true,
                         }),
                         ParameterProperty.create({
@@ -71,6 +70,7 @@
                             componentName: "level2-parameter-property",
                             dimension: 'scalar',
                             timeVarying: true,
+                            bursts: false,
                             optional: true,
                         }),
                         ParameterProperty.create({
@@ -78,6 +78,7 @@
                             componentName: "level2-parameter-property",
                             dimension: 'scalar',
                             timeVarying: true,
+                            bursts: false,
                             optional: true,
                         }),
                         ParameterProperty.create({
@@ -85,6 +86,7 @@
                             componentName: "level2-parameter-property",
                             dimension: 'scalar',
                             timeVarying: true,
+                            bursts: false,
                             optional: true,
                         }),
                         ParameterProperty.create({
@@ -92,6 +94,7 @@
                             componentName: "level2-parameter-property",
                             dimension: 'scalar',
                             timeVarying: true,
+                            bursts: false,
                             optional: true,
                         }),
                         ParameterProperty.create({
@@ -99,6 +102,7 @@
                             componentName: "level2-parameter-property",
                             dimension: 'scalar',
                             timeVarying: true,
+                            bursts: false,
                             optional: true,
                         }),
                         ParameterProperty.create({
@@ -106,6 +110,7 @@
                             componentName: "level2-parameter-property",
                             dimension: 'scalar',
                             timeVarying: true,
+                            bursts: false,
                             optional: true,
                         }),
                     ]),
@@ -126,6 +131,7 @@
                                     componentName: "level3-parameter-property",
                                     dimension: 'scalar',
                                     timeVarying: false,
+                                    bursts: false,
                                     optional: true,
                                 }),
                             ]),
@@ -140,6 +146,7 @@
                                     componentName: "level3-parameter-property",
                                     dimension: 'scalar',
                                     timeVarying: false,
+                                    bursts: false,
                                     optional: true,
                                 }),
                                 ParameterProperty.create({
@@ -147,6 +154,7 @@
                                     componentName: "level3-parameter-property",
                                     dimension: 'scalar',
                                     timeVarying: true,
+                                    bursts: false,
                                     optional: true,
                                 }),
                             ]),
@@ -161,6 +169,7 @@
                                     componentName: "level3-parameter-property",
                                     dimension: 'scalar',
                                     timeVarying: true,
+                                    bursts: false,
                                     optional: true,
                                 }),
                                 ParameterProperty.create({
@@ -168,6 +177,7 @@
                                     componentName: "level3-parameter-property",
                                     dimension: 'scalar',
                                     timeVarying: true,
+                                    bursts: false,
                                     optional: true,
                                 }),
                                 ParameterProperty.create({
@@ -175,6 +185,7 @@
                                     componentName: "level3-parameter-property",
                                     dimension: 'scalar',
                                     timeVarying: true,
+                                    bursts: false,
                                     optional: true,
                                 }),
                             ]),
@@ -189,6 +200,7 @@
                                     componentName: "level3-parameter-property",
                                     dimension: 'scalar',
                                     timeVarying: true,
+                                    bursts: false,
                                     optional: true,
                                 }),
                                 ParameterProperty.create({
@@ -196,6 +208,7 @@
                                     componentName: "level3-parameter-property",
                                     dimension: 'scalar',
                                     timeVarying: true,
+                                    bursts: false,
                                     optional: true,
                                 }),
                                 ParameterProperty.create({
@@ -203,6 +216,7 @@
                                     componentName: "level3-parameter-property",
                                     dimension: 'scalar',
                                     timeVarying: true,
+                                    bursts: false,
                                     optional: true,
                                 }),
                             ]),
@@ -217,6 +231,7 @@
                                     componentName: "level3-parameter-property",
                                     dimension: 'scalar',
                                     timeVarying: true,
+                                    bursts: false,
                                     optional: true,
                                 }),
                                 ParameterProperty.create({
@@ -231,6 +246,7 @@
                                     componentName: "level3-parameter-property",
                                     dimension: 'scalar',
                                     timeVarying: true,
+                                    bursts: false,
                                     optional: true,
                                 }),
                             ]),
@@ -245,6 +261,7 @@
                                     componentName: "level3-parameter-property",
                                     dimension: 'scalar',
                                     timeVarying: false,
+                                    bursts: false,
                                     optional: true,
                                 }),
                                 ParameterProperty.create({
@@ -252,6 +269,7 @@
                                     componentName: "level3-parameter-property",
                                     dimension: 'scalar',
                                     timeVarying: true,
+                                    bursts: false,
                                     optional: true,
                                 }),
                                 ParameterProperty.create({
@@ -259,6 +277,7 @@
                                     componentName: "level3-parameter-property",
                                     dimension: 'scalar',
                                     timeVarying: false,
+                                    bursts: false,
                                     optional: true,
                                 }),
                                 ParameterProperty.create({
@@ -266,6 +285,7 @@
                                     componentName: "level3-parameter-property",
                                     dimension: 'scalar',
                                     timeVarying: false,
+                                    bursts: false,
                                     optional: true,
                                 }),
                                 ParameterProperty.create({
@@ -273,6 +293,7 @@
                                     componentName: "level3-parameter-property",
                                     dimension: 'scalar',
                                     timeVarying: false,
+                                    bursts: false,
                                     optional: true,
                                 }),
                                 ParameterProperty.create({
@@ -280,6 +301,7 @@
                                     componentName: "level3-parameter-property",
                                     dimension: 'scalar',
                                     timeVarying: true,
+                                    bursts: false,
                                     optional: true,
                                 }),
                                 ParameterProperty.create({
@@ -287,6 +309,7 @@
                                     componentName: "level3-parameter-property",
                                     dimension: 'scalar',
                                     timeVarying: true,
+                                    bursts: false,
                                     optional: true,
                                 }),
                                 ParameterProperty.create({
@@ -294,6 +317,7 @@
                                     componentName: "level3-parameter-property",
                                     dimension: 'scalar',
                                     timeVarying: true,
+                                    bursts: false,
                                     optional: true,
                                 }),
                             ]),
@@ -308,6 +332,7 @@
                                     componentName: "level3-parameter-property",
                                     dimension: 'rgba',
                                     timeVarying: false,
+                                    bursts: false,
                                     optional: true,
                                 }),
                                 ParameterProperty.create({
@@ -315,6 +340,7 @@
                                     componentName: "level3-parameter-property",
                                     dimension: 'rgb',
                                     timeVarying: true,
+                                    bursts: false,
                                     optional: true,
                                 }),
                                 ParameterProperty.create({
@@ -322,6 +348,7 @@
                                     componentName: "level3-parameter-property",
                                     dimension: 'scalar',
                                     timeVarying: true,
+                                    bursts: false,
                                     optional: true,
                                 }),
                             ]),

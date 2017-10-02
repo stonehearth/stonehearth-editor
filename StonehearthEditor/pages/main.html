@@ -26,7 +26,6 @@
     <script src="scripts/effect-property.js"></script>
     <script src="scripts/string-property.js"></script>
     <script src="scripts/origin-property.js"></script>
-    <script src="scripts/burst-property.js"></script>
     <script src="scripts/complex-property.js"></script>
     <script type="text/x-handlebars" data-template-name="index">
         <div class="tools">
@@ -181,36 +180,6 @@
         {{ component model.parameter.componentName model=model.parameter }}
         {{/if }}
     </script>
-    <script type="text/x-handlebars" data-template-name="components/emission-parameter-property">
-        <span class="level3-parameter-property-header-text">
-            {{ model.name }}
-        </span>
-        {{#if model.isMissing }}
-        {{ else }}
-            <select onchange={{ action (mut model.kind) value="target.value" }} class="level3-parameter-property-select">
-                {{#each model.kindOptionNames as |kindChoice| }}
-                <option value={{ kindChoice }}
-                        selected={{ eq model.kind kindChoice }}>
-                    {{ kindChoice }}
-                </option>
-                {{/each }}
-            </select>
-        {{/if }}
-        {{#if model.optional }}
-            <button class="level3-parameter-property-expand-button" {{ action 'toggleMissing' }}>
-                {{#if model.isMissing }}
-                ➕
-                {{ else }}
-                ❌
-                {{/if }}
-            </button>
-        {{/if }}
-        <br />
-        {{#if model.isMissing }}
-        {{ else }}
-        {{ component model.parameter.componentName model=model.parameter }}
-        {{/if }}
-    </script>
     <script type="text/x-handlebars" data-template-name="components/burst-parameter-property">
         {{#if model.isMissing }}
         {{ else }}
@@ -223,7 +192,7 @@
                 <td>time</td>
                 <td>burst</td>
             </tr>
-            {{#each model.parameter.curve.points as |point index| }}
+            {{#each model.points as |point index| }}
                 <tr>
                     <td><div class="curve-warning">{{ warning-icon message=(get model.errorMap (tostr index)) }}</div></td>
                     <td><button class="curve-button" {{ action 'addAbove' index }}><img src="styles/add_above.png" /></button></td>
@@ -238,6 +207,9 @@
             </tr>
         </table>
         {{/if }}
+    </script>
+    <script type="text/x-handlebars" data-template-name="components/burst-scalar-parameter">
+        {{ burst-parameter-property model=model.curve }}
     </script>
     <script type="text/x-handlebars" data-template-name="components/block-property">
         {{#if model.isRoot }}
@@ -269,7 +241,7 @@
         {{ warning-icon message=model.invalidValueMessage }}
     </script>
     <script type="text/x-handlebars" data-template-name="components/constant-rgba-parameter">
-        {{ rgba-x model=model.rgba name=model.nameId}}
+        {{ rgba-x model=model.rgba name="color1"}}
     </script>
     <script type="text/x-handlebars" data-template-name="components/random-between-rgba-parameter">
         <div class="random-between-type-header"><span class="parameter-property-label">Color 1</span>
@@ -341,9 +313,9 @@
                 <td>R</td>
                 <td>G</td>
                 <td>B</td>
-
+                <td><span class="parameter-property-label-color">Picker</span></td>
             </tr>
-            {{#each model.points as |point index| }}
+            {{#each model.pointsRGB as |point index| }}
                 <tr>
                     <td><div class="curve-warning">{{ warning-icon message=(get model.errorMap (tostr index)) }}</div></td>
                     <td><button class="curve-button" {{ action 'addAbove' index }}><img src="styles/add_above.png" /></button></td>
@@ -352,7 +324,7 @@
                     <td>{{ input class="curve-input" type="text" value=point.rValue }}</td>
                     <td>{{ input class="curve-input" type="text" value=point.gValue }}</td>
                     <td>{{ input class="curve-input" type="text" value=point.bValue }}</td>
-                    
+                    <td><div id={{ name }} class="color-picker-div"><input type="text" class="color-picker" /></div></td>
                 </tr>
             {{/each }}
             <tr>
@@ -361,11 +333,6 @@
             </tr>
         </table>
     </script>
-        <!-- Removed these from a total of 4 places, the other two are in string-property -->
-    <!-- <td><span class="parameter-property-label-color">Picker</span></td> -->
-        <!-- this line goes at the end of the first table row -->
-    <!-- <td><div id={{ name }} class="color-picker-div"><input type="text" class="color-picker" /></div></td> -->
-        <!-- this line goes at the end of the each statement -->
     <script type="text/x-handlebars" data-template-name="components/rgba-x">
         <table class="curve-rgbTable">
             <tr>
