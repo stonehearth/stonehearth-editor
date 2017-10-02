@@ -74,8 +74,6 @@ namespace StonehearthEditor.Recipes
             while (!mIngredients.Any(i => i.Group == group))
             {
                 Ingredient ingredientData = NewIngredient();
-                ingredientData.Amount = 1;
-                ingredientData.Name = "";
             }
 
             return mIngredients.Single(i => i.Group == group);

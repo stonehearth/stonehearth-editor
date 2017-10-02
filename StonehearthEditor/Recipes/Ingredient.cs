@@ -53,19 +53,20 @@ namespace StonehearthEditor.Recipes
             get
             {
                 object value = this.row[columnGroup.AmountColumnKey];
-                return value == DBNull.Value ? 0 : (int)value;
+                return value == DBNull.Value ? null : (int?)value;
             }
 
             set
             {
-                if (value == null)
+                this.row[columnGroup.AmountColumnKey] = value ?? (object)DBNull.Value;
+                /*if (value == null)
                 {
                     this.row[columnGroup.AmountColumnKey] = DBNull.Value;
                 }
                 else
                 {
                     this.row[columnGroup.AmountColumnKey] = value;
-                }
+                }*/
             }
         }
     }

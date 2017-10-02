@@ -129,12 +129,29 @@ namespace StonehearthEditor.Recipes
             {
                 ingredient.Amount = null;
             }
+            else if (ingredient.Amount == null)
+            {
+                ingredient.Amount = 1;
+            }
         }
     }
 
     internal class IngrAmountColumnBehavior : ColumnBehavior
     {
         public override bool IsIngredientColumn => true;
+
+        private IngredientColumnGroup columnGroup = null;
+
+        public IngrAmountColumnBehavior(IngredientColumnGroup columnGroup)
+        {
+            this.columnGroup = columnGroup;
+        }
+
+        public override void OnCellChanged(DataColumnChangeEventArgs e)
+        {
+            RecipeRow row = (RecipeRow)e.Row;
+            Ingredient ingredient = row.GetIngredient(columnGroup);
+        }
     }
 
     internal class CrafterColumnBehavior : ColumnBehavior
