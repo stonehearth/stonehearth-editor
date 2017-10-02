@@ -1,12 +1,9 @@
-﻿using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Drawing;
-using System.Windows.Forms;
+﻿using System.Data;
+using Newtonsoft.Json.Linq;
 
 namespace StonehearthEditor.Recipes
 {
+    // Defines behavior for each column in a RecipeTable/RecipeView
     internal class ColumnBehavior
     {
         public virtual bool IsIngredientColumn => false;
@@ -17,7 +14,6 @@ namespace StonehearthEditor.Recipes
 
         public virtual void SaveCell(RecipeRow row, object value)
         {
-
         }
 
         public virtual void TryDeleteCell(RecipeRow row)

@@ -7,30 +7,32 @@ using System.Threading.Tasks;
 
 namespace StonehearthEditor.Recipes
 {
+    // Represents a single ingredient in a recipe row
+    // Getters/setters for name, amount, icon that reflect the recipe grid
     class Ingredient
     {
-        private IngredientColumnGroup columnGroup;
-        private RecipeRow row;
+        private IngredientColumnGroup mColumnGroup;
+        private RecipeRow mRow;
 
-        public IngredientColumnGroup Group => columnGroup;
+        public IngredientColumnGroup Group => mColumnGroup;
 
         public Ingredient(RecipeRow row, IngredientColumnGroup columnGroup)
         {
-            this.row = row;
-            this.columnGroup = columnGroup;
+            this.mRow = row;
+            this.mColumnGroup = columnGroup;
         }
 
         public string Name
         {
             get
             {
-                object value = this.row[columnGroup.NameColumnKey];
+                object value = this.mRow[mColumnGroup.NameColumnKey];
                 return value == DBNull.Value ? "" : (string)value;
             }
 
             set
             {
-                this.row[columnGroup.NameColumnKey] = value;
+                this.mRow[mColumnGroup.NameColumnKey] = value;
             }
         }
 
@@ -38,13 +40,13 @@ namespace StonehearthEditor.Recipes
         {
             get
             {
-                object value = this.row[columnGroup.IconColumnKey];
+                object value = this.mRow[mColumnGroup.IconColumnKey];
                 return value == DBNull.Value ? null : (Image)value;
             }
 
             set
             {
-                this.row[columnGroup.IconColumnKey] = value;
+                this.mRow[mColumnGroup.IconColumnKey] = value;
             }
         }
 
@@ -52,21 +54,13 @@ namespace StonehearthEditor.Recipes
         {
             get
             {
-                object value = this.row[columnGroup.AmountColumnKey];
+                object value = this.mRow[mColumnGroup.AmountColumnKey];
                 return value == DBNull.Value ? null : (int?)value;
             }
 
             set
             {
-                this.row[columnGroup.AmountColumnKey] = value ?? (object)DBNull.Value;
-                /*if (value == null)
-                {
-                    this.row[columnGroup.AmountColumnKey] = DBNull.Value;
-                }
-                else
-                {
-                    this.row[columnGroup.AmountColumnKey] = value;
-                }*/
+                this.mRow[mColumnGroup.AmountColumnKey] = value ?? (object)DBNull.Value;
             }
         }
     }

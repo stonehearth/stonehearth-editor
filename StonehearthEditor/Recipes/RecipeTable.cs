@@ -19,8 +19,7 @@ namespace StonehearthEditor.Recipes
         public const string kEffort = "R Effort";
         public const string kName = "Name";
 
-        private readonly RecipesView recipesView;
-
+        private readonly RecipesView mRecipesView;
         private readonly Dictionary<string, ColumnBehavior> mKeyToColumnBehavior = new Dictionary<string, ColumnBehavior>();
         private List<IngredientColumnGroup> mIngredientColumnGroups = new List<IngredientColumnGroup>();
 
@@ -32,7 +31,7 @@ namespace StonehearthEditor.Recipes
 
         public RecipeTable(RecipesView recipesView)
         {
-            this.recipesView = recipesView;
+            this.mRecipesView = recipesView;
             AddRecipeColumns();
         }
 
@@ -63,7 +62,7 @@ namespace StonehearthEditor.Recipes
 
         private void AddIngredientColumns()
         {
-            mIngredientColumnGroups.Add(new IngredientColumnGroup(this, mIngredientColumnGroups.Count, recipesView));
+            mIngredientColumnGroups.Add(new IngredientColumnGroup(this, mIngredientColumnGroups.Count, mRecipesView));
         }
 
         private void AddRecipeColumns()

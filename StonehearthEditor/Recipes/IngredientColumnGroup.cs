@@ -8,21 +8,23 @@ using System.Threading.Tasks;
 
 namespace StonehearthEditor.Recipes
 {
+    // Mostly a data holder for each group of columns that represent an ingredient
     class IngredientColumnGroup
     {
         public const string kIcon = "Icon";
         public const string kName = "Name";
         public const string kIngr = "Ingr";
         public const string kAmount = "Amount";
-        private int index = 0;
-        private RecipesView recipesView = null;
+
+        private int mIndex = 0;
+        private RecipesView mRecipesView = null;
 
         private static string GetIngredientPrefix(int index)
         {
             return kIngr + (index + 1) + " ";
         }
 
-        private string prefix => GetIngredientPrefix(index);
+        private string prefix => GetIngredientPrefix(mIndex);
 
         public string AmountColumnKey => prefix + kAmount;
 
@@ -32,8 +34,8 @@ namespace StonehearthEditor.Recipes
 
         public IngredientColumnGroup(RecipeTable table, int index, RecipesView recipesView)
         {
-            this.index = index;
-            this.recipesView = recipesView;
+            this.mIndex = index;
+            this.mRecipesView = recipesView;
 
             table.AddDataColumn(prefix + kIcon, typeof(Image), new IngrIconColumnBehavior(this));
             table.AddDataColumn(prefix + kName, typeof(string), new IngrNameColumnBehavior(this, recipesView));

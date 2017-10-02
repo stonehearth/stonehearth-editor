@@ -19,6 +19,7 @@ namespace StonehearthEditor.Recipes
 
         private bool mBaseModsOnly = true;
 
+        // Cell with extra getters for the DataRow/Column
         private struct Cell
         {
             public RecipeRow Row { get; private set; }
@@ -34,25 +35,36 @@ namespace StonehearthEditor.Recipes
 
         private RecipeTable mDataTable;
         private HashSet<Cell> mModifiedCells = new HashSet<Cell>();
-        private HashSet<int> mComboBoxColumns = new HashSet<int>();
+        private HashSet<int> mCmbxColumns = new HashSet<int>();
 
-        // Cached data
+        // Cached material image paths
         private Dictionary<string, string> mMaterialImages = new Dictionary<string, string>();
 
         public RecipesView()
         {
             mDataTable = new RecipeTable(this);
+            mDataTable.ColumnChanged +=
+                (sender, e) =>
+                {
+                    RecipeRow row = (RecipeRow)e.Row;
+                    mModifiedCells.Add(new Cell(row, e.Column));
+
+                    mDataTable.GetColumnBehavior(e.Column).OnCellChanged(e);
+                };
+
             InitializeComponent();
-            filterByColumn.Items.Add(kAllCol);
-            filterByColumn.Items.Add(RecipeTable.kAlias);
-            filterByColumn.Items.Add(RecipeTable.kDisplayName);
-            filterByColumn.Items.Add(RecipeTable.kCrafter);
-            filterByColumn.Items.Add(RecipeTable.kLvlReq);
-            filterByColumn.Items.Add(RecipeTable.kNetWorth);
-            filterByColumn.Items.Add(RecipeTable.kEffort);
-            filterByColumn.Items.Add(IngredientColumnGroup.kIngr + " " + IngredientColumnGroup.kName);
-            filterByColumn.Items.Add(IngredientColumnGroup.kIngr + " " + IngredientColumnGroup.kAmount);
-            filterByColumn.SelectedIndex = 0;
+
+            // Add column names to the filter combobox
+            filterCmbx.Items.Add(kAllCol);
+            filterCmbx.Items.Add(RecipeTable.kAlias);
+            filterCmbx.Items.Add(RecipeTable.kDisplayName);
+            filterCmbx.Items.Add(RecipeTable.kCrafter);
+            filterCmbx.Items.Add(RecipeTable.kLvlReq);
+            filterCmbx.Items.Add(RecipeTable.kNetWorth);
+            filterCmbx.Items.Add(RecipeTable.kEffort);
+            filterCmbx.Items.Add(IngredientColumnGroup.kIngr + " " + IngredientColumnGroup.kName);
+            filterCmbx.Items.Add(IngredientColumnGroup.kIngr + " " + IngredientColumnGroup.kAmount);
+            filterCmbx.SelectedIndex = 0;
         }
 
         public void SaveModifiedFiles()
@@ -85,15 +97,6 @@ namespace StonehearthEditor.Recipes
             MakeDoubleBuffered();
             LoadMaterialImages();
             LoadColumnsData();
-
-            mDataTable.ColumnChanged +=
-                (sender, e) =>
-                {
-                    RecipeRow row = (RecipeRow)e.Row;
-                    mModifiedCells.Add(new Cell(row, e.Column));
-
-                    mDataTable.GetColumnBehavior(e.Column).OnCellChanged(e);
-                };
         }
 
         public void Reload()
@@ -102,7 +105,7 @@ namespace StonehearthEditor.Recipes
             recipesGridView.DataSource = null;
             mDataTable.Reload();
             mModifiedCells.Clear();
-            mComboBoxColumns.Clear();
+            mCmbxColumns.Clear();
             LoadColumnsData();
         }
 
@@ -147,7 +150,7 @@ namespace StonehearthEditor.Recipes
 
                     recipesGridView.Columns.RemoveAt(i);
                     recipesGridView.Columns.Insert(i, newColumn);
-                    mComboBoxColumns.Add(i);
+                    mCmbxColumns.Add(i);
                     column = newColumn;
                 }
 
@@ -257,7 +260,7 @@ namespace StonehearthEditor.Recipes
                         JToken material = ingredient["material"];
                         JToken count = ingredient["count"];
 
-                        Ingredient ingredientData = row.NewIngredient();
+                        Ingredient ingredientData = row.AddNewIngredient();
 
                         string alias = uri != null ? uri.ToString() : material.ToString();
 
@@ -497,7 +500,7 @@ namespace StonehearthEditor.Recipes
         private void searchBox_Filter(object sender, EventArgs e)
         {
             string searchTerm = searchBox.Text.ToString();
-            string colFilter = filterByColumn.Text;
+            string colFilter = filterCmbx.Text;
             if (searchTerm != "")
             {
                 searchBox.BackColor = Color.Gold;
@@ -522,7 +525,7 @@ namespace StonehearthEditor.Recipes
                         sb.Append(GetColFilterString(column.Name, searchTerm));
                         if (i < recipesGridView.Columns.Count - 1)
                         {
-                            sb.Append(" OR ");
+                            sb.Append(" OR "); // to aggregate multiple columns into the search filter query
                         }
                     }
                 }
@@ -538,6 +541,7 @@ namespace StonehearthEditor.Recipes
 
         private void recipesGridView_KeyDown(object sender, KeyEventArgs e)
         {
+            // Delete cell on del
             if (e.KeyCode == Keys.Delete)
             {
                 DeleteCurrentCell();
@@ -548,6 +552,7 @@ namespace StonehearthEditor.Recipes
             {
                 SaveModifiedFiles();
             }
+
             // Paste multiple cells on ctrl+v
             else if (e.Control && e.KeyCode == Keys.V)
             {
@@ -600,13 +605,14 @@ namespace StonehearthEditor.Recipes
 
         private void recipesGridView_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
         {
-            if (mComboBoxColumns.Contains(recipesGridView.CurrentCell.ColumnIndex))
+            if (mCmbxColumns.Contains(recipesGridView.CurrentCell.ColumnIndex))
             {
                 int row = recipesGridView.CurrentCell.RowIndex;
                 ComboBox cbx = (ComboBox)e.Control;
                 cbx.DropDownStyle = ComboBoxStyle.DropDown;
                 cbx.AutoCompleteSource = AutoCompleteSource.ListItems;
                 cbx.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+                // Otherwise two dropdowns appear. Known bug where the KeyDown event of a combobox is raised twice
                 cbx.KeyDown -= ComboBoxKeyDown;
                 cbx.KeyDown += ComboBoxKeyDown;
             }
@@ -666,7 +672,7 @@ namespace StonehearthEditor.Recipes
         {
             DataGridViewCell cell = recipesGridView.CurrentCell;
             RecipeRow recipeRow = (RecipeRow)mDataTable.Rows[cell.RowIndex];
-            recipeRow.NewIngredient();
+            recipeRow.AddNewIngredient();
             ConfigureColumns();
         }
     }

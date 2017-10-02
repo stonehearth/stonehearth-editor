@@ -37,7 +37,7 @@
             this.toolStrip = new System.Windows.Forms.ToolStrip();
             this.searchBox = new System.Windows.Forms.ToolStripTextBox();
             this.searchButton = new System.Windows.Forms.ToolStripButton();
-            this.filterByColumn = new System.Windows.Forms.ToolStripComboBox();
+            this.filterCmbx = new System.Windows.Forms.ToolStripComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.recipesGridView)).BeginInit();
             this.recipesCellContextMenu.SuspendLayout();
             this.searchPanel.SuspendLayout();
@@ -108,7 +108,7 @@
             this.toolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.searchBox,
             this.searchButton,
-            this.filterByColumn});
+            this.filterCmbx});
             this.toolStrip.Location = new System.Drawing.Point(0, 0);
             this.toolStrip.Name = "toolStrip";
             this.toolStrip.Size = new System.Drawing.Size(761, 25);
@@ -136,11 +136,11 @@
             // 
             // filterByColumn
             // 
-            this.filterByColumn.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.filterByColumn.Name = "filterByColumn";
-            this.filterByColumn.Size = new System.Drawing.Size(121, 25);
-            this.filterByColumn.ToolTipText = "Select column to filter by";
-            this.filterByColumn.SelectedIndexChanged += new System.EventHandler(this.searchBox_Filter);
+            this.filterCmbx.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.filterCmbx.Name = "filterByColumn";
+            this.filterCmbx.Size = new System.Drawing.Size(121, 25);
+            this.filterCmbx.ToolTipText = "Select column to filter by";
+            this.filterCmbx.SelectedIndexChanged += new System.EventHandler(this.searchBox_Filter);
             // 
             // RecipesView
             // 
@@ -170,7 +170,7 @@
         private System.Windows.Forms.ToolStrip toolStrip;
         private System.Windows.Forms.ToolStripTextBox searchBox;
         private System.Windows.Forms.ToolStripButton searchButton;
-        private System.Windows.Forms.ToolStripComboBox filterByColumn;
+        private System.Windows.Forms.ToolStripComboBox filterCmbx;
         private System.Windows.Forms.ToolStripMenuItem removeIngredientToolStripMenuItem;
     }
 }
