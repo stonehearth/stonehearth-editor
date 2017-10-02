@@ -175,6 +175,7 @@ namespace StonehearthEditor.Recipes
             }
 
             recipesGridView.Columns[RecipeTable.kAlias].ReadOnly = true;
+            recipesGridView.Columns[RecipeTable.kAlias].Frozen = true;
             recipesGridView.Columns[RecipeTable.kCrafter].ReadOnly = true;
         }
 
