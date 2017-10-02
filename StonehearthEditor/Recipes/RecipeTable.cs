@@ -77,7 +77,7 @@ namespace StonehearthEditor.Recipes
             AddDataColumn(kEffort, typeof(int), new EffortColumnBehavior());
         }
 
-        internal IngredientColumnGroup GetIngredientColumnGroup(int index)
+        internal IngredientColumnGroup GetOrAddIngredientColumnGroup(int index)
         {
             while (mIngredientColumnGroups.Count <= index)
             {

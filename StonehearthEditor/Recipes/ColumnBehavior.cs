@@ -19,6 +19,10 @@ namespace StonehearthEditor.Recipes
         {
 
         }
+
+        public virtual void TryDeleteCell(RecipeRow row)
+        {
+        }
     }
 
     internal class DisplayNameColumnBehavior : ColumnBehavior
@@ -92,7 +96,20 @@ namespace StonehearthEditor.Recipes
 
     internal class IngrIconColumnBehavior : ColumnBehavior
     {
+        private IngredientColumnGroup columnGroup = null;
+
         public override bool IsIngredientColumn => true;
+
+        public IngrIconColumnBehavior(IngredientColumnGroup columnGroup)
+        {
+            this.columnGroup = columnGroup;
+        }
+
+        public override void TryDeleteCell(RecipeRow row)
+        {
+            Ingredient ingredient = row.GetOrAddIngredient(columnGroup);
+            ingredient.Name = "";
+        }
     }
 
     internal class IngrNameColumnBehavior : ColumnBehavior
@@ -113,7 +130,7 @@ namespace StonehearthEditor.Recipes
             // grab col and change the image
             RecipeRow row = (RecipeRow)e.Row;
             string newName = (string)e.ProposedValue ?? "";
-            Ingredient ingredient = row.GetIngredient(columnGroup);
+            Ingredient ingredient = row.GetOrAddIngredient(columnGroup);
 
             if (newName.Contains(":"))
             {
@@ -134,6 +151,12 @@ namespace StonehearthEditor.Recipes
                 ingredient.Amount = 1;
             }
         }
+
+        public override void TryDeleteCell(RecipeRow row)
+        {
+            Ingredient ingredient = row.GetOrAddIngredient(columnGroup);
+            ingredient.Name = "";
+        }
     }
 
     internal class IngrAmountColumnBehavior : ColumnBehavior
@@ -150,7 +173,13 @@ namespace StonehearthEditor.Recipes
         public override void OnCellChanged(DataColumnChangeEventArgs e)
         {
             RecipeRow row = (RecipeRow)e.Row;
-            Ingredient ingredient = row.GetIngredient(columnGroup);
+            Ingredient ingredient = row.GetOrAddIngredient(columnGroup);
+        }
+
+        public override void TryDeleteCell(RecipeRow row)
+        {
+            Ingredient ingredient = row.GetOrAddIngredient(columnGroup);
+            ingredient.Name = "";
         }
     }
 

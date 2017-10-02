@@ -31,6 +31,7 @@
             this.components = new System.ComponentModel.Container();
             this.recipesGridView = new System.Windows.Forms.DataGridView();
             this.recipesCellContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.removeIngredientToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addNewIngredientToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.searchPanel = new System.Windows.Forms.Panel();
             this.toolStrip = new System.Windows.Forms.ToolStrip();
@@ -65,6 +66,7 @@
             this.recipesGridView.TabIndex = 0;
             this.recipesGridView.CellBeginEdit += new System.Windows.Forms.DataGridViewCellCancelEventHandler(this.recipesGridView_CellBeginEdit);
             this.recipesGridView.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.recipesGridView_CellEndEdit);
+            this.recipesGridView.CellMouseUp += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.recipesGridView_CellMouseUp);
             this.recipesGridView.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.recipesGridView_CellMouseClick);
             this.recipesGridView.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.recipesGridView_DataError);
             this.recipesGridView.EditingControlShowing += new System.Windows.Forms.DataGridViewEditingControlShowingEventHandler(this.recipesGridView_EditingControlShowing);
@@ -73,15 +75,24 @@
             // recipesCellContextMenu
             // 
             this.recipesCellContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.removeIngredientToolStripMenuItem,
             this.addNewIngredientToolStripMenuItem});
             this.recipesCellContextMenu.Name = "recipesCellContextMenu";
-            this.recipesCellContextMenu.Size = new System.Drawing.Size(179, 26);
+            this.recipesCellContextMenu.Size = new System.Drawing.Size(179, 70);
+            // 
+            // removeIngredientToolStripMenuItem
+            // 
+            this.removeIngredientToolStripMenuItem.Name = "removeIngredientToolStripMenuItem";
+            this.removeIngredientToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
+            this.removeIngredientToolStripMenuItem.Text = "Remove ingredient";
+            this.removeIngredientToolStripMenuItem.Click += new System.EventHandler(this.removeIngredientToolStripMenuItem_Click);
             // 
             // addNewIngredientToolStripMenuItem
             // 
             this.addNewIngredientToolStripMenuItem.Name = "addNewIngredientToolStripMenuItem";
             this.addNewIngredientToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
             this.addNewIngredientToolStripMenuItem.Text = "Add new ingredient";
+            this.addNewIngredientToolStripMenuItem.Click += new System.EventHandler(this.addNewIngredientToolStripMenuItem_Click);
             // 
             // searchPanel
             // 
@@ -160,5 +171,6 @@
         private System.Windows.Forms.ToolStripTextBox searchBox;
         private System.Windows.Forms.ToolStripButton searchButton;
         private System.Windows.Forms.ToolStripComboBox filterByColumn;
+        private System.Windows.Forms.ToolStripMenuItem removeIngredientToolStripMenuItem;
     }
 }

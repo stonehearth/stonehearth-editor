@@ -64,12 +64,12 @@ namespace StonehearthEditor.Recipes
 
         public Ingredient NewIngredient()
         {
-            Ingredient ingr = new Ingredient(this, ((RecipeTable)Table).GetIngredientColumnGroup(mIngredients.Count));
+            Ingredient ingr = new Ingredient(this, ((RecipeTable)Table).GetOrAddIngredientColumnGroup(mIngredients.Count));
             mIngredients.Add(ingr);
             return ingr;
         }
 
-        public Ingredient GetIngredient(IngredientColumnGroup group)
+        public Ingredient GetOrAddIngredient(IngredientColumnGroup group)
         {
             while (!mIngredients.Any(i => i.Group == group))
             {
