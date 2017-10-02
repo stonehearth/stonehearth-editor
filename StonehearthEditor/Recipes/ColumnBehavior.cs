@@ -1,5 +1,6 @@
 ﻿using System.Data;
 using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
 
 namespace StonehearthEditor.Recipes
 {
@@ -12,7 +13,7 @@ namespace StonehearthEditor.Recipes
         {
         }
 
-        public virtual void SaveCell(RecipeRow row, object value)
+        public virtual void SaveCell(HashSet<JsonFileData> modifiedFiles, RecipeRow row, object value)
         {
         }
 
@@ -23,7 +24,7 @@ namespace StonehearthEditor.Recipes
 
     internal class DisplayNameColumnBehavior : ColumnBehavior
     {
-        public override void SaveCell(RecipeRow row, object value)
+        public override void SaveCell(HashSet<JsonFileData> modifiedFiles, RecipeRow row, object value)
         {
             JsonFileData jsonFileData = row.Item;
             foreach (JsonFileData file in jsonFileData.OpenedFiles)
@@ -38,7 +39,7 @@ namespace StonehearthEditor.Recipes
                     {
                         nameToken.Value = (string)value;
                         jsonFileData.TrySetFlatFileData(json.ToString());
-                        jsonFileData.TrySaveFile();
+                        modifiedFiles.Add(jsonFileData);
                     }
                     else
                     {
@@ -53,40 +54,40 @@ namespace StonehearthEditor.Recipes
 
     internal class NetWorthColumnBehavior : ColumnBehavior
     {
-        public override void SaveCell(RecipeRow row, object value)
+        public override void SaveCell(HashSet<JsonFileData> modifiedFiles, RecipeRow row, object value)
         {
             JsonFileData jsonFileData = row.Item;
             JObject json = jsonFileData.Json;
             JValue token = json.SelectToken("entity_data.stonehearth:net_worth.value_in_gold") as JValue;
             token.Value = (int)value;
             jsonFileData.TrySetFlatFileData(json.ToString());
-            jsonFileData.TrySaveFile();
+            modifiedFiles.Add(jsonFileData);
         }
     }
 
     internal class EffortColumnBehavior : ColumnBehavior
     {
-        public override void SaveCell(RecipeRow row, object value)
+        public override void SaveCell(HashSet<JsonFileData> modifiedFiles, RecipeRow row, object value)
         {
             JsonFileData jsonFileData = row.Recipe;
             JObject json = jsonFileData.Json;
             JValue token = json["work_units"] as JValue;
             json["work_units"] = (int)value;
             jsonFileData.TrySetFlatFileData(json.ToString());
-            jsonFileData.TrySaveFile();
+            modifiedFiles.Add(jsonFileData);
         }
     }
 
     internal class LevelRequiredColumnBehavior : ColumnBehavior
     {
-        public override void SaveCell(RecipeRow row, object value)
+        public override void SaveCell(HashSet<JsonFileData> modifiedFiles, RecipeRow row, object value)
         {
             JsonFileData jsonFileData = row.Recipe;
             JObject json = jsonFileData.Json;
             JValue token = json["level_requirement"] as JValue;
             json["level_requirement"] = (int)value;
             jsonFileData.TrySetFlatFileData(json.ToString());
-            jsonFileData.TrySaveFile();
+            modifiedFiles.Add(jsonFileData);
         }
     }
 

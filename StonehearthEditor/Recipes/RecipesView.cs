@@ -35,6 +35,7 @@ namespace StonehearthEditor.Recipes
 
         private RecipeTable mDataTable;
         private HashSet<Cell> mModifiedCells = new HashSet<Cell>();
+        private HashSet<JsonFileData> mModifiedFiles = new HashSet<JsonFileData>();
         private HashSet<int> mCmbxColumns = new HashSet<int>();
 
         // Cached material image paths
@@ -64,7 +65,7 @@ namespace StonehearthEditor.Recipes
             foreach (Cell cell in mModifiedCells)
             {
                 ColumnBehavior behavior = mDataTable.GetColumnBehavior(cell.Column);
-                behavior.SaveCell(cell.Row, cell.Row[cell.Column]);
+                behavior.SaveCell(mModifiedFiles, cell.Row, cell.Row[cell.Column]);
             }
 
             // Save ingredient rows all at once instead of once per cell to avoid unnecessary calculation
@@ -77,9 +78,15 @@ namespace StonehearthEditor.Recipes
 
             foreach (var row in ingredientRows)
             {
-                SaveIngredients(row);
+                SaveIngredients(mModifiedFiles, row);
             }
 
+            foreach (JsonFileData modified in mModifiedFiles)
+            {
+                modified.TrySaveFile();
+            }
+
+            mModifiedFiles.Clear();
             mModifiedCells.Clear();
             unsavedFilesLabel.Visible = false;
         }
@@ -302,7 +309,7 @@ namespace StonehearthEditor.Recipes
             return jsonFileData;
         }
 
-        private void SaveIngredients(RecipeRow row)
+        private void SaveIngredients(HashSet<JsonFileData> modifiedFiles, RecipeRow row)
         {
             JsonFileData jsonFileData = row.Recipe;
             JObject json = jsonFileData.Json;
@@ -323,7 +330,7 @@ namespace StonehearthEditor.Recipes
 
             json["ingredients"] = newIngrArray;
             jsonFileData.TrySetFlatFileData(json.ToString());
-            jsonFileData.TrySaveFile();
+            modifiedFiles.Add(jsonFileData);
         }
 
         // Load the material constants from the stonehearth mod. This needs to be done before the data columns
