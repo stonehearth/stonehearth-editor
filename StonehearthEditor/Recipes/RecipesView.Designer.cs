@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(RecipesView));
             this.recipesGridView = new System.Windows.Forms.DataGridView();
             this.recipesCellContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.removeIngredientToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -38,6 +39,7 @@
             this.searchBox = new System.Windows.Forms.ToolStripTextBox();
             this.searchButton = new System.Windows.Forms.ToolStripButton();
             this.filterCmbx = new System.Windows.Forms.ToolStripComboBox();
+            this.helpButton = new System.Windows.Forms.ToolStripButton();
             ((System.ComponentModel.ISupportInitialize)(this.recipesGridView)).BeginInit();
             this.recipesCellContextMenu.SuspendLayout();
             this.searchPanel.SuspendLayout();
@@ -66,8 +68,8 @@
             this.recipesGridView.TabIndex = 0;
             this.recipesGridView.CellBeginEdit += new System.Windows.Forms.DataGridViewCellCancelEventHandler(this.recipesGridView_CellBeginEdit);
             this.recipesGridView.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.recipesGridView_CellEndEdit);
-            this.recipesGridView.CellMouseUp += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.recipesGridView_CellMouseUp);
             this.recipesGridView.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.recipesGridView_CellMouseClick);
+            this.recipesGridView.CellMouseUp += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.recipesGridView_CellMouseUp);
             this.recipesGridView.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.recipesGridView_DataError);
             this.recipesGridView.EditingControlShowing += new System.Windows.Forms.DataGridViewEditingControlShowingEventHandler(this.recipesGridView_EditingControlShowing);
             this.recipesGridView.KeyDown += new System.Windows.Forms.KeyEventHandler(this.recipesGridView_KeyDown);
@@ -78,7 +80,7 @@
             this.removeIngredientToolStripMenuItem,
             this.addNewIngredientToolStripMenuItem});
             this.recipesCellContextMenu.Name = "recipesCellContextMenu";
-            this.recipesCellContextMenu.Size = new System.Drawing.Size(179, 70);
+            this.recipesCellContextMenu.Size = new System.Drawing.Size(179, 48);
             // 
             // removeIngredientToolStripMenuItem
             // 
@@ -108,7 +110,8 @@
             this.toolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.searchBox,
             this.searchButton,
-            this.filterCmbx});
+            this.filterCmbx,
+            this.helpButton});
             this.toolStrip.Location = new System.Drawing.Point(0, 0);
             this.toolStrip.Name = "toolStrip";
             this.toolStrip.Size = new System.Drawing.Size(761, 25);
@@ -134,13 +137,23 @@
             this.searchButton.ToolTipText = "Filter recipes";
             this.searchButton.Click += new System.EventHandler(this.searchBox_Filter);
             // 
-            // filterByColumn
+            // filterCmbx
             // 
             this.filterCmbx.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.filterCmbx.Name = "filterByColumn";
+            this.filterCmbx.Name = "filterCmbx";
             this.filterCmbx.Size = new System.Drawing.Size(121, 25);
             this.filterCmbx.ToolTipText = "Select column to filter by";
             this.filterCmbx.SelectedIndexChanged += new System.EventHandler(this.searchBox_Filter);
+            // 
+            // helpButton
+            // 
+            this.helpButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.helpButton.Image = ((System.Drawing.Image)(resources.GetObject("helpButton.Image")));
+            this.helpButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.helpButton.Name = "helpButton";
+            this.helpButton.Size = new System.Drawing.Size(36, 22);
+            this.helpButton.Text = "Help";
+            this.helpButton.Click += new System.EventHandler(this.helpButton_Click);
             // 
             // RecipesView
             // 
@@ -172,5 +185,6 @@
         private System.Windows.Forms.ToolStripButton searchButton;
         private System.Windows.Forms.ToolStripComboBox filterCmbx;
         private System.Windows.Forms.ToolStripMenuItem removeIngredientToolStripMenuItem;
+        private System.Windows.Forms.ToolStripButton helpButton;
     }
 }

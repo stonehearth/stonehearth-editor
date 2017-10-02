@@ -675,5 +675,20 @@ namespace StonehearthEditor.Recipes
             recipeRow.AddNewIngredient();
             ConfigureColumns();
         }
+
+        private void helpButton_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("From this view, you can: \n" + 
+                            "* Change the Display Name and Net Worth of an item \n" +
+                            "* Change the Effort and Lvl Req of a recipe \n" + 
+                            "* Add and remove ingredients from a recipe \n" + 
+                            "* Change ingredient amounts and ingredients in a recipe \n" + 
+                            "Hotkeys: \n" + 
+                            "* Press `delete` to delete an ingredient \n" +
+                            "* Press ctrl+s to save the modified files \n" + 
+                            "* Press ctrl+c ctrl+v and select a single or multiple cells to paste a value \n" +
+                            "* Right click and press add ingredient to add ingredient columns to a recipe that does not have enough columns to fit a new ingredient \n" + 
+                            "\n");
+        }
     }
 }
