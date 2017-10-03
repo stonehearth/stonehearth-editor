@@ -786,7 +786,7 @@ ParameterKindRegistry = {
         { kind: 'RANDOM_BETWEEN', dimension: 'scalar', timeVarying: false, bursts: false, type: RandomBetweenScalarParameterKind, },
         { kind: 'RANDOM_BETWEEN', dimension: 'rgba', timeVarying: false, bursts: false, type: RandomBetweenRgbaParameterKind, },
         { kind: 'RANDOM_BETWEEN', dimension: 'rgb', timeVarying: false, bursts: false, type: RandomBetweenRgbaParameterKind, args: { hasA: false, }, },
-        { kind: 'BURSTS', dimension: 'scalar', timeVarying: true, bursts: true, type: BurstScalarParameterKind, args: { hasA: false, }, },
+        { kind: 'BURST', dimension: 'scalar', timeVarying: true, bursts: true, type: BurstScalarParameterKind, args: { hasA: false, }, },
     ],
 
     get: function (kind, dimension) {

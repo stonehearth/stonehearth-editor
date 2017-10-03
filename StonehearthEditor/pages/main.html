@@ -61,6 +61,7 @@
     <script type="text/x-handlebars" data-template-name="components/int-property">
         <span class="inline-property-label">{{ model.name }}</span>
         {{ input class="sh-input" type='text' value=model.value }}
+        <span class="duration-warning" >(Duration is in Milliseconds.)</span>
         {{ warning-icon message=model.invalidValueMessage }}
     </script>
     <script type="text/x-handlebars" data-template-name="components/complex-property">
