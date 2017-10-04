@@ -671,7 +671,7 @@ RandomBetweenCurvesRgbParameterKind = ParameterKind.extend({
     }),
 });
 
-Point_Burst = Ember.Object.extend({
+PointBurst = Ember.Object.extend({
     time: '0',
     burst: '0',
 
@@ -697,7 +697,7 @@ Point_Burst = Ember.Object.extend({
     },
 });
 
-Curve_Burst = Ember.Object.extend({
+CurveBurst = Ember.Object.extend({
     points: null,
     isMissing: null,
     _onInit: function () {
@@ -706,7 +706,7 @@ Curve_Burst = Ember.Object.extend({
     fromJson: function (json) {
         var points = Ember.A();
         for (var i = 0; i < json.length; i++) {
-            var point = Point_Burst.create({});
+            var point = PointBurst.create({});
             point.fromJson(json[i]);
             points.push(point);
         }
@@ -759,10 +759,10 @@ BurstScalarParameterKind = Ember.Object.extend({
     componentName: 'burst-scalar-parameter',
     curve: null,
     _onInit: function () {
-        this.set('curve', Curve_Burst.create({}));
+        this.set('curve', CurveBurst.create({}));
     }.on('init'),
     fromJson: function (json) {
-        var curve = Curve_Burst.create({});
+        var curve = CurveBurst.create({});
         curve.fromJson(json);
         this.set('curve', curve);
     },

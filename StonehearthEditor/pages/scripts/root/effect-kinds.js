@@ -460,29 +460,15 @@
                             optional: true,
                         }),
                         ParameterProperty.create({
-                            name: 'over_lifetime_r',
+                            name: 'over_lifetime',
                             componentName: "level3-parameter-property",
-                            dimension: 'scalar',
+                            dimension: 'rgb',
                             timeVarying: true,
                             optional: true,
-                        }),
-                        ParameterProperty.create({
-                            name: 'over_lifetime_g',
-                            componentName: "level3-parameter-property",
-                            dimension: 'scalar',
-                            timeVarying: true,
-                            optional: true,
-                        }),
-                        ParameterProperty.create({
-                            name: 'over_lifetime_b',
-                            componentName: "level3-parameter-property",
-                            dimension: 'scalar',
-                            timeVarying: true,
-                            optional: true,
-                        }),
-                    ]),
-                }),
-            ]),
+                        })
+                    ])
+                })
+            ])
         });
-    },
+    }
 }

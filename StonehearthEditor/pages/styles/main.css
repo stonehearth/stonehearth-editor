@@ -119,9 +119,6 @@
 .sh-material-input {
     width: 400px;
 }
-.material-warning {
-}
-
 .sh-checkbox-input {
     transform: scale(1.5);
 }
@@ -153,12 +150,6 @@
     width: 520px;
     height: 170px;
     border: 1px solid rgb(51, 195, 240);
-}
-
-.curve-table {
-}
-
-.curve-rgbTable {
 }
 
 .curve-input {
