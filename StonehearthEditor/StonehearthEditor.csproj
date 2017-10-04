@@ -252,6 +252,7 @@
     <Compile Include="Recipes\RecipeTable.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="SuggestComboBoxCompanion.cs" />
     <Compile Include="ThumbnailCache.cs" />
     <Compile Include="EncounterEditor\UnknownNodeData.cs" />
     <Compile Include="Recipes\RecipesView.cs">

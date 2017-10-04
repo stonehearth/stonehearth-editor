@@ -32,11 +32,20 @@ namespace StonehearthEditor.Recipes
         // Cached material image paths
         private Dictionary<string, string> mMaterialImages = new Dictionary<string, string>();
 
+        private ComboBox x;
+        private SuggestComboBoxCompanion y;
+
         public RecipesView()
         {
             mDataTable = new RecipeTable(this);
 
             InitializeComponent();
+
+            x = new ComboBox();
+            x.Width = 400;
+            y = new SuggestComboBoxCompanion(x);
+
+            Controls.Add(x);
 
             // Add column names to the filter combobox
             filterCmbx.Items.Add(kAllCol);
@@ -88,6 +97,8 @@ namespace StonehearthEditor.Recipes
             MakeDoubleBuffered();
             LoadMaterialImages();
             LoadColumnsData();
+            x.DataSource = GetAutoCompleteStrings("Ingr1 Name");
+            y.PropertySelector = collection => collection.Cast<string>();
 
             // Attach event listener after all data has been populated
             mDataTable.ColumnChanging +=
@@ -142,13 +153,6 @@ namespace StonehearthEditor.Recipes
             recipesGridView.DataSource = mDataTable;
 
             ConfigureColumns();
-        }
-
-        private DataColumn AddDataColumn(string name, Type valueType)
-        {
-            DataColumn dataColumn = new DataColumn(name, valueType);
-            mDataTable.Columns.Add(dataColumn);
-            return dataColumn;
         }
 
         private void ConfigureColumns()
@@ -630,17 +634,26 @@ namespace StonehearthEditor.Recipes
             }
         }
 
+        private HashSet<ComboBox> zzz = new HashSet<ComboBox>();
+
         private void recipesGridView_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
         {
             if (mCmbxColumns.Contains(recipesGridView.CurrentCell.ColumnIndex))
             {
                 ComboBox cbx = (ComboBox)e.Control;
                 cbx.DropDownStyle = ComboBoxStyle.DropDown;
-                cbx.AutoCompleteSource = AutoCompleteSource.ListItems;
-                cbx.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+                //cbx.AutoCompleteSource = AutoCompleteSource.ListItems;
+                //cbx.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
                 // Otherwise two dropdowns appear. Known bug where the KeyDown event of a combobox is raised twice
-                cbx.KeyDown -= ComboBoxKeyDown;
-                cbx.KeyDown += ComboBoxKeyDown;
+                //cbx.KeyDown -= ComboBoxKeyDown;
+                //cbx.KeyDown += ComboBoxKeyDown;
+
+                if (!zzz.Contains(cbx))
+                {
+                    zzz.Add(cbx);
+                    var c = new SuggestComboBoxCompanion(cbx);
+                    c.PropertySelector = collection => collection.Cast<string>();
+                }
             }
         }
 
