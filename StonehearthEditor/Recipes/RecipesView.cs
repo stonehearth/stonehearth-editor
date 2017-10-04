@@ -195,9 +195,13 @@ namespace StonehearthEditor.Recipes
                 {
                     column.DefaultCellStyle.BackColor = Color.LightBlue;
                 }
-                else if (column.Name.StartsWith("R "))
+                else
                 {
-                    column.DefaultCellStyle.BackColor = Color.Azure;
+                    DataColumn dataColumn = mDataTable.Columns[i];
+                    if (mDataTable.GetColumnBehavior(dataColumn).IsRecipeColumn)
+                    {
+                        column.DefaultCellStyle.BackColor = Color.Azure;
+                    }
                 }
             }
 
@@ -271,7 +275,7 @@ namespace StonehearthEditor.Recipes
                         row.SetAlias(alias);
 
                         // Check aliases linked by recipe file
-                        JsonFileData itemFileData = FindJsonFileMatchingAlias(jsonFileData, alias);
+                        JsonFileData itemFileData = FindLinkedJsonMatchingAlias(jsonFileData, alias);
                         row.Item = itemFileData;
                         row.SetNetWorth(itemFileData.NetWorth);
                         row.SetDisplayName(GetTranslatedName(GetDisplayName(itemFileData)));
@@ -285,21 +289,22 @@ namespace StonehearthEditor.Recipes
                         JToken count = ingredient["count"];
 
                         Ingredient ingredientData = row.AddNewIngredient();
-
-                        string alias = uri != null ? uri.ToString() : material.ToString();
-
                         ingredientData.Amount = count.ToObject<int>();
 
                         if (material != null)
                         {
-                            ingredientData.Name = alias;
+                            ingredientData.Name = material.ToString();
                             ingredientData.Icon = GetIcon(material.ToString());
                         }
                         else if (uri != null)
                         {
-                            JsonFileData ingrJsonFileData = FindJsonFileMatchingAlias(jsonFileData, alias);
+                            JsonFileData ingrJsonFileData = FindLinkedJsonMatchingAlias(jsonFileData, uri.ToString());
                             ingredientData.Name = ingrJsonFileData.GetModuleFile().FullAlias;
                             ingredientData.Icon = GetIcon(ingrJsonFileData);
+                        }
+                        else
+                        {
+                            throw new Exception("Recipe " + jsonFileData.GetModuleFile().FullAlias + " has invalid ingredient with no uri/material field");
                         }
                     }
 
@@ -308,7 +313,7 @@ namespace StonehearthEditor.Recipes
             }
         }
 
-        private JsonFileData FindJsonFileMatchingAlias(JsonFileData jsonFileData, String alias)
+        private JsonFileData FindLinkedJsonMatchingAlias(JsonFileData jsonFileData, String alias)
         {
             foreach (ModuleFile linkedModule in jsonFileData.LinkedAliases)
             {
@@ -389,7 +394,9 @@ namespace StonehearthEditor.Recipes
                     }
 
                     if (valid)
+                    {
                         recipesGridView[colIndex, rowIndex].Value = value;
+                    }
                 }
             }
             catch (Exception exception)
@@ -411,7 +418,7 @@ namespace StonehearthEditor.Recipes
         {
             if (locKey.Contains(':'))
             {
-                return ModuleDataManager.GetInstance().LocalizeString(locKey, true);
+                return ModuleDataManager.GetInstance().LocalizeString(locKey);
             }
             else
             {
@@ -452,7 +459,7 @@ namespace StonehearthEditor.Recipes
             return string.Format("Convert([{0}], 'System.String') LIKE '%{1}%'", colName, searchTerm);
         }
 
-        private List<string> GetAutoCompleteStrings(string colName) // TODO: put in behavior
+        private List<string> GetAutoCompleteStrings(string colName)
         {
             List<string> strings = new List<string>();
             if (colName.StartsWith(IngredientColumnGroup.kIngr) && colName.EndsWith(IngredientColumnGroup.kName))
@@ -620,8 +627,8 @@ namespace StonehearthEditor.Recipes
 
                     lineIndex++;
 
-                    // Repeat last line in clipboard if selected rows exceeds rows in clipboard
-                    if (lineIndex == lines.Count())
+                    // Repeat last line in clipboard if we've copied one line and the selected rows exceeds one line
+                    if (lineIndex == lines.Count() && lines.Count() == 1)
                     {
                         int selectedRowCount = Math.Abs(startCell.RowIndex - endCell.RowIndex) + 1;
                         int clipboardRowCount = Math.Abs((rowIndex - 1) - startRow) + 1;

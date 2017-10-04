@@ -272,6 +272,7 @@ namespace StonehearthEditor
             return fileName;
         }
 
+        // TODO: make this less brittle. it just takes the first linked image file it references and uses it as the image
         public string GetImageForFile()
         {
             foreach (FileData openedFile in OpenedFiles)

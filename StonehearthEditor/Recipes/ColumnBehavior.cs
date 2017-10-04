@@ -8,6 +8,7 @@ namespace StonehearthEditor.Recipes
     internal class ColumnBehavior
     {
         public virtual bool IsIngredientColumn => false;
+        public virtual bool IsRecipeColumn => false;
 
         public virtual void OnCellChanged(DataColumnChangeEventArgs e)
         {
@@ -65,8 +66,16 @@ namespace StonehearthEditor.Recipes
         }
     }
 
+    internal class CrafterColumnBehavior : ColumnBehavior
+    {
+        public override bool IsRecipeColumn => true;
+
+    }
+
     internal class EffortColumnBehavior : ColumnBehavior
     {
+        public override bool IsRecipeColumn => true;
+
         public override void SaveCell(HashSet<JsonFileData> modifiedFiles, RecipeRow row, object value)
         {
             JsonFileData jsonFileData = row.Recipe;
@@ -80,6 +89,8 @@ namespace StonehearthEditor.Recipes
 
     internal class LevelRequiredColumnBehavior : ColumnBehavior
     {
+        public override bool IsRecipeColumn => true;
+
         public override void SaveCell(HashSet<JsonFileData> modifiedFiles, RecipeRow row, object value)
         {
             JsonFileData jsonFileData = row.Recipe;
@@ -178,9 +189,5 @@ namespace StonehearthEditor.Recipes
             Ingredient ingredient = row.GetOrAddIngredient(columnGroup);
             ingredient.Name = "";
         }
-    }
-
-    internal class CrafterColumnBehavior : ColumnBehavior
-    {
     }
 }

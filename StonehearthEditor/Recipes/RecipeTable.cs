@@ -14,9 +14,9 @@ namespace StonehearthEditor.Recipes
         public const string kAlias = "Alias";
         public const string kDisplayName = "Display Name";
         public const string kNetWorth = "Net Worth";
-        public const string kCrafter = "R Crafter";
-        public const string kLvlReq = "R Lvl Req";
-        public const string kEffort = "R Effort";
+        public const string kCrafter = "Crafter";
+        public const string kLvlReq = "Lvl Req";
+        public const string kEffort = "Effort";
         public const string kName = "Name";
 
         private readonly RecipesView mRecipesView;

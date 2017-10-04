@@ -37,9 +37,9 @@ namespace StonehearthEditor.Recipes
             this.mIndex = index;
             this.mRecipesView = recipesView;
 
-            table.AddDataColumn(prefix + kIcon, typeof(Image), new IngrIconColumnBehavior(this));
-            table.AddDataColumn(prefix + kName, typeof(string), new IngrNameColumnBehavior(this, recipesView));
-            table.AddDataColumn(prefix + kAmount, typeof(int), new IngrAmountColumnBehavior(this));
+            table.AddDataColumn(IconColumnKey, typeof(Image), new IngrIconColumnBehavior(this));
+            table.AddDataColumn(NameColumnKey, typeof(string), new IngrNameColumnBehavior(this, recipesView));
+            table.AddDataColumn(AmountColumnKey, typeof(int), new IngrAmountColumnBehavior(this));
         }
     }
 }

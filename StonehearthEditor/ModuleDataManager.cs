@@ -406,12 +406,13 @@ namespace StonehearthEditor
             return mModules[modName];
         }
 
-        public string LocalizeString(string key, bool trimKey = false)
+        public string LocalizeString(string key)
         {
-            // Strip the i18n() from the key
-            if (trimKey)
+            string locPrefix = "i18n(";
+            // Strip the i18n() from the key if it's there
+            if (key.Contains(locPrefix))
             {
-                int i18nLength = "i18n(".Length;
+                int i18nLength = locPrefix.Length;
                 key = key.Substring(i18nLength, key.Length - i18nLength - 1);
             }
 
@@ -617,7 +618,7 @@ namespace StonehearthEditor
                 key = split[1];
             }
 
-            Module mod = ModuleDataManager.GetInstance().GetMod(modName);
+            Module mod = GetMod(modName);
             if (mod == null)
             {
                 MessageBox.Show("Could not change loc key. There is no mod named " + modName);
