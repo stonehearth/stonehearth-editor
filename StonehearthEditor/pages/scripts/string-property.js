@@ -19,6 +19,27 @@
     }
 });
 
+MaterialProperty = EffectProperty.extend({
+    componentName: 'material-property',
+    value: '', // string
+    isMissing: Ember.computed('value', function () {
+        return this.get('value') === undefined;
+    }),
+    isValid: function () {
+        return true;
+    }.property(),
+    toJson: function () {
+        return this.get('value');
+    },
+    fromJson: function (json) {
+        Utils.assert(Utils.isUndefinedOrTypeOf("string", json));
+        if (json === undefined) {
+            json = 'materials/cubemitter.material.json';
+        }
+        this.set('value', json);
+    }
+});
+
 IntProperty = EffectProperty.extend({
     componentName: 'int-property',
     value: '', // string, undefined, null
@@ -69,49 +90,6 @@ BooleanProperty = EffectProperty.extend({
     invalidValueMessage: Ember.computed('value', function () {
         return null;
     }),
-});
-
-OriginProperty = EffectProperty.extend({
-    componentName: 'origin-property',
-    surface: null, // string or null
-    value1: '0', // string
-    value2: '0', // string
-    isMissing: null,
-    isValid: Ember.computed('value1', 'value2', function () {
-        return Utils.isNumber(this.get('value1')) && Utils.isNumber(this.get('value2'));
-    }),
-    invalidValue1Message: Ember.computed('value1', function () {
-        if (Utils.isNumber(this.get('value1'))) {
-            return null;
-        }
-
-        return "Invalid number";
-    }),
-    invalidValue2Message: Ember.computed('value2', function () {
-        if (Utils.isNumber(this.get('value2'))) {
-            return null;
-        }
-
-        return "Invalid number";
-    }),
-    toJson: function () {
-        return {
-            surface: this.get('surface'),
-            values: [
-                Number(this.get('value1')),
-                Number(this.get('value2'), 10),
-            ],
-        };
-    },
-    fromJson: function (json) {
-        Utils.assert(Utils.isUndefinedOrTypeOf("object", json));
-        if (json === undefined) {
-            return;
-        }
-        this.set('surface', Utils.getEffectValueOrDefault(json, 'surface', 'POINT'));
-        this.set('value1', Utils.getEffectValueOrDefault(json['values'], 0, '0'));
-        this.set('value2', Utils.getEffectValueOrDefault(json['values'], 1, '0'));
-    },
 });
 
 ParameterKind = Ember.Object.extend({
@@ -276,6 +254,25 @@ CurveScalarParameterKind = ParameterKind.extend({
     }),
 });
 
+CurveRgbParameterKind = ParameterKind.extend({
+    componentName: 'curve-rgb-parameter',
+    curveRGB: null,
+    _onInit: function () {
+        this.set('curveRGB', CurveRGB.create({}));
+    }.on('init'),
+    fromJson: function (json) {
+        var curveRGB = CurveRGB.create({});
+        curveRGB.fromJson(json);
+        this.set('curveRGB', curveRGB);
+    },
+    toJson: function () {
+        return this.curveRGB.toJson();
+    },
+    isValid: Ember.computed('curveRGB.isValid', function () {
+        return this.get('curveRGB.isValid');
+    }),
+});
+
 RandomBetweenScalarParameterKind = ParameterKind.extend({
     componentName: 'random-between-scalar-parameter',
     minValue: '0',
@@ -315,8 +312,8 @@ RandomBetweenScalarParameterKind = ParameterKind.extend({
 });
 
 Point = Ember.Object.extend({
-    time: 0,
-    value: 0,
+    time: '0',
+    value: '0',
 
     isValid: Ember.computed('time', 'value', function () {
         return Utils.isNumber(this.time) && Utils.isNumber(this.value);
@@ -404,6 +401,154 @@ Curve = Ember.Object.extend({
     }),
 });
 
+PointRgb = Ember.Object.extend({
+    hasA: false,
+    time: '0',
+    rValue: '0',
+    gValue: '0',
+    bValue: '0',
+    aValue: '1',
+    colorPicker: null,
+    _onInit: function () {
+        var self = this;
+        Ember.run.scheduleOnce('afterRender', this, function () {
+            var picker = $('#color1 .color-picker');
+            self.set('colorPicker', picker);
+            picker.spectrum({
+                color: "#ff0000",
+                showAlpha: this.get('hasA'),
+                showInput: true,
+                showInitial: true,
+                preferredFormat: "rgb",
+                change: function (color) {
+                    self.updateColor(color);
+                }
+            });
+        });
+    }.on('init'),
+    updateColor: function (color) {
+        var floatVals = Utils.convertRgbaToFloat(color._r, color._g, color._b, color._a);
+        this.setRgba(floatVals.r, floatVals.g, floatVals.b, floatVals.a);
+    },
+    fromJson: function (json) {
+        this.set('time', Utils.getEffectValueOrDefault(json, 0, '0'));
+        var self = this;
+        var r = Utils.getEffectValueOrDefault(json, 1, '0');
+        var g = Utils.getEffectValueOrDefault(json, 2, '0');
+        var b = Utils.getEffectValueOrDefault(json, 3, '0');
+        var a = Utils.getEffectValueOrDefault(json, 3, '0');
+        var a;
+        if (!this.get('hasA')) {
+            a = '1';
+        } else {
+            a = Utils.getEffectValueOrDefault(json, 3, '0');
+        }
+        self.setRgba(r, g, b, a);
+        Ember.run.scheduleOnce('afterRender', this, function () {
+            self.get('colorPicker').spectrum("set", Utils.convertFloatToRgba(r,g,b,a));
+        });
+    },
+    toJson: function () {
+        var json = [Number(this.time), Number(this.rValue), Number(this.gValue), Number(this.bValue)];
+        return json;
+    },
+    isValid: Ember.computed('time', 'rValue', 'gValue', 'bValue', 'aValue', function () {
+        return Utils.isNumber(this.time) && Utils.isNumber(this.rValue) && Utils.isNumber(this.gValue) && Utils.isNumber(this.bValue) && Utils.isNumber(this.aValue);
+    }),
+    setRgba: function (r, g, b, a) {
+        this.set('rValue', r);
+        this.set('gValue', g);
+        this.set('bValue', b);
+        this.set('aValue', a);
+    },
+    setPickerColor: function(picker) {
+        this.set('colorPicker', picker);
+    },
+    invalidMessage: Ember.computed('time', 'rValue', 'gValue', 'bValue', 'aValue', function () {
+        if (!Utils.isNumber(this.get('time'))) {
+            return "Invalid time.";
+        }
+        if (!Utils.isNumber(this.get('rValue'))) {
+            return "Invalid rValue.";
+        }
+        if (!Utils.isNumber(this.get('gValue'))) {
+            return "Invalid gValue.";
+        }
+        if (!Utils.isNumber(this.get('bValue'))) {
+            return "Invalid bValue.";
+        }
+        if (!Utils.isNumber(this.get('aValue'))) {
+            return "Invalid aValue.";
+        }
+
+        return null;
+    }),
+});
+
+CurveRGB = Ember.Object.extend({
+    pointsRGB: null,
+    _onInit: function () {
+        this.set('pointsRGB', Ember.A());
+    }.on('init'),
+    fromJson: function (json) {
+        var pointsRGB = Ember.A();
+        for (var i = 0; i < json.length; i++) {
+            var point = PointRgb.create({});
+            point.fromJson(json[i]);
+            pointsRGB.push(point);
+        }
+        this.set('pointsRGB', pointsRGB);
+    },
+    toJson: function () {
+        var ret = [];
+        for (var i = 0; i < this.pointsRGB.length; i++) {
+            ret.push(this.pointsRGB[i].toJson());
+        }
+        return ret;
+    },
+    errorMap: Ember.computed('pointsRGB.@each.time', 'pointsRGB.@each.rValue', 'pointsRGB.@each.gValue', 'pointsRGB.@each.bValue', function () {
+        // Returns index -> error message, -1 means overall
+        var ret = {};
+        function addError(index, message) {
+            if (index in ret) {
+                ret[index] += " " + message;
+            } else {
+                ret[index] = message;
+            }
+        }
+
+        var pointsRGB = this.get('pointsRGB');
+        if (pointsRGB === null) {
+            return {};
+        }
+        if (pointsRGB.length < 2) {
+            addError(-1, "Need at least two points in curve.");
+        }
+        for (var i = 0; i < pointsRGB.length; i++) {
+            var pointMessage = pointsRGB[i].get('invalidMessage');
+            if (pointMessage) {
+                addError(i, pointMessage);
+            }
+        }
+
+        if (pointsRGB.length > 0) {
+            if (Number(pointsRGB[0].time) !== 0) {
+                addError(0, "First point must have time=0.");
+            }
+        }
+        for (var i = 0; i < pointsRGB.length - 1; i++) {
+            if (Number(pointsRGB[i].time) >= Number(pointsRGB[i + 1].time)) {
+                addError(i + 1, "Time must be greater than last point's time.");
+            }
+        }
+
+        return ret;
+    }),
+    isValid: Ember.computed('errorMap', function () {
+        return Object.keys(this.get('errorMap')).length === 0;
+    }),
+});
+
 Rgba = Ember.Object.extend({
     hasA: true,
     rValue: '0',
@@ -476,25 +621,6 @@ Rgba = Ember.Object.extend({
     }),
 });
 
-CurveScalarParameterKind = ParameterKind.extend({
-    componentName: 'curve-scalar-parameter',
-    curve: null,
-    _onInit: function () {
-        this.set('curve', Curve.create({}));
-    }.on('init'),
-    fromJson: function (json) {
-        var curve = Curve.create({});
-        curve.fromJson(json);
-        this.set('curve', curve);
-    },
-    toJson: function () {
-        return this.curve.toJson();
-    },
-    isValid: Ember.computed('curve.isValid', function () {
-        return this.get('curve.isValid');
-    }),
-});
-
 RandomBetweenCurvesScalarParameterKind = ParameterKind.extend({
     componentName: 'random-between-curves-scalar-parameter',
     curve1: null,
@@ -520,16 +646,147 @@ RandomBetweenCurvesScalarParameterKind = ParameterKind.extend({
     }),
 });
 
+RandomBetweenCurvesRgbParameterKind = ParameterKind.extend({
+    componentName: 'random-between-curves-rgb-parameter',
+    curveRGB1: null,
+    curveRGB2: null,
+    _onInit: function () {
+        this.set('curveRGB1', CurveRGB.create({}));
+        this.set('curveRGB2', CurveRGB.create({}));
+    }.on('init'),
+    fromJson: function (json) {
+        var curveRGB1 = CurveRGB.create({});
+        curveRGB1.fromJson(json[0]);
+        this.set('curveRGB1', curveRGB1);
+
+        var curveRGB2 = CurveRGB.create({});
+        curveRGB2.fromJson(json[1]);
+        this.set('curveRGB2', curveRGB2);
+    },
+    toJson: function () {
+        return [this.curveRGB1.toJson(), this.curveRGB2.toJson()];
+    },
+    isValid: Ember.computed('curveRGB1.isValid', 'curveRGB2.isValid', function () {
+        return this.curveRGB1.get('isValid') && this.curveRGB2.get('isValid');
+    }),
+});
+
+PointBurst = Ember.Object.extend({
+    time: '0',
+    burst: '0',
+
+    isValid: Ember.computed('time', 'burst', function () {
+        return Utils.isNumber(this.time) && Utils.isNumber(this.burst);
+    }),
+    invalidMessage: Ember.computed('time', 'burst', function () {
+        if (!Utils.isNumber(this.time)) {
+            return "Invalid time.";
+        }
+        if (!Utils.isNumber(this.burst)) {
+            return "Invalid burst.";
+        }
+
+        return null;
+    }),
+    fromJson: function (json) {
+        this.set('time', Utils.getEffectValueOrDefault(json, 0, '0'));
+        this.set('burst', Utils.getEffectValueOrDefault(json, 1, '0'));
+    },
+    toJson: function () {
+        return [Number(this.time), Number(this.burst)];
+    },
+});
+
+CurveBurst = Ember.Object.extend({
+    points: null,
+    isMissing: null,
+    _onInit: function () {
+        this.set('points', Ember.A());
+    }.on('init'),
+    fromJson: function (json) {
+        var points = Ember.A();
+        for (var i = 0; i < json.length; i++) {
+            var point = PointBurst.create({});
+            point.fromJson(json[i]);
+            points.push(point);
+        }
+        var isMissing = json === undefined;
+        this.set('isMissing', isMissing);
+        console.log(json)
+        if (isMissing) {
+            this.set('points', ['0','0']);
+            return;
+        }
+        this.set('points', points);
+    },
+    toJson: function () {
+        var ret = [];
+        for (var i = 0; i < this.points.length; i++) {
+            ret.push(this.points[i].toJson());
+        }
+        return ret;
+    },
+    errorMap: Ember.computed('points.@each.time', 'points.@each.burst', function () {
+        // Returns index -> error message, -1 means overall
+        var ret = {};
+        function addError(index, message) {
+            if (index in ret) {
+                ret[index] += " " + message;
+            } else {
+                ret[index] = message;
+            }
+        }
+
+        var points = this.get('points');
+        if (points === null) {
+            return {};
+        }
+        for (var i = 0; i < points.length; i++) {
+            var pointMessage = points[i].get('invalidMessage');
+            if (pointMessage) {
+                addError(i, pointMessage);
+            }
+        }
+
+        return ret;
+    }),
+    isValid: Ember.computed('errorMap', function () {
+        return Object.keys(this.get('errorMap')).length === 0;
+    }),
+});
+
+BurstScalarParameterKind = Ember.Object.extend({
+    componentName: 'burst-scalar-parameter',
+    curve: null,
+    _onInit: function () {
+        this.set('curve', CurveBurst.create({}));
+    }.on('init'),
+    fromJson: function (json) {
+        var curve = CurveBurst.create({});
+        curve.fromJson(json);
+        this.set('curve', curve);
+    },
+    toJson: function () {
+        return this.curve.toJson();
+    },
+    isValid: Ember.computed('curve.isValid', function () {
+        return this.get('curve.isValid');
+    }),
+});
+
 ParameterKindRegistry = {
     _options: [
-        { kind: 'CONSTANT', dimension: 'rgba', timeVarying: false, type: ConstantRgbaParameterKind, },
-        { kind: 'CONSTANT', dimension: 'rgb', timeVarying: false, type: ConstantRgbaParameterKind, args: { hasA: false, }, },
-        { kind: 'CONSTANT', dimension: 'scalar', timeVarying: false, type: ConstantScalarParameterKind, },
-        { kind: 'CURVE', dimension: 'scalar', timeVarying: true, type: CurveScalarParameterKind, },
-        { kind: 'RANDOM_BETWEEN_CURVES', dimension: 'scalar', timeVarying: true, type: RandomBetweenCurvesScalarParameterKind, },
-        { kind: 'RANDOM_BETWEEN', dimension: 'scalar', timeVarying: false, type: RandomBetweenScalarParameterKind, },
-        { kind: 'RANDOM_BETWEEN', dimension: 'rgba', timeVarying: false, type: RandomBetweenRgbaParameterKind, },
-        { kind: 'RANDOM_BETWEEN', dimension: 'rgb', timeVarying: false, type: RandomBetweenRgbaParameterKind, args: { hasA: false, }, },
+        { kind: 'CONSTANT', dimension: 'rgba', timeVarying: false, bursts: false, type: ConstantRgbaParameterKind, },
+        { kind: 'CONSTANT', dimension: 'rgb', timeVarying: false, bursts: false, type: ConstantRgbaParameterKind, args: { hasA: false, }, },
+        { kind: 'CONSTANT', dimension: 'scalar', timeVarying: false, bursts: false, type: ConstantScalarParameterKind, },
+        { kind: 'CURVE', dimension: 'scalar', timeVarying: true, bursts: false, type: CurveScalarParameterKind, },
+        { kind: 'CURVE', dimension: 'rgb', timeVarying: true, bursts: false, type: CurveRgbParameterKind, },
+        { kind: 'RANDOM_BETWEEN_CURVES', dimension: 'scalar', timeVarying: true, bursts: false, type: RandomBetweenCurvesScalarParameterKind, },
+        { kind: 'RANDOM_BETWEEN_CURVES', dimension: 'rgb', timeVarying: true, bursts: false, type: RandomBetweenCurvesRgbParameterKind, },
+        { kind: 'RANDOM_BETWEEN', dimension: 'scalar', timeVarying: false, bursts: false, type: RandomBetweenScalarParameterKind, },
+        { kind: 'RANDOM_BETWEEN', dimension: 'rgba', timeVarying: false, bursts: false, type: RandomBetweenRgbaParameterKind, },
+        { kind: 'RANDOM_BETWEEN', dimension: 'rgb', timeVarying: false, bursts: false, type: RandomBetweenRgbaParameterKind, args: { hasA: false, }, },
+        { kind: 'BURST', dimension: 'scalar', timeVarying: true, bursts: true, type: BurstScalarParameterKind, args: { hasA: false, }, },
     ],
 
     get: function (kind, dimension) {
@@ -547,12 +804,13 @@ ParameterKindRegistry = {
         Utils.assert(false, "parameter kind " + kind + " with dimension " + dimension + " not found valid");
     },
 
-    getNames: function (dimension, timeVarying) {
+    getNames: function (dimension, timeVarying, bursts) {
         var options = [];
         for (var i = 0; i < ParameterKindRegistry._options.length; i++) {
             var option = ParameterKindRegistry._options[i];
             var timeVaryingMatches = !(option.timeVarying && !timeVarying);
-            if (option.dimension === dimension && timeVaryingMatches) {
+            var burstsMatches = !(option.bursts && !bursts);
+            if (option.dimension === dimension && timeVaryingMatches && burstsMatches) {
                 options.push(option.kind);
             }
         }
@@ -568,13 +826,12 @@ ParameterProperty = EffectProperty.extend({
     parameter: null,
     kindOptionNames: null,
     kind: null,
-
     isMissing: false,
     isValid: Ember.computed('parameter.isValid', function () {
         return this.parameter === null || this.parameter.get('isValid');
     }),
     _onInit: function(){
-        this.set('kindOptionNames', ParameterKindRegistry.getNames(this.dimension, this.timeVarying));
+        this.set('kindOptionNames', ParameterKindRegistry.getNames(this.dimension, this.timeVarying, this.bursts));
     }.on('init'),
     toJson: function () {
         return {
@@ -598,4 +855,3 @@ ParameterProperty = EffectProperty.extend({
         this.set('parameter', ParameterKindRegistry.get(this.kind, this.dimension));
     }),
 });
-
