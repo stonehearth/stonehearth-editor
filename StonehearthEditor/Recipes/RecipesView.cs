@@ -20,32 +20,36 @@ namespace StonehearthEditor.Recipes
         private bool mBaseModsOnly = true;
 
         // Cell with extra getters for the DataRow/Column
+        private struct DataCell
+        {
+            public RecipeRow Row { get; private set; }
+
+            public DataColumn Column { get; private set; }
+
+            public DataCell(RecipeRow row, DataColumn column)
+            {
+                this.Row = row;
+                this.Column = column;
+            }
+        }
 
         private RecipeTable mDataTable;
-        private HashSet<Cell> mModifiedCells = new HashSet<Cell>();
+        private HashSet<DataCell> mModifiedCells = new HashSet<DataCell>();
         private HashSet<JsonFileData> mModifiedFiles = new HashSet<JsonFileData>();
-        private HashSet<int> mCmbxColumns = new HashSet<int>();
+        private HashSet<int> mComboBoxColumns = new HashSet<int>();
+        private HashSet<ComboBox> mComboBoxes = new HashSet<ComboBox>();
 
-        private Stack<Cell> undoStack = new Stack<Cell>();
-        private Stack<Cell> redoStack = new Stack<Cell>();
+        private Stack<DataCell> undoStack = new Stack<DataCell>();
+        private Stack<DataCell> redoStack = new Stack<DataCell>();
 
         // Cached material image paths
         private Dictionary<string, string> mMaterialImages = new Dictionary<string, string>();
-
-        private ComboBox x;
-        private SuggestComboBoxCompanion y;
 
         public RecipesView()
         {
             mDataTable = new RecipeTable(this);
 
             InitializeComponent();
-
-            x = new ComboBox();
-            x.Width = 400;
-            y = new SuggestComboBoxCompanion(x);
-
-            Controls.Add(x);
 
             // Add column names to the filter combobox
             filterCmbx.Items.Add(kAllCol);
@@ -62,7 +66,7 @@ namespace StonehearthEditor.Recipes
 
         public void SaveModifiedFiles()
         {
-            foreach (Cell cell in mModifiedCells)
+            foreach (DataCell cell in mModifiedCells)
             {
                 ColumnBehavior behavior = mDataTable.GetColumnBehavior(cell.Column);
                 behavior.SaveCell(mModifiedFiles, cell.Row, cell.Row[cell.Column]);
@@ -97,17 +101,15 @@ namespace StonehearthEditor.Recipes
             MakeDoubleBuffered();
             LoadMaterialImages();
             LoadColumnsData();
-            x.DataSource = GetAutoCompleteStrings("Ingr1 Name");
-            y.PropertySelector = collection => collection.Cast<string>();
 
             // Attach event listener after all data has been populated
             mDataTable.ColumnChanging +=
                 (object sender, DataColumnChangeEventArgs e) =>
                 {
                     RecipeRow row = (RecipeRow)e.Row;
-                    Cell cell = new Cell(row, e.Column);
-                    cell.OldValue = recipesGridView[mDataTable.Columns.IndexOf(e.Column), mDataTable.Rows.IndexOf(row)].Value;
-                    cell.NewValue = e.ProposedValue;
+                    DataCell cell = new DataCell(row, e.Column);
+                    //cell.OldValue = recipesGridView[mDataTable.Columns.IndexOf(e.Column), mDataTable.Rows.IndexOf(row)].Value;
+                    //cell.NewValue = e.ProposedValue;
 
                     undoStack.Push(cell);
                 };
@@ -116,7 +118,7 @@ namespace StonehearthEditor.Recipes
                 (sender, e) =>
                 {
                     RecipeRow row = (RecipeRow)e.Row;
-                    Cell cell = new Cell(row, e.Column);
+                    DataCell cell = new DataCell(row, e.Column);
                     //cell.OldValue = recipesGridView[mDataTable.Columns.IndexOf(e.Column), mDataTable.Rows.IndexOf(row)].Value;
                     //cell.NewValue = e.ProposedValue;
 
@@ -135,7 +137,7 @@ namespace StonehearthEditor.Recipes
             recipesGridView.DataSource = null;
             mDataTable.Reload();
             mModifiedCells.Clear();
-            mCmbxColumns.Clear();
+            mComboBoxColumns.Clear();
             LoadColumnsData();
         }
 
@@ -174,7 +176,7 @@ namespace StonehearthEditor.Recipes
 
                     recipesGridView.Columns.RemoveAt(i);
                     recipesGridView.Columns.Insert(i, newColumn);
-                    mCmbxColumns.Add(i);
+                    mComboBoxColumns.Add(i);
                     column = newColumn;
                 }
 
@@ -586,8 +588,8 @@ namespace StonehearthEditor.Recipes
             {
                 if (undoStack.Any())
                 {
-                    Cell cell = undoStack.Pop();
-                    recipesGridView[mDataTable.Columns.IndexOf(cell.Column), mDataTable.Rows.IndexOf(cell.Row)].Value = cell.OldValue;
+                    DataCell cell = undoStack.Pop();
+                    //recipesGridView[mDataTable.Columns.IndexOf(cell.Column), mDataTable.Rows.IndexOf(cell.Row)].Value = cell.OldValue;
                     redoStack.Push(cell);
                 }
             }
@@ -641,35 +643,19 @@ namespace StonehearthEditor.Recipes
             }
         }
 
-        private HashSet<ComboBox> zzz = new HashSet<ComboBox>();
-
         private void recipesGridView_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
         {
-            if (mCmbxColumns.Contains(recipesGridView.CurrentCell.ColumnIndex))
+            if (mComboBoxColumns.Contains(recipesGridView.CurrentCell.ColumnIndex))
             {
                 ComboBox cbx = (ComboBox)e.Control;
                 cbx.DropDownStyle = ComboBoxStyle.DropDown;
-                //cbx.AutoCompleteSource = AutoCompleteSource.ListItems;
-                //cbx.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
-                // Otherwise two dropdowns appear. Known bug where the KeyDown event of a combobox is raised twice
-                //cbx.KeyDown -= ComboBoxKeyDown;
-                //cbx.KeyDown += ComboBoxKeyDown;
 
-                if (!zzz.Contains(cbx))
+                if (!mComboBoxes.Contains(cbx))
                 {
-                    zzz.Add(cbx);
-                    var c = new SuggestComboBoxCompanion(cbx);
-                    c.PropertySelector = collection => collection.Cast<string>();
+                    mComboBoxes.Add(cbx);
+                    var companion = new SuggestComboBoxCompanion(cbx);
+                    companion.PropertySelector = collection => collection.Cast<string>();
                 }
-            }
-        }
-
-        private void ComboBoxKeyDown(object sender, EventArgs args)
-        {
-            ComboBox cbx = (ComboBox)sender;
-            if (cbx.DroppedDown)
-            {
-                cbx.DroppedDown = false;
             }
         }
 

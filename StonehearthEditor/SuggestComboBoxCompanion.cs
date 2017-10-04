@@ -133,7 +133,9 @@ namespace StonehearthEditor
                 _suggLb.Visible = false;
             }
         }
+
         private List<Control> _parentChain = new List<Control>();
+
         private void BuildChain()
         {
             foreach (var item in _parentChain)
@@ -175,6 +177,7 @@ namespace StonehearthEditor
                 OnLocationChanged2(relLoc);
             }
         }
+
         protected void OnLocationChanged2(Point r)
         {
             _suggLb.Top = r.Y + comboBox.Height - 3;
@@ -210,12 +213,14 @@ namespace StonehearthEditor
             if (!_suggLb.Focused)
                 HideSuggBox();
         }
+
         protected void OnLocationChanged(object sender, EventArgs e)
         {
             return;
             _suggLb.Top = comboBox.Top + comboBox.Height - 3;
             _suggLb.Left = comboBox.Left + 3;
         }
+
         protected void OnSizeChanged(object sender, EventArgs e)
         {
             _suggLb.Width = comboBox.Width - 20;
