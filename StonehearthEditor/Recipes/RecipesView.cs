@@ -20,23 +20,14 @@ namespace StonehearthEditor.Recipes
         private bool mBaseModsOnly = true;
 
         // Cell with extra getters for the DataRow/Column
-        private struct Cell
-        {
-            public RecipeRow Row { get; private set; }
-
-            public DataColumn Column { get; private set; }
-
-            public Cell(RecipeRow row, DataColumn column)
-            {
-                this.Row = row;
-                this.Column = column;
-            }
-        }
 
         private RecipeTable mDataTable;
         private HashSet<Cell> mModifiedCells = new HashSet<Cell>();
         private HashSet<JsonFileData> mModifiedFiles = new HashSet<JsonFileData>();
         private HashSet<int> mCmbxColumns = new HashSet<int>();
+
+        private Stack<Cell> undoStack = new Stack<Cell>();
+        private Stack<Cell> redoStack = new Stack<Cell>();
 
         // Cached material image paths
         private Dictionary<string, string> mMaterialImages = new Dictionary<string, string>();
@@ -99,11 +90,28 @@ namespace StonehearthEditor.Recipes
             LoadColumnsData();
 
             // Attach event listener after all data has been populated
+            mDataTable.ColumnChanging +=
+                (object sender, DataColumnChangeEventArgs e) =>
+                {
+                    RecipeRow row = (RecipeRow)e.Row;
+                    Cell cell = new Cell(row, e.Column);
+                    cell.OldValue = recipesGridView[mDataTable.Columns.IndexOf(e.Column), mDataTable.Rows.IndexOf(row)].Value;
+                    cell.NewValue = e.ProposedValue;
+
+                    undoStack.Push(cell);
+                };
+
             mDataTable.ColumnChanged +=
                 (sender, e) =>
                 {
                     RecipeRow row = (RecipeRow)e.Row;
-                    mModifiedCells.Add(new Cell(row, e.Column));
+                    Cell cell = new Cell(row, e.Column);
+                    //cell.OldValue = recipesGridView[mDataTable.Columns.IndexOf(e.Column), mDataTable.Rows.IndexOf(row)].Value;
+                    //cell.NewValue = e.ProposedValue;
+
+                    //undoStack.Push(cell);
+
+                    mModifiedCells.Add(cell);
                     unsavedFilesLabel.Visible = true;
 
                     mDataTable.GetColumnBehavior(e.Column).OnCellChanged(e);
@@ -558,13 +566,20 @@ namespace StonehearthEditor.Recipes
             {
                 DeleteCurrentCell();
             }
-
             // Save on ctrl+s
             else if (e.Control && e.KeyCode == Keys.S)
             {
                 SaveModifiedFiles();
             }
-
+            else if (e.Control && e.KeyCode == Keys.Z)
+            {
+                if (undoStack.Any())
+                {
+                    Cell cell = undoStack.Pop();
+                    recipesGridView[mDataTable.Columns.IndexOf(cell.Column), mDataTable.Rows.IndexOf(cell.Row)].Value = cell.OldValue;
+                    redoStack.Push(cell);
+                }
+            }
             // Paste multiple cells on ctrl+v
             else if (e.Control && e.KeyCode == Keys.V)
             {
