@@ -18,20 +18,7 @@ namespace StonehearthEditor.Recipes
         public const string kAllCol = "All Columns";
 
         private bool mBaseModsOnly = true;
-
-        // Cell with extra getters for the DataRow/Column
-        private struct DataCell
-        {
-            public RecipeRow Row { get; private set; }
-
-            public DataColumn Column { get; private set; }
-
-            public DataCell(RecipeRow row, DataColumn column)
-            {
-                this.Row = row;
-                this.Column = column;
-            }
-        }
+        private bool mListenOnCellChange = false;
 
         private RecipeTable mDataTable;
         private HashSet<DataCell> mModifiedCells = new HashSet<DataCell>();
@@ -39,8 +26,8 @@ namespace StonehearthEditor.Recipes
         private HashSet<int> mComboBoxColumns = new HashSet<int>();
         private HashSet<ComboBox> mComboBoxes = new HashSet<ComboBox>();
 
-        private Stack<DataCell> undoStack = new Stack<DataCell>();
-        private Stack<DataCell> redoStack = new Stack<DataCell>();
+        private Stack<MultipleCellChange> mUndoStack = new Stack<MultipleCellChange>();
+        private Stack<MultipleCellChange> mRedoStack = new Stack<MultipleCellChange>();
 
         // Cached material image paths
         private Dictionary<string, string> mMaterialImages = new Dictionary<string, string>();
@@ -48,6 +35,28 @@ namespace StonehearthEditor.Recipes
         public RecipesView()
         {
             mDataTable = new RecipeTable(this);
+            mDataTable.ColumnChanging +=
+                (object sender, DataColumnChangeEventArgs e) =>
+                {
+                    if (mListenOnCellChange)
+                    {
+                        DataCell cell = new DataCell((RecipeRow)e.Row, e.Column);
+                        MultipleCellChange change = new MultipleCellChange(cell, e.Row[e.Column], e.ProposedValue);
+                        mUndoStack.Push(change);
+                    }
+                };
+
+            mDataTable.ColumnChanged +=
+                (object sender, DataColumnChangeEventArgs e) =>
+                {
+                    mDataTable.GetColumnBehavior(e.Column).OnCellChanged(e);
+
+                    if (mListenOnCellChange)
+                    {
+                        mModifiedCells.Add(new DataCell((RecipeRow)e.Row, e.Column));
+                        unsavedFilesLabel.Visible = true;
+                    }
+                };
 
             InitializeComponent();
 
@@ -101,44 +110,21 @@ namespace StonehearthEditor.Recipes
             MakeDoubleBuffered();
             LoadMaterialImages();
             LoadColumnsData();
-
-            // Attach event listener after all data has been populated
-            mDataTable.ColumnChanging +=
-                (object sender, DataColumnChangeEventArgs e) =>
-                {
-                    RecipeRow row = (RecipeRow)e.Row;
-                    DataCell cell = new DataCell(row, e.Column);
-                    //cell.OldValue = recipesGridView[mDataTable.Columns.IndexOf(e.Column), mDataTable.Rows.IndexOf(row)].Value;
-                    //cell.NewValue = e.ProposedValue;
-
-                    undoStack.Push(cell);
-                };
-
-            mDataTable.ColumnChanged +=
-                (sender, e) =>
-                {
-                    RecipeRow row = (RecipeRow)e.Row;
-                    DataCell cell = new DataCell(row, e.Column);
-                    //cell.OldValue = recipesGridView[mDataTable.Columns.IndexOf(e.Column), mDataTable.Rows.IndexOf(row)].Value;
-                    //cell.NewValue = e.ProposedValue;
-
-                    //undoStack.Push(cell);
-
-                    mModifiedCells.Add(cell);
-                    unsavedFilesLabel.Visible = true;
-
-                    mDataTable.GetColumnBehavior(e.Column).OnCellChanged(e);
-                };
+            mListenOnCellChange = true;
         }
 
         public void Reload()
         {
+            mListenOnCellChange = false;
             // Disable render while adding rows
             recipesGridView.DataSource = null;
             mDataTable.Reload();
             mModifiedCells.Clear();
             mComboBoxColumns.Clear();
+            mUndoStack.Clear();
+            mRedoStack.Clear();
             LoadColumnsData();
+            mListenOnCellChange = false;
         }
 
         // Helps address DataGridView's slow repaint time. See https://www.codeproject.com/Tips/654101/Double-Buffering-a-DataGridview
@@ -296,13 +282,11 @@ namespace StonehearthEditor.Recipes
                         if (material != null)
                         {
                             ingredientData.Name = material.ToString();
-                            ingredientData.Icon = GetIcon(material.ToString());
                         }
                         else if (uri != null)
                         {
                             JsonFileData ingrJsonFileData = FindLinkedJsonMatchingAlias(jsonFileData, uri.ToString());
                             ingredientData.Name = ingrJsonFileData.GetModuleFile().FullAlias;
-                            ingredientData.Icon = GetIcon(ingrJsonFileData);
                         }
                         else
                         {
@@ -377,35 +361,39 @@ namespace StonehearthEditor.Recipes
             }
         }
 
-        private void SetGridValue(int colIndex, int rowIndex, string value)
+        private bool SetGridValue(int colIndex, int rowIndex, string value, MultipleCellChange changes)
         {
             try
             {
-                if (recipesGridView.Columns[colIndex].ValueType == typeof(int))
-                {
-                    recipesGridView[colIndex, rowIndex].Value = int.Parse(value);
-                }
-                else
-                {
-                    bool valid = true;
-                    if (recipesGridView.Columns[colIndex] is DataGridViewComboBoxColumn)
-                    {
-                        List<string> autoCompleteStrings = (recipesGridView.Columns[colIndex] as DataGridViewComboBoxColumn).DataSource as List<string>;
-                        if (!autoCompleteStrings.Contains(value))
-                            valid = false;
-                    }
+                object oldValue = recipesGridView[colIndex, rowIndex].Value;
 
-                    if (valid)
+                DataGridViewColumn column = recipesGridView.Columns[colIndex];
+                if (column is DataGridViewComboBoxColumn)
+                {
+                    List<string> autoCompleteStrings = (column as DataGridViewComboBoxColumn).DataSource as List<string>;
+                    if (!autoCompleteStrings.Contains(value))
                     {
-                        recipesGridView[colIndex, rowIndex].Value = value;
+                        MessageBox.Show(string.Format("Value \"{0}\" not found in combobox for column \"{1}\"", value, column.Name));
+                        return false;
                     }
                 }
+                else if (column.ReadOnly)
+                {
+                    MessageBox.Show(string.Format("Trying to write to read-only column {0}", column.Name));
+                    return false;
+                }
+
+                recipesGridView[colIndex, rowIndex].Value = value;
+                DataCell cell = new DataCell((RecipeRow)mDataTable.Rows[rowIndex], mDataTable.Columns[colIndex]);
+                changes.Add(new CellChange(cell, oldValue, value));
             }
             catch (Exception exception)
             {
-                MessageBox.Show(string.Format("Unable to set grid value for (%d, %d). Error: %s", colIndex, rowIndex, exception.Message));
-                return;
+                MessageBox.Show(string.Format("Unable to set grid value for ({0}, {1}). Error: {2}", colIndex, rowIndex, exception.Message));
+                return false;
             }
+
+            return true;
         }
 
         private void DeleteCurrentCell()
@@ -574,32 +562,49 @@ namespace StonehearthEditor.Recipes
 
         private void recipesGridView_KeyDown(object sender, KeyEventArgs e)
         {
-            // Delete cell on del
             if (e.KeyCode == Keys.Delete)
             {
+                // Delete cell on del
                 DeleteCurrentCell();
             }
-            // Save on ctrl+s
             else if (e.Control && e.KeyCode == Keys.S)
             {
+                // Save on ctrl+s
                 SaveModifiedFiles();
             }
             else if (e.Control && e.KeyCode == Keys.Z)
             {
-                if (undoStack.Any())
+                if (mUndoStack.Any())
                 {
-                    DataCell cell = undoStack.Pop();
-                    //recipesGridView[mDataTable.Columns.IndexOf(cell.Column), mDataTable.Rows.IndexOf(cell.Row)].Value = cell.OldValue;
-                    redoStack.Push(cell);
+                    MultipleCellChange changes = mUndoStack.Pop();
+                    mListenOnCellChange = false;
+                    changes.Undo();
+                    mListenOnCellChange = true;
+                    mRedoStack.Push(changes);
                 }
             }
-            // Paste multiple cells on ctrl+v
+            else if (e.Control && e.KeyCode == Keys.Y)
+            {
+                if (mRedoStack.Any())
+                {
+                    MultipleCellChange changes = mRedoStack.Pop();
+                    mListenOnCellChange = false;
+                    changes.Redo();
+                    mListenOnCellChange = true;
+                    mUndoStack.Push(changes);
+                }
+            }
             else if (e.Control && e.KeyCode == Keys.V)
             {
+                // Paste multiple cells on ctrl+v
                 if (recipesGridView.SelectedCells.Count == 0)
                 {
                     return;
                 }
+
+                // Add cell changes to one transaction so we can roll back if needed
+                mListenOnCellChange = false;
+                MultipleCellChange changes = new MultipleCellChange();
 
                 Tuple<DataGridViewCell, DataGridViewCell> boundaryCells = GetSelectedCellsBoundaries();
                 DataGridViewCell startCell = boundaryCells.Item1;
@@ -620,7 +625,13 @@ namespace StonehearthEditor.Recipes
                         int colIndex = startCol;
                         for (int i = 0; i < cells.Length && colIndex < recipesGridView.Columns.Count; i++)
                         {
-                            SetGridValue(colIndex, rowIndex, cells[i]);
+                            bool success = SetGridValue(colIndex, rowIndex, cells[i], changes);
+                            if (!success)
+                            {
+                                changes.Undo();
+                                return;
+                            }
+
                             colIndex++;
                         }
 
@@ -639,6 +650,10 @@ namespace StonehearthEditor.Recipes
                             lineIndex--;
                         }
                     }
+
+                    // Save cell changes made in this paste operation
+                    mUndoStack.Push(changes);
+                    mListenOnCellChange = true;
                 }
             }
         }

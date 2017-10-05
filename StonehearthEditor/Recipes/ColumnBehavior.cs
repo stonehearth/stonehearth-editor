@@ -178,12 +178,6 @@ namespace StonehearthEditor.Recipes
             this.columnGroup = columnGroup;
         }
 
-        public override void OnCellChanged(DataColumnChangeEventArgs e)
-        {
-            RecipeRow row = (RecipeRow)e.Row;
-            Ingredient ingredient = row.GetOrAddIngredient(columnGroup);
-        }
-
         public override void TryDeleteCell(RecipeRow row)
         {
             Ingredient ingredient = row.GetOrAddIngredient(columnGroup);
