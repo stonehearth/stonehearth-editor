@@ -586,7 +586,15 @@ namespace StonehearthEditor.Recipes
 
         private void recipesGridView_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.Delete)
+            if (e.KeyCode == Keys.Enter)
+            {
+                if (!recipesGridView.IsCurrentCellInEditMode)
+                {
+                    recipesGridView.BeginEdit(true);
+                    e.Handled = true;
+                }
+            }
+            else if (e.KeyCode == Keys.Delete)
             {
                 // Delete cell on del
                 DeleteCurrentCell();
