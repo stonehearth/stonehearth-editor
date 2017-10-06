@@ -372,7 +372,6 @@ namespace StonehearthEditor.Recipes
         {
             try
             {
-                object oldValue = recipesGridView[colIndex, rowIndex].Value;
 
                 DataGridViewColumn column = recipesGridView.Columns[colIndex];
                 if (column is DataGridViewComboBoxColumn)
@@ -390,7 +389,8 @@ namespace StonehearthEditor.Recipes
                     return false;
                 }
 
-                recipesGridView[colIndex, rowIndex].Value = value;
+                object oldValue = mDataTable.Rows[rowIndex][colIndex];
+                mDataTable.Rows[rowIndex][colIndex] = value;
                 DataCell cell = new DataCell(mDataTable.Columns[colIndex], (RecipeRow)mDataTable.Rows[rowIndex]);
                 changes.Add(new CellChange(cell, oldValue, value));
             }
