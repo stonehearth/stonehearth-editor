@@ -18,7 +18,8 @@ namespace StonehearthEditor.Recipes
         public const string kAllCol = "All Columns";
 
         private bool mBaseModsOnly = true;
-        private bool mListenOnCellChange = false;
+        private bool mIsLoading = false;
+        private bool mIsApplyingChanges = false;
 
         private RecipeTable mDataTable;
         private HashSet<DataCell> mModifiedCells = new HashSet<DataCell>();
@@ -28,6 +29,7 @@ namespace StonehearthEditor.Recipes
 
         private Stack<MultipleCellChange> mUndoStack = new Stack<MultipleCellChange>();
         private Stack<MultipleCellChange> mRedoStack = new Stack<MultipleCellChange>();
+        private int currentStateUndoIndex = 0;
 
         // Cached material image paths
         private Dictionary<string, string> mMaterialImages = new Dictionary<string, string>();
@@ -38,7 +40,7 @@ namespace StonehearthEditor.Recipes
             mDataTable.ColumnChanging +=
                 (object sender, DataColumnChangeEventArgs e) =>
                 {
-                    if (mListenOnCellChange)
+                    if (!mIsLoading && !mIsApplyingChanges)
                     {
                         DataCell cell = new DataCell((RecipeRow)e.Row, e.Column);
                         MultipleCellChange change = new MultipleCellChange(cell, e.Row[e.Column], e.ProposedValue);
@@ -51,26 +53,26 @@ namespace StonehearthEditor.Recipes
                 {
                     mDataTable.GetColumnBehavior(e.Column).OnCellChanged(e);
 
-                    if (mListenOnCellChange)
+                    if (!mIsLoading)
                     {
-                        mModifiedCells.Add(new DataCell((RecipeRow)e.Row, e.Column));
                         unsavedFilesLabel.Visible = true;
+                        mModifiedCells.Add(new DataCell((RecipeRow)e.Row, e.Column));
                     }
                 };
 
             InitializeComponent();
 
             // Add column names to the filter combobox
-            filterCmbx.Items.Add(kAllCol);
-            filterCmbx.Items.Add(RecipeTable.kAlias);
-            filterCmbx.Items.Add(RecipeTable.kDisplayName);
-            filterCmbx.Items.Add(RecipeTable.kCrafter);
-            filterCmbx.Items.Add(RecipeTable.kLvlReq);
-            filterCmbx.Items.Add(RecipeTable.kNetWorth);
-            filterCmbx.Items.Add(RecipeTable.kEffort);
-            filterCmbx.Items.Add(IngredientColumnGroup.kIngr + " " + IngredientColumnGroup.kName);
-            filterCmbx.Items.Add(IngredientColumnGroup.kIngr + " " + IngredientColumnGroup.kAmount);
-            filterCmbx.SelectedIndex = 0;
+            filterCbx.Items.Add(kAllCol);
+            filterCbx.Items.Add(RecipeTable.kAlias);
+            filterCbx.Items.Add(RecipeTable.kDisplayName);
+            filterCbx.Items.Add(RecipeTable.kCrafter);
+            filterCbx.Items.Add(RecipeTable.kLvlReq);
+            filterCbx.Items.Add(RecipeTable.kNetWorth);
+            filterCbx.Items.Add(RecipeTable.kEffort);
+            filterCbx.Items.Add(IngredientColumnGroup.kIngr + " " + IngredientColumnGroup.kName);
+            filterCbx.Items.Add(IngredientColumnGroup.kIngr + " " + IngredientColumnGroup.kAmount);
+            filterCbx.SelectedIndex = 0;
         }
 
         public void SaveModifiedFiles()
@@ -81,7 +83,8 @@ namespace StonehearthEditor.Recipes
                 behavior.SaveCell(mModifiedFiles, cell.Row, cell.Row[cell.Column]);
             }
 
-            // Save ingredient rows all at once instead of once per cell to avoid unnecessary calculation
+            // Save ingredient rows all at once because unlike other cells, an ingredient
+            // does not map to a unique key in json. We rewrite the entire json array all at once
             var ingredientRows =
                 mModifiedCells
                 .Where(e => mDataTable.GetColumnBehavior(e.Column).IsIngredientColumn)
@@ -96,26 +99,29 @@ namespace StonehearthEditor.Recipes
 
             foreach (JsonFileData modified in mModifiedFiles)
             {
+                modified.TrySetFlatFileData(modified.Json.ToString());
                 modified.TrySaveFile();
             }
 
             mModifiedFiles.Clear();
             mModifiedCells.Clear();
             unsavedFilesLabel.Visible = false;
+            currentStateUndoIndex = mUndoStack.Count();
         }
 
         public void Initialize()
         {
+            mIsLoading = true;
             DateTime mStart = DateTime.Now;
             MakeDoubleBuffered();
             LoadMaterialImages();
             LoadColumnsData();
-            mListenOnCellChange = true;
+            mIsLoading = false;
         }
 
         public void Reload()
         {
-            mListenOnCellChange = false;
+            mIsLoading = true;
             // Disable render while adding rows
             recipesGridView.DataSource = null;
             mDataTable.Reload();
@@ -124,7 +130,7 @@ namespace StonehearthEditor.Recipes
             mUndoStack.Clear();
             mRedoStack.Clear();
             LoadColumnsData();
-            mListenOnCellChange = false;
+            mIsLoading = false;
         }
 
         // Helps address DataGridView's slow repaint time. See https://www.codeproject.com/Tips/654101/Double-Buffering-a-DataGridview
@@ -332,7 +338,6 @@ namespace StonehearthEditor.Recipes
             }
 
             json["ingredients"] = newIngrArray;
-            jsonFileData.TrySetFlatFileData(json.ToString());
             modifiedFiles.Add(jsonFileData);
         }
 
@@ -402,6 +407,25 @@ namespace StonehearthEditor.Recipes
             DataColumn dataColumn = mDataTable.Columns[cell.ColumnIndex];
             RecipeRow recipeRow = (RecipeRow)mDataTable.Rows[cell.RowIndex];
             mDataTable.GetColumnBehavior(dataColumn).TryDeleteCell(recipeRow);
+        }
+
+        private void ApplyCellChanges(Stack<MultipleCellChange> fromStack, Stack<MultipleCellChange> toStack, Action<MultipleCellChange> doChange)
+        {
+            if (fromStack.Any())
+            {
+                MultipleCellChange changes = fromStack.Pop();
+                mIsApplyingChanges = true;
+                doChange(changes);
+                mIsApplyingChanges = false;
+                toStack.Push(changes);
+
+                // Hide unsaved indicator if we have undone/redone to the current state of the files
+                if (currentStateUndoIndex == mUndoStack.Count())
+                {
+                    unsavedFilesLabel.Visible = false;
+                    mModifiedCells.Clear();
+                }
+            }
         }
 
         private string GetTranslatedName(string locKey)
@@ -521,7 +545,7 @@ namespace StonehearthEditor.Recipes
         private void searchBox_Filter(object sender, EventArgs e)
         {
             string searchTerm = searchBox.Text.ToString();
-            string colFilter = filterCmbx.Text;
+            string colFilter = filterCbx.Text;
             if (searchTerm != "")
             {
                 searchBox.BackColor = Color.Gold;
@@ -574,25 +598,13 @@ namespace StonehearthEditor.Recipes
             }
             else if (e.Control && e.KeyCode == Keys.Z)
             {
-                if (mUndoStack.Any())
-                {
-                    MultipleCellChange changes = mUndoStack.Pop();
-                    mListenOnCellChange = false;
-                    changes.Undo();
-                    mListenOnCellChange = true;
-                    mRedoStack.Push(changes);
-                }
+                // Undo on ctrl+z
+                ApplyCellChanges(mUndoStack, mRedoStack, changes => changes.Undo());
             }
             else if (e.Control && e.KeyCode == Keys.Y)
             {
-                if (mRedoStack.Any())
-                {
-                    MultipleCellChange changes = mRedoStack.Pop();
-                    mListenOnCellChange = false;
-                    changes.Redo();
-                    mListenOnCellChange = true;
-                    mUndoStack.Push(changes);
-                }
+                // Redo on ctrl+y
+                ApplyCellChanges(mRedoStack, mUndoStack, changes => changes.Redo());
             }
             else if (e.Control && e.KeyCode == Keys.V)
             {
@@ -603,7 +615,7 @@ namespace StonehearthEditor.Recipes
                 }
 
                 // Add cell changes to one transaction so we can roll back if needed
-                mListenOnCellChange = false;
+                mIsApplyingChanges = true;
                 MultipleCellChange changes = new MultipleCellChange();
 
                 Tuple<DataGridViewCell, DataGridViewCell> boundaryCells = GetSelectedCellsBoundaries();
@@ -650,11 +662,11 @@ namespace StonehearthEditor.Recipes
                             lineIndex--;
                         }
                     }
-
-                    // Save cell changes made in this paste operation
-                    mUndoStack.Push(changes);
-                    mListenOnCellChange = true;
                 }
+
+                // Save cell changes made in this paste operation
+                mUndoStack.Push(changes);
+                mIsApplyingChanges = false;
             }
         }
 
@@ -735,8 +747,10 @@ namespace StonehearthEditor.Recipes
                             "* Change ingredient amounts and ingredients in a recipe \n" + 
                             "Hotkeys: \n" + 
                             "* Press `delete` to delete an ingredient \n" +
-                            "* Press ctrl+s to save the modified files \n" + 
-                            "* Press ctrl+c ctrl+v and select a single or multiple cells to paste a value \n" +
+                            "* Press `ctrl+s` to save the modified files \n" + 
+                            "* Press `ctrl+c, ctrl+v` and select a single or multiple cells to paste a value \n" +
+                            "* Press `ctrl+z` to undo \n" +
+                            "* Press `ctrl+y` to redo \n" + 
                             "* Right click and press add ingredient to add ingredient columns to a recipe that does not have enough columns to fit a new ingredient \n" + 
                             "\n");
         }

@@ -38,7 +38,7 @@
             this.toolStrip = new System.Windows.Forms.ToolStrip();
             this.searchBox = new System.Windows.Forms.ToolStripTextBox();
             this.searchButton = new System.Windows.Forms.ToolStripButton();
-            this.filterCmbx = new System.Windows.Forms.ToolStripComboBox();
+            this.filterCbx = new System.Windows.Forms.ToolStripComboBox();
             this.helpButton = new System.Windows.Forms.ToolStripButton();
             this.unsavedFilesLabel = new System.Windows.Forms.ToolStripLabel();
             ((System.ComponentModel.ISupportInitialize)(this.recipesGridView)).BeginInit();
@@ -111,7 +111,7 @@
             this.toolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.searchBox,
             this.searchButton,
-            this.filterCmbx,
+            this.filterCbx,
             this.helpButton,
             this.unsavedFilesLabel});
             this.toolStrip.Location = new System.Drawing.Point(0, 0);
@@ -141,11 +141,11 @@
             // 
             // filterCmbx
             // 
-            this.filterCmbx.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.filterCmbx.Name = "filterCmbx";
-            this.filterCmbx.Size = new System.Drawing.Size(121, 25);
-            this.filterCmbx.ToolTipText = "Select column to filter by";
-            this.filterCmbx.SelectedIndexChanged += new System.EventHandler(this.searchBox_Filter);
+            this.filterCbx.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.filterCbx.Name = "filterCmbx";
+            this.filterCbx.Size = new System.Drawing.Size(121, 25);
+            this.filterCbx.ToolTipText = "Select column to filter by";
+            this.filterCbx.SelectedIndexChanged += new System.EventHandler(this.searchBox_Filter);
             // 
             // helpButton
             // 
@@ -193,7 +193,7 @@
         private System.Windows.Forms.ToolStrip toolStrip;
         private System.Windows.Forms.ToolStripTextBox searchBox;
         private System.Windows.Forms.ToolStripButton searchButton;
-        private System.Windows.Forms.ToolStripComboBox filterCmbx;
+        private System.Windows.Forms.ToolStripComboBox filterCbx;
         private System.Windows.Forms.ToolStripMenuItem removeIngredientToolStripMenuItem;
         private System.Windows.Forms.ToolStripButton helpButton;
         private System.Windows.Forms.ToolStripLabel unsavedFilesLabel;

@@ -39,7 +39,6 @@ namespace StonehearthEditor.Recipes
                     if (!locKey.Contains(":"))
                     {
                         nameToken.Value = (string)value;
-                        jsonFileData.TrySetFlatFileData(json.ToString());
                         modifiedFiles.Add(jsonFileData);
                     }
                     else
@@ -61,7 +60,6 @@ namespace StonehearthEditor.Recipes
             JObject json = jsonFileData.Json;
             JValue token = json.SelectToken("entity_data.stonehearth:net_worth.value_in_gold") as JValue;
             token.Value = (int)value;
-            jsonFileData.TrySetFlatFileData(json.ToString());
             modifiedFiles.Add(jsonFileData);
         }
     }
@@ -82,7 +80,6 @@ namespace StonehearthEditor.Recipes
             JObject json = jsonFileData.Json;
             JValue token = json["work_units"] as JValue;
             json["work_units"] = (int)value;
-            jsonFileData.TrySetFlatFileData(json.ToString());
             modifiedFiles.Add(jsonFileData);
         }
     }
@@ -97,7 +94,6 @@ namespace StonehearthEditor.Recipes
             JObject json = jsonFileData.Json;
             JValue token = json["level_requirement"] as JValue;
             json["level_requirement"] = (int)value;
-            jsonFileData.TrySetFlatFileData(json.ToString());
             modifiedFiles.Add(jsonFileData);
         }
     }
