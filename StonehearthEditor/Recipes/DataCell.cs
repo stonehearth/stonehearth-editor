@@ -9,10 +9,10 @@ namespace StonehearthEditor.Recipes
 
         public DataColumn Column { get; private set; }
 
-        public DataCell(RecipeRow row, DataColumn column)
+        public DataCell(DataColumn column, RecipeRow row)
         {
-            this.Row = row;
             this.Column = column;
+            this.Row = row;
         }
     }
 }

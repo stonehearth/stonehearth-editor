@@ -42,7 +42,7 @@ namespace StonehearthEditor.Recipes
                 {
                     if (!mIsLoading && !mIsApplyingChanges)
                     {
-                        DataCell cell = new DataCell((RecipeRow)e.Row, e.Column);
+                        DataCell cell = new DataCell(e.Column, (RecipeRow)e.Row);
                         MultipleCellChange change = new MultipleCellChange(cell, e.Row[e.Column], e.ProposedValue);
                         mUndoStack.Push(change);
                     }
@@ -51,12 +51,14 @@ namespace StonehearthEditor.Recipes
             mDataTable.ColumnChanged +=
                 (object sender, DataColumnChangeEventArgs e) =>
                 {
-                    mDataTable.GetColumnBehavior(e.Column).OnCellChanged(e);
+                    RecipeRow row = (RecipeRow)e.Row;
+                    DataColumn column = e.Column;
+                    mDataTable.GetColumnBehavior(column).OnCellChanged(e);
 
                     if (!mIsLoading)
                     {
                         unsavedFilesLabel.Visible = true;
-                        mModifiedCells.Add(new DataCell((RecipeRow)e.Row, e.Column));
+                        mModifiedCells.Add(new DataCell(column, row));
                     }
                 };
 
@@ -389,7 +391,7 @@ namespace StonehearthEditor.Recipes
                 }
 
                 recipesGridView[colIndex, rowIndex].Value = value;
-                DataCell cell = new DataCell((RecipeRow)mDataTable.Rows[rowIndex], mDataTable.Columns[colIndex]);
+                DataCell cell = new DataCell(mDataTable.Columns[colIndex], (RecipeRow)mDataTable.Rows[rowIndex]);
                 changes.Add(new CellChange(cell, oldValue, value));
             }
             catch (Exception exception)
@@ -604,15 +606,15 @@ namespace StonehearthEditor.Recipes
                 // Save on ctrl+s
                 SaveModifiedFiles();
             }
+            else if ((e.Control && e.Shift && e.KeyCode == Keys.Z) || (e.Control && e.KeyCode == Keys.Y))
+            {
+                // Redo on ctrl+shift+z or ctrl+y
+                ApplyCellChanges(mRedoStack, mUndoStack, changes => changes.Redo());
+            }
             else if (e.Control && e.KeyCode == Keys.Z)
             {
                 // Undo on ctrl+z
                 ApplyCellChanges(mUndoStack, mRedoStack, changes => changes.Undo());
-            }
-            else if (e.Control && e.KeyCode == Keys.Y)
-            {
-                // Redo on ctrl+y
-                ApplyCellChanges(mRedoStack, mUndoStack, changes => changes.Redo());
             }
             else if (e.Control && e.KeyCode == Keys.V)
             {
@@ -758,7 +760,7 @@ namespace StonehearthEditor.Recipes
                             "* Press `ctrl+s` to save the modified files \n" + 
                             "* Press `ctrl+c, ctrl+v` and select a single or multiple cells to paste a value \n" +
                             "* Press `ctrl+z` to undo \n" +
-                            "* Press `ctrl+y` to redo \n" + 
+                            "* Press `ctrl+shift+z` or `ctrl+y` to redo \n" + 
                             "* Right click and press add ingredient to add ingredient columns to a recipe that does not have enough columns to fit a new ingredient \n" + 
                             "\n");
         }
