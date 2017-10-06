@@ -197,7 +197,6 @@ namespace StonehearthEditor
                 ControlParentChanged(sender, e);
                 var topParent = _parentChain[_parentChain.Count - 1];
                 topParent.Controls.Add(_suggLb);
-                //comboBox.Parent.Controls.Add(_suggLb);
                 topParent.Controls.SetChildIndex(_suggLb, 0);
                 _suggLb.Top = comboBox.Top + comboBox.Height - 3;
                 _suggLb.Left = comboBox.Left + 3;
@@ -297,7 +296,6 @@ namespace StonehearthEditor
         private static readonly Keys[] KeysToHandle = new[]
                     { Keys.Down, Keys.Up, Keys.Enter, Keys.Escape, Keys.Tab };
 
-
         private void ComboBox_KeyDown(object sender, KeyEventArgs e)
         {
             // the keysstrokes of our interest should not be processed be base class:
@@ -305,41 +303,6 @@ namespace StonehearthEditor
             {
                 e.Handled = true;
             }
-
-
-            /*if (!_suggLb.Visible)
-            {
-                return;
-            }
-            if (comboBox.DroppedDown)
-            {
-                comboBox.DroppedDown = false;
-            }
-
-            switch (e.KeyCode)
-            {
-                case Keys.Down:
-                    if (_suggLb.SelectedIndex < _suggBindingList.Count - 1)
-                        _suggLb.SelectedIndex++;
-                    e.Handled = true;
-                    return;
-                case Keys.Up:
-                    if (_suggLb.SelectedIndex > 0)
-                        _suggLb.SelectedIndex--;
-                    e.Handled = true;
-                    return;
-                case Keys.Tab:
-                case Keys.Enter:
-                    comboBox.Text = _suggLb.Text;
-                    comboBox.Select(0, comboBox.Text.Length);
-                    e.Handled = true;
-                    _suggLb.Visible = false;
-                    return;
-                case Keys.Escape:
-                    HideSuggBox();
-                    e.Handled = true;
-                    return;
-            }*/
         }
 
         #endregion
