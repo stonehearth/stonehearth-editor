@@ -57,11 +57,14 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.recipesGridView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
+            this.recipesGridView.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.DisplayedCellsExceptHeaders;
             this.recipesGridView.ClipboardCopyMode = System.Windows.Forms.DataGridViewClipboardCopyMode.EnableWithoutHeaderText;
+            this.recipesGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.recipesGridView.ContextMenuStrip = this.recipesCellContextMenu;
             this.recipesGridView.Location = new System.Drawing.Point(0, 31);
             this.recipesGridView.Name = "recipesGridView";
             this.recipesGridView.RowHeadersVisible = false;
+            this.recipesGridView.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.recipesGridView.RowTemplate.ContextMenuStrip = this.recipesCellContextMenu;
             this.recipesGridView.RowTemplate.Height = 30;
             this.recipesGridView.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.True;
@@ -139,10 +142,10 @@
             this.searchButton.ToolTipText = "Filter recipes";
             this.searchButton.Click += new System.EventHandler(this.searchBox_Filter);
             // 
-            // filterCmbx
+            // filterCbx
             // 
             this.filterCbx.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.filterCbx.Name = "filterCmbx";
+            this.filterCbx.Name = "filterCbx";
             this.filterCbx.Size = new System.Drawing.Size(121, 25);
             this.filterCbx.ToolTipText = "Select column to filter by";
             this.filterCbx.SelectedIndexChanged += new System.EventHandler(this.searchBox_Filter);
