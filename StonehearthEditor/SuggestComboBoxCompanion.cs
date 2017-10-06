@@ -209,7 +209,7 @@ namespace StonehearthEditor
         {
             // _suggLb can only getting focused by clicking (because TabStop is off)
             // --> click-eventhandler 'SuggLbOnClick' is called
-            if (!_suggLb.Focused)
+            if (!_suggLb.Focused || !comboBox.Focused)
                 HideSuggBox();
         }
 
@@ -252,20 +252,24 @@ namespace StonehearthEditor
         /// <param name="e"></param>
         protected void OnPreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
         {
-            if (skip)
+            if (e.KeyCode == Keys.Down || e.KeyCode == Keys.Up)
             {
-                skip = false;
-                return;
-            }
-            else
-            {
-                skip = true;
+                if (skip)
+                {
+                    skip = false;
+                    return;
+                }
+                else
+                {
+                    skip = true;
+                }
+
+                if (!_suggLb.Visible)
+                {
+                    return;
+                }
             }
 
-            if (!_suggLb.Visible)
-            {
-                return;
-            }
             if (comboBox.DroppedDown)
             {
                 comboBox.DroppedDown = false;
@@ -294,7 +298,7 @@ namespace StonehearthEditor
         }
 
         private static readonly Keys[] KeysToHandle = new[]
-                    { Keys.Down, Keys.Up, Keys.Enter, Keys.Escape, Keys.Tab };
+            { Keys.Down, Keys.Up, Keys.Enter, Keys.Escape, Keys.Tab };
 
         private void ComboBox_KeyDown(object sender, KeyEventArgs e)
         {
