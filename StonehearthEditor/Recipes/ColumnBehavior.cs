@@ -1,6 +1,7 @@
 ﻿using System.Data;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
+using System;
 
 namespace StonehearthEditor.Recipes
 {
@@ -133,7 +134,7 @@ namespace StonehearthEditor.Recipes
         {
             // grab col and change the image
             RecipeRow row = (RecipeRow)e.Row;
-            string newName = (string)e.ProposedValue ?? "";
+            string newName = e.ProposedValue == DBNull.Value || e.ProposedValue == null ? "" : (string)e.ProposedValue;
             Ingredient ingredient = row.GetOrAddIngredient(columnGroup);
 
             if (newName.Contains(":"))
