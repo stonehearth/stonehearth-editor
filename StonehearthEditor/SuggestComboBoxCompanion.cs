@@ -117,7 +117,7 @@ namespace StonehearthEditor
             _suggBindingList.RaiseListChangedEvents = false;
             _propertySelectorCompiled(comboBox.Items)
                 .Where(_filterRuleCompiled)
-                .OrderBy(_suggestListOrderRuleCompiled)
+                //.OrderBy(_suggestListOrderRuleCompiled)
                 .ToList()
                 .ForEach(_suggBindingList.Add);
             _suggBindingList.RaiseListChangedEvents = true;
