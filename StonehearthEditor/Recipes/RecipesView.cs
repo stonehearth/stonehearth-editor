@@ -692,6 +692,17 @@ namespace StonehearthEditor.Recipes
                     mComboBoxes.Add(cbx);
                     var companion = new SuggestComboBoxCompanion(cbx);
                     companion.PropertySelector = collection => collection.Cast<string>();
+                    // Set the cell value manually from suggestion list on click. Need to do this
+                    // due to timing. We can't suppress mouse clicks from the companion, so by the time 
+                    // the click goes through, the combobox/listbox will be hidden so setting the combobox
+                    // at that time will not resulting in the grid view accepting the combobox value.
+                    companion.OnClick =
+                        (object s, EventArgs ev, ListBox suggList) =>
+                        {
+                            DataGridViewCell cell = recipesGridView.CurrentCell;
+                            mDataTable.Rows[cell.RowIndex][cell.ColumnIndex] = suggList.Text;
+                            return null;
+                        };
                 }
             }
         }

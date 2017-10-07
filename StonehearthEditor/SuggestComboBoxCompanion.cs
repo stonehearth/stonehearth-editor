@@ -32,7 +32,6 @@ namespace StonehearthEditor
             comboBox.TextChanged += ComboBox_TextChanged;
             comboBox.LostFocus += OnLostFocus;
             comboBox.SizeChanged += OnSizeChanged;
-            comboBox.LocationChanged += OnLocationChanged;
             comboBox.DropDown += OnDropDown;
             comboBox.PreviewKeyDown += OnPreviewKeyDown;
             comboBox.KeyDown += ComboBox_KeyDown;
@@ -102,6 +101,8 @@ namespace StonehearthEditor
                 _suggestListOrderRuleCompiled = value.Compile();
             }
         }
+
+        public Func<object, EventArgs, ListBox, object> OnClick { get; internal set; }
 
         #endregion
 
@@ -174,11 +175,11 @@ namespace StonehearthEditor
                 var screenLoc = comboBox.Parent.PointToScreen(comboBox.Location);
                 var topParent = _parentChain[_parentChain.Count - 1];
                 var relLoc = topParent.PointToClient(screenLoc);
-                OnLocationChanged2(relLoc);
+                OnLocationChanged(relLoc);
             }
         }
 
-        protected void OnLocationChanged2(Point r)
+        protected void OnLocationChanged(Point r)
         {
             _suggLb.Top = r.Y + comboBox.Height - 3;
             _suggLb.Left = r.X + 3;
@@ -200,8 +201,8 @@ namespace StonehearthEditor
                 topParent.Controls.SetChildIndex(_suggLb, 0);
                 _suggLb.Top = comboBox.Top + comboBox.Height - 3;
                 _suggLb.Left = comboBox.Left + 3;
-                _suggLb.Width = comboBox.Width - 20;
-                _suggLb.Font = new Font("Segoe UI", 9);
+                _suggLb.Width = comboBox.Width;
+                _suggLb.Font = comboBox.Font;
             }
         }
 
@@ -209,26 +210,25 @@ namespace StonehearthEditor
         {
             // _suggLb can only getting focused by clicking (because TabStop is off)
             // --> click-eventhandler 'SuggLbOnClick' is called
-            if (!_suggLb.Focused || !comboBox.Focused)
+            if (!_suggLb.Focused) //|| !comboBox.Focused)
                 HideSuggBox();
-        }
-
-        protected void OnLocationChanged(object sender, EventArgs e)
-        {
-            return;
-            _suggLb.Top = comboBox.Top + comboBox.Height - 3;
-            _suggLb.Left = comboBox.Left + 3;
         }
 
         protected void OnSizeChanged(object sender, EventArgs e)
         {
-            _suggLb.Width = comboBox.Width - 20;
+            _suggLb.Width = comboBox.Width;
         }
 
         private void SuggLbOnClick(object sender, EventArgs eventArgs)
         {
             comboBox.Text = _suggLb.Text;
             comboBox.Focus();
+
+            if (this.OnClick != null)
+            {
+                OnClick(sender, eventArgs, _suggLb);
+            }
+            HideSuggBox();
         }
 
         private void HideSuggBox()
@@ -289,7 +289,7 @@ namespace StonehearthEditor
                 case Keys.Enter:
                     comboBox.Text = _suggLb.Text;
                     comboBox.Select(0, comboBox.Text.Length);
-                    _suggLb.Visible = false;
+                    HideSuggBox();
                     return;
                 case Keys.Escape:
                     HideSuggBox();
@@ -302,7 +302,7 @@ namespace StonehearthEditor
 
         private void ComboBox_KeyDown(object sender, KeyEventArgs e)
         {
-            // the keysstrokes of our interest should not be processed be base class:
+            // the keystrokes of our interest should not be processed by base class:
             if (_suggLb.Visible && KeysToHandle.Contains(e.KeyCode))
             {
                 e.Handled = true;
