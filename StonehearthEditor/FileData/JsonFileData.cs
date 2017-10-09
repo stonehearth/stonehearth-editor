@@ -154,7 +154,7 @@ namespace StonehearthEditor
 
             bool filterMatchesSelf = true;
             ModuleFile owner = GetModuleFile();
-            if (!string.IsNullOrEmpty(filter) && owner != null && !owner.Name.Contains(filter))
+            if (!string.IsNullOrEmpty(filter) && owner != null && !owner.Alias.Contains(filter))
             {
                 filterMatchesSelf = false;
             }
@@ -270,6 +270,23 @@ namespace StonehearthEditor
             }
 
             return fileName;
+        }
+
+        // TODO: make this less brittle. it just takes the first linked image file it references and uses it as the image
+        public string GetImageForFile()
+        {
+            foreach (FileData openedFile in OpenedFiles)
+            {
+                foreach (KeyValuePair<string, FileData> linkedFile in openedFile.LinkedFileData)
+                {
+                    if ((linkedFile.Value is ImageFileData) && System.IO.File.Exists(linkedFile.Value.Path))
+                    {
+                        return linkedFile.Value.Path;
+                    }
+                }
+            }
+
+            return string.Empty;
         }
 
         public void SetModuleFile(ModuleFile moduleFile)

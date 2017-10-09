@@ -29,22 +29,6 @@ namespace StonehearthEditor
             mManifestView = view;
         }
 
-        private string FindImageForFile(JsonFileData data)
-        {
-            foreach (FileData openedFile in data.OpenedFiles)
-            {
-                foreach (KeyValuePair<string, FileData> linkedFile in openedFile.LinkedFileData)
-                {
-                    if ((linkedFile.Value is ImageFileData) && System.IO.File.Exists(linkedFile.Value.Path))
-                    {
-                        return linkedFile.Value.Path;
-                    }
-                }
-            }
-
-            return string.Empty;
-        }
-
         public void UpdateNetWorthData()
         {
             mItemCount = 0;
@@ -66,7 +50,7 @@ namespace StonehearthEditor
                         continue;
                     }
 
-                    string imageFile = FindImageForFile(data);
+                    string imageFile = data.GetImageForFile();
                     if (string.IsNullOrEmpty(imageFile))
                     {
                         Console.WriteLine("file " + data.FileName + " has no icon!");
@@ -147,7 +131,7 @@ namespace StonehearthEditor
                     for (int j = 0; j < count; j++)
                     {
                         JsonFileData data = list[j];
-                        string imageFile = FindImageForFile(data);
+                        string imageFile = data.GetImageForFile();
                         if (string.IsNullOrEmpty(imageFile))
                         {
                             Console.WriteLine("file " + data.FileName + " has no icon!");

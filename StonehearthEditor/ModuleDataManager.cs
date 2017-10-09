@@ -215,11 +215,9 @@ namespace StonehearthEditor
             }
         }
 
-        // Returns an Object array with a map from alias to jsonfiledata and alias to modname
-        public Object[] FilterJsonByTerm(ListView listView, string filterTerm)
+        public Dictionary<string, JsonFileData> GetJsonsByTerm(string filterTerm)
         {
             Dictionary<string, JsonFileData> aliasJsonMap = new Dictionary<string, JsonFileData>();
-            Dictionary<string, string> aliasModNameMap = new Dictionary<string, string>();
             foreach (Module module in mModules.Values)
             {
                 foreach (ModuleFile moduleFile in module.GetAliases())
@@ -228,18 +226,16 @@ namespace StonehearthEditor
                     if (data != null)
                     {
                         aliasJsonMap.Add(moduleFile.FullAlias, data);
-                        aliasModNameMap.Add(moduleFile.FullAlias, module.Name);
                     }
                 }
             }
 
-            return new object[] { aliasJsonMap, aliasModNameMap };
+            return aliasJsonMap;
         }
 
-        public object[] GetJsonsOfType(ListView listView, JSONTYPE jsonType)
+        public Dictionary<string, JsonFileData> GetJsonsOfType(JSONTYPE jsonType)
         {
             Dictionary<string, JsonFileData> aliasJsonMap = new Dictionary<string, JsonFileData>();
-            Dictionary<string, string> aliasModNameMap = new Dictionary<string, string>();
             foreach (Module module in mModules.Values)
             {
                 foreach (ModuleFile moduleFile in module.GetAliases())
@@ -248,12 +244,11 @@ namespace StonehearthEditor
                     if (data != null && data.JsonType == jsonType)
                     {
                         aliasJsonMap.Add(moduleFile.FullAlias, data);
-                        aliasModNameMap.Add(moduleFile.FullAlias, module.Name);
                     }
                 }
             }
 
-            return new Object[] { aliasJsonMap, aliasModNameMap };
+            return aliasJsonMap;
         }
 
         public FileData GetSelectedFileData(TreeNode selected)
@@ -413,6 +408,14 @@ namespace StonehearthEditor
 
         public string LocalizeString(string key)
         {
+            string locPrefix = "i18n(";
+            // Strip the i18n() from the key if it's there
+            if (key.Contains(locPrefix))
+            {
+                int i18nLength = locPrefix.Length;
+                key = key.Substring(i18nLength, key.Length - i18nLength - 1);
+            }
+
             string[] split = key.Split(':');
             string modName = "stonehearth";
             if (split.Length > 1)
@@ -589,6 +592,75 @@ namespace StonehearthEditor
         public HashSet<FileData> ModifiedFiles
         {
             get { return mModifiedFiles; }
+        }
+
+        public string GetModNameFromAlias(string fullAlias)
+        {
+            int indexOfColon = fullAlias.IndexOf(':');
+            string modName = fullAlias.Substring(0, indexOfColon);
+            if (GetMod(modName) == null)
+            {
+                throw new Exception("Input string does not have a valid mod name before the first colon");
+            }
+
+            return modName;
+        }
+
+        public bool ChangeEnglishLocValue(string locKey, string newValue)
+        {
+            string key = locKey;
+            string[] split = key.Split(':');
+            string modName = "stonehearth"; // default mod name
+
+            if (split.Length > 1)
+            {
+                modName = split[0];
+                key = split[1];
+            }
+
+            Module mod = GetMod(modName);
+            if (mod == null)
+            {
+                MessageBox.Show("Could not change loc key. There is no mod named " + modName);
+                return true;
+            }
+
+            JValue token = mod.EnglishLocalizationJson.SelectToken(key) as JValue;
+            if (token == null)
+            {
+                // No such localization key. Try to add it.
+                string[] tokenSplit = key.Split('.');
+                JObject parent = mod.EnglishLocalizationJson;
+                for (int i = 0; i < tokenSplit.Length - 1; ++i)
+                {
+                    if (parent == null)
+                    {
+                        break;
+                    }
+
+                    if (parent[tokenSplit[i]] == null)
+                    {
+                        parent[tokenSplit[i]] = new JObject();
+                    }
+
+                    parent = parent[tokenSplit[i]] as JObject;
+                }
+
+                if (parent == null)
+                {
+                    MessageBox.Show("Could not insert localization token " + locKey);
+                    return true;
+                }
+
+                parent.Add(tokenSplit[tokenSplit.Length - 1], newValue);
+            }
+            else
+            {
+                token.Value = newValue;
+            }
+
+            mod.WriteEnglishLocalizationToFile();
+            return true;
         }
 
         public void Dispose()

@@ -140,19 +140,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AliasSelectionDialog.cs">
+    <Compile Include="Dialogs\AliasSelectionDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="AliasSelectionDialog.Designer.cs">
+    <Compile Include="Dialogs\AliasSelectionDialog.Designer.cs">
       <DependentUpon>AliasSelectionDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="EncounterEditor\ArcNodeData.cs" />
     <Compile Include="EncounterEditor\CampaignNodeData.cs" />
     <Compile Include="EncounterEditor\CampPieceNodeData.cs" />
-    <Compile Include="CloneDialog.cs">
+    <Compile Include="Dialogs\CloneDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="CloneDialog.Designer.cs">
+    <Compile Include="Dialogs\CloneDialog.Designer.cs">
       <DependentUpon>CloneDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="CloneObjectParameters.cs" />
@@ -178,25 +178,25 @@
     <Compile Include="ErrorFileList.Designer.cs">
       <DependentUpon>ErrorFileList.cs</DependentUpon>
     </Compile>
-    <Compile Include="FileData.cs" />
-    <Compile Include="FolderSelectDialog.cs" />
+    <Compile Include="FileData\FileData.cs" />
+    <Compile Include="Dialogs\FolderSelectDialog.cs" />
     <Compile Include="EncounterEditor\GameMasterNode.cs" />
-    <Compile Include="IFileDataSelectable.cs" />
+    <Compile Include="FileData\IFileDataSelectable.cs" />
     <Compile Include="IGraphOwner.cs" />
-    <Compile Include="IModuleFileData.cs" />
+    <Compile Include="FileData\IModuleFileData.cs" />
     <Compile Include="IReloadable.cs" />
     <Compile Include="JsonSchemaTools.cs" />
     <Compile Include="JsonSuggester.cs" />
     <Compile Include="ListViewItemComparer.cs" />
-    <Compile Include="LuaFileData.cs" />
-    <Compile Include="ImageFileData.cs" />
-    <Compile Include="InputDialog.cs">
+    <Compile Include="FileData\LuaFileData.cs" />
+    <Compile Include="FileData\ImageFileData.cs" />
+    <Compile Include="Dialogs\InputDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="InputDialog.Designer.cs">
+    <Compile Include="Dialogs\InputDialog.Designer.cs">
       <DependentUpon>InputDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="JsonFileData.cs" />
+    <Compile Include="FileData\JsonFileData.cs" />
     <Compile Include="EncounterEditor\GameMasterDataManager.cs" />
     <Compile Include="ManifestView.cs">
       <SubType>UserControl</SubType>
@@ -229,10 +229,10 @@
     </Compile>
     <Compile Include="NewAliasParameters.cs" />
     <Compile Include="EncounterEditor\NodeData.cs" />
-    <Compile Include="PreviewCloneDialog.cs">
+    <Compile Include="Dialogs\PreviewCloneDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="PreviewCloneDialog.Designer.cs">
+    <Compile Include="Dialogs\PreviewCloneDialog.Designer.cs">
       <DependentUpon>PreviewCloneDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
@@ -243,13 +243,29 @@
     <Compile Include="FilePreview.Designer.cs">
       <DependentUpon>FilePreview.cs</DependentUpon>
     </Compile>
-    <Compile Include="QubicleFileData.cs" />
+    <Compile Include="FileData\QubicleFileData.cs" />
+    <Compile Include="Recipes\MultipleCellChange.cs" />
+    <Compile Include="Recipes\ColumnBehavior.cs" />
+    <Compile Include="Recipes\DataCell.cs" />
+    <Compile Include="Recipes\Ingredient.cs" />
+    <Compile Include="Recipes\IngredientColumnGroup.cs" />
+    <Compile Include="Recipes\RecipeRow.cs" />
+    <Compile Include="Recipes\RecipeTable.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="SuggestComboBoxCompanion.cs" />
     <Compile Include="ThumbnailCache.cs" />
-    <Compile Include="UnknownNodeData.cs" />
-    <EmbeddedResource Include="AliasSelectionDialog.resx">
+    <Compile Include="EncounterEditor\UnknownNodeData.cs" />
+    <Compile Include="Recipes\RecipesView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Recipes\RecipesView.Designer.cs">
+      <DependentUpon>RecipesView.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="Dialogs\AliasSelectionDialog.resx">
       <DependentUpon>AliasSelectionDialog.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="CloneDialog.resx">
+    <EmbeddedResource Include="Dialogs\CloneDialog.resx">
       <DependentUpon>CloneDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="EffectsEditorView.resx">
@@ -265,7 +281,7 @@
       <DependentUpon>FilePreview.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="InputDialog.resx">
+    <EmbeddedResource Include="Dialogs\InputDialog.resx">
       <DependentUpon>InputDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
@@ -281,7 +297,7 @@
     <EmbeddedResource Include="EntityBrowserView.resx">
       <DependentUpon>EntityBrowserView.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="PreviewCloneDialog.resx">
+    <EmbeddedResource Include="Dialogs\PreviewCloneDialog.resx">
       <DependentUpon>PreviewCloneDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -294,6 +310,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="Recipes\RecipesView.resx">
+      <DependentUpon>RecipesView.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="App_Readme\Handlebarsjs_LICENSE" />
     <None Include="App_Readme\Handlebarsjs_README.md" />
     <None Include="pages\styles\bootstrap-theme.css.map">
@@ -392,6 +411,8 @@
     <None Include="images\action_add_16xSM.png" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="bin\x86\Debug\images\Find_5650.png" />
+    <None Include="images\Find_5650.png" />
     <Content Include="pages\scripts\complex-property.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -555,7 +576,6 @@
     <PostBuildEvent>robocopy /mir "$(ProjectDir)scripts" "$(ProjectDir)$(OutDir)scripts"
 robocopy /mir "$(ProjectDir)images" "$(ProjectDir)$(OutDir)images"
 robocopy /mir "$(ProjectDir)schemas" "$(ProjectDir)$(OutDir)schemas"
-robocopy /mir "$(ProjectDir)pages" "$(ProjectDir)$(OutDir)pages"
 IF %25ERRORLEVEL%25 LEQ 4 exit 0  # https://superuser.com/questions/280425/getting-robocopy-to-return-a-proper-exit-code</PostBuildEvent>
   </PropertyGroup>
 </Project>

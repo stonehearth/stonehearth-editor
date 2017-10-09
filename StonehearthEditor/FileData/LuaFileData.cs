@@ -29,7 +29,7 @@ namespace StonehearthEditor
             node.Tag = this;
             bool filterMatchesSelf = true;
             ModuleFile owner = GetModuleFile();
-            if (!string.IsNullOrEmpty(filter) && owner != null && !owner.Name.Contains(filter))
+            if (!string.IsNullOrEmpty(filter) && owner != null && !owner.Alias.Contains(filter))
             {
                 filterMatchesSelf = false;
             }

@@ -50,6 +50,7 @@ namespace StonehearthEditor
             encounterDesignerView.Initialize();
             entityBrowserView.Initialize();
             effectsEditorView.Initialize();
+            recipesView.Initialize();
         }
 
         private void tabControl_Selected(object sender, TabControlEventArgs e)
@@ -76,6 +77,8 @@ namespace StonehearthEditor
             entityBrowserView.Reload();
             encounterDesignerView.Reload();
             effectsEditorView.Reload();
+            recipesView.Reload();
+
             if (mNetWorthVisualizer != null && !mNetWorthVisualizer.IsDisposed)
             {
                 mNetWorthVisualizer.UpdateNetWorthData();
