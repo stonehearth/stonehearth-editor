@@ -53,7 +53,7 @@ namespace StonehearthEditor.Recipes
                 {
                     RecipeRow row = (RecipeRow)e.Row;
                     DataColumn column = e.Column;
-                    mDataTable.GetColumnBehavior(column).OnCellChanged(e);
+                    mDataTable.GetColumnBehavior(column).OnDataCellChanged(e);
 
                     if (!mIsLoading)
                     {
@@ -155,10 +155,12 @@ namespace StonehearthEditor.Recipes
         {
             for (int i = 0; i < recipesGridView.Columns.Count; i++)
             {
-                var column = recipesGridView.Columns[i];
+                DataGridViewColumn column = recipesGridView.Columns[i];
+                DataColumn dataColumn = mDataTable.Columns[i];
+                ColumnBehavior colBehavior = mDataTable.GetColumnBehavior(dataColumn);
 
                 // Add combo boxes for columns that have a predetermined set of valid values
-                if (column.Name.StartsWith(IngredientColumnGroup.kIngr) && column.Name.EndsWith(IngredientColumnGroup.kName))
+                if (colBehavior is IngrNameColumnBehavior)
                 {
                     DataGridViewComboBoxColumn newColumn = new DataGridViewComboBoxColumn();
                     newColumn.Name = column.Name;
@@ -174,36 +176,20 @@ namespace StonehearthEditor.Recipes
                     column = newColumn;
                 }
 
-                // Remove [x] broken image icons
-                if (column is DataGridViewImageColumn)
-                {
-                    (column as DataGridViewImageColumn).DefaultCellStyle.NullValue = null;
-                }
-
-                // Color ingredient columns
-                Regex matchOdd = new Regex(IngredientColumnGroup.kIngr + "[13579]");
-                Regex matchEven = new Regex(IngredientColumnGroup.kIngr + "[02468]");
-                if (matchOdd.IsMatch(column.Name))
-                {
-                    column.DefaultCellStyle.BackColor = Color.LemonChiffon;
-                }
-                else if (matchEven.IsMatch(column.Name))
-                {
-                    column.DefaultCellStyle.BackColor = Color.LightBlue;
-                }
-                else
-                {
-                    DataColumn dataColumn = mDataTable.Columns[i];
-                    if (mDataTable.GetColumnBehavior(dataColumn).IsRecipeColumn)
-                    {
-                        column.DefaultCellStyle.BackColor = Color.Azure;
-                    }
-                }
+                // Configure columns based on column behavior
+                colBehavior.ConfigureColumn(column);
             }
+        }
 
-            recipesGridView.Columns[RecipeTable.kAlias].ReadOnly = true;
-            recipesGridView.Columns[RecipeTable.kAlias].Frozen = true;
-            recipesGridView.Columns[RecipeTable.kCrafter].ReadOnly = true;
+        private void ConfigureColumnsAfterRender()
+        {
+            for (int i = 0; i < recipesGridView.Columns.Count; i++)
+            {
+                DataGridViewColumn column = recipesGridView.Columns[i];
+                DataColumn dataColumn = mDataTable.Columns[i];
+                ColumnBehavior colBehavior = mDataTable.GetColumnBehavior(dataColumn);
+                colBehavior.ConfigureColumnAfterRender(column, recipesGridView);
+            }
         }
 
         private void LoadAllRecipes()
@@ -427,6 +413,18 @@ namespace StonehearthEditor.Recipes
                     unsavedFilesLabel.Visible = false;
                     mModifiedCells.Clear();
                 }
+            }
+        }
+
+        public void ApplyStyle(DataGridViewCell cell, DataGridViewCellStyle style)
+        {
+            if (cell.Style != null)
+            {
+                cell.Style.ApplyStyle(style);
+            }
+            else
+            {
+                cell.Style = style;
             }
         }
 
@@ -718,13 +716,17 @@ namespace StonehearthEditor.Recipes
             DataGridViewCell cell = recipesGridView[e.ColumnIndex, e.RowIndex];
             DataGridViewCellStyle style = new DataGridViewCellStyle();
             style.BackColor = Color.Gold;
-            cell.Style = style;
+            ApplyStyle(cell, style);
         }
 
         private void recipesGridView_CellEndEdit(object sender, DataGridViewCellEventArgs e)
         {
             DataGridViewCell cell = recipesGridView[e.ColumnIndex, e.RowIndex];
-            cell.Style = null;
+            if (cell.Style != null)
+            {
+                DataGridViewColumn column = recipesGridView.Columns[e.ColumnIndex];
+                cell.Style.BackColor = column.DefaultCellStyle.BackColor;
+            }
         }
 
         private void recipesGridView_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
@@ -774,6 +776,18 @@ namespace StonehearthEditor.Recipes
                             "* Press `ctrl+shift+z` or `ctrl+y` to redo \n" + 
                             "* Right click and press add ingredient to add ingredient columns to a recipe that does not have enough columns to fit a new ingredient \n" + 
                             "\n");
+        }
+
+        private void recipesGridView_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            DataColumn column = mDataTable.Columns[e.ColumnIndex];
+            mDataTable.GetColumnBehavior(column).OnGridCellChanged(recipesGridView, e);
+        }
+
+        // Some configure (like cell style updates) can only be applied after the grid view is done rendering
+        private void recipesGridView_DataBindingComplete(object sender, DataGridViewBindingCompleteEventArgs e)
+        {
+            ConfigureColumnsAfterRender();
         }
     }
 }

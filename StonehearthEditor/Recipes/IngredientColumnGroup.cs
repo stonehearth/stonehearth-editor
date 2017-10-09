@@ -32,6 +32,8 @@ namespace StonehearthEditor.Recipes
 
         public string IconColumnKey => prefix + kIcon;
 
+        public int Index => mIndex;
+
         public IngredientColumnGroup(RecipeTable table, int index, RecipesView recipesView)
         {
             this.mIndex = index;

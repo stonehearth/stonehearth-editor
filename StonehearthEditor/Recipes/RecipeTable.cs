@@ -68,7 +68,7 @@ namespace StonehearthEditor.Recipes
         private void AddRecipeColumns()
         {
             AddDataColumn(kIcon, typeof(Image), new ColumnBehavior());
-            AddDataColumn(kAlias, typeof(string), new ColumnBehavior());
+            AddDataColumn(kAlias, typeof(string), new AliasColumnBehavior());
             AddDataColumn(kDisplayName, typeof(string), new DisplayNameColumnBehavior());
             AddDataColumn(kNetWorth, typeof(int), new NetWorthColumnBehavior());
             AddDataColumn(kCrafter, typeof(string), new CrafterColumnBehavior());

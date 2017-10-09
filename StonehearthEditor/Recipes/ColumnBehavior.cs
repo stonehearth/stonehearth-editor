@@ -2,6 +2,9 @@
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System;
+using System.Windows.Forms;
+using System.Text.RegularExpressions;
+using System.Drawing;
 
 namespace StonehearthEditor.Recipes
 {
@@ -9,9 +12,14 @@ namespace StonehearthEditor.Recipes
     internal class ColumnBehavior
     {
         public virtual bool IsIngredientColumn => false;
+
         public virtual bool IsRecipeColumn => false;
 
-        public virtual void OnCellChanged(DataColumnChangeEventArgs e)
+        public virtual void OnDataCellChanged(DataColumnChangeEventArgs e)
+        {
+        }
+
+        public virtual void OnGridCellChanged(DataGridView recipesGridView, DataGridViewCellEventArgs e)
         {
         }
 
@@ -21,6 +29,60 @@ namespace StonehearthEditor.Recipes
 
         public virtual void TryDeleteCell(RecipeRow row)
         {
+        }
+
+        public virtual void ConfigureColumn(DataGridViewColumn gridCol)
+        {
+        }
+
+        public virtual void ConfigureColumnAfterRender(DataGridViewColumn gridCol, DataGridView recipesGridView)
+        {
+        }
+    }
+
+    internal class IngrColumnBehavior : ColumnBehavior
+    {
+        protected IngredientColumnGroup columnGroup = null;
+
+        public override bool IsIngredientColumn => true;
+
+        public IngrColumnBehavior(IngredientColumnGroup columnGroup)
+        {
+            this.columnGroup = columnGroup;
+        }
+
+        public override void ConfigureColumn(DataGridViewColumn gridCol)
+        {
+            int index = columnGroup.Index;
+
+            // Color ingredient columns
+            if (index % 2 == 0)
+            {
+                gridCol.DefaultCellStyle.BackColor = Color.LemonChiffon;
+            }
+            else
+            {
+                gridCol.DefaultCellStyle.BackColor = Color.LightBlue;
+            }
+        }
+    }
+
+    internal class RecipeColumnBehavior : ColumnBehavior
+    {
+        public override bool IsRecipeColumn => true;
+
+        public override void ConfigureColumn(DataGridViewColumn gridCol)
+        {
+            gridCol.DefaultCellStyle.BackColor = Color.Azure;
+        }
+    }
+
+    internal class AliasColumnBehavior : ColumnBehavior
+    {
+        public override void ConfigureColumn(DataGridViewColumn gridCol)
+        {
+            gridCol.ReadOnly = true;
+            gridCol.Frozen = true;
         }
     }
 
@@ -65,15 +127,17 @@ namespace StonehearthEditor.Recipes
         }
     }
 
-    internal class CrafterColumnBehavior : ColumnBehavior
+    internal class CrafterColumnBehavior : RecipeColumnBehavior
     {
-        public override bool IsRecipeColumn => true;
-
+        public override void ConfigureColumn(DataGridViewColumn gridCol)
+        {
+            base.ConfigureColumn(gridCol);
+            gridCol.ReadOnly = true;
+        }
     }
 
-    internal class EffortColumnBehavior : ColumnBehavior
+    internal class EffortColumnBehavior : RecipeColumnBehavior
     {
-        public override bool IsRecipeColumn => true;
 
         public override void SaveCell(HashSet<JsonFileData> modifiedFiles, RecipeRow row, object value)
         {
@@ -85,10 +149,8 @@ namespace StonehearthEditor.Recipes
         }
     }
 
-    internal class LevelRequiredColumnBehavior : ColumnBehavior
+    internal class LevelRequiredColumnBehavior : RecipeColumnBehavior
     {
-        public override bool IsRecipeColumn => true;
-
         public override void SaveCell(HashSet<JsonFileData> modifiedFiles, RecipeRow row, object value)
         {
             JsonFileData jsonFileData = row.Recipe;
@@ -99,52 +161,56 @@ namespace StonehearthEditor.Recipes
         }
     }
 
-    internal class IngrIconColumnBehavior : ColumnBehavior
+    internal class IngrIconColumnBehavior : IngrColumnBehavior
     {
-        private IngredientColumnGroup columnGroup = null;
-
-        public override bool IsIngredientColumn => true;
-
         public IngrIconColumnBehavior(IngredientColumnGroup columnGroup)
+            : base(columnGroup)
         {
-            this.columnGroup = columnGroup;
         }
 
         public override void TryDeleteCell(RecipeRow row)
         {
-            Ingredient ingredient = row.GetOrAddIngredient(columnGroup);
+            Ingredient ingredient = row.GetOrAddIngredient(this.columnGroup);
             ingredient.Name = "";
+        }
+
+        public override void ConfigureColumn(DataGridViewColumn gridCol)
+        {
+            base.ConfigureColumn(gridCol);
+
+            // Remove [x] broken image icons
+            if (gridCol is DataGridViewImageColumn)
+            {
+                gridCol.DefaultCellStyle.NullValue = null;
+            }
         }
     }
 
-    internal class IngrNameColumnBehavior : ColumnBehavior
+    internal class IngrNameColumnBehavior : IngrColumnBehavior
     {
-        private IngredientColumnGroup columnGroup = null;
         private RecipesView recipesView = null;
 
         public IngrNameColumnBehavior(IngredientColumnGroup columnGroup, RecipesView recipesView)
+            : base(columnGroup)
         {
-            this.columnGroup = columnGroup;
             this.recipesView = recipesView;
         }
 
-        public override bool IsIngredientColumn => true;
-
-        public override void OnCellChanged(DataColumnChangeEventArgs e)
+        public override void OnDataCellChanged(DataColumnChangeEventArgs e)
         {
             // grab col and change the image
             RecipeRow row = (RecipeRow)e.Row;
             string newName = e.ProposedValue == DBNull.Value || e.ProposedValue == null ? "" : (string)e.ProposedValue;
-            Ingredient ingredient = row.GetOrAddIngredient(columnGroup);
+            Ingredient ingredient = row.GetOrAddIngredient(this.columnGroup);
 
-            if (newName.Contains(":"))
+            if (IsMaterial(newName))
             {
-                JsonFileData jsonFileData = (JsonFileData)ModuleDataManager.GetInstance().GetModuleFile(newName).FileData;
-                ingredient.Icon = recipesView.GetIcon(jsonFileData);
+                ingredient.Icon = recipesView.GetIcon(newName);
             }
             else
             {
-                ingredient.Icon = recipesView.GetIcon(newName);
+                JsonFileData jsonFileData = (JsonFileData)ModuleDataManager.GetInstance().GetModuleFile(newName).FileData;
+                ingredient.Icon = recipesView.GetIcon(jsonFileData);
             }
 
             if (newName == "")
@@ -157,27 +223,65 @@ namespace StonehearthEditor.Recipes
             }
         }
 
+        public override void OnGridCellChanged(DataGridView recipesGridView, DataGridViewCellEventArgs e)
+        {
+            DataGridViewCell cell = recipesGridView[e.ColumnIndex, e.RowIndex];
+            if (cell.Value != DBNull.Value && !string.IsNullOrEmpty(cell.Value as string))
+            {
+                UpdateIngrNameColor(cell, (string)cell.Value);
+            }
+        }
+
         public override void TryDeleteCell(RecipeRow row)
         {
-            Ingredient ingredient = row.GetOrAddIngredient(columnGroup);
+            Ingredient ingredient = row.GetOrAddIngredient(this.columnGroup);
             ingredient.Name = "";
+        }
+
+        public override void ConfigureColumnAfterRender(DataGridViewColumn gridCol, DataGridView recipesGridView)
+        {
+            for (int i = 0; i < recipesGridView.Rows.Count; i++)
+            {
+                DataGridViewCell cell = recipesGridView[gridCol.Name, i];
+                UpdateIngrNameColor(cell, cell.Value);
+            }
+        }
+
+        private void UpdateIngrNameColor(DataGridViewCell cell, object ingrName)
+        {
+            if (cell.Value != DBNull.Value && !string.IsNullOrEmpty(cell.Value as string))
+            {
+                DataGridViewCellStyle style = new DataGridViewCellStyle();
+                if (IsMaterial((string)cell.Value))
+                {
+                    style.ForeColor = Color.DarkGoldenrod;
+                }
+                else
+                {
+                    style.ForeColor = Color.Black;
+                }
+
+                recipesView.ApplyStyle(cell, style);
+            }
+        }
+
+        private bool IsMaterial(string ingrName)
+        {
+            return !ingrName.Contains(":");
         }
     }
 
-    internal class IngrAmountColumnBehavior : ColumnBehavior
+    internal class IngrAmountColumnBehavior : IngrColumnBehavior
     {
-        public override bool IsIngredientColumn => true;
-
-        private IngredientColumnGroup columnGroup = null;
 
         public IngrAmountColumnBehavior(IngredientColumnGroup columnGroup)
+            : base(columnGroup)
         {
-            this.columnGroup = columnGroup;
         }
 
         public override void TryDeleteCell(RecipeRow row)
         {
-            Ingredient ingredient = row.GetOrAddIngredient(columnGroup);
+            Ingredient ingredient = row.GetOrAddIngredient(this.columnGroup);
             ingredient.Name = "";
         }
     }

@@ -74,6 +74,8 @@
             this.recipesGridView.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.recipesGridView_CellEndEdit);
             this.recipesGridView.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.recipesGridView_CellMouseClick);
             this.recipesGridView.CellMouseUp += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.recipesGridView_CellMouseUp);
+            this.recipesGridView.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.recipesGridView_CellValueChanged);
+            this.recipesGridView.DataBindingComplete += new System.Windows.Forms.DataGridViewBindingCompleteEventHandler(this.recipesGridView_DataBindingComplete);
             this.recipesGridView.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.recipesGridView_DataError);
             this.recipesGridView.EditingControlShowing += new System.Windows.Forms.DataGridViewEditingControlShowingEventHandler(this.recipesGridView_EditingControlShowing);
             this.recipesGridView.KeyDown += new System.Windows.Forms.KeyEventHandler(this.recipesGridView_KeyDown);
