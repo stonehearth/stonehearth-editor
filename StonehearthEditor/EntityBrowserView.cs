@@ -80,9 +80,7 @@ namespace StonehearthEditor
             netWorthListView.BeginUpdate();
             netWorthListView.Items.Clear();
             netWorthImagePaths = new Dictionary<string, string>();
-            object[] data = ModuleDataManager.GetInstance().FilterJsonByTerm(netWorthListView, "entity_data.stonehearth:net_worth");
-            netWorthJsonFiles = (Dictionary<string, JsonFileData>)data[0];
-            modNames = (Dictionary<string, string>)data[1];
+            netWorthJsonFiles = ModuleDataManager.GetInstance().GetJsonsByTerm("entity_data.stonehearth:net_worth");
             ImageList imageList = new ImageList();
 
             // populate listView
@@ -139,7 +137,7 @@ namespace StonehearthEditor
                 }
 
                 item.SubItems.Add(category); // Category
-                string modName = modNames[entry.Key];
+                string modName = ModuleDataManager.GetInstance().GetModNameFromAlias(entry.Key);
                 item.SubItems.Add(modName); // Mod Name
                 item.SubItems.Add(material);
 
@@ -157,9 +155,7 @@ namespace StonehearthEditor
             weaponsListView.BeginUpdate();
             weaponsListView.Items.Clear();
             weaponsImagePaths = new Dictionary<string, string>();
-            object[] data = ModuleDataManager.GetInstance().FilterJsonByTerm(netWorthListView, "entity_data.stonehearth:combat:weapon_data");
-            weaponsJsonFiles = (Dictionary<string, JsonFileData>)data[0];
-            Dictionary<string, string> modNames = (Dictionary<string, string>)data[1];
+            weaponsJsonFiles = ModuleDataManager.GetInstance().GetJsonsByTerm("entity_data.stonehearth:combat:weapon_data");
             ImageList imageList = new ImageList();
 
             // populate listView
@@ -189,7 +185,7 @@ namespace StonehearthEditor
                 string roles = rolesToken == null ? "none" : rolesToken.ToString();
                 item.SubItems.Add(roles);
 
-                string modName = modNames[entry.Key];
+                string modName = ModuleDataManager.GetInstance().GetModNameFromAlias(entry.Key);
                 item.SubItems.Add(modName);
 
                 addImages(jsonFileData, weaponsImagePaths, imageList, item, entry, ref index);
@@ -206,9 +202,7 @@ namespace StonehearthEditor
             defenseItemsListView.BeginUpdate();
             defenseItemsListView.Items.Clear();
             defenseImagePaths = new Dictionary<string, string>();
-            object[] data = ModuleDataManager.GetInstance().FilterJsonByTerm(defenseItemsListView, "entity_data.stonehearth:combat:armor_data");
-            defenseJsonFiles = (Dictionary<string, JsonFileData>)data[0];
-            Dictionary<string, string> modNames = (Dictionary<string, string>)data[1];
+            defenseJsonFiles = ModuleDataManager.GetInstance().GetJsonsByTerm("entity_data.stonehearth:combat:armor_data");
             ImageList imageList = new ImageList();
 
             // populate listView
@@ -229,7 +223,7 @@ namespace StonehearthEditor
                 string roles = rolesToken == null ? "none" : rolesToken.ToString();
                 item.SubItems.Add(roles);
 
-                string modName = modNames[entry.Key];
+                string modName = ModuleDataManager.GetInstance().GetModNameFromAlias(entry.Key);
                 item.SubItems.Add(modName);
 
                 this.addImages(jsonFileData, defenseImagePaths, imageList, item, entry, ref index);
@@ -248,8 +242,7 @@ namespace StonehearthEditor
             killableEntitiesListView.Items.Clear();
             InitializeKillableEntitiesColumns();
 
-            object[] data = ModuleDataManager.GetInstance().GetJsonsOfType(killableEntitiesListView, JSONTYPE.MONSTER_TUNING);
-            killableEntitiesJsonFiles = (Dictionary<string, JsonFileData>)data[0];
+            killableEntitiesJsonFiles = ModuleDataManager.GetInstance().GetJsonsOfType(JSONTYPE.MONSTER_TUNING);
 
             foreach (KeyValuePair<string, JsonFileData> entry in killableEntitiesJsonFiles)
             {

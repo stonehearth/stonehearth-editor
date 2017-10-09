@@ -97,6 +97,15 @@ namespace StonehearthEditor.Properties {
                 return ResourceManager.GetString("defaultNetWorth", resourceCulture);
             }
         }
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Find_56502 {
+            get {
+                object obj = ResourceManager.GetObject("Find_56502", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
         
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
