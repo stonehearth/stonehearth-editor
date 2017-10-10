@@ -134,6 +134,7 @@
             // lightsTreeView
             // 
             this.lightsTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lightsTreeView.HideSelection = false;
             this.lightsTreeView.Location = new System.Drawing.Point(3, 3);
             this.lightsTreeView.Name = "lightsTreeView";
             this.lightsTreeView.Size = new System.Drawing.Size(203, 516);
