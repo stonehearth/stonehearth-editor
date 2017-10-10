@@ -247,14 +247,14 @@
         {{ warning-icon message=model.invalidValueMessage }}
     </script>
     <script type="text/x-handlebars" data-template-name="components/constant-rgba-parameter">
-        {{ rgba-x model=model.rgba name="color1"}}
+        {{ rgba-x model=model.rgba name=model.id}}
     </script>
     <script type="text/x-handlebars" data-template-name="components/random-between-rgba-parameter">
         <div class="random-between-type-header"><span class="parameter-property-label">Color 1</span>
-            {{ rgba-x model=model.rgba1 name="color1"}}
+            {{ rgba-x model=model.rgba1 name=model.id1}}
         </div>
         <div class="random-between-type-header"><span class="parameter-property-label">Color 2</span>
-            {{ rgba-x model=model.rgba2 name="color2"}}
+            {{ rgba-x model=model.rgba2 name=model.id2}}
         </div>
     </script>
     <script type="text/x-handlebars" data-template-name="components/random-between-scalar-parameter">
@@ -330,7 +330,7 @@
                     <td>{{ input class="curve-input" type="text" value=point.rValue }}</td>
                     <td>{{ input class="curve-input" type="text" value=point.gValue }}</td>
                     <td>{{ input class="curve-input" type="text" value=point.bValue }}</td>
-                    <td><div id={{ name }} class="color-picker-div"><input type="text" class="color-picker" /></div></td>
+                    <td><div id={{ point.id }} class="color-picker-div"><input type="text" class="color-picker" /></div></td>
                 </tr>
             {{/each }}
             <tr>

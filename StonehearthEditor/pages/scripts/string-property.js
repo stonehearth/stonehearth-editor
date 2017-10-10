@@ -128,27 +128,33 @@ ConstantScalarParameterKind = ParameterKind.extend({
 
 ConstantRgbaParameterKind = ParameterKind.extend({
     componentName: 'constant-rgba-parameter',
+    id: '',
     hasA: true,
     rgba: null,
     colorPicker: null,
     _onInit: function () {
         var self = this;
-        this.set('rgba', Rgba.create({ hasA: this.get('hasA') }));
-        Ember.run.scheduleOnce('afterRender', this, function () {
-            var picker = $('#color1 .color-picker');
-            self.set('colorPicker', picker);
-            picker.spectrum({
-                color: "#ff0000",
-                showAlpha: this.get('hasA'),
-                showInput: true,
-                showInitial: true,
-                preferredFormat: "rgb",
-                change: function (color) {
-                    self.updateColor(color);
-                }
-            });
+        self.set('rgba', Rgba.create({ hasA: self.get('hasA') }));
+        self.set('id', 'color' + ParameterKindRegistry.getID());
+        Ember.run.schedule('afterRender', self, function () {
+            self._setupColorPicker();
         });
     }.on('init'),
+    _setupColorPicker: function () {
+        var self = this;
+        var picker = $('#' + self.get('id') + ' .color-picker');
+        self.set('colorPicker', picker);
+        picker.spectrum({
+            color: "#ff0000",
+            showAlpha: self.get('hasA'),
+            showInput: true,
+            showInitial: true,
+            preferredFormat: "rgb",
+            change: function (color) {
+                self.updateColor(color);
+            }
+        });
+    },
     updateColor: function (color) {
         var floatVals = Utils.convertRgbaToFloat(color._r, color._g, color._b, color._a);
         this.get('rgba').setRgba(floatVals.r, floatVals.g, floatVals.b, floatVals.a);
@@ -172,21 +178,27 @@ ConstantRgbaParameterKind = ParameterKind.extend({
 RandomBetweenRgbaParameterKind = ParameterKind.extend({
     componentName: 'random-between-rgba-parameter',
     hasA: true,
+    id1: '',
+    id2: '',
     rgba1: null,
     rgba2: null,
     colorPicker1: null,
     colorPicker2: null,
     _onInit: function () {
         var self = this;
-        this.set('rgba1', Rgba.create({ hasA: this.get('hasA') }));
-        this.set('rgba2', Rgba.create({ hasA: this.get('hasA') }));
+        self.set('rgba1', Rgba.create({ hasA: this.get('hasA') }));
+        self.set('rgba2', Rgba.create({ hasA: this.get('hasA') }));
 
-        Ember.run.scheduleOnce('afterRender', this, function () {
-            var picker1 = $('#color1 .color-picker');
+        self.set('id1', 'color' + ParameterKindRegistry.getID());
+        self.set('id2', 'color' + ParameterKindRegistry.getID());
+
+        Ember.run.scheduleOnce('afterRender', self, function () {
+            var name1 = '#' + self.get('id1') + ' .color-picker';
+            var picker1 = $(name1);
             self.set('colorPicker1', picker1);
             picker1.spectrum({
                 color: "#ff0000",
-                showAlpha: this.get('hasA'),
+                showAlpha: self.get('hasA'),
                 showInput: true,
                 showInitial: true,
                 preferredFormat: "rgb",
@@ -194,11 +206,12 @@ RandomBetweenRgbaParameterKind = ParameterKind.extend({
                     self.updateColor(color, 'rgba1');
                 }
             });
-            var picker2 = $('#color2 .color-picker');
+            var name2 = '#' + self.get('id2') + ' .color-picker';
+            var picker2 = $(name2);
             self.set('colorPicker2', picker2);
             picker2.spectrum({
                 color: "#ff0000",
-                showAlpha: this.get('hasA'),
+                showAlpha: self.get('hasA'),
                 showInput: true,
                 showInitial: true,
                 preferredFormat: "rgb",
@@ -403,6 +416,7 @@ Curve = Ember.Object.extend({
 
 PointRgb = Ember.Object.extend({
     hasA: false,
+    id: '',
     time: '0',
     rValue: '0',
     gValue: '0',
@@ -411,12 +425,13 @@ PointRgb = Ember.Object.extend({
     colorPicker: null,
     _onInit: function () {
         var self = this;
-        Ember.run.scheduleOnce('afterRender', this, function () {
-            var picker = $('#color1 .color-picker');
+        self.set('id', 'color' + ParameterKindRegistry.getID());
+        Ember.run.scheduleOnce('afterRender', self, function () {
+            var picker = $('#' + self.get('id') + ' .color-picker');
             self.set('colorPicker', picker);
             picker.spectrum({
                 color: "#ff0000",
-                showAlpha: this.get('hasA'),
+                showAlpha: self.get('hasA'),
                 showInput: true,
                 showInitial: true,
                 preferredFormat: "rgb",
@@ -775,6 +790,12 @@ BurstScalarParameterKind = Ember.Object.extend({
 });
 
 ParameterKindRegistry = {
+    _idCount: 0,
+    getID: function() {
+        ParameterKindRegistry._idCount++;
+        return ParameterKindRegistry._idCount;
+    },
+
     _options: [
         { kind: 'CONSTANT', dimension: 'rgba', timeVarying: false, bursts: false, type: ConstantRgbaParameterKind, },
         { kind: 'CONSTANT', dimension: 'rgb', timeVarying: false, bursts: false, type: ConstantRgbaParameterKind, args: { hasA: false, }, },
@@ -853,5 +874,10 @@ ParameterProperty = EffectProperty.extend({
     },
     _kindObserver: Ember.observer('kind', function (sender, key, value, rev) {
         this.set('parameter', ParameterKindRegistry.get(this.kind, this.dimension));
+    }),
+    _missingObserver: Ember.observer('isMissing', function (sender, key, value, rev) {
+        if (!this.isMissing) {
+            this.set('parameter', ParameterKindRegistry.get(this.kind, this.dimension));
+        }
     }),
 });
