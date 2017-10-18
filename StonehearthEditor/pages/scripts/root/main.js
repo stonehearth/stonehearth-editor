@@ -99,10 +99,10 @@ App.CurveRgbComponent = Ember.Component.extend({
 App.BurstParameterPropertyComponent = Ember.Component.extend({
     actions: {
         add: function () {
-            this.model.points.pushObject(Point_Burst.create({}));
+            this.model.points.pushObject(PointBurst.create({}));
         },
         addAbove: function (index) {
-            this.model.points.insertAt(index, Point_Burst.create({}));
+            this.model.points.insertAt(index, PointBurst.create({}));
         },
         delete: function (index) {
             this.model.points.removeAt(index);
