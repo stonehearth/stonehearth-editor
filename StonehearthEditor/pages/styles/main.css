@@ -1,3 +1,7 @@
+table {
+  margin-bottom: 0;
+}
+
 .inline-property-label {
     display: inline-block;
     width: 100px;
@@ -147,9 +151,10 @@
 }
 
 .curve-editor {
-    width: 520px;
-    height: 170px;
-    border: 1px solid rgb(51, 195, 240);
+    border: 1px solid #aaa;
+    border-radius: 4px;
+    margin-left: 3px;
+    user-select: none;
 }
 
 .curve-input {
