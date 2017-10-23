@@ -143,9 +143,36 @@ namespace StonehearthEditor.Recipes
         {
             JsonFileData jsonFileData = row.Recipe;
             JObject json = jsonFileData.Json;
-            JValue token = json["work_units"] as JValue;
-            json["work_units"] = (int)value;
+            json["effort"] = (int)value;
             modifiedFiles.Add(jsonFileData);
+        }
+    }
+
+    internal class WorkUnitsColumnBehavior : RecipeColumnBehavior
+    {
+
+        public override void SaveCell(HashSet<JsonFileData> modifiedFiles, RecipeRow row, object value)
+        {
+            JsonFileData jsonFileData = row.Recipe;
+            JObject json = jsonFileData.Json;
+            if (value == null || value == DBNull.Value)
+            {
+                if (json["work_units"] != null)
+                {
+                    json.Remove("work_units");
+                }
+            }
+            else
+            {
+                json["work_units"] = (int)value;
+            }
+
+            modifiedFiles.Add(jsonFileData);
+        }
+
+        public override void TryDeleteCell(RecipeRow row)
+        {
+            row.SetWorkUnits(null);
         }
     }
 
@@ -155,7 +182,6 @@ namespace StonehearthEditor.Recipes
         {
             JsonFileData jsonFileData = row.Recipe;
             JObject json = jsonFileData.Json;
-            JValue token = json["level_requirement"] as JValue;
             json["level_requirement"] = (int)value;
             modifiedFiles.Add(jsonFileData);
         }

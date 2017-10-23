@@ -17,6 +17,7 @@ namespace StonehearthEditor.Recipes
         public const string kCrafter = "Crafter";
         public const string kLvlReq = "Lvl Req";
         public const string kEffort = "Effort";
+        public const string kWorkUnits = "Work Units";
         public const string kName = "Name";
 
         private readonly RecipesView mRecipesView;
@@ -74,6 +75,7 @@ namespace StonehearthEditor.Recipes
             AddDataColumn(kCrafter, typeof(string), new CrafterColumnBehavior());
             AddDataColumn(kLvlReq, typeof(int), new LevelRequiredColumnBehavior());
             AddDataColumn(kEffort, typeof(int), new EffortColumnBehavior());
+            AddDataColumn(kWorkUnits, typeof(int), new WorkUnitsColumnBehavior());
         }
 
         internal IngredientColumnGroup GetOrAddIngredientColumnGroup(int index)
