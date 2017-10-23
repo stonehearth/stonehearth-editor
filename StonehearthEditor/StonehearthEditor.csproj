@@ -419,7 +419,9 @@
     <Content Include="pages\scripts\effect-property.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="pages\scripts\libs\d3.v4.min.js" />
+    <Content Include="pages\scripts\libs\d3.v4.min.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="pages\scripts\libs\spectrum.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
