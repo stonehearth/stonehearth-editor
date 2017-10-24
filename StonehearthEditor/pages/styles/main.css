@@ -165,13 +165,11 @@ table {
    width: 90px;
 }
 
-.curve-table .undo, .curve-table .redo {
+.curve-table button {
    width: 36px;
-}
-
-.curve-table .reframe {
-   width: 100px;
-   margin-left: 2px;
+   height: 36px;
+   line-height: 25px;
+   font-size: 25px;
 }
 
 .curve-input {

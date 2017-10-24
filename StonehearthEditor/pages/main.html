@@ -285,13 +285,13 @@
             <tr>
                 <td></td>
                 {{#if selectedPoint}}
-                   <td>Time: {{ input type='number' value=selectedPoint.time step=0.1 }}</td>
-                   <td>Value: {{ input type='number' value=selectedPoint.value step=0.1 }}</td>
+                   <td>T: {{ input type='number' value=selectedPoint.time step=0.1 }}</td>
+                   <td>V: {{ input type='number' value=selectedPoint.value step=0.1 }}</td>
                 {{/if}}
                 <td>
-                   <button class="undo">↶</button>
-                   <button class="redo">↷</button>
-                   <button class="reframe">Reframe</button>
+                   <button class="undo" title="Undo">↶</button>
+                   <button class="redo" title="Redo">↷</button>
+                   <button class="reframe" title="Reframe">🖽</button>
                 </td>
             </tr>
         </table>
