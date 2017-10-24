@@ -454,7 +454,7 @@ App.CurveXComponent = Ember.Component.extend({
 
        if (!self._applyingUndoRedo) {
           this._addUndoFrame({
-             curve: self.curve1.points.indexOf(p) >= 0 ? self.curve1 : self.curve2,
+             curve: this.curve1.points.indexOf(p) >= 0 ? this.curve1 : this.curve2,
              p: p,
              action: 'remove',
           });
