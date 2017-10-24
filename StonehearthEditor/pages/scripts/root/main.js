@@ -129,18 +129,19 @@ App.CurveXComponent = Ember.Component.extend({
        self.baseYScale = d3.scaleLinear().domain(self._getRange()).range([self.height, 0]);
        self.yScale = self.baseYScale;
        self.xAxisTicks = d3.axisBottom(self.xScale).ticks(10);
-       self.yAxisTicks = d3.axisLeft(self.yScale).ticks(5);
+       self.yAxisTicks1 = d3.axisLeft(self.yScale).ticks(5);
+       self.yAxisTicks2 = d3.axisRight(self.yScale).ticks(5);
        self.xAxisView = self.svg.append('g')
             .attr('transform', 'translate(' + self.leftMargin + ',' + (self.height + self.topMargin) + ')')
             .call(self.xAxisTicks)
             .attr('style', 'pointer-events: none');
        self.yAxisView1 = self.svg.append('g')
             .attr('transform', 'translate(' + self.leftMargin + ',' + self.topMargin + ')')
-            .call(self.yAxisTicks)
+            .call(self.yAxisTicks1)
             .attr('style', 'pointer-events: none');
        self.yAxisView2 = self.svg.append('g')
             .attr('transform', 'translate(' + (self.width + self.leftMargin) + ',' + self.topMargin + ')')
-            .call(self.yAxisTicks)
+            .call(self.yAxisTicks2)
             .attr('style', 'pointer-events: none');
 
        // Set up Y axis pan/zoom on alt-MMB/wheel.
@@ -233,8 +234,8 @@ App.CurveXComponent = Ember.Component.extend({
            .on('zoom', function () {
               var scaleY = d3.event.transform.k;
               self.yScale = d3.event.transform.rescaleY(self.baseYScale);
-              self.yAxisView1.call(self.yAxisTicks.scale(self.yScale));
-              self.yAxisView2.call(self.yAxisTicks.scale(self.yScale));
+              self.yAxisView1.call(self.yAxisTicks1.scale(self.yScale));
+              self.yAxisView2.call(self.yAxisTicks2.scale(self.yScale));
               self._update();
            })
            .filter(function () {
