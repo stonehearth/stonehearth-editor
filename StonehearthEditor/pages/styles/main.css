@@ -158,16 +158,20 @@ table {
 }
 
 .curve-table td {
-   text-align: left;
+   text-align: right;
 }
 
 .curve-table input {
-   width: 100px;
+   width: 90px;
 }
 
-.curve-table button {
+.curve-table .undo, .curve-table .redo {
+   width: 36px;
+}
+
+.curve-table .reframe {
    width: 100px;
-   float: right;
+   margin-left: 2px;
 }
 
 .curve-input {

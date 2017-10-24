@@ -93,6 +93,7 @@ App.CurveXComponent = Ember.Component.extend({
        secondaryLine: 'rgba(150, 70, 0, 1)',
        selected: 'rgba(255, 60, 60, 1)',
     },
+    maxMsBetweenMergedChanges: 300,  // Changes to the same point this long apart are merged for undo/redo.
     didInsertElement: function () {
        var self = this;
 
@@ -144,7 +145,7 @@ App.CurveXComponent = Ember.Component.extend({
 
        // Set up Y axis pan/zoom on alt-MMB/wheel.
        self._resetZoom();
-       self.$('.zoom').click(function () {
+       self.$('.reframe').click(function () {
           // Undo current zoom.
           self.zoom.scaleTo(self.svg, 1);
           self.zoom.translateTo(self.svg, 0, self.height / 2);
@@ -170,8 +171,57 @@ App.CurveXComponent = Ember.Component.extend({
        
        // Listen to point changes.
        self._getAllPoints().forEach(function (p) {
-          p.addObserver('time', self._handlePointTimeChanged.bind(self));
-          p.addObserver('value', self._handlePointValueChanged.bind(self));
+          p.addObserver('time', function () { self._handlePointChanged(this); });
+          p.addObserver('value', function () { self._handlePointChanged(this); });
+          // Cache old values for undo.
+          p.set('_lastTime', p.time);
+          p.set('_lastValue', p.value);
+       });
+
+       // Handle undo/redo.
+       self._lastUpdateTime = 0;
+       self._undoStack = [];  // Keys: curve, p, action ('add'/'remove'/'edit'), timeBefore, valueBefore, timeAfter, valueAfter
+       self._undoIndex = -1;
+       self._applyingUndoRedo = false;
+       self.$('.undo').click(function () {
+          if (self._undoIndex >= 0) {
+             self._applyingUndoRedo = true;
+             var operation = self._undoStack[self._undoIndex];
+             if (operation.action == 'add') {
+                operation.curve.points.removeObject(operation.p);
+                self._update();
+             } else if (operation.action == 'remove') {
+                operation.curve.points.pushObject(operation.p);
+                self.set('selectedPoint', operation.p);
+                self._clampAndSortPoints();
+                self._update();
+             } else if (operation.action == 'edit') {
+                operation.p.set('time', operation.timeBefore);
+                operation.p.set('value', operation.valueBefore);
+             }
+             self._applyingUndoRedo = false;
+             self._undoIndex--;
+          }
+       });
+       self.$('.redo').click(function () {
+          if (self._undoIndex < self._undoStack.length - 1) {
+             self._undoIndex++;
+             self._applyingUndoRedo = true;
+             var operation = self._undoStack[self._undoIndex];
+             if (operation.action == 'add') {
+                operation.curve.points.pushObject(operation.p);
+                self.set('selectedPoint', operation.p);
+                self._clampAndSortPoints();
+                self._update();
+             } else if (operation.action == 'remove') {
+                operation.curve.points.removeObject(operation.p);
+                self._update();
+             } else if (operation.action == 'edit') {
+                operation.p.set('time', operation.timeAfter);
+                operation.p.set('value', operation.valueAfter);
+             }
+             self._applyingUndoRedo = false;
+          }
        });
 
        // Initial render.
@@ -304,56 +354,112 @@ App.CurveXComponent = Ember.Component.extend({
        }
     },
     _handleDoubleClick: function () {
-       var position = d3.mouse(this.pointsView.node());
-       var curve = this.curve1;
-       var curveNodes = this.linesView.selectAll('path').nodes();
-       var projection = this._getClosestPointOnPath(curveNodes[0], position);
-       if (this.curve2) {
+       var self = this;
+       var position = d3.mouse(self.pointsView.node());
+       var curve = self.curve1;
+       var curveNodes = self.linesView.selectAll('path').nodes();
+       var projection = self._getClosestPointOnPath(curveNodes[0], position);
+       if (self.curve2) {
           var distanceTo1 = projection.distance;
-          var projection2 = this._getClosestPointOnPath(curveNodes[1], position);
+          var projection2 = self._getClosestPointOnPath(curveNodes[1], position);
           var distanceTo2 = projection2.distance;
           if (distanceTo2 < distanceTo1) {
-             curve = this.curve2;
+             curve = self.curve2;
              projection = projection2;
           } else {
-             // This is kinda flimsy, but I think it feels good.
-             if (this.curve2.points.length < 2 && this.curve1.points.length >= 2 && distanceTo1 > this.curveSnapDistance) {
-                curve = this.curve2;
+             // self is kinda flimsy, but I think it feels good.
+             if (self.curve2.points.length < 2 && self.curve1.points.length >= 2 && distanceTo1 > self.curveSnapDistance) {
+                curve = self.curve2;
                 projection = projection2;
              }
           }
        }
-       if (projection.distance <= this.curveSnapDistance) {
+       if (projection.distance <= self.curveSnapDistance) {
           position = projection;
        }
        var newPoint = Point.create({
-          time: this.xScale.invert(position[0]),
-          value: this.yScale.invert(position[1])
+          time: self.xScale.invert(position[0]),
+          value: self.yScale.invert(position[1])
        });
-       newPoint.addObserver('time', this._handlePointTimeChanged.bind(this));
-       newPoint.addObserver('value', this._handlePointValueChanged.bind(this));
+       newPoint.addObserver('time', function () { self._handlePointChanged(this); });
+       newPoint.addObserver('value', function () { self._handlePointChanged(this); });
+       newPoint.set('_lastTime', newPoint.time);
+       newPoint.set('_lastValue', newPoint.value);
+
+       if (!self._applyingUndoRedo) {
+          this._addUndoFrame({
+             curve: curve,
+             p: newPoint,
+             action: 'add',
+          });
+       }
+
        curve.points.pushObject(newPoint);
-       this.set('selectedPoint', newPoint);
-       this._clampAndSortPoints();
-       this._update();
+       self.set('selectedPoint', newPoint);
+       self._clampAndSortPoints();
+       self._update();
+    },
+    _addUndoFrame: function (f) {
+       while (this._undoIndex < this._undoStack.length - 1) {
+          this._undoStack.pop();
+       }
+       this._undoStack.push(f);
+       this._undoIndex = this._undoStack.length - 1;
     },
     _handlePointMouseDown: function (d) {
        this.set('selectedPoint', d);
        this._update();
     },
-    _handlePointTimeChanged: function () {
-       this._clampAndSortPoints();
-       this._update();
-    },
-    _handlePointValueChanged: function () {
-       this._clampAndSortPoints();
-       this._update();
-    },
-    _handlePointRightClick: function (d) {
-       // One of these will succeed.
-       this.curve1.points.removeObject(d);
-       if (this.curve2) this.curve2.points.removeObject(d);
+    _handlePointChanged: function (p) {
+       if (!this._applyingUndoRedo) {
+          var isMergedUpdated = true;
+          if (this._undoStack.length == 0) {
+             isMergedUpdated = false;
+          } else if (this._undoIndex != this._undoStack.length - 1) {
+             isMergedUpdated = false;
+          } else if (p != this._undoStack[this._undoStack.length - 1].p) {
+             isMergedUpdated = false;
+          } else if (this._undoStack[this._undoStack.length - 1].action != 'edit') {
+             isMergedUpdated = false;
+          } else if (Date.now() - this._lastUpdateTime > this.maxMsBetweenMergedChanges) {
+             isMergedUpdated = false;
+          }
 
+          if (isMergedUpdated) {
+             this._undoStack[this._undoStack.length - 1].timeAfter = p.time;
+             this._undoStack[this._undoStack.length - 1].valueAfter = p.value;
+          } else {
+             this._addUndoFrame({
+                curve: this.curve1.points.indexOf(p) >= 0 ? this.curve1 : this.curve2,
+                p: p,
+                action: 'edit',
+                timeBefore: p._lastTime,
+                valueBefore: p._lastValue,
+                timeAfter: p.time,
+                valueAfter: p.value,
+             });
+          }
+       }
+       p.set('_lastTime', p.time);
+       p.set('_lastValue', p.value);
+
+       this._lastUpdateTime = Date.now();
+
+       this._clampAndSortPoints();
+       this._update();
+    },
+    _handlePointRightClick: function (p) {
+       var curve = this.curve1.points.indexOf(p) >= 0 ? this.curve1 : this.curve2;
+
+       if (!self._applyingUndoRedo) {
+          this._addUndoFrame({
+             curve: self.curve1.points.indexOf(p) >= 0 ? self.curve1 : self.curve2,
+             p: p,
+             action: 'remove',
+          });
+       }
+
+       curve.points.removeObject(p);
        this._update();
     },
     _handleDragStart: function (d) {

@@ -280,7 +280,7 @@
                    <div class="curve-warning">{{ warning-icon message=curve1.errorMap.[-1] }}</div>
                    <div class="curve-warning">{{ warning-icon message=curve2.errorMap.[-1] }}</div>
                 </td>
-                <td colspan="4"><svg width="400px" height="100px" /></td>
+                <td colspan="3"><svg width="400px" height="100px" /></td>
             </tr>
             <tr>
                 <td></td>
@@ -288,7 +288,11 @@
                    <td>Time: {{ input type='number' value=selectedPoint.time step=0.1 }}</td>
                    <td>Value: {{ input type='number' value=selectedPoint.value step=0.1 }}</td>
                 {{/if}}
-                <td><button class="zoom">Reset view</button></td>
+                <td>
+                   <button class="undo">↶</button>
+                   <button class="redo">↷</button>
+                   <button class="reframe">Reframe</button>
+                </td>
             </tr>
         </table>
     </script>
