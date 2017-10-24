@@ -1,4 +1,12 @@
-﻿App = Ember.Application.create({
+﻿// Prevent MMB scroll to not interfere with curve scrolling.
+$(window).mousedown(function (e) {
+   if (e.button == 1) {
+      e.preventDefault();
+      e.stopPropagation();
+   }
+});
+
+App = Ember.Application.create({
 });
 
 CsApi = {};
@@ -75,18 +83,20 @@ App.CurveXComponent = Ember.Component.extend({
     bottomMargin: 20,
     leftMargin: 30,
     rightMargin: 30,
+    curveSnapDistance: 10,
     colors: {
        primary: 'rgba(0, 127, 239, 0.75)',
        primaryHover: 'rgba(0, 127, 239, 1)',
        primaryLine: 'rgba(0, 50, 100, 1)',
        secondary: 'rgba(239, 127, 0, 0.75)',
        secondaryHover: 'rgba(239, 127, 0, 1)',
-       secondaryLine: 'rgba(150, 70, 0, 1)'
+       secondaryLine: 'rgba(150, 70, 0, 1)',
+       selected: 'rgba(255, 60, 60, 1)',
     },
     didInsertElement: function () {
        var self = this;
 
-       this._sortPoints();
+       this._clampAndSortPoints();
        
        // Set up the canvas.
        var fullWidth = self.width + self.leftMargin + self.rightMargin;
@@ -95,11 +105,23 @@ App.CurveXComponent = Ember.Component.extend({
             .attr('width', fullWidth)
             .attr('height', fullHeight)
             .on('dblclick', self._handleDoubleClick.bind(self))
+            .on('mousedown', function () {
+               if (d3.event.button == 0) {
+                  self.set('selectedPoint', undefined);
+                  self._update();
+               }
+            })
             .on('contextmenu', function () { d3.event.preventDefault(); });
        self.rect = self.svg.append('rect')
             .attr('width', fullWidth)
             .attr('height', fullHeight)
             .attr('fill', 'white');
+       // Prevent browser scrolling with MMB - we're handling it in zoom.
+       $(self.rect.node()).mousedown(function (e) {
+          if (e.button == 1) {
+             e.preventDefault();
+          }
+       });
 
        // Set up axes.
        self.xScale = d3.scaleLinear().domain([0, 1]).range([0, self.width]);
@@ -120,7 +142,7 @@ App.CurveXComponent = Ember.Component.extend({
             .call(self.yAxisTicks)
             .attr('style', 'pointer-events: none');
 
-       // Set up Y axis pan/zoom on Ctrl-wheel/Ctrl-drag.
+       // Set up Y axis pan/zoom on alt-MMB/wheel.
        self._resetZoom();
        self.$('.zoom').click(function () {
           // Undo current zoom.
@@ -146,6 +168,12 @@ App.CurveXComponent = Ember.Component.extend({
             .attr('height', self.height)
             .attr('transform', 'translate(' + self.leftMargin + ',' + self.topMargin + ')');
        
+       // Listen to point changes.
+       self._getAllPoints().forEach(function (p) {
+          p.addObserver('time', self._handlePointTimeChanged.bind(self));
+          p.addObserver('value', self._handlePointValueChanged.bind(self));
+       });
+
        // Initial render.
        self._update();
     },
@@ -160,7 +188,7 @@ App.CurveXComponent = Ember.Component.extend({
               self._update();
            })
            .filter(function () {
-              return !d3.event.button && (d3.event.buttons == 1 || d3.event.ctrlKey);
+              return d3.event.type == 'wheel' || (d3.event.altKey && d3.event.button == 1);
            });
        self.svg.call(self.zoom);
     },
@@ -178,17 +206,21 @@ App.CurveXComponent = Ember.Component.extend({
             .append('circle')
             .attr('r', 4)
             .on("mouseover", function (p) {
-               d3.select(this)
-                    .attr('r', 8)
-                    .attr('fill', self.curve1.points.indexOf(p) >= 0 ? self.colors.primaryHover : self.colors.secondaryHover);
+               d3.select(this).attr('r', 8)
+               if (p != self.get('selectedPoint')) {
+                  d3.select(this).attr('fill', self.curve1.points.indexOf(p) >= 0 ? self.colors.primaryHover : self.colors.secondaryHover);
+               }
             })
             .on("mouseout", function (p) {
-               d3.select(this)
-                    .attr('r', 4)
-                    .attr('fill', self.curve1.points.indexOf(p) >= 0 ? self.colors.primary : self.colors.secondary);
+               d3.select(this).attr('r', 4)
+               if (p != self.get('selectedPoint')) {
+                  d3.select(this).attr('fill', self.curve1.points.indexOf(p) >= 0 ? self.colors.primary : self.colors.secondary);
+               }
             })
+            .on('mousedown', self._handlePointMouseDown.bind(self))
             .on('contextmenu', self._handlePointRightClick.bind(self))
             .call(d3.drag()
+                     .on('start', self._handleDragStart.bind(self))
                      .on('drag', self._handleDrag.bind(self)));
        pointsSelection.merge(newSelection)
             .attr('cx', function (p) {
@@ -198,7 +230,17 @@ App.CurveXComponent = Ember.Component.extend({
                return self.yScale(p.value);
             })
             .attr('fill', function (p) {
-               return self.curve1.points.indexOf(p) >= 0 ? self.colors.primary : self.colors.secondary;
+               if (p == self.get('selectedPoint')) {
+                  return self.colors.selected;
+               } else {
+                  return self.curve1.points.indexOf(p) >= 0 ? self.colors.primary : self.colors.secondary;
+               }
+            })
+            .attr('stroke', function (p) {
+               return p == self.get('selectedPoint') ? 'black' : 'none';
+            })
+            .attr('stroke-width', function (p) {
+               return p == self.get('selectedPoint') ? 2 : 0;
             });
 
        // Replace the path.
@@ -248,7 +290,7 @@ App.CurveXComponent = Ember.Component.extend({
           vertices = vertices.concat(self.curve2.points.copy().reverse());
           ensureFillerVertex(self.curve2, 0, 0);
 
-          // Repalce the polygon.
+          // Replace the polygon.
           self.linesView.selectAll('polygon')
                .remove();
           self.linesView
@@ -264,24 +306,47 @@ App.CurveXComponent = Ember.Component.extend({
     _handleDoubleClick: function () {
        var position = d3.mouse(this.pointsView.node());
        var curve = this.curve1;
+       var curveNodes = this.linesView.selectAll('path').nodes();
+       var projection = this._getClosestPointOnPath(curveNodes[0], position);
        if (this.curve2) {
-          var curves = this.linesView.selectAll('path').nodes();
-          var distanceTo1 = this._getClosestPointOnPath(curves[0], position).distance;
-          var distanceTo2 = this._getClosestPointOnPath(curves[1], position).distance;
+          var distanceTo1 = projection.distance;
+          var projection2 = this._getClosestPointOnPath(curveNodes[1], position);
+          var distanceTo2 = projection2.distance;
           if (distanceTo2 < distanceTo1) {
              curve = this.curve2;
+             projection = projection2;
           } else {
              // This is kinda flimsy, but I think it feels good.
-             if (this.curve2.points.length < 2 && this.curve1.points.length >= 2 && distanceTo1 > 5) {
+             if (this.curve2.points.length < 2 && this.curve1.points.length >= 2 && distanceTo1 > this.curveSnapDistance) {
                 curve = this.curve2;
+                projection = projection2;
              }
           }
        }
-       curve.points.pushObject(Point.create({
+       if (projection.distance <= this.curveSnapDistance) {
+          position = projection;
+       }
+       var newPoint = Point.create({
           time: this.xScale.invert(position[0]),
           value: this.yScale.invert(position[1])
-       }));
-       this._sortPoints();
+       });
+       newPoint.addObserver('time', this._handlePointTimeChanged.bind(this));
+       newPoint.addObserver('value', this._handlePointValueChanged.bind(this));
+       curve.points.pushObject(newPoint);
+       this.set('selectedPoint', newPoint);
+       this._clampAndSortPoints();
+       this._update();
+    },
+    _handlePointMouseDown: function (d) {
+       this.set('selectedPoint', d);
+       this._update();
+    },
+    _handlePointTimeChanged: function () {
+       this._clampAndSortPoints();
+       this._update();
+    },
+    _handlePointValueChanged: function () {
+       this._clampAndSortPoints();
        this._update();
     },
     _handlePointRightClick: function (d) {
@@ -291,11 +356,31 @@ App.CurveXComponent = Ember.Component.extend({
 
        this._update();
     },
+    _handleDragStart: function (d) {
+       this.dragOrigin = d3.mouse(this.pointsView.node());
+       this.dragDirection = null;
+    },
     _handleDrag: function (d) {
        var position = d3.mouse(this.pointsView.node());
-       d.time = Math.max(0, Math.min(this.xScale.invert(position[0]), 1));
-       d.value = this.yScale.invert(position[1]);
-       this._sortPoints();
+       if (d3.event.sourceEvent.shiftKey) {
+          if (!this.dragDirection) {
+             var dx = Math.abs(position[0] - this.dragOrigin[0]);
+             var dy = Math.abs(position[1] - this.dragOrigin[1]);
+             if (dx > dy) {
+                this.dragDirection = 'horizontal';
+             } else if (dx < dy) {
+                this.dragDirection = 'vertical';
+             }
+          }
+          if (this.dragDirection == 'horizontal') {
+             position[1] = this.dragOrigin[1];
+          } else if (this.dragDirection == 'vertical') {
+             position[0] = this.dragOrigin[0];
+          }
+       }
+       d.set('time', Math.max(0, Math.min(this.xScale.invert(position[0]), 1)));
+       d.set('value', this.yScale.invert(position[1]));
+       this._clampAndSortPoints();
        this._update();
     },
     _getAllPoints: function () {
@@ -322,11 +407,19 @@ App.CurveXComponent = Ember.Component.extend({
           }
        }
     },
-    _sortPoints: function () {
+    _clampAndSortPoints: function () {
+       this.curve1.points.forEach(function (p) {
+          if (p.time < 0) p.set('time', 0);
+          if (p.time > 1) p.set('time', 1);
+       });
        this.curve1.points.sort(function (a, b) {
           return a.time - b.time;
        });
        if (this.curve2) {
+          this.curve2.points.forEach(function (p) {
+             if (p.time < 0) p.set('time', 0);
+             if (p.time > 1) p.set('time', 1);
+          });
           this.curve2.points.sort(function (a, b) {
              return a.time - b.time;
           });

@@ -284,6 +284,10 @@
             </tr>
             <tr>
                 <td></td>
+                {{#if selectedPoint}}
+                   <td>Time: {{ input type='number' value=selectedPoint.time step=0.1 }}</td>
+                   <td>Value: {{ input type='number' value=selectedPoint.value step=0.1 }}</td>
+                {{/if}}
                 <td><button class="zoom">Reset view</button></td>
             </tr>
         </table>
