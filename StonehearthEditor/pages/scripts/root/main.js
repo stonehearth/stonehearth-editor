@@ -271,6 +271,7 @@ App.CurveXComponent = Ember.Component.extend({
             .on('mousedown', self._handlePointMouseDown.bind(self))
             .on('contextmenu', self._handlePointRightClick.bind(self))
             .call(d3.drag()
+                     .filter(function() { return d3.event.button == 1; })
                      .on('start', self._handleDragStart.bind(self))
                      .on('drag', self._handleDrag.bind(self)));
        pointsSelection.merge(newSelection)
@@ -410,6 +411,11 @@ App.CurveXComponent = Ember.Component.extend({
     _handlePointMouseDown: function (d) {
        this.set('selectedPoint', d);
        this._update();
+       d3.event.stopPropagation();
+       // Prevent browser scrolling with MMB - we're handling it in zoom.
+       if (d3.event.button == 1) {
+          d3.event.preventDefault();
+       }
     },
     _handlePointChanged: function (p) {
        if (!this._applyingUndoRedo) {
