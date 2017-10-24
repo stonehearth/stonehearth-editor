@@ -157,6 +157,19 @@ table {
     user-select: none;
 }
 
+.curve-table td {
+   text-align: left;
+}
+
+.curve-table input {
+   width: 100px;
+}
+
+.curve-table button {
+   width: 100px;
+   float: right;
+}
+
 .curve-input {
     width: 75px;
     text-align: center;

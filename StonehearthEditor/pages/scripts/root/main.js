@@ -70,7 +70,7 @@ App.WarningIconComponent = Ember.Component.extend({
 
 App.CurveXComponent = Ember.Component.extend({
     width: 400,
-    height: 100,
+    height: 150,
     topMargin: 5,
     bottomMargin: 20,
     leftMargin: 30,
@@ -106,7 +106,7 @@ App.CurveXComponent = Ember.Component.extend({
        self.baseYScale = d3.scaleLinear().domain(self._getRange()).range([self.height, 0]);
        self.yScale = self.baseYScale;
        self.xAxisTicks = d3.axisBottom(self.xScale).ticks(10);
-       self.yAxisTicks = d3.axisLeft(self.yScale).ticks(10);
+       self.yAxisTicks = d3.axisLeft(self.yScale).ticks(5);
        self.xAxisView = self.svg.append('g')
             .attr('transform', 'translate(' + self.leftMargin + ',' + (self.height + self.topMargin) + ')')
             .call(self.xAxisTicks)
@@ -121,18 +121,19 @@ App.CurveXComponent = Ember.Component.extend({
             .attr('style', 'pointer-events: none');
 
        // Set up Y axis pan/zoom on Ctrl-wheel/Ctrl-drag.
-       self.zoom = d3.zoom()
-           .on('zoom', function() {
-               var scaleY = d3.event.transform.k;
-               self.yScale = d3.event.transform.rescaleY(self.baseYScale);
-               self.yAxisView1.call(self.yAxisTicks.scale(self.yScale));
-               self.yAxisView2.call(self.yAxisTicks.scale(self.yScale));
-               self._update();
-           })
-           .filter(function() {
-              return !d3.event.button && (d3.event.buttons == 1 || d3.event.ctrlKey);
-           });
-       self.svg.call(self.zoom);
+       self._resetZoom();
+       self.$('.zoom').click(function () {
+          // Undo current zoom.
+          self.zoom.scaleTo(self.svg, 1);
+          self.zoom.translateTo(self.svg, 0, self.height / 2);
+          self.on('zoom', null);
+          // Recalculate range.
+          self.baseYScale = d3.scaleLinear().domain(self._getRange()).range([self.height, 0]);
+          self.yScale = self.baseYScale;
+          // Apply zoom.
+          self._resetZoom();
+          self._update();
+       });
 
        // Set up containers for the points and lines. Separate to enforce z-index.
        self.linesView = self.svg.append('g')
@@ -147,6 +148,21 @@ App.CurveXComponent = Ember.Component.extend({
        
        // Initial render.
        self._update();
+    },
+    _resetZoom: function () {
+       var self = this;
+       self.zoom = d3.zoom()
+           .on('zoom', function () {
+              var scaleY = d3.event.transform.k;
+              self.yScale = d3.event.transform.rescaleY(self.baseYScale);
+              self.yAxisView1.call(self.yAxisTicks.scale(self.yScale));
+              self.yAxisView2.call(self.yAxisTicks.scale(self.yScale));
+              self._update();
+           })
+           .filter(function () {
+              return !d3.event.button && (d3.event.buttons == 1 || d3.event.ctrlKey);
+           });
+       self.svg.call(self.zoom);
     },
     _update: function () {
        var self = this;
@@ -191,13 +207,23 @@ App.CurveXComponent = Ember.Component.extend({
        var curves = [self.curve1];
        if (self.curve2) curves.push(self.curve2);
        curves.forEach(function (curve, i) {
+          var points = curve.points.copy();
+          if (points.length == 0) {
+             points = [{ time: 0, value: 0 }];
+          }
+          if (points[0].time > 0) {
+             points.unshift({ time: 0, value: points[0].value });
+          }
+          if (points[points.length - 1].time < 1) {
+             points.push({ time: 1, value: points[points.length - 1].value });
+          }
           self.linesView
                .append('path')
                .attr('d', d3.line()
                               .x(function (d) { return self.xScale(d.time); })
                               .y(function (d) { return self.yScale(d.value); })
                               .curve(d3.curveLinear)
-                              (curve.points))
+                              (points))
                .attr('stroke', i ? self.colors.secondaryLine : self.colors.primaryLine)
                .attr('stroke-width', 1.5)
                .attr('fill', 'none');
@@ -206,24 +232,21 @@ App.CurveXComponent = Ember.Component.extend({
        // Draw the area between the curves of there are multiple.
        if (self.curve2) {
           var vertices = [];
+          var ensureFillerVertex = function (curve, index, time) {
+             if (!curve.points.length || curve.points[index].time > 0) {
+                vertices.push({ time: time, value: curve.points[index] ? curve.points[index].value : 0 });
+             }
+          }
 
           // First curve.
-          if (!self.curve1.points.length || self.curve1.points[0].time > 0) {
-             vertices.push({ time: 0, value: 0 });
-          }
+          ensureFillerVertex(self.curve1, 0, 0);
           vertices = vertices.concat(self.curve1.points);
-          if (!self.curve1.points.length || self.curve1.points[self.curve1.points.length - 1].time < 1) {
-             vertices.push({ time: 1, value: 0 });
-          }
+          ensureFillerVertex(self.curve1, self.curve1.points.length - 1, 1);
 
           // Second curve.
-          if (!self.curve2.points.length || self.curve2.points[self.curve2.points.length - 1].time < 1) {
-             vertices.push({ time: 1, value: 0 });
-          }
+          ensureFillerVertex(self.curve2, self.curve2.points.length - 1, 1);
           vertices = vertices.concat(self.curve2.points.copy().reverse());
-          if (!self.curve2.points.length || self.curve2.points[0].time > 0) {
-             vertices.push({ time: 0, value: 0 });
-          }
+          ensureFillerVertex(self.curve2, 0, 0);
 
           // Repalce the polygon.
           self.linesView.selectAll('polygon')
@@ -290,7 +313,13 @@ App.CurveXComponent = Ember.Component.extend({
              min = Math.min(min, p.value);
              max = Math.max(max, p.value);
           });
-          return [min, max];
+          if (min != max) {
+             return [min, max];
+          } else if (min >= 0 && min <= 1) {
+            return [0, 1];
+          } else {
+             return [min / 2, min * 2];
+          }
        }
     },
     _sortPoints: function () {
