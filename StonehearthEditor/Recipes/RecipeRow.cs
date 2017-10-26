@@ -29,7 +29,7 @@ namespace StonehearthEditor.Recipes
             this.Ingredients = new ReadOnlyCollection<Ingredient>(mIngredients);
         }
 
-        public void SetLevelRequired(int value)
+        public void SetLevelRequired(int? value)
         {
             SetGridCell(RecipeTable.kLvlReq, value);
         }
@@ -39,7 +39,7 @@ namespace StonehearthEditor.Recipes
             SetGridCell(RecipeTable.kWorkUnits, value);
         }
 
-        public void SetEffort(int value)
+        public void SetEffort(int? value)
         {
             SetGridCell(RecipeTable.kEffort, value);
         }

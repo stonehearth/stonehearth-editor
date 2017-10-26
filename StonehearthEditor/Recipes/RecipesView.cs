@@ -244,9 +244,13 @@ namespace StonehearthEditor.Recipes
                     row.RecipeList = recipesIndex;
                     row.Recipe = jsonFileData;
 
-                    row.SetLevelRequired((recipeJson["level_requirement"] ?? 0).ToObject<int>());
-                    row.SetEffort((recipeJson["effort"] ?? 0).ToObject<int>());
-                    row.SetWorkUnits((recipeJson["work_units"] ?? null).ToObject<int?>());
+                    JToken lvlReq = recipeJson["level_requirement"];
+                    JToken effort = recipeJson["effort"];
+                    JToken workUnits = recipeJson["work_units"];
+
+                    row.SetLevelRequired(lvlReq == null ? null : lvlReq.ToObject<int?>());
+                    row.SetEffort(effort == null ? null : effort.ToObject<int?>());
+                    row.SetWorkUnits(workUnits == null ? null : workUnits.ToObject<int?>());
                     row.SetCrafter(jobAlias);
 
                     // TODO: make a row for each fine item?

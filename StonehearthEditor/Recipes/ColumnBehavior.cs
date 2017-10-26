@@ -38,6 +38,49 @@ namespace StonehearthEditor.Recipes
         public virtual void ConfigureColumnAfterRender(DataGridViewColumn gridCol, DataGridView recipesGridView)
         {
         }
+
+        public virtual void SetJsonField(JObject json, string name, JValue value)
+        {
+        }
+
+        public void SetJsonField(JObject json, string name, JValue value, JObject orderedFields)
+        {
+            bool exists = json[name] != null;
+
+            if (exists)
+            {
+                json[name] = value;
+            }
+            else
+            {
+                // Find an approximate place to insert the name value, given the desired json index of the property name
+                // Sorting the entire recipe json is slow, and this is good enough for our needs
+                int targetIndex = orderedFields[name].Value<int>();
+
+                if (targetIndex == -1)
+                {
+                    throw new Exception("No value for " + name + " found in StonehearthEditor.Properties.Resources.defaultRecipeOrdering");
+                }
+
+                int index = 0;
+                foreach (JProperty property in json.Children())
+                {
+                    if (targetIndex == 0 || index >= targetIndex ||
+                        orderedFields[property.Name].Value<int>() >= targetIndex)
+                    {
+                        property.AddBeforeSelf(new JProperty(name, value));
+                        break;
+                    }
+                    else if (index == json.Count)
+                    {
+                        property.AddAfterSelf(new JProperty(name, value));
+                        break;
+                    }
+
+                    index++;
+                }
+            }
+        }
     }
 
     internal class IngrColumnBehavior : ColumnBehavior
@@ -71,9 +114,32 @@ namespace StonehearthEditor.Recipes
     {
         public override bool IsRecipeColumn => true;
 
+        // Used for finding a location to insert recipe fields that doesn't already exist in the json
+        // Json dictionary of property name -> desired index in recipe json
+        private static JObject defaultRecipeOrdering = null;
+
+        static RecipeColumnBehavior()
+        {
+            int i = 0;
+            JObject recipeOrdering = new JObject();
+
+            // JArray of property names, ordered by the existing recipe schema
+            foreach (JToken token in JArray.Parse(StonehearthEditor.Properties.Resources.defaultRecipeOrdering))
+            {
+                recipeOrdering.Add(new JProperty(token.Value<string>(), i++));
+            }
+
+            defaultRecipeOrdering = recipeOrdering;
+        }
+
         public override void ConfigureColumn(DataGridViewColumn gridCol)
         {
             gridCol.DefaultCellStyle.BackColor = Color.Azure;
+        }
+
+        public override void SetJsonField(JObject json, string name, JValue value)
+        {
+            SetJsonField(json, name, value, defaultRecipeOrdering);
         }
     }
 
@@ -127,6 +193,42 @@ namespace StonehearthEditor.Recipes
         }
     }
 
+    internal class AppealColumnBehavior : ColumnBehavior
+    {
+        public override void SaveCell(HashSet<JsonFileData> modifiedFiles, RecipeRow row, object value)
+        {
+            JsonFileData jsonFileData = row.Item;
+            JObject json = jsonFileData.Json;
+            JToken token = json.SelectToken("entity_data.stonehearth:appeal");
+
+            if (token != null)
+            {
+                if (value == null || value == DBNull.Value)
+                {
+                    token.Remove();
+                }
+                else
+                {
+                    (token as JValue).Value = (int)value;
+                }
+            }
+            else
+            {
+                JObject entityData = json["entity_data"] as JObject;
+                if (entityData == null)
+                {
+                    entityData = new JObject();
+                    json["entity_data"] = entityData;
+                }
+
+                JObject appealData = new JObject(new JProperty("appeal", (int)value));
+                entityData.Add("stonehearth:appeal", appealData);
+            }
+
+            modifiedFiles.Add(jsonFileData);
+        }
+    }
+
     internal class CrafterColumnBehavior : RecipeColumnBehavior
     {
         public override void ConfigureColumn(DataGridViewColumn gridCol)
@@ -143,8 +245,9 @@ namespace StonehearthEditor.Recipes
         {
             JsonFileData jsonFileData = row.Recipe;
             JObject json = jsonFileData.Json;
-            json["effort"] = (int)value;
-            modifiedFiles.Add(jsonFileData);
+            SetJsonField(json, "effort", new JValue((int)value));
+
+           modifiedFiles.Add(jsonFileData);
         }
     }
 
@@ -164,7 +267,7 @@ namespace StonehearthEditor.Recipes
             }
             else
             {
-                json["work_units"] = (int)value;
+                SetJsonField(json, "work_units", new JValue((int)value));
             }
 
             modifiedFiles.Add(jsonFileData);
@@ -182,7 +285,7 @@ namespace StonehearthEditor.Recipes
         {
             JsonFileData jsonFileData = row.Recipe;
             JObject json = jsonFileData.Json;
-            json["level_requirement"] = (int)value;
+            SetJsonField(json, "level_requirement", new JValue((int)value));
             modifiedFiles.Add(jsonFileData);
         }
     }
@@ -312,3 +415,4 @@ namespace StonehearthEditor.Recipes
         }
     }
 }
+

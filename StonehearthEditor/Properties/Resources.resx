@@ -151,4 +151,19 @@
   <data name="Find_56502" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\images\Find_5650.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="defaultRecipeOrdering" xml:space="preserve">
+    <value>[
+   "type",
+   "effort",
+   "work_units",
+   "recipe_name",
+   "description",
+   "flavor",
+   "portrait",
+   "workshop",
+   "level_requirement",
+   "ingredients",
+   "produces"
+]</value>
+  </data>
 </root>

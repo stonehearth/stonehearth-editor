@@ -97,6 +97,28 @@ namespace StonehearthEditor.Properties {
                 return ResourceManager.GetString("defaultNetWorth", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [
+        ///   &quot;type&quot;,
+        ///   &quot;effort&quot;,
+        ///   &quot;work_units&quot;,
+        ///   &quot;recipe_name&quot;,
+        ///   &quot;description&quot;,
+        ///   &quot;flavor&quot;,
+        ///   &quot;portrait&quot;,
+        ///   &quot;workshop&quot;,
+        ///   &quot;level_requirement&quot;,
+        ///   &quot;ingredients&quot;,
+        ///   &quot;produces&quot;
+        ///].
+        /// </summary>
+        internal static string defaultRecipeOrdering {
+            get {
+                return ResourceManager.GetString("defaultRecipeOrdering", resourceCulture);
+            }
+        }
+        
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
