@@ -273,7 +273,11 @@ App.CurveXComponent = Ember.Component.extend({
                }
             })
             .on('mousedown', self._handlePointMouseDown.bind(self))
-            .on('contextmenu', self._handlePointRightClick.bind(self));
+            .on('contextmenu', self._handlePointRightClick.bind(self))
+            .call(d3.drag()
+                     .filter(function () { return d3.event.button == 1; })
+                     .on('start', self._handleDragStart.bind(self))
+                     .on('drag', self._handleDrag.bind(self)));
        pointsSelection.merge(newSelection)
             .attr('cx', function (p) {
                return self.xScale(p.time);
@@ -484,8 +488,10 @@ App.CurveXComponent = Ember.Component.extend({
              var dy = Math.abs(position[1] - this.dragOrigin[1]);
              if (dx > dy) {
                 this.dragKeepDimension = 'y';
+                this.selectedPoint.set('value', this.yScale.invert(this.dragPointOrigin[1]));
              } else if (dx < dy) {
                 this.dragKeepDimension = 'x';
+                this.selectedPoint.set('time', this.xScale.invert(this.dragPointOrigin[0]));
              }
           }
        }
