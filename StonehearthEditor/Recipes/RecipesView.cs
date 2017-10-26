@@ -71,6 +71,7 @@ namespace StonehearthEditor.Recipes
             filterCbx.Items.Add(RecipeTable.kCrafter);
             filterCbx.Items.Add(RecipeTable.kLvlReq);
             filterCbx.Items.Add(RecipeTable.kNetWorth);
+            filterCbx.Items.Add(RecipeTable.kAppeal);
             filterCbx.Items.Add(RecipeTable.kEffort);
             filterCbx.Items.Add(IngredientColumnGroup.kIngr + " " + IngredientColumnGroup.kName);
             filterCbx.Items.Add(IngredientColumnGroup.kIngr + " " + IngredientColumnGroup.kAmount);
@@ -245,8 +246,14 @@ namespace StonehearthEditor.Recipes
                     row.Recipe = jsonFileData;
 
                     JToken lvlReq = recipeJson["level_requirement"];
-                    row.SetLevelRequired(lvlReq == null ? 0 : lvlReq.ToObject<int>());
-                    row.SetEffort(recipeJson["work_units"].ToObject<int>());
+                    JToken effort = recipeJson["effort"];
+                    JToken workUnits = recipeJson["work_units"];
+                    JToken appeal = recipeJson.SelectToken("entity_data.stonehearth:appeal.appeal");
+
+                    row.SetLevelRequired(lvlReq == null ? null : lvlReq.ToObject<int?>());
+                    row.SetEffort(effort == null ? null : effort.ToObject<int?>());
+                    row.SetWorkUnits(workUnits == null ? null : workUnits.ToObject<int?>());
+                    row.SetAppeal(appeal == null ? null : appeal.ToObject<int?>());
                     row.SetCrafter(jobAlias);
 
                     // TODO: make a row for each fine item?

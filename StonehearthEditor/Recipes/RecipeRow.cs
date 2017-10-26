@@ -29,39 +29,49 @@ namespace StonehearthEditor.Recipes
             this.Ingredients = new ReadOnlyCollection<Ingredient>(mIngredients);
         }
 
-        public void SetLevelRequired(int value)
+        public void SetLevelRequired(int? value)
         {
-            this[RecipeTable.kLvlReq] = value;
+            SetGridCell(RecipeTable.kLvlReq, value);
         }
 
-        public void SetEffort(int value)
+        public void SetWorkUnits(int? value)
         {
-            this[RecipeTable.kEffort] = value;
+            SetGridCell(RecipeTable.kWorkUnits, value);
+        }
+
+        public void SetAppeal(int? value)
+        {
+            SetGridCell(RecipeTable.kAppeal, value);
+        }
+
+        public void SetEffort(int? value)
+        {
+            SetGridCell(RecipeTable.kEffort, value);
         }
 
         public void SetCrafter(string value)
         {
-            this[RecipeTable.kCrafter] = value;
+            SetGridCell(RecipeTable.kCrafter, value);
         }
 
         public void SetAlias(string value)
         {
-            this[RecipeTable.kAlias] = value;
+            SetGridCell(RecipeTable.kAlias, value);
         }
 
         public void SetNetWorth(int value)
         {
-            this[RecipeTable.kNetWorth] = value;
+            SetGridCell(RecipeTable.kNetWorth, value);
         }
 
         public void SetDisplayName(string value)
         {
-            this[RecipeTable.kDisplayName] = value;
+            SetGridCell(RecipeTable.kDisplayName, value);
         }
 
         public void SetIcon(Image value)
         {
-            this[RecipeTable.kIcon] = value;
+            SetGridCell(RecipeTable.kIcon, value);
         }
 
         public Ingredient AddNewIngredient()
@@ -79,6 +89,18 @@ namespace StonehearthEditor.Recipes
             }
 
             return mIngredients.Single(i => i.Group == group);
+        }
+
+        private void SetGridCell(string key, object value)
+        {
+            if (value != null)
+            {
+                this[key] = value;
+            }
+            else
+            {
+                this[key] = DBNull.Value;
+            }
         }
     }
 }
