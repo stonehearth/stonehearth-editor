@@ -27,8 +27,9 @@ namespace StonehearthEditor.Recipes
         {
         }
 
-        public virtual void TryDeleteCell(RecipeRow row)
+        public virtual bool TryDeleteCell(RecipeRow row)
         {
+            return false;
         }
 
         public virtual void ConfigureColumn(DataGridViewColumn gridCol)
@@ -273,9 +274,10 @@ namespace StonehearthEditor.Recipes
             modifiedFiles.Add(jsonFileData);
         }
 
-        public override void TryDeleteCell(RecipeRow row)
+        public override bool TryDeleteCell(RecipeRow row)
         {
             row.SetWorkUnits(null);
+            return true;
         }
     }
 
@@ -297,10 +299,11 @@ namespace StonehearthEditor.Recipes
         {
         }
 
-        public override void TryDeleteCell(RecipeRow row)
+        public override bool TryDeleteCell(RecipeRow row)
         {
             Ingredient ingredient = row.GetOrAddIngredient(this.columnGroup);
             ingredient.Name = "";
+            return true;
         }
 
         public override void ConfigureColumn(DataGridViewColumn gridCol)
@@ -361,10 +364,11 @@ namespace StonehearthEditor.Recipes
             }
         }
 
-        public override void TryDeleteCell(RecipeRow row)
+        public override bool TryDeleteCell(RecipeRow row)
         {
             Ingredient ingredient = row.GetOrAddIngredient(this.columnGroup);
             ingredient.Name = "";
+            return true;
         }
 
         public override void ConfigureColumnAfterRender(DataGridViewColumn gridCol, DataGridView recipesGridView)
@@ -408,11 +412,11 @@ namespace StonehearthEditor.Recipes
         {
         }
 
-        public override void TryDeleteCell(RecipeRow row)
+        public override bool TryDeleteCell(RecipeRow row)
         {
             Ingredient ingredient = row.GetOrAddIngredient(this.columnGroup);
             ingredient.Name = "";
+            return true;
         }
     }
 }
-

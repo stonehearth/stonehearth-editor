@@ -601,11 +601,6 @@ namespace StonehearthEditor.Recipes
                     e.Handled = true;
                 }
             }
-            else if (e.KeyCode == Keys.Delete)
-            {
-                // Delete cell on del
-                DeleteCurrentCell();
-            }
             else if (e.Control && e.KeyCode == Keys.S)
             {
                 // Save on ctrl+s
@@ -620,6 +615,49 @@ namespace StonehearthEditor.Recipes
             {
                 // Undo on ctrl+z
                 ApplyCellChanges(mUndoStack, mRedoStack, changes => changes.Undo());
+            }
+            else if (e.KeyCode == Keys.Delete)
+            {
+                if (recipesGridView.SelectedCells.Count == 0)
+                {
+                    return;
+                }
+                else if (recipesGridView.SelectedCells.Count == 1)
+                {
+                    // Delete current cell on del if only one selected
+                    DeleteCurrentCell();
+                }
+                else
+                {
+                    // Delete multiple cells
+                    // Add cell changes to one transaction so we can roll back if needed
+                    mIsApplyingChanges = true;
+                    MultipleCellChange changes = new MultipleCellChange();
+
+                    foreach (DataGridViewCell cell in recipesGridView.SelectedCells)
+                    {
+                        DataColumn dataColumn = mDataTable.Columns[cell.ColumnIndex];
+                        RecipeRow recipeRow = (RecipeRow)mDataTable.Rows[cell.RowIndex];
+
+                        object oldValue = recipeRow[dataColumn];
+                        object newValue = DBNull.Value;
+
+                        bool success = mDataTable.GetColumnBehavior(dataColumn).TryDeleteCell(recipeRow);
+
+                        if (!success)
+                        {
+                            changes.Undo();
+                            return;
+                        }
+
+                        DataCell dataCell = new DataCell(dataColumn, recipeRow);
+                        changes.Add(new CellChange(dataCell, oldValue, newValue));
+                    }
+
+                    // Save cell changes made in this delete operation
+                    mUndoStack.Push(changes);
+                    mIsApplyingChanges = false;
+                }
             }
             else if (e.Control && e.KeyCode == Keys.V)
             {
