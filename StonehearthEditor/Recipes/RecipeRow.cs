@@ -39,6 +39,11 @@ namespace StonehearthEditor.Recipes
             SetGridCell(RecipeTable.kWorkUnits, value);
         }
 
+        public void SetAppeal(int? value)
+        {
+            SetGridCell(RecipeTable.kAppeal, value);
+        }
+
         public void SetEffort(int? value)
         {
             SetGridCell(RecipeTable.kEffort, value);

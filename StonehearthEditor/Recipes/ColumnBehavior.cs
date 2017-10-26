@@ -199,13 +199,13 @@ namespace StonehearthEditor.Recipes
         {
             JsonFileData jsonFileData = row.Item;
             JObject json = jsonFileData.Json;
-            JToken token = json.SelectToken("entity_data.stonehearth:appeal");
+            JToken token = json.SelectToken("entity_data.stonehearth:appeal.appeal");
 
             if (token != null)
             {
                 if (value == null || value == DBNull.Value)
                 {
-                    token.Remove();
+                    (token as JValue).Value = 0;
                 }
                 else
                 {

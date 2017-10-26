@@ -14,6 +14,7 @@ namespace StonehearthEditor.Recipes
         public const string kAlias = "Alias";
         public const string kDisplayName = "Display Name";
         public const string kNetWorth = "Net Worth";
+        public const string kAppeal = "Appeal";
         public const string kCrafter = "Crafter";
         public const string kLvlReq = "Lvl Req";
         public const string kEffort = "Effort";
@@ -72,6 +73,7 @@ namespace StonehearthEditor.Recipes
             AddDataColumn(kAlias, typeof(string), new AliasColumnBehavior());
             AddDataColumn(kDisplayName, typeof(string), new DisplayNameColumnBehavior());
             AddDataColumn(kNetWorth, typeof(int), new NetWorthColumnBehavior());
+            AddDataColumn(kAppeal, typeof(int), new AppealColumnBehavior());
             AddDataColumn(kCrafter, typeof(string), new CrafterColumnBehavior());
             AddDataColumn(kLvlReq, typeof(int), new LevelRequiredColumnBehavior());
             AddDataColumn(kEffort, typeof(int), new EffortColumnBehavior());
