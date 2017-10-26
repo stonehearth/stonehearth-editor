@@ -112,7 +112,11 @@ App.CurveXComponent = Ember.Component.extend({
                   self._update();
                }
             })
-            .on('contextmenu', function () { d3.event.preventDefault(); });
+            .on('contextmenu', function () { d3.event.preventDefault(); })
+            .call(d3.drag()
+                     .filter(function () { return d3.event.button == 1; })
+                     .on('start', self._handleDragStart.bind(self))
+                     .on('drag', self._handleDrag.bind(self)));
        self.rect = self.svg.append('rect')
             .attr('width', fullWidth)
             .attr('height', fullHeight)
@@ -239,7 +243,7 @@ App.CurveXComponent = Ember.Component.extend({
               self._update();
            })
            .filter(function () {
-              return d3.event.type == 'wheel' || (d3.event.altKey && d3.event.button == 1);
+              return d3.event.altKey && (d3.event.type == 'wheel' || d3.event.button == 1);
            });
        self.svg.call(self.zoom);
     },
@@ -269,11 +273,7 @@ App.CurveXComponent = Ember.Component.extend({
                }
             })
             .on('mousedown', self._handlePointMouseDown.bind(self))
-            .on('contextmenu', self._handlePointRightClick.bind(self))
-            .call(d3.drag()
-                     .filter(function() { return d3.event.button == 1; })
-                     .on('start', self._handleDragStart.bind(self))
-                     .on('drag', self._handleDrag.bind(self)));
+            .on('contextmenu', self._handlePointRightClick.bind(self));
        pointsSelection.merge(newSelection)
             .attr('cx', function (p) {
                return self.xScale(p.time);
@@ -469,30 +469,35 @@ App.CurveXComponent = Ember.Component.extend({
        curve.points.removeObject(p);
        this._update();
     },
-    _handleDragStart: function (d) {
+    _handleDragStart: function () {
+       if (!this.selectedPoint) return;
        this.dragOrigin = d3.mouse(this.pointsView.node());
-       this.dragDirection = null;
+       this.dragPointOrigin = [this.xScale(this.selectedPoint.time), this.yScale(this.selectedPoint.value)];
+       this.dragKeepDimension = null;
     },
-    _handleDrag: function (d) {
+    _handleDrag: function () {
+       if (!this.selectedPoint) return;
        var position = d3.mouse(this.pointsView.node());
        if (d3.event.sourceEvent.shiftKey) {
-          if (!this.dragDirection) {
+          if (!this.dragKeepDimension) {
              var dx = Math.abs(position[0] - this.dragOrigin[0]);
              var dy = Math.abs(position[1] - this.dragOrigin[1]);
              if (dx > dy) {
-                this.dragDirection = 'horizontal';
+                this.dragKeepDimension = 'y';
              } else if (dx < dy) {
-                this.dragDirection = 'vertical';
+                this.dragKeepDimension = 'x';
              }
           }
-          if (this.dragDirection == 'horizontal') {
-             position[1] = this.dragOrigin[1];
-          } else if (this.dragDirection == 'vertical') {
-             position[0] = this.dragOrigin[0];
-          }
        }
-       d.set('time', Math.max(0, Math.min(this.xScale.invert(position[0]), 1)));
-       d.set('value', this.yScale.invert(position[1]));
+       // Update a subset of the dimensions.
+       if (this.dragKeepDimension != 'x') {
+          var newX = this.xScale.invert(this.dragPointOrigin[0] + position[0] - this.dragOrigin[0]);
+          this.selectedPoint.set('time', Math.max(0, Math.min(newX, 1)));
+       }
+       if (this.dragKeepDimension != 'y') {
+          var newY = this.yScale.invert(this.dragPointOrigin[1] + position[1] - this.dragOrigin[1]);
+          this.selectedPoint.set('value', newY);
+       }
        this._clampAndSortPoints();
        this._update();
     },
