@@ -41,6 +41,7 @@
             this.filterCbx = new System.Windows.Forms.ToolStripComboBox();
             this.helpButton = new System.Windows.Forms.ToolStripButton();
             this.unsavedFilesLabel = new System.Windows.Forms.ToolStripLabel();
+            this.itemsTypeComboBox = new System.Windows.Forms.ToolStripComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.recipesGridView)).BeginInit();
             this.recipesCellContextMenu.SuspendLayout();
             this.searchPanel.SuspendLayout();
@@ -117,6 +118,7 @@
             this.searchBox,
             this.searchButton,
             this.filterCbx,
+            this.itemsTypeComboBox,
             this.helpButton,
             this.unsavedFilesLabel});
             this.toolStrip.Location = new System.Drawing.Point(0, 0);
@@ -170,6 +172,18 @@
             this.unsavedFilesLabel.Text = "Unsaved Changes*";
             this.unsavedFilesLabel.Visible = false;
             // 
+            // itemsTypeComboBox
+            // 
+            this.itemsTypeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.itemsTypeComboBox.Items.AddRange(new object[] {
+            "Recipes",
+            "Entities",
+            "Iconics"});
+            this.itemsTypeComboBox.Name = "itemsTypeComboBox";
+            this.itemsTypeComboBox.Size = new System.Drawing.Size(121, 25);
+            this.itemsTypeComboBox.ToolTipText = "Select a type of data to edit";
+            this.itemsTypeComboBox.SelectedIndexChanged += new System.EventHandler(this.itemsTypeComboBox_SelectedIndexChanged);
+            // 
             // RecipesView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -202,5 +216,6 @@
         private System.Windows.Forms.ToolStripMenuItem removeIngredientToolStripMenuItem;
         private System.Windows.Forms.ToolStripButton helpButton;
         private System.Windows.Forms.ToolStripLabel unsavedFilesLabel;
+        private System.Windows.Forms.ToolStripComboBox itemsTypeComboBox;
     }
 }

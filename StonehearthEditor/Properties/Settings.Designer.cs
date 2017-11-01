@@ -106,5 +106,17 @@ namespace StonehearthEditor.Properties {
                 this["LastSelectedManifestPath"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public string LastSelectedItemsTypeIndex {
+            get {
+                return ((string)(this["LastSelectedItemsTypeIndex"]));
+            }
+            set {
+                this["LastSelectedItemsTypeIndex"] = value;
+            }
+        }
     }
 }

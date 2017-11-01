@@ -144,6 +144,20 @@ namespace StonehearthEditor.Recipes
         }
     }
 
+    internal class IconColumnBehavior : ColumnBehavior
+    {
+        public override void ConfigureColumn(DataGridViewColumn gridCol)
+        {
+            base.ConfigureColumn(gridCol);
+
+            // Remove [x] broken image icons
+            if (gridCol is DataGridViewImageColumn)
+            {
+                gridCol.DefaultCellStyle.NullValue = null;
+            }
+        }
+    }
+
     internal class AliasColumnBehavior : ColumnBehavior
     {
         public override void ConfigureColumn(DataGridViewColumn gridCol)
@@ -202,16 +216,16 @@ namespace StonehearthEditor.Recipes
             JObject json = jsonFileData.Json;
             JToken token = json.SelectToken("entity_data.stonehearth:appeal.appeal");
 
-            if (token != null)
+            if (value == null || value == DBNull.Value)
             {
-                if (value == null || value == DBNull.Value)
+                if (token != null)
                 {
-                    (token as JValue).Value = 0;
+                    json.SelectToken("entity_data.stonehearth:appeal").Parent.Remove();
                 }
-                else
-                {
-                    (token as JValue).Value = (int)value;
-                }
+            }
+            else if (token != null)
+            {
+                (token as JValue).Value = (int)value;
             }
             else
             {
@@ -227,6 +241,12 @@ namespace StonehearthEditor.Recipes
             }
 
             modifiedFiles.Add(jsonFileData);
+        }
+
+        public override bool TryDeleteCell(RecipeRow row)
+        {
+            row.SetAppeal(null);
+            return true;
         }
     }
 

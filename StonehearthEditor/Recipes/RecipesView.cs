@@ -75,7 +75,6 @@ namespace StonehearthEditor.Recipes
             filterCbx.Items.Add(RecipeTable.kEffort);
             filterCbx.Items.Add(IngredientColumnGroup.kIngr + " " + IngredientColumnGroup.kName);
             filterCbx.Items.Add(IngredientColumnGroup.kIngr + " " + IngredientColumnGroup.kAmount);
-            filterCbx.SelectedIndex = 0;
         }
 
         public void SaveModifiedFiles()
@@ -115,7 +114,8 @@ namespace StonehearthEditor.Recipes
         public void Initialize()
         {
             mIsLoading = true;
-            DateTime mStart = DateTime.Now;
+            filterCbx.SelectedIndex = 0;
+            itemsTypeComboBox.SelectedIndex = int.Parse(Properties.Settings.Default.LastSelectedItemsTypeIndex);
             MakeDoubleBuffered();
             LoadMaterialImages();
             LoadColumnsData();
@@ -145,7 +145,21 @@ namespace StonehearthEditor.Recipes
 
         private void LoadColumnsData()
         {
-            LoadAllRecipes();
+            string itemsType = itemsTypeComboBox.Text;
+            switch(itemsType)
+            {
+                case "Recipes":
+                    LoadAllRecipes();
+                    break;
+                case "Entities":
+                    LoadEntities();
+                    break;
+                case "Iconics":
+                    LoadIconics();
+                    break;
+                default:
+                    throw new Exception("no editable option available for " + itemsType);
+            }
 
             recipesGridView.DataSource = mDataTable;
 
@@ -190,6 +204,32 @@ namespace StonehearthEditor.Recipes
                 DataColumn dataColumn = mDataTable.Columns[i];
                 ColumnBehavior colBehavior = mDataTable.GetColumnBehavior(dataColumn);
                 colBehavior.ConfigureColumnAfterRender(column, recipesGridView);
+            }
+        }
+
+        private void LoadEntities()
+        {
+            Dictionary<string, JsonFileData> entityJsonFiles = ModuleDataManager.GetInstance().GetJsonsOfType(JSONTYPE.ENTITY)
+                .Where(kvp => kvp.Value.Json.SelectToken("components.stonehearth:ai") == null)
+                .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+
+            foreach (KeyValuePair<string, JsonFileData> entry in entityJsonFiles)
+            {
+                RecipeRow row = mDataTable.NewRecipeRow();
+                SetRowDataForItem(row, entry.Key, entry.Value);
+                mDataTable.Rows.Add(row);
+            }
+        }
+
+        private void LoadIconics()
+        {
+            Dictionary<string, JsonFileData> iconicJsonFiles = ModuleDataManager.GetInstance().GetIconicJsons();
+
+            foreach (KeyValuePair<string, JsonFileData> entry in iconicJsonFiles)
+            {
+                RecipeRow row = mDataTable.NewRecipeRow();
+                SetRowDataForItem(row, entry.Key, entry.Value);
+                mDataTable.Rows.Add(row);
             }
         }
 
@@ -434,6 +474,20 @@ namespace StonehearthEditor.Recipes
                 cell.Style = style;
             }
         }
+        
+        private void SetRowDataForItem(RecipeRow row, string alias, JsonFileData jsonFileData)
+        {
+            JObject json = jsonFileData.Json;
+
+            JToken appeal = json.SelectToken("entity_data.stonehearth:appeal.appeal");
+            row.SetAppeal(appeal == null ? null : appeal.ToObject<int?>());
+            row.SetAlias(alias);
+
+            row.Item = jsonFileData;
+            row.SetNetWorth(jsonFileData.NetWorth);
+            row.SetDisplayName(GetTranslatedName(GetDisplayName(jsonFileData)));
+            row.SetIcon(GetIcon(jsonFileData));
+        }
 
         private string GetTranslatedName(string locKey)
         {
@@ -510,6 +564,19 @@ namespace StonehearthEditor.Recipes
         {
             JsonFileData mixinsFile = jsonFileData.CreateFileWithMixinsApplied();
             JToken displayName = mixinsFile.Json.SelectToken("entity_data.stonehearth:catalog.display_name");
+            if (displayName == null)
+            {
+                ModuleFile moduleFile = jsonFileData.GetModuleFile();
+                if (moduleFile != null)
+                {
+                    return moduleFile.FullAlias;
+                }
+                else
+                {
+                    return jsonFileData.FileName;
+                }
+            }
+
             return displayName.ToString();
         }
 
@@ -833,6 +900,18 @@ namespace StonehearthEditor.Recipes
         private void recipesGridView_DataBindingComplete(object sender, DataGridViewBindingCompleteEventArgs e)
         {
             ConfigureColumnsAfterRender();
+        }
+
+        private void itemsTypeComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (mIsLoading)
+            {
+                return;
+            }
+
+            Reload();
+            Properties.Settings.Default.LastSelectedItemsTypeIndex = itemsTypeComboBox.SelectedIndex.ToString();
+            Properties.Settings.Default.Save();
         }
     }
 }

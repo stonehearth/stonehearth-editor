@@ -251,6 +251,32 @@ namespace StonehearthEditor
             return aliasJsonMap;
         }
 
+        public Dictionary<string, JsonFileData> GetIconicJsons()
+        {
+            Dictionary<string, JsonFileData> entityJsonFiles = GetJsonsOfType(JSONTYPE.ENTITY);
+            Dictionary<string, JsonFileData> iconicJsonFiles = new Dictionary<string, JsonFileData>();
+
+            foreach (KeyValuePair<string, JsonFileData> entry in entityJsonFiles)
+            {
+                JsonFileData jsonFileData = entry.Value;
+                JToken iconicForm = jsonFileData.Json.SelectToken("components.stonehearth:entity_forms.iconic_form");
+                if (iconicForm != null)
+                {
+
+                    string iconicFilePath = JsonHelper.GetFileFromFileJson(iconicForm.ToString(), jsonFileData.Directory);
+                    iconicFilePath = JsonHelper.NormalizeSystemPath(iconicFilePath);
+
+                    JsonFileData iconicFileData = (JsonFileData)jsonFileData.OpenedFiles.Find(e => e is JsonFileData && e.Path == iconicFilePath);
+                    if (iconicFileData != null)
+                    {
+                        iconicJsonFiles.Add(iconicFilePath, iconicFileData);
+                    }
+                }
+            }
+
+            return iconicJsonFiles;
+        }
+
         public FileData GetSelectedFileData(TreeNode selected)
         {
             if (selected != null)
