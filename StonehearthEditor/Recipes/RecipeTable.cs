@@ -94,5 +94,15 @@ namespace StonehearthEditor.Recipes
         {
             return mKeyToColumnBehavior[col.ColumnName];
         }
+
+        internal RecipeRow GetRow(int rowIndex)
+        {
+            return (RecipeRow)this.DefaultView[rowIndex].Row;
+        }
+
+        internal DataColumn GetColumn(int colIndex)
+        {
+            return this.Columns[colIndex];
+        }
     }
 }

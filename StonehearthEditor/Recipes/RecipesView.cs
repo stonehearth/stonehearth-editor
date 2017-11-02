@@ -422,9 +422,9 @@ namespace StonehearthEditor.Recipes
                     return false;
                 }
 
-                object oldValue = mDataTable.Rows[rowIndex][colIndex];
-                mDataTable.Rows[rowIndex][colIndex] = value;
-                DataCell cell = new DataCell(mDataTable.Columns[colIndex], (RecipeRow)mDataTable.Rows[rowIndex]);
+                object oldValue = mDataTable.GetRow(rowIndex)[colIndex];
+                mDataTable.GetRow(rowIndex)[colIndex] = value;
+                DataCell cell = new DataCell(mDataTable.Columns[colIndex], mDataTable.GetRow(rowIndex));
                 changes.Add(new CellChange(cell, oldValue, value));
             }
             catch (Exception exception)
@@ -439,8 +439,8 @@ namespace StonehearthEditor.Recipes
         private void DeleteCurrentCell()
         {
             DataGridViewCell cell = recipesGridView.CurrentCell;
-            DataColumn dataColumn = mDataTable.Columns[cell.ColumnIndex];
-            RecipeRow recipeRow = (RecipeRow)mDataTable.Rows[cell.RowIndex];
+            DataColumn dataColumn = mDataTable.GetColumn(cell.ColumnIndex);
+            RecipeRow recipeRow = mDataTable.GetRow(cell.RowIndex);
             mDataTable.GetColumnBehavior(dataColumn).TryDeleteCell(recipeRow);
         }
 
@@ -703,8 +703,8 @@ namespace StonehearthEditor.Recipes
 
                     foreach (DataGridViewCell cell in recipesGridView.SelectedCells)
                     {
-                        DataColumn dataColumn = mDataTable.Columns[cell.ColumnIndex];
-                        RecipeRow recipeRow = (RecipeRow)mDataTable.Rows[cell.RowIndex];
+                        DataColumn dataColumn = mDataTable.GetColumn(cell.ColumnIndex);
+                        RecipeRow recipeRow = mDataTable.GetRow(cell.RowIndex);
 
                         object oldValue = recipeRow[dataColumn];
                         object newValue = DBNull.Value;
@@ -810,7 +810,7 @@ namespace StonehearthEditor.Recipes
                         (object s, EventArgs ev, ListBox suggList) =>
                         {
                             DataGridViewCell cell = recipesGridView.CurrentCell;
-                            mDataTable.Rows[cell.RowIndex][cell.ColumnIndex] = suggList.Text;
+                            mDataTable.GetRow(cell.RowIndex)[cell.ColumnIndex] = suggList.Text;
                             return null;
                         };
                 }
@@ -868,7 +868,7 @@ namespace StonehearthEditor.Recipes
         private void addNewIngredientToolStripMenuItem_Click(object sender, EventArgs e)
         {
             DataGridViewCell cell = recipesGridView.CurrentCell;
-            RecipeRow recipeRow = (RecipeRow)mDataTable.Rows[cell.RowIndex];
+            RecipeRow recipeRow = mDataTable.GetRow(cell.RowIndex);
             recipeRow.AddNewIngredient();
             ConfigureColumns();
         }
