@@ -430,7 +430,14 @@ namespace StonehearthEditor.Recipes
                 }
 
                 object oldValue = mDataTable.GetRow(rowIndex)[colIndex];
-                mDataTable.GetRow(rowIndex)[colIndex] = value;
+                if (string.IsNullOrEmpty(value))
+                {
+                    mDataTable.GetRow(rowIndex)[colIndex] = DBNull.Value;
+                }
+                else
+                {
+                    mDataTable.GetRow(rowIndex)[colIndex] = value;
+                }
                 DataCell cell = new DataCell(mDataTable.Columns[colIndex], mDataTable.GetRow(rowIndex));
                 changes.Add(new CellChange(cell, oldValue, value));
             }
@@ -498,7 +505,7 @@ namespace StonehearthEditor.Recipes
 
         private string GetTranslatedName(string locKey)
         {
-            if (locKey.Contains(':'))
+            if (locKey.Contains("i18n"))
             {
                 return ModuleDataManager.GetInstance().LocalizeString(locKey);
             }
@@ -571,20 +578,7 @@ namespace StonehearthEditor.Recipes
         {
             JsonFileData mixinsFile = jsonFileData.CreateFileWithMixinsApplied();
             JToken displayName = mixinsFile.Json.SelectToken("entity_data.stonehearth:catalog.display_name");
-            if (displayName == null)
-            {
-                ModuleFile moduleFile = jsonFileData.GetModuleFile();
-                if (moduleFile != null)
-                {
-                    return moduleFile.FullAlias;
-                }
-                else
-                {
-                    return jsonFileData.FileName;
-                }
-            }
-
-            return displayName.ToString();
+            return displayName == null ? "" : displayName.ToString();
         }
 
         public Image GetIcon(JsonFileData jsonFileData)

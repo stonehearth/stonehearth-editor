@@ -64,6 +64,7 @@ namespace StonehearthEditor
         {
             GameMasterDataManager.GetInstance().SaveModifiedFiles();
             ModuleDataManager.GetInstance().SaveModifiedFiles();
+            recipesView.SaveModifiedFiles();
         }
 
         private void reloadToolStripMenuItem_Click(object sender, EventArgs e)
