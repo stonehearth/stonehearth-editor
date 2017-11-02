@@ -37,16 +37,6 @@ namespace StonehearthEditor.Recipes
             AddRecipeColumns();
         }
 
-        public void Reload()
-        {
-            this.Rows.Clear();
-            this.Columns.Clear();
-            mKeyToColumnBehavior.Clear();
-            mIngredientColumnGroups.Clear();
-
-            AddRecipeColumns();
-        }
-
         protected override Type GetRowType()
         {
             return typeof(RecipeRow);

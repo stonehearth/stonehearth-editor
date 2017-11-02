@@ -37,30 +37,7 @@ namespace StonehearthEditor.Recipes
         public RecipesView()
         {
             mDataTable = new RecipeTable(this);
-            mDataTable.ColumnChanging +=
-                (object sender, DataColumnChangeEventArgs e) =>
-                {
-                    if (!mIsLoading && !mIsApplyingChanges)
-                    {
-                        DataCell cell = new DataCell(e.Column, (RecipeRow)e.Row);
-                        MultipleCellChange change = new MultipleCellChange(cell, e.Row[e.Column], e.ProposedValue);
-                        mUndoStack.Push(change);
-                    }
-                };
-
-            mDataTable.ColumnChanged +=
-                (object sender, DataColumnChangeEventArgs e) =>
-                {
-                    RecipeRow row = (RecipeRow)e.Row;
-                    DataColumn column = e.Column;
-                    mDataTable.GetColumnBehavior(column).OnDataCellChanged(e);
-
-                    if (!mIsLoading)
-                    {
-                        unsavedFilesLabel.Visible = true;
-                        mModifiedCells.Add(new DataCell(column, row));
-                    }
-                };
+            AddDataTableEventHandlers(mDataTable);
 
             InitializeComponent();
 
@@ -127,7 +104,9 @@ namespace StonehearthEditor.Recipes
             mIsLoading = true;
             // Disable render while adding rows
             recipesGridView.DataSource = null;
-            mDataTable.Reload();
+            mDataTable.Dispose();
+            mDataTable = new RecipeTable(this);
+            AddDataTableEventHandlers(mDataTable);
             mModifiedCells.Clear();
             mComboBoxColumns.Clear();
             mUndoStack.Clear();
@@ -141,6 +120,34 @@ namespace StonehearthEditor.Recipes
         {
             BindingFlags bindings = BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.SetProperty;
             typeof(DataGridView).InvokeMember("DoubleBuffered", bindings, null, recipesGridView, new object[] { true });
+        }
+
+        private void AddDataTableEventHandlers(DataTable dataTable)
+        {
+            dataTable.ColumnChanging +=
+                (object sender, DataColumnChangeEventArgs e) =>
+                {
+                    if (!mIsLoading && !mIsApplyingChanges)
+                    {
+                        DataCell cell = new DataCell(e.Column, (RecipeRow)e.Row);
+                        MultipleCellChange change = new MultipleCellChange(cell, e.Row[e.Column], e.ProposedValue);
+                        mUndoStack.Push(change);
+                    }
+                };
+
+            dataTable.ColumnChanged +=
+                (object sender, DataColumnChangeEventArgs e) =>
+                {
+                    RecipeRow row = (RecipeRow)e.Row;
+                    DataColumn column = e.Column;
+                    mDataTable.GetColumnBehavior(column).OnDataCellChanged(e);
+
+                    if (!mIsLoading)
+                    {
+                        unsavedFilesLabel.Visible = true;
+                        mModifiedCells.Add(new DataCell(column, row));
+                    }
+                };
         }
 
         private void LoadColumnsData()
