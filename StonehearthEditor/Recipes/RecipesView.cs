@@ -300,7 +300,6 @@ namespace StonehearthEditor.Recipes
                     row.SetLevelRequired(lvlReq == null ? null : lvlReq.ToObject<int?>());
                     row.SetEffort(effort == null ? null : effort.ToObject<int?>());
                     row.SetWorkUnits(workUnits == null ? null : workUnits.ToObject<int?>());
-                    row.SetAppeal(appeal == null ? null : appeal.ToObject<int?>());
                     row.SetCrafter(jobAlias);
 
                     // TODO: make a row for each fine item?
@@ -308,14 +307,9 @@ namespace StonehearthEditor.Recipes
                     if (item != null)
                     {
                         string alias = item.ToString();
-                        row.SetAlias(alias);
-
                         // Check aliases linked by recipe file
                         JsonFileData itemFileData = FindLinkedJsonMatchingAlias(jsonFileData, alias);
-                        row.Item = itemFileData;
-                        row.SetNetWorth(itemFileData.NetWorth);
-                        row.SetDisplayName(GetTranslatedName(GetDisplayName(itemFileData)));
-                        row.SetIcon(GetIcon(itemFileData));
+                        SetRowDataForItem(row, alias, itemFileData);
                     }
 
                     foreach (JToken ingredient in ingredientArray)
