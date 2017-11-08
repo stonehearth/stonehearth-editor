@@ -16,6 +16,11 @@ namespace StonehearthEditor
             return sInstance;
         }
 
+        public static bool IsBaseMod(string modName)
+        {
+            return modName == "stonehearth" || modName == "rayyas_children";
+        }
+
         private string mModsDirectoryPath;
         private Dictionary<string, Module> mModules = new Dictionary<string, Module>();
 
@@ -185,8 +190,8 @@ namespace StonehearthEditor
                 {
                     treeNodes.Add(modNode);
                     modNode.ExpandAll();
+                }
             }
-        }
         }
 
         // Adds all files and directories in path to tree node root
@@ -215,11 +220,16 @@ namespace StonehearthEditor
             }
         }
 
-        public Dictionary<string, JsonFileData> GetJsonsByTerm(string filterTerm)
+        public Dictionary<string, JsonFileData> GetJsonsByTerm(string filterTerm, bool baseModsOnly = false)
         {
             Dictionary<string, JsonFileData> aliasJsonMap = new Dictionary<string, JsonFileData>();
             foreach (Module module in mModules.Values)
             {
+                if (baseModsOnly && !IsBaseMod(module.Name))
+                {
+                    continue;
+                }
+
                 foreach (ModuleFile moduleFile in module.GetAliases())
                 {
                     JsonFileData data = moduleFile.GetJsonFileDataByTerm(filterTerm);
@@ -233,11 +243,16 @@ namespace StonehearthEditor
             return aliasJsonMap;
         }
 
-        public Dictionary<string, JsonFileData> GetJsonsOfType(JSONTYPE jsonType)
+        public Dictionary<string, JsonFileData> GetJsonsOfType(JSONTYPE jsonType, bool baseModsOnly = false)
         {
             Dictionary<string, JsonFileData> aliasJsonMap = new Dictionary<string, JsonFileData>();
             foreach (Module module in mModules.Values)
             {
+                if (baseModsOnly && !IsBaseMod(module.Name))
+                {
+                    continue;
+                }
+
                 foreach (ModuleFile moduleFile in module.GetAliases())
                 {
                     JsonFileData data = moduleFile.FileData as JsonFileData;
@@ -251,9 +266,9 @@ namespace StonehearthEditor
             return aliasJsonMap;
         }
 
-        public Dictionary<string, JsonFileData> GetIconicJsons()
+        public Dictionary<string, JsonFileData> GetIconicJsons(bool baseModsOnly = false)
         {
-            Dictionary<string, JsonFileData> entityJsonFiles = GetJsonsOfType(JSONTYPE.ENTITY);
+            Dictionary<string, JsonFileData> entityJsonFiles = GetJsonsOfType(JSONTYPE.ENTITY, baseModsOnly);
             Dictionary<string, JsonFileData> iconicJsonFiles = new Dictionary<string, JsonFileData>();
 
             foreach (KeyValuePair<string, JsonFileData> entry in entityJsonFiles)

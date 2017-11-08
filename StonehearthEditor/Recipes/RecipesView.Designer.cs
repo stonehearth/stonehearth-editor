@@ -39,9 +39,10 @@
             this.searchBox = new System.Windows.Forms.ToolStripTextBox();
             this.searchButton = new System.Windows.Forms.ToolStripButton();
             this.filterCbx = new System.Windows.Forms.ToolStripComboBox();
+            this.itemsTypeComboBox = new System.Windows.Forms.ToolStripComboBox();
+            this.baseModsButton = new System.Windows.Forms.ToolStripButton();
             this.helpButton = new System.Windows.Forms.ToolStripButton();
             this.unsavedFilesLabel = new System.Windows.Forms.ToolStripLabel();
-            this.itemsTypeComboBox = new System.Windows.Forms.ToolStripComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.recipesGridView)).BeginInit();
             this.recipesCellContextMenu.SuspendLayout();
             this.searchPanel.SuspendLayout();
@@ -119,6 +120,7 @@
             this.searchButton,
             this.filterCbx,
             this.itemsTypeComboBox,
+            this.baseModsButton,
             this.helpButton,
             this.unsavedFilesLabel});
             this.toolStrip.Location = new System.Drawing.Point(0, 0);
@@ -154,8 +156,37 @@
             this.filterCbx.ToolTipText = "Select column to filter by";
             this.filterCbx.SelectedIndexChanged += new System.EventHandler(this.searchBox_Filter);
             // 
+            // itemsTypeComboBox
+            // 
+            this.itemsTypeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.itemsTypeComboBox.Items.AddRange(new object[] {
+            "Recipes",
+            "Entities",
+            "Iconics"});
+            this.itemsTypeComboBox.Name = "itemsTypeComboBox";
+            this.itemsTypeComboBox.Size = new System.Drawing.Size(121, 25);
+            this.itemsTypeComboBox.ToolTipText = "Select a type of data to edit";
+            this.itemsTypeComboBox.SelectedIndexChanged += new System.EventHandler(this.itemsTypeComboBox_SelectedIndexChanged);
+            // 
+            // baseModsButton
+            // 
+            this.baseModsButton.BackColor = System.Drawing.SystemColors.ActiveBorder;
+            this.baseModsButton.Checked = true;
+            this.baseModsButton.CheckOnClick = true;
+            this.baseModsButton.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.baseModsButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.baseModsButton.Image = ((System.Drawing.Image)(resources.GetObject("baseModsButton.Image")));
+            this.baseModsButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.baseModsButton.Margin = new System.Windows.Forms.Padding(0, 1, 2, 2);
+            this.baseModsButton.Name = "baseModsButton";
+            this.baseModsButton.Size = new System.Drawing.Size(113, 22);
+            this.baseModsButton.Text = "Hide external mods";
+            this.baseModsButton.ToolTipText = "Click to only show items from the \"stonehearth\" and \"rayyas_children\" mods";
+            this.baseModsButton.CheckedChanged += new System.EventHandler(this.baseModsButton_CheckedChanged);
+            // 
             // helpButton
             // 
+            this.helpButton.BackColor = System.Drawing.SystemColors.ActiveBorder;
             this.helpButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.helpButton.Image = ((System.Drawing.Image)(resources.GetObject("helpButton.Image")));
             this.helpButton.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -171,18 +202,6 @@
             this.unsavedFilesLabel.Size = new System.Drawing.Size(106, 22);
             this.unsavedFilesLabel.Text = "Unsaved Changes*";
             this.unsavedFilesLabel.Visible = false;
-            // 
-            // itemsTypeComboBox
-            // 
-            this.itemsTypeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.itemsTypeComboBox.Items.AddRange(new object[] {
-            "Recipes",
-            "Entities",
-            "Iconics"});
-            this.itemsTypeComboBox.Name = "itemsTypeComboBox";
-            this.itemsTypeComboBox.Size = new System.Drawing.Size(121, 25);
-            this.itemsTypeComboBox.ToolTipText = "Select a type of data to edit";
-            this.itemsTypeComboBox.SelectedIndexChanged += new System.EventHandler(this.itemsTypeComboBox_SelectedIndexChanged);
             // 
             // RecipesView
             // 
@@ -217,5 +236,6 @@
         private System.Windows.Forms.ToolStripButton helpButton;
         private System.Windows.Forms.ToolStripLabel unsavedFilesLabel;
         private System.Windows.Forms.ToolStripComboBox itemsTypeComboBox;
+        private System.Windows.Forms.ToolStripButton baseModsButton;
     }
 }

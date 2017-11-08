@@ -216,7 +216,7 @@ namespace StonehearthEditor.Recipes
 
         private void LoadEntities()
         {
-            Dictionary<string, JsonFileData> entityJsonFiles = ModuleDataManager.GetInstance().GetJsonsOfType(JSONTYPE.ENTITY)
+            Dictionary<string, JsonFileData> entityJsonFiles = ModuleDataManager.GetInstance().GetJsonsOfType(JSONTYPE.ENTITY, mBaseModsOnly)
                 .Where(kvp => kvp.Value.Json.SelectToken("components.stonehearth:ai") == null)
                 .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
@@ -230,7 +230,7 @@ namespace StonehearthEditor.Recipes
 
         private void LoadIconics()
         {
-            Dictionary<string, JsonFileData> iconicJsonFiles = ModuleDataManager.GetInstance().GetIconicJsons();
+            Dictionary<string, JsonFileData> iconicJsonFiles = ModuleDataManager.GetInstance().GetIconicJsons(mBaseModsOnly);
 
             foreach (KeyValuePair<string, JsonFileData> entry in iconicJsonFiles)
             {
@@ -244,7 +244,7 @@ namespace StonehearthEditor.Recipes
         {
             foreach (Module module in ModuleDataManager.GetInstance().GetAllModules())
             {
-                bool shouldIncludeMod = mBaseModsOnly ? (module.Name == "stonehearth" || module.Name == "rayyas_children") : true;
+                bool shouldIncludeMod = mBaseModsOnly ? ModuleDataManager.IsBaseMod(module.Name) : true;
                 if (shouldIncludeMod)
                 {
                     ModuleFile jobsIndex = module.GetAliasFile("jobs:index");
@@ -907,6 +907,16 @@ namespace StonehearthEditor.Recipes
             Reload();
             Properties.Settings.Default.LastSelectedItemsTypeIndex = itemsTypeComboBox.SelectedIndex.ToString();
             Properties.Settings.Default.Save();
+        }
+
+        private void baseModsButton_CheckedChanged(object sender, EventArgs e)
+        {
+            bool prev = mBaseModsOnly;
+            if (prev != baseModsButton.Checked)
+            {
+                mBaseModsOnly = baseModsButton.Checked;
+                Reload();
+            }
         }
     }
 }
