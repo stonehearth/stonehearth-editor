@@ -112,6 +112,7 @@ namespace StonehearthEditor.Recipes
             mUndoStack.Clear();
             mRedoStack.Clear();
             LoadColumnsData();
+            FilterRows();
             mIsLoading = false;
         }
 
@@ -482,7 +483,7 @@ namespace StonehearthEditor.Recipes
                 cell.Style = style;
             }
         }
-        
+
         private void SetRowDataForItem(RecipeRow row, string alias, JsonFileData jsonFileData)
         {
             JObject json = jsonFileData.Json;
@@ -495,6 +496,49 @@ namespace StonehearthEditor.Recipes
             row.SetNetWorth(jsonFileData.NetWorth);
             row.SetDisplayName(GetTranslatedName(GetDisplayName(jsonFileData)));
             row.SetIcon(GetIcon(jsonFileData));
+        }
+
+        private void FilterRows()
+        {
+            string searchTerm = searchBox.Text.ToString();
+
+            if (searchTerm == "")
+            {
+                searchBox.BackColor = Color.White;
+                mDataTable.DefaultView.RowFilter = "";
+                return;
+            }
+
+            searchBox.BackColor = Color.Gold;
+
+            string colFilter = filterCbx.Text;
+            StringBuilder sb = new StringBuilder();
+            // Filter by all columns or all ingredient columns
+            if (colFilter == kAllCol || colFilter.Contains(IngredientColumnGroup.kIngr))
+            {
+                Regex matchIng = new Regex(IngredientColumnGroup.kIngr + "\\d");
+                for (int i = 0; i < recipesGridView.Columns.Count; i++)
+                {
+                    DataGridViewColumn column = recipesGridView.Columns[i];
+                    bool isText = column.ValueType == typeof(string) || column.ValueType == typeof(int);
+                    bool match = colFilter.Contains(IngredientColumnGroup.kIngr) ? matchIng.IsMatch(column.Name) : isText;
+                    if (match)
+                    {
+                        sb.Append(GetColFilterString(column.Name, searchTerm));
+                        if (i < recipesGridView.Columns.Count - 1)
+                        {
+                            sb.Append(" OR "); // to aggregate multiple columns into the search filter query
+                        }
+                    }
+                }
+            }
+            else
+            {
+                // Filter by specific columns
+                sb.Append(GetColFilterString(colFilter, searchTerm));
+            }
+
+            mDataTable.DefaultView.RowFilter = sb.ToString();
         }
 
         private string GetTranslatedName(string locKey)
@@ -613,44 +657,7 @@ namespace StonehearthEditor.Recipes
 
         private void searchBox_Filter(object sender, EventArgs e)
         {
-            string searchTerm = searchBox.Text.ToString();
-            string colFilter = filterCbx.Text;
-            if (searchTerm != "")
-            {
-                searchBox.BackColor = Color.Gold;
-            }
-            else
-            {
-                searchBox.BackColor = Color.White;
-            }
-
-            StringBuilder sb = new StringBuilder();
-            // Filter by all columns or all ingredient columns
-            if (colFilter == kAllCol || colFilter.Contains(IngredientColumnGroup.kIngr))
-            {
-                Regex matchIng = new Regex(IngredientColumnGroup.kIngr + "\\d");
-                for (int i = 0; i < recipesGridView.Columns.Count; i++)
-                {
-                    DataGridViewColumn column = recipesGridView.Columns[i];
-                    bool isText = column.ValueType == typeof(string) || column.ValueType == typeof(int);
-                    bool match = colFilter.Contains(IngredientColumnGroup.kIngr) ? matchIng.IsMatch(column.Name) : isText;
-                    if (match)
-                    {
-                        sb.Append(GetColFilterString(column.Name, searchTerm));
-                        if (i < recipesGridView.Columns.Count - 1)
-                        {
-                            sb.Append(" OR "); // to aggregate multiple columns into the search filter query
-                        }
-                    }
-                }
-            }
-            else
-            {
-                // Filter by specific columns
-                sb.Append(GetColFilterString(colFilter, searchTerm));
-            }
-
-            mDataTable.DefaultView.RowFilter = sb.ToString();
+            FilterRows();
         }
 
         private void recipesGridView_KeyDown(object sender, KeyEventArgs e)
