@@ -13,7 +13,7 @@ using Newtonsoft.Json.Linq;
 
 namespace StonehearthEditor.Recipes
 {
-    public partial class RecipesView : UserControl
+    public partial class RecipesView : UserControl, IReloadable
     {
         public const string kAllCol = "All Columns";
 
@@ -303,7 +303,6 @@ namespace StonehearthEditor.Recipes
                     row.SetWorkUnits(workUnits == null ? null : workUnits.ToObject<int?>());
                     row.SetCrafter(jobAlias);
 
-                    // TODO: make a row for each fine item?
                     JToken item = product["item"];
                     if (item != null)
                     {
