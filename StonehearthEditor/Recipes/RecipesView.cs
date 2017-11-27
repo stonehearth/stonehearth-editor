@@ -197,6 +197,15 @@ namespace StonehearthEditor.Recipes
                     recipesGridView.Columns.Insert(i, newColumn);
                     mComboBoxColumns.Add(i);
                     column = newColumn;
+                } else if (colBehavior is BooleanColumnBehavior) {
+                    var newColumn = new DataGridViewCheckBoxColumn();
+                    newColumn.Name = column.Name;
+                    newColumn.DataPropertyName = column.DataPropertyName;
+
+                    recipesGridView.Columns.RemoveAt(i);
+                    recipesGridView.Columns.Insert(i, newColumn);
+                    mComboBoxColumns.Add(i);
+                    column = newColumn;
                 }
 
                 // Configure columns based on column behavior
@@ -489,6 +498,10 @@ namespace StonehearthEditor.Recipes
 
             JToken appeal = json.SelectToken("entity_data.stonehearth:appeal.appeal");
             row.SetAppeal(appeal == null ? null : appeal.ToObject<int?>());
+
+            JToken alwaysStandardItemQuality = json.SelectToken("entity_data.stonehearth:item_quality.always_standard");
+            row.SetIsVariableQuality(alwaysStandardItemQuality == null ? null : alwaysStandardItemQuality.ToObject<bool?>());
+
             row.SetAlias(alias);
 
             row.Item = jsonFileData;
