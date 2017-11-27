@@ -183,6 +183,7 @@ namespace StonehearthEditor.Recipes
                 ColumnBehavior colBehavior = mDataTable.GetColumnBehavior(dataColumn);
 
                 // Add combo boxes for columns that have a predetermined set of valid values
+                DataGridViewColumn replacementColumn = null;
                 if (colBehavior is IngrNameColumnBehavior)
                 {
                     DataGridViewComboBoxColumn newColumn = new DataGridViewComboBoxColumn();
@@ -192,11 +193,18 @@ namespace StonehearthEditor.Recipes
                     newColumn.DisplayStyle = DataGridViewComboBoxDisplayStyle.Nothing;
                     newColumn.DataSource = GetAutoCompleteStrings(newColumn.Name);
                     newColumn.SortMode = DataGridViewColumnSortMode.Automatic;
-
+                    replacementColumn = newColumn;
+                } else if (colBehavior is BooleanColumnBehavior) {
+                    var newColumn = new DataGridViewCheckBoxColumn();
+                    newColumn.Name = column.Name;
+                    newColumn.DataPropertyName = column.DataPropertyName;
+                    replacementColumn = newColumn;
+                }
+                if (replacementColumn != null) {
                     recipesGridView.Columns.RemoveAt(i);
-                    recipesGridView.Columns.Insert(i, newColumn);
+                    recipesGridView.Columns.Insert(i, replacementColumn);
                     mComboBoxColumns.Add(i);
-                    column = newColumn;
+                    column = replacementColumn;
                 }
 
                 // Configure columns based on column behavior
@@ -489,6 +497,10 @@ namespace StonehearthEditor.Recipes
 
             JToken appeal = json.SelectToken("entity_data.stonehearth:appeal.appeal");
             row.SetAppeal(appeal == null ? null : appeal.ToObject<int?>());
+
+            JToken alwaysStandardItemQuality = json.SelectToken("entity_data.stonehearth:item_quality.always_standard");
+            row.SetIsVariableQuality(alwaysStandardItemQuality == null ? null : alwaysStandardItemQuality.ToObject<bool?>());
+
             row.SetAlias(alias);
 
             row.Item = jsonFileData;
