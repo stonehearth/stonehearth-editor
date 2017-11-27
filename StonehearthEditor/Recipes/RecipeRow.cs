@@ -44,6 +44,11 @@ namespace StonehearthEditor.Recipes
             SetGridCell(RecipeTable.kAppeal, value);
         }
 
+        public void SetIsVariableQuality(bool? value)
+        {
+            SetGridCell(RecipeTable.kIsVariableQuality, value);
+        }
+
         public void SetEffort(int? value)
         {
             SetGridCell(RecipeTable.kEffort, value);

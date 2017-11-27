@@ -250,6 +250,44 @@ namespace StonehearthEditor.Recipes
         }
     }
 
+    internal class BooleanColumnBehavior : ColumnBehavior
+    {
+    }
+
+    internal class IsVariableQualityColumnBehavior : BooleanColumnBehavior
+    {
+        public override void SaveCell(HashSet<JsonFileData> modifiedFiles, RecipeRow row, object value)
+        {
+            JsonFileData jsonFileData = row.Item;
+            JObject json = jsonFileData.Json;
+            JToken token = json.SelectToken("entity_data.stonehearth:item_quality.variable_quality");
+
+            if (value == null || value == DBNull.Value || !(bool)value) {
+                if (token != null) {
+                    json.SelectToken("entity_data.stonehearth:item_quality").Parent.Remove();
+                }
+            } else if (token != null) {
+                (token as JValue).Value = true;
+            } else {
+                JObject entityData = json["entity_data"] as JObject;
+                if (entityData == null) {
+                    entityData = new JObject();
+                    json["entity_data"] = entityData;
+                }
+
+                entityData.Add("stonehearth:item_quality", new JObject(new JProperty("variable_quality", true)));
+            }
+
+            modifiedFiles.Add(jsonFileData);
+        }
+
+        public override bool TryDeleteCell(RecipeRow row)
+        {
+            row.SetIsVariableQuality(null);
+            return true;
+        }
+    }
+
     internal class CrafterColumnBehavior : RecipeColumnBehavior
     {
         public override void ConfigureColumn(DataGridViewColumn gridCol)
