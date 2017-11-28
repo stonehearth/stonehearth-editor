@@ -320,7 +320,6 @@ namespace StonehearthEditor
             {
                 addIconicVersionToolStripMenuItem.Visible = CanAddEntityForm(file, "iconic");
                 addGhostToolStripMenuItem.Visible = !CanAddEntityForm(file, "iconic") && CanAddEntityForm(file, "ghost");
-                makeFineVersionToolStripMenuItem.Visible = CanAddFineVersion(file);
                 removeFromManifestToolStripMenuItem.Visible = GetModuleFile(file) != null;
                 aliasContextDuplicate.Visible = true;
                 copyFullAliasToolStripMenuItem.Visible = true;
@@ -367,29 +366,6 @@ namespace StonehearthEditor
             treeView.SelectedNode = treeView.GetNodeAt(e.X, e.Y);
         }
 
-        private bool CanAddFineVersion(FileData file)
-        {
-            JsonFileData jsonFileData = file as JsonFileData;
-            if (jsonFileData == null)
-            {
-                return false; // Don't know how to clone something not jsonFileData
-            }
-
-            ModuleFile moduleFile = jsonFileData.GetModuleFile();
-            if (moduleFile == null || moduleFile.IsFineVersion || jsonFileData.JsonType != JSONTYPE.ENTITY)
-            {
-                return false; // can only make fine version of a module file
-            }
-
-            string fineFullAlias = moduleFile.FullAlias + ":fine";
-            if (ModuleDataManager.GetInstance().GetModuleFile(fineFullAlias) != null)
-            {
-                return false; // fine already exists
-            }
-
-            return true;
-        }
-
         private ModuleFile GetModuleFile(FileData file)
         {
             IModuleFileData moduleFileData = file as IModuleFileData;
@@ -399,26 +375,6 @@ namespace StonehearthEditor
             }
 
             return moduleFileData.GetModuleFile();
-        }
-
-        private void makeFineVersionToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            TreeNode selectedNode = treeView.SelectedNode;
-            FileData selectedFileData = ModuleDataManager.GetInstance().GetSelectedFileData(treeView.SelectedNode);
-            if (!CanAddFineVersion(selectedFileData))
-            {
-                return;
-            }
-
-            JsonFileData jsonFileData = selectedFileData as JsonFileData;
-            ModuleFile moduleFile = jsonFileData.GetModuleFile();
-            CloneObjectParameters parameters = new CloneObjectParameters();
-            parameters.AddStringReplacement(moduleFile.ShortName, moduleFile.ShortName + "_fine");
-            parameters.AddAliasReplacement(moduleFile.ShortName + "_fine", moduleFile.ShortName + ":fine");
-            HashSet<string> dependencies = ModuleDataManager.GetInstance().PreviewCloneDependencies(selectedFileData, parameters);
-            PreviewCloneAliasCallback callback = new PreviewCloneAliasCallback(this, selectedFileData, parameters);
-            PreviewCloneDialog dialog = new PreviewCloneDialog("Creating " + moduleFile.ShortName + ":fine", dependencies, callback);
-            dialog.ShowDialog();
         }
 
         private class CloneAliasCallback : CloneDialog.IDialogCallback

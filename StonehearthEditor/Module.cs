@@ -66,6 +66,7 @@ namespace StonehearthEditor
                         mManifestJson = JObject.Parse(fileString);
 
                         AddModuleFiles("aliases");
+                        AddModuleFiles("aliases", "deprecated_aliases");
                         AddModuleFiles("components");
                         AddModuleFiles("controllers");
                     }
@@ -167,6 +168,13 @@ namespace StonehearthEditor
         {
             JObject aliases = mManifestJson[manifestEntryType] as JObject;
             JProperty aliasProperty = aliases.Property(alias);
+
+            if (aliasProperty == null && manifestEntryType == "aliases")
+            {
+                aliases = mManifestJson["deprecated_aliases"] as JObject;
+                aliasProperty = aliases.Property(alias);
+            }
+
             if (aliasProperty != null)
             {
                 aliasProperty.Remove();
@@ -253,6 +261,17 @@ namespace StonehearthEditor
             return (searchTerm == "" || searchTerm == null || hasItems) ? root : null;
         }
 
+        public bool IsAliasDeprecated(string alias)
+        {
+            JToken deprecatedAliases = mManifestJson["deprecated_aliases"];
+            if (deprecatedAliases != null)
+            {
+                return deprecatedAliases[alias] != null;
+            }
+
+            return false;
+        }
+
         public void Dispose()
         {
             foreach (Dictionary<string, ModuleFile> dictionary in mModuleFiles.Values)
@@ -274,13 +293,22 @@ namespace StonehearthEditor
             }
         }
 
-        private void AddModuleFiles(string fileType)
+        private void AddModuleFiles(string fileType, string key = null)
         {
-            JToken fileTypes = mManifestJson[fileType];
+            JToken fileTypes = mManifestJson[key ?? fileType];
             if (fileTypes != null)
             {
-                Dictionary<string, ModuleFile> dictionary = new Dictionary<string, ModuleFile>();
-                mModuleFiles[fileType] = dictionary;
+                Dictionary<string, ModuleFile> dictionary;
+                if (mModuleFiles.ContainsKey(fileType))
+                {
+                    dictionary = mModuleFiles[fileType];
+                }
+                else
+                {
+                    dictionary = new Dictionary<string, ModuleFile>();
+                    mModuleFiles[fileType] = dictionary;
+                }
+
                 foreach (JToken item in fileTypes.Children())
                 {
                     JProperty alias = item as JProperty;
@@ -288,6 +316,7 @@ namespace StonehearthEditor
                     string value = alias.Value.ToString().Trim();
 
                     ModuleFile moduleFile = new ModuleFile(this, name, value);
+                    moduleFile.IsDeprecated = IsAliasDeprecated(name);
                     dictionary.Add(name, moduleFile);
                 }
             }
