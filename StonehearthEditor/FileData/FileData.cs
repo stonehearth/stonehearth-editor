@@ -74,6 +74,17 @@ namespace StonehearthEditor
                 node.ToolTipText = Errors;
             }
 
+            // Mark deprecation.
+            if (this is IModuleFileData)
+            {
+                var moduleFile = ((IModuleFileData)this).GetModuleFile();
+                if (moduleFile != null && moduleFile.IsDeprecated)
+                {
+                    node.ForeColor = System.Drawing.Color.Gray;
+                    node.ToolTipText = ((node.ToolTipText ?? "") + "\nDEPRECATED").Trim();
+                }
+            }
+
             return true;
         }
 

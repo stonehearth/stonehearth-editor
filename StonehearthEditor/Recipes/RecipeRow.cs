@@ -23,6 +23,8 @@ namespace StonehearthEditor.Recipes
 
         public JsonFileData Item { get; set; }
 
+        public bool IsDeprecated;
+
         internal RecipeRow(DataRowBuilder builder)
             : base(builder)
         {
