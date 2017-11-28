@@ -24,7 +24,7 @@ namespace StonehearthEditor
         private string mShortName;
         private FileData mFileData = null;
         private FileType mType = FileType.UNKNOWN;
-        private bool mIsFineVersion = false;
+        public bool IsDeprecated = false;
 
         public ModuleFile(Module module, string alias, string filePath)
         {
@@ -34,21 +34,8 @@ namespace StonehearthEditor
             mRootFile = JsonHelper.GetFileFromFileJson(filePath, module.Path);
             int lastColon = Alias.LastIndexOf(':');
             mShortName = lastColon > -1 ? Alias.Substring(lastColon + 1) : Alias;
-            if (mShortName.Equals("fine"))
-            {
-                string oneBefore = Alias.Substring(0, lastColon);
-                int secondToLastColon = oneBefore.LastIndexOf(':');
-                oneBefore = secondToLastColon > -1 ? oneBefore.Substring(secondToLastColon + 1) : oneBefore;
-                mShortName = oneBefore;
-                mIsFineVersion = true;
-            }
 
             DetermineFileType();
-        }
-
-        public bool IsFineVersion
-        {
-            get { return mIsFineVersion; }
         }
 
         public void TryLoad()

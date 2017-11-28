@@ -52,6 +52,15 @@ namespace StonehearthEditor.Recipes
             filterCbx.Items.Add(RecipeTable.kEffort);
             filterCbx.Items.Add(IngredientColumnGroup.kIngr + " " + IngredientColumnGroup.kName);
             filterCbx.Items.Add(IngredientColumnGroup.kIngr + " " + IngredientColumnGroup.kAmount);
+
+            // Paint deprecated rows in gray.
+            recipesGridView.RowPrePaint += (object sender, DataGridViewRowPrePaintEventArgs e) =>
+            {
+                if (((recipesGridView.Rows[e.RowIndex].DataBoundItem as DataRowView).Row as RecipeRow).IsDeprecated)
+                {
+                    recipesGridView.Rows[e.RowIndex].DefaultCellStyle.ForeColor = Color.Gray;
+                }
+            };
         }
 
         public void SaveModifiedFiles()
@@ -507,6 +516,11 @@ namespace StonehearthEditor.Recipes
             row.SetNetWorth(jsonFileData.NetWorth);
             row.SetDisplayName(GetTranslatedName(GetDisplayName(jsonFileData)));
             row.SetIcon(GetIcon(jsonFileData));
+
+            if (jsonFileData.GetModuleFile() != null && jsonFileData.GetModuleFile().IsDeprecated)
+            {
+                row.IsDeprecated = true;
+            }
         }
 
         private void FilterRows()

@@ -34,7 +34,6 @@
             this.aliasContextDuplicate = new System.Windows.Forms.ToolStripMenuItem();
             this.addIconicVersionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addGhostToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.makeFineVersionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.copyFullAliasToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.removeFromManifestToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addNewAliasToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -82,7 +81,6 @@
             this.aliasContextDuplicate,
             this.addIconicVersionToolStripMenuItem,
             this.addGhostToolStripMenuItem,
-            this.makeFineVersionToolStripMenuItem,
             this.copyFullAliasToolStripMenuItem,
             this.removeFromManifestToolStripMenuItem,
             this.addNewAliasToolStripMenuItem});
@@ -110,13 +108,6 @@
             this.addGhostToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
             this.addGhostToolStripMenuItem.Text = "Add Ghost";
             this.addGhostToolStripMenuItem.Click += new System.EventHandler(this.addGhostToolStripMenuItem_Click);
-            // 
-            // makeFineVersionToolStripMenuItem
-            // 
-            this.makeFineVersionToolStripMenuItem.Name = "makeFineVersionToolStripMenuItem";
-            this.makeFineVersionToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
-            this.makeFineVersionToolStripMenuItem.Text = "Make Fine Version";
-            this.makeFineVersionToolStripMenuItem.Click += new System.EventHandler(this.makeFineVersionToolStripMenuItem_Click);
             // 
             // copyFullAliasToolStripMenuItem
             // 
@@ -453,7 +444,6 @@
       private System.Windows.Forms.TextBox selectedFilePathTextBox;
       private System.Windows.Forms.ContextMenuStrip aliasContextMenu;
       private System.Windows.Forms.ToolStripMenuItem aliasContextDuplicate;
-      private System.Windows.Forms.ToolStripMenuItem makeFineVersionToolStripMenuItem;
       private System.Windows.Forms.ToolStripMenuItem copyFullAliasToolStripMenuItem;
       private System.Windows.Forms.ImageList manifestImageList;
       private System.Windows.Forms.ToolStripMenuItem addIconicVersionToolStripMenuItem;
