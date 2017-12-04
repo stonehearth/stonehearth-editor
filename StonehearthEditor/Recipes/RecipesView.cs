@@ -639,8 +639,42 @@ namespace StonehearthEditor.Recipes
 
         private string GetDisplayName(JsonFileData jsonFileData)
         {
-            JsonFileData mixinsFile = jsonFileData.CreateFileWithMixinsApplied();
-            JToken displayName = mixinsFile.Json.SelectToken("entity_data.stonehearth:catalog.display_name");
+            JObject entityJson = jsonFileData.Json;
+            JToken displayName = entityJson.SelectToken("entity_data.stonehearth:catalog.display_name");
+            try
+            {
+                JsonFileData mixinsFile = jsonFileData.CreateFileWithMixinsApplied();
+                displayName = mixinsFile.Json.SelectToken("entity_data.stonehearth:catalog.display_name");
+            }
+            catch (Exception e)
+            {
+                // If could not apply mixin (e.g. if it is a mod json that uses mixintypes),
+                // manually check the ghost for the display name.
+                if (displayName == null)
+                {
+                    JToken entityFormsComponent = entityJson.SelectToken("components.stonehearth:entity_forms");
+                    if (entityFormsComponent != null)
+                    {
+                        JToken ghostForm = entityFormsComponent["ghost_form"];
+                        if (ghostForm != null)
+                        {
+                            string ghostFilePath = JsonHelper.GetFileFromFileJson(ghostForm.ToString(), jsonFileData.Directory);
+                            ghostFilePath = JsonHelper.NormalizeSystemPath(ghostFilePath);
+
+                            foreach (JsonFileData file in jsonFileData.OpenedFiles)
+                            {
+                                JObject json = file.Json;
+                                if (file.Path == ghostFilePath)
+                                {
+                                    displayName = json.SelectToken("entity_data.stonehearth:catalog.display_name");
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
             return displayName == null ? "" : displayName.ToString();
         }
 
