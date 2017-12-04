@@ -507,8 +507,8 @@ namespace StonehearthEditor.Recipes
             JToken appeal = json.SelectToken("entity_data.stonehearth:appeal.appeal");
             row.SetAppeal(appeal == null ? null : appeal.ToObject<int?>());
 
-            JToken alwaysStandardItemQuality = json.SelectToken("entity_data.stonehearth:item_quality.always_standard");
-            row.SetIsVariableQuality(alwaysStandardItemQuality == null ? null : alwaysStandardItemQuality.ToObject<bool?>());
+            JToken hasVariableItemQuality = json.SelectToken("entity_data.stonehearth:item_quality.variable_quality");
+            row.SetIsVariableQuality(hasVariableItemQuality == null ? null : hasVariableItemQuality.ToObject<bool?>());
 
             row.SetAlias(alias);
 
