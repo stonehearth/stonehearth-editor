@@ -325,7 +325,7 @@ namespace StonehearthEditor.Recipes
                     {
                         string alias = item.ToString();
                         // Check aliases linked by recipe file
-                        JsonFileData itemFileData = FindLinkedJsonMatchingAlias(jsonFileData, alias);
+                        JsonFileData itemFileData = FindLinkedJsonMatchingAlias(jsonFileData, alias) ?? jsonFileData;
                         SetRowDataForItem(row, alias, itemFileData);
                     }
 
@@ -345,6 +345,12 @@ namespace StonehearthEditor.Recipes
                         else if (uri != null)
                         {
                             JsonFileData ingrJsonFileData = FindLinkedJsonMatchingAlias(jsonFileData, uri.ToString());
+                            if (ingrJsonFileData == null)
+                            {
+                                MessageBox.Show("Could not find ingredient \"" + uri + "\" in the manifest for recipe \"" + jsonFileData.FileName + "\"");
+                                continue;
+                            }
+
                             ingredientData.Name = ingrJsonFileData.GetModuleFile().FullAlias;
                         }
                         else
@@ -358,7 +364,7 @@ namespace StonehearthEditor.Recipes
             }
         }
 
-        private JsonFileData FindLinkedJsonMatchingAlias(JsonFileData jsonFileData, String alias)
+        private JsonFileData FindLinkedJsonMatchingAlias(JsonFileData jsonFileData, string alias)
         {
             foreach (ModuleFile linkedModule in jsonFileData.LinkedAliases)
             {
@@ -368,7 +374,7 @@ namespace StonehearthEditor.Recipes
                 }
             }
 
-            return jsonFileData;
+            return null;
         }
 
         private void SaveIngredients(HashSet<JsonFileData> modifiedFiles, RecipeRow row)
