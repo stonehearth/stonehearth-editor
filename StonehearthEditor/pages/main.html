@@ -55,10 +55,8 @@
         <span class="material-warning" >(Materials only update on reload.)</span>
     </script>
     <script type="text/x-handlebars" data-template-name="components/boolean-property">
-        <label>
-            <span class="inline-property-label checkbox-property-label">{{ model.name }}</span>
-            {{ input class="sh-input sh-checkbox-input" type='checkbox' checked=model.value }}
-        </label>
+        <span class="inline-property-label checkbox-property-label">{{ model.name }}</span>
+        {{ input class="sh-input sh-checkbox-input" type='checkbox' checked=model.value }}
     </script>
     <script type="text/x-handlebars" data-template-name="components/int-property">
         <span class="inline-property-label">{{ model.name }}</span>
@@ -80,7 +78,7 @@
         {{/each }}
     </script>
     <script type="text/x-handlebars" data-template-name="components/sub-group-property">
-            <div class="sub-group-property-header">
+            <h2 class="sub-group-property-header">
                 {{ model.name }}
                 {{#if model.optional }}
                     <button {{ action 'toggleMissing' }} class="sub-group-property-expand-button">
@@ -91,7 +89,7 @@
                         {{/if }}
                     </button>
                 {{/if }}
-            </div>
+            </h2>
         {{#if model.isMissing }}
         {{ else }}
             {{#each model.children as |property| }}
@@ -136,10 +134,10 @@
         {{ else }}
             <select onchange={{ action (mut model.kind) value="target.value" }} class="level3-parameter-property-select">
                 {{#each model.kindOptionNames as |kindChoice| }}
-                <option value={{ kindChoice }}
-                        selected={{ eq model.kind kindChoice }}>
-                    {{ kindChoice }}
-                </option>
+                    <option value={{ kindChoice }}
+                            selected={{ eq model.kind kindChoice }}>
+                        {{ kindChoice }}
+                    </option>
                 {{/each }}
             </select>
         {{/if }}
@@ -166,10 +164,10 @@
         {{ else }}
             <select onchange={{ action (mut model.surface) value="target.value" }} class="origin-parameter-property-select">
                 {{#each model.surfaceOptionNames as |surfaceChoice| }}
-                <option value={{ surfaceChoice }}
-                        selected={{ eq model.surface surfaceChoice }}>
-                    {{ surfaceChoice }}
-                </option>
+                    <option value={{ surfaceChoice }}
+                            selected={{ eq model.surface surfaceChoice }}>
+                        {{ surfaceChoice }}
+                    </option>
                 {{/each }}
             </select>
         {{/if }}
