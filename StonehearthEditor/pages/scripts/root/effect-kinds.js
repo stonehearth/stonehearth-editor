@@ -21,6 +21,24 @@
                 }),
 
                 ComplexProperty.create({
+                    name: "mesh",
+                    componentName: "encompassing-group-property",
+                    optional: false,
+                    children: Ember.A([
+
+                        MeshFileProperty.create({
+                            name: "file",
+                        }),
+                        MeshMatrixProperty.create({
+                            name: "matrix",
+                        }),
+                        MeshOffsetProperty.create({
+                            name: "offset",
+                        }),
+                    ]),
+                }),
+
+                ComplexProperty.create({
                     name: "emission",
                     componentName: "encompassing-group-property",
                     optional: false,

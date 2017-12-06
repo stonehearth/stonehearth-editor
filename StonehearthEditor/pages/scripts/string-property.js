@@ -109,6 +109,14 @@ ConstantScalarParameterKind = ParameterKind.extend({
     componentName: 'constant-scalar-parameter',
     value: '0',
     fromJson: function (json) {
+        if (json === undefined) {
+            this.set('value', '0');
+            // This should detect if 'rate' is the name of the parameter we are inspecting, and if so set the value to 50.
+            if (this.get('name') === 'rate') {
+                this.set('value', '50');
+            }
+            return;
+        }
         this.set('value', Utils.getEffectValueOrDefault(json, 0, "0"));
     },
     toJson: function () {
@@ -847,6 +855,7 @@ ParameterProperty = EffectProperty.extend({
     parameter: null,
     kindOptionNames: null,
     kind: null,
+    bursts: false,
     isMissing: false,
     isValid: Ember.computed('parameter.isValid', function () {
         return this.parameter === null || this.parameter.get('isValid');
@@ -866,6 +875,10 @@ ParameterProperty = EffectProperty.extend({
         this.set('isMissing', isMissing);
         if (isMissing) {
             this.set('kind', 'CONSTANT');
+            this.set('parameter', (this.kind, this.dimension));
+            if (!this.get('optional')) {
+                this.set('isMissing', false);
+            }
             return;
         }
         var kind = json['kind'];
