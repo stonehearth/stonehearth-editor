@@ -51,6 +51,30 @@ table {
     border: 5px solid #9c9c9c;
     padding: 5px;
 }
+.origin-parameter-property-header-text {
+    width: 110px;
+    display: inline-block;
+    text-align: left;
+    margin-left: 15px;
+}
+.origin-parameter-property-select {
+    width: 250px;
+}
+
+.mesh-parameter-property {
+    background-color: #ababab;
+    border: 5px solid #9c9c9c;
+    padding: 5px;
+}
+.mesh-parameter-property-header-text {
+    width: 110px;
+    display: inline-block;
+    text-align: left;
+    margin-left: 15px;
+}
+.mesh-parameter-property-select {
+    width: 250px;
+}
 
 .burst-parameter-property {
     background-color: #ababab;
@@ -93,15 +117,6 @@ table {
 .level3-parameter-property-select {
     width: 250px;
 }
-.origin-parameter-property-header-text {
-    width: 110px;
-    display: inline-block;
-    text-align: left;
-    margin-left: 15px;
-}
-.origin-parameter-property-select {
-    width: 250px;
-}
 .parameter-property-label {
     width: 125px;
     display: inline-block;
@@ -113,7 +128,7 @@ table {
     text-align: center;
 }
 .inline-property-label {
-    width: 135px;
+    width: 125px;
     display: inline-block;
     text-align: center;
 }

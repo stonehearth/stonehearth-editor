@@ -64,8 +64,8 @@ App.OriginParameterPropertyComponent = Ember.Component.extend({
     },
 });
 
-App.MeshoffsetParameterPropertyComponent = Ember.Component.extend({
-    classNames: ['meshoffset-parameter-property'],
+App.MeshParameterPropertyComponent = Ember.Component.extend({
+    classNames: ['mesh-parameter-property'],
     actions: {
         toggleMissing: function () {
             this.set('model.isMissing', !this.get('model.isMissing'));

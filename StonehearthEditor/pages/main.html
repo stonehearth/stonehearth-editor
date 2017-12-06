@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -188,25 +188,26 @@
         {{ component model.parameter.componentName model=model.parameter }}
         {{/if }}
     </script>
-    <script type="text/x-handlebars" data-template-name="components/meshfile-property">
-        <span class="inline-property-label">{{ model.name }}</span>
-        {{ input class="sh-textlong-input" type="text" value=model.value }}
-        {{ warning-icon message=model.invalidValueMessage }}
-    </script>
-    <script type="text/x-handlebars" data-template-name="components/meshmatrix-property">
-        <span class="inline-property-label">{{ model.name }}</span>
-        {{ input class="sh-textlong-input" type="text" value=model.value }}
-        {{ warning-icon message=model.invalidValueMessage }}
-    </script>
-    <script type="text/x-handlebars" data-template-name="components/meshoffset-parameter-property">
-        <span class="inline-property-label">{{ model.name }}</span><br>
-        <span class="parameter-property-label">X</span>
-        {{ input class="sh-input sh-numeric-input" type="text" value=model.offset.x }}
-        <span class="parameter-property-label">Y</span>
-        {{ input class="sh-input sh-numeric-input" type="text" value=model.offset.y }}
-        <span class="parameter-property-label">Z</span>
-        {{ input class="sh-input sh-numeric-input" type="text" value=model.offset.z }}
-        {{ warning-icon message=model.invalidValueMessage }}
+    <script type="text/x-handlebars" data-template-name="components/mesh-parameter-property">
+        {{#if model.isMissing }}
+        {{ else }}
+            {{#if model.offset }}
+                <span class="inline-property-label">{{ model.name }}</span><br>
+                <span class="parameter-property-label">X</span>
+                {{ input class="sh-input sh-numeric-input" type="text" value=model.offset.x }}
+                <span class="parameter-property-label">Y</span>
+                {{ input class="sh-input sh-numeric-input" type="text" value=model.offset.y }}
+                <span class="parameter-property-label">Z</span>
+                {{ input class="sh-input sh-numeric-input" type="text" value=model.offset.z }}
+                {{ warning-icon message=model.invalidValueMessage }}
+                {{ component model.parameter.componentName model=model.parameter }}
+            {{ else }}
+                <span class="inline-property-label">{{ model.name }}</span>
+                {{ input class="sh-textlong-input" type="text" value=model.value }}
+                {{ warning-icon message=model.invalidValueMessage }}
+                {{ component model.parameter.componentName model=model.parameter }}
+            {{/if }}
+        {{/if }}
     </script>
     <script type="text/x-handlebars" data-template-name="components/burst-parameter-property">
         {{#if model.isMissing }}
