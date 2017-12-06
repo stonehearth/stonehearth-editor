@@ -231,9 +231,11 @@ body {
 
 @media (min-width: 550px) {
     h3 {
-        font-size: 1.8rem;
+        font-size: 1.6rem;
+        font-weight: bolder;
     }
     h2 {
-        font-size: 1.4rem;
+        font-size: 1.2rem;
+        font-weight: bolder;
     }
 }

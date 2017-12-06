@@ -47,7 +47,7 @@
     </script>
     <script type="text/x-handlebars" data-template-name="components/string-property">
         <span class="inline-property-label">{{ model.name }}</span>
-        {{ input class="sh-input" type='text' value=model.value }}
+        {{ input class="sh-textlong-input" type='text' value=model.value }}
     </script>
     <script type="text/x-handlebars" data-template-name="components/material-property">
         <span class="inline-property-label">{{ model.name }}</span>
@@ -190,7 +190,8 @@
         {{#if model.isMissing }}
         {{ else }}
             {{#if model.offset }}
-                <span class="inline-property-label">{{ model.name }}</span><br>
+                <span class="inline-property-label">{{ model.name }}</span>
+                <br>
                 <span class="parameter-property-label">X</span>
                 {{ input class="sh-input sh-numeric-input" type="text" value=model.offset.x }}
                 <span class="parameter-property-label">Y</span>
