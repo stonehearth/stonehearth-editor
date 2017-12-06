@@ -309,7 +309,7 @@ OriginProperty = EffectProperty.extend({
             this.set('surface', 'POINT');
             if (!this.get('optional')) {
                 this.set('isMissing', false);
-            }     
+            }
             return;
         }
         var surface = json['surface'];

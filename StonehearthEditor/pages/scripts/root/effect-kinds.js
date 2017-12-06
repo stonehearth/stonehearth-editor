@@ -25,7 +25,6 @@
                     componentName: "encompassing-group-property",
                     optional: false,
                     children: Ember.A([
-
                         MeshFileProperty.create({
                             name: "file",
                             componentName: "mesh-parameter-property",
@@ -40,7 +39,7 @@
                         }),
                     ]),
                 }),
-
+                
                 ComplexProperty.create({
                     name: "emission",
                     componentName: "encompassing-group-property",
