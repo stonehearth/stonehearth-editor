@@ -36,7 +36,11 @@
         Utils.assert(Utils.isUndefinedOrTypeOf('object', json));
         var children = this.get('children');
         var isMissing = json === undefined;
-        this.set('isMissing', isMissing);
+        var isOptional = !!this.get('optional');
+
+        // Here we expect required fields to have reasonable defaults.
+        this.set('isMissing', isOptional ? isMissing : false);
+
         if (isMissing) {
             for (var i = 0; i < children.length; i++) {
                 children[i].fromJson(undefined);

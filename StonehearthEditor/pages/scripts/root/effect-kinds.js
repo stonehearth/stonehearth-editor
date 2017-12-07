@@ -21,6 +21,26 @@
                 }),
 
                 ComplexProperty.create({
+                    name: "mesh",
+                    componentName: "encompassing-group-property",
+                    optional: false,
+                    children: Ember.A([
+                        MeshFileProperty.create({
+                            name: "file",
+                            componentName: "mesh-parameter-property",
+                        }),
+                        MeshMatrixProperty.create({
+                            name: "matrix",
+                            componentName: "mesh-parameter-property",
+                        }),
+                        MeshOffsetProperty.create({
+                            name: "offset",
+                            componentName: "mesh-parameter-property",
+                        }),
+                    ]),
+                }),
+                
+                ComplexProperty.create({
                     name: "emission",
                     componentName: "encompassing-group-property",
                     optional: false,
@@ -32,6 +52,7 @@
                             timeVarying: true,
                             bursts: true,
                             optional: false,
+                            defaultValue: '50',
                         }),
                         ParameterProperty.create({
                             name: 'angle',
@@ -40,6 +61,7 @@
                             timeVarying: true,
                             bursts: false,
                             optional: false,
+                            defaultValue: '0',
                         }),
                         OriginProperty.create({
                             name: "origin",

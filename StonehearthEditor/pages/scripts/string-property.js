@@ -109,6 +109,9 @@ ConstantScalarParameterKind = ParameterKind.extend({
     componentName: 'constant-scalar-parameter',
     value: '0',
     fromJson: function (json) {
+        if (json === undefined) {
+            this.set('value', '0');
+        }
         this.set('value', Utils.getEffectValueOrDefault(json, 0, "0"));
     },
     toJson: function () {
@@ -315,7 +318,7 @@ RandomBetweenScalarParameterKind = ParameterKind.extend({
         if (Utils.isNumber(this.get('minValue'))) {
             var min = Number(this.minValue);
             var max = Number(this.maxValue);
-            if (min >= max) {
+            if (min > max) {
                 return "Must be greater than min";
             }
         }
@@ -610,28 +613,24 @@ Rgba = Ember.Object.extend({
         if (Utils.isNumber(this.get('rValue'))) {
             return null;
         }
-
         return "Invalid number";
     }),
     invalidGValueMessage: Ember.computed('gValue', function () {
         if (Utils.isNumber(this.get('gValue'))) {
             return null;
         }
-
         return "Invalid number";
     }),
     invalidBValueMessage: Ember.computed('bValue', function () {
         if (Utils.isNumber(this.get('bValue'))) {
             return null;
         }
-
         return "Invalid number";
     }),
     invalidAValueMessage: Ember.computed('aValue', function () {
         if (Utils.isNumber(this.get('aValue'))) {
             return null;
         }
-
         return "Invalid number";
     }),
 });
@@ -700,7 +699,6 @@ PointBurst = Ember.Object.extend({
         if (!Utils.isNumber(this.burst)) {
             return "Invalid burst.";
         }
-
         return null;
     }),
     fromJson: function (json) {
@@ -847,7 +845,9 @@ ParameterProperty = EffectProperty.extend({
     parameter: null,
     kindOptionNames: null,
     kind: null,
+    bursts: false,
     isMissing: false,
+    defaultValue: null,
     isValid: Ember.computed('parameter.isValid', function () {
         return this.parameter === null || this.parameter.get('isValid');
     }),
@@ -866,6 +866,13 @@ ParameterProperty = EffectProperty.extend({
         this.set('isMissing', isMissing);
         if (isMissing) {
             this.set('kind', 'CONSTANT');
+            this.set('parameter', (this.kind, this.dimension));
+            if (!this.get('optional')) {
+                this.set('isMissing', false);
+                if (this.get('defaultValue') != null) {
+                    this.parameter.set('value', this.get('defaultValue'));
+                }
+            }
             return;
         }
         var kind = json['kind'];
