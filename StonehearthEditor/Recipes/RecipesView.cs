@@ -100,6 +100,7 @@ namespace StonehearthEditor.Recipes
         public void Initialize()
         {
             mIsLoading = true;
+            SelectContextMenuItems();
             filterCbx.SelectedIndex = 0;
             itemsTypeComboBox.SelectedIndex = int.Parse(Properties.Settings.Default.LastSelectedItemsTypeIndex);
             MakeDoubleBuffered();
@@ -110,8 +111,9 @@ namespace StonehearthEditor.Recipes
 
         public void Reload()
         {
-            mIsLoading = true;
             // Disable render while adding rows
+            mIsLoading = true;
+            SelectContextMenuItems();
             recipesGridView.DataSource = null;
             mDataTable.Dispose();
             mDataTable = new RecipeTable(this);
@@ -123,6 +125,14 @@ namespace StonehearthEditor.Recipes
             LoadColumnsData();
             FilterRows();
             mIsLoading = false;
+        }
+
+        private void SelectContextMenuItems()
+        {
+            var showRecipeContextMenuButtons = itemsTypeComboBox.Text == "Recipes";
+            removeIngredientToolStripMenuItem.Visible = showRecipeContextMenuButtons;
+            addNewIngredientToolStripMenuItem.Visible = showRecipeContextMenuButtons;
+            openRecipeJSONToolStripMenuItem.Visible = showRecipeContextMenuButtons;
         }
 
         // Helps address DataGridView's slow repaint time. See https://www.codeproject.com/Tips/654101/Double-Buffering-a-DataGridview
@@ -938,6 +948,23 @@ namespace StonehearthEditor.Recipes
             RecipeRow recipeRow = mDataTable.GetRow(cell.RowIndex);
             recipeRow.AddNewIngredient();
             ConfigureColumns();
+        }
+
+        private void openJSONToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DataGridViewCell cell = recipesGridView.CurrentCell;
+            RecipeRow recipeRow = mDataTable.GetRow(cell.RowIndex);
+            System.Diagnostics.Process.Start(recipeRow.Item.Path);
+        }
+
+        private void openRecipeJSONToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DataGridViewCell cell = recipesGridView.CurrentCell;
+            RecipeRow recipeRow = mDataTable.GetRow(cell.RowIndex);
+            if (recipeRow.Recipe != null)
+            {
+                System.Diagnostics.Process.Start(recipeRow.Recipe.Path);
+            }
         }
 
         private void helpButton_Click(object sender, EventArgs e)

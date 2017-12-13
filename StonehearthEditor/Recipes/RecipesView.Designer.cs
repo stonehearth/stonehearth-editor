@@ -43,6 +43,8 @@
             this.baseModsButton = new System.Windows.Forms.ToolStripButton();
             this.helpButton = new System.Windows.Forms.ToolStripButton();
             this.unsavedFilesLabel = new System.Windows.Forms.ToolStripLabel();
+            this.openJSONToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openRecipeJSONToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.recipesGridView)).BeginInit();
             this.recipesCellContextMenu.SuspendLayout();
             this.searchPanel.SuspendLayout();
@@ -86,9 +88,11 @@
             // 
             this.recipesCellContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.removeIngredientToolStripMenuItem,
-            this.addNewIngredientToolStripMenuItem});
+            this.addNewIngredientToolStripMenuItem,
+            this.openJSONToolStripMenuItem,
+            this.openRecipeJSONToolStripMenuItem});
             this.recipesCellContextMenu.Name = "recipesCellContextMenu";
-            this.recipesCellContextMenu.Size = new System.Drawing.Size(179, 48);
+            this.recipesCellContextMenu.Size = new System.Drawing.Size(179, 114);
             // 
             // removeIngredientToolStripMenuItem
             // 
@@ -203,6 +207,20 @@
             this.unsavedFilesLabel.Text = "Unsaved Changes*";
             this.unsavedFilesLabel.Visible = false;
             // 
+            // openJSONToolStripMenuItem
+            // 
+            this.openJSONToolStripMenuItem.Name = "openJSONToolStripMenuItem";
+            this.openJSONToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
+            this.openJSONToolStripMenuItem.Text = "Open Entity JSON";
+            this.openJSONToolStripMenuItem.Click += new System.EventHandler(this.openJSONToolStripMenuItem_Click);
+            // 
+            // openRecipeJSONToolStripMenuItem
+            // 
+            this.openRecipeJSONToolStripMenuItem.Name = "openRecipeJSONToolStripMenuItem";
+            this.openRecipeJSONToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
+            this.openRecipeJSONToolStripMenuItem.Text = "Open Recipe JSON";
+            this.openRecipeJSONToolStripMenuItem.Click += new System.EventHandler(this.openRecipeJSONToolStripMenuItem_Click);
+            // 
             // RecipesView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -237,5 +255,7 @@
         private System.Windows.Forms.ToolStripLabel unsavedFilesLabel;
         private System.Windows.Forms.ToolStripComboBox itemsTypeComboBox;
         private System.Windows.Forms.ToolStripButton baseModsButton;
+        private System.Windows.Forms.ToolStripMenuItem openJSONToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem openRecipeJSONToolStripMenuItem;
     }
 }
