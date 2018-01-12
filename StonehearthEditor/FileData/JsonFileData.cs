@@ -168,7 +168,8 @@ namespace StonehearthEditor
                     TreeNode recipes = new TreeNode(recipeJsonData.FileName);
                     recipeJsonData.UpdateTreeNode(recipes, filter);
 
-                    foreach (KeyValuePair<string, FileData> recipe in recipeJsonData.LinkedFileData)
+                    IOrderedEnumerable<KeyValuePair<string, FileData>> sortedRecipes = recipeJsonData.LinkedFileData.OrderBy(recipe => recipe.Key);
+                    foreach (KeyValuePair<string, FileData> recipe in sortedRecipes)
                     {
                         string recipePath = recipe.Key;
                         string recipeName = System.IO.Path.GetFileNameWithoutExtension(recipePath);
