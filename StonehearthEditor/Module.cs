@@ -21,6 +21,15 @@ namespace StonehearthEditor
         // dictionary of aliases, components, and controllers
         private Dictionary<string, Dictionary<string, ModuleFile>> mModuleFiles = new Dictionary<string, Dictionary<string, ModuleFile>>();
 
+        private List<string> validManifestEntryTypes = new List<string>
+        {
+            "aliases",
+            "mixintos",
+            "overrides",
+            "components",
+            "controllers"
+        };
+
         public Module(string modPath)
         {
             mPath = modPath;
@@ -148,6 +157,11 @@ namespace StonehearthEditor
         // Add alias to manifest under manifest file type (aliases, components, controllers)
         public void AddToManifest(string alias, string path, string manifestEntryType = "aliases")
         {
+            if (!validManifestEntryTypes.Contains(manifestEntryType))
+            {
+                manifestEntryType = "aliases";
+            }
+
             JToken aliases = mManifestJson[manifestEntryType];
             if (aliases == null)
             {
