@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 namespace StonehearthEditor
@@ -235,7 +236,9 @@ namespace StonehearthEditor
 
             if (execute)
             {
-                string newFlatFile = parameters.TransformParameter(FlatFileData);
+                string flatFileData = ResolveLocalizedStrings(parameters, FlatFileData);
+                string newFlatFile = parameters.TransformParameter(flatFileData);
+
                 using (StreamWriter wr = new StreamWriter(newPath, false, new UTF8Encoding(false)))
                 {
                     wr.Write(newFlatFile);
@@ -243,6 +246,23 @@ namespace StonehearthEditor
             }
 
             return true;
+        }
+
+        private string ResolveLocalizedStrings(CloneObjectParameters parameters, string newFlatFile)
+        {
+            string pattern = @"(i18n\([\S]+\))";
+            Regex rgx = new Regex(pattern, RegexOptions.IgnoreCase);
+
+            MatchCollection matches = rgx.Matches(newFlatFile);
+            if (matches.Count > 0)
+            {
+                foreach (Match match in matches)
+                {
+                    newFlatFile = newFlatFile.Replace(match.Value, ModuleDataManager.GetInstance().LocalizeString(match.Value));
+                }
+            }
+
+            return newFlatFile;
         }
 
         protected Dictionary<string, FileData> GetDependencies()
