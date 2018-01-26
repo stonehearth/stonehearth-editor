@@ -49,9 +49,9 @@ MeshOffsetProperty = EffectProperty.extend({
     }),
     toJson: function () {
         return {
-            "x": this.offset.x,
-            "y": this.offset.y,
-            "z": this.offset.z
+            "x": Number(this.offset.x),
+            "y": Number(this.offset.y),
+            "z": Number(this.offset.z)
         };
     },
     fromJson: function (json) {
