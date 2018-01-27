@@ -219,6 +219,7 @@
                 <td></td>
                 <td>time</td>
                 <td>burst</td>
+                <td>burst_max</td>
             </tr>
             {{#each model.points as |point index| }}
                 <tr>
@@ -227,6 +228,7 @@
                     <td><button class="curve-button" {{ action 'delete' index }}>✖️</button></td>
                     <td>{{ input class="curve-input" type="text" value=point.time }}</td>
                     <td>{{ input class="curve-input" type="text" value=point.burst }}</td>
+                    <td>{{ input class="curve-input" type="text" value=point.burst_max }}</td>
                 </tr>
             {{/each }}
             <tr>
