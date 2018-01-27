@@ -21,7 +21,7 @@
         return formatted;
     },
     getEffectValueOrDefault: function (json, index, defaultVal) {
-        if (json && json[index]) {
+        if (json && json[index] !== undefined) {
             return json[index].toString();
         } else {
             return defaultVal;

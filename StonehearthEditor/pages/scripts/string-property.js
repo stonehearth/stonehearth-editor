@@ -688,25 +688,30 @@ RandomBetweenCurvesRgbParameterKind = ParameterKind.extend({
 PointBurst = Ember.Object.extend({
     time: '0',
     burst: '0',
+    burst_max: '0',
 
     isValid: Ember.computed('time', 'burst', function () {
-        return Utils.isNumber(this.time) && Utils.isNumber(this.burst);
+        return Utils.isNumber(this.time) && Utils.isNumber(this.burst) && Utils.isNumber(this.burst_max);
     }),
-    invalidMessage: Ember.computed('time', 'burst', function () {
+    invalidMessage: Ember.computed('time', 'burst', 'burst_max', function () {
         if (!Utils.isNumber(this.time)) {
             return "Invalid time.";
         }
         if (!Utils.isNumber(this.burst)) {
             return "Invalid burst.";
         }
+        if (!Utils.isNumber(this.burst_max)) {
+            return "Invalid burst_max.";
+        }
         return null;
     }),
     fromJson: function (json) {
         this.set('time', Utils.getEffectValueOrDefault(json, 0, '0'));
-        this.set('burst', Utils.getEffectValueOrDefault(json, 1, '0'));
+        this.set('burst', Utils.getEffectValueOrDefault(json, 1, '1'));
+        this.set('burst_max', Utils.getEffectValueOrDefault(json, 2, Utils.getEffectValueOrDefault(json, 1, '1')));
     },
     toJson: function () {
-        return [Number(this.time), Number(this.burst)];
+        return [Number(this.time), Number(this.burst), Number(this.burst_max)];
     },
 });
 
@@ -727,7 +732,7 @@ CurveBurst = Ember.Object.extend({
         this.set('isMissing', isMissing);
         console.log(json)
         if (isMissing) {
-            this.set('points', ['0','0']);
+            this.set('points', ['0','0','0']);
             return;
         }
         this.set('points', points);
