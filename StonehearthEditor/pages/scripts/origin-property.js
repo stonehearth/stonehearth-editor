@@ -16,7 +16,7 @@ ConstantPointOriginSurface = OriginSurface.extend({
     surface: null, // string or null
     isMissing: null,
     toJson: function () {
-        return { surface: this.get('surface') };
+        return;
     },
     fromJson: function (json) {
         Utils.assert(Utils.isUndefinedOrTypeOf("object", json));
