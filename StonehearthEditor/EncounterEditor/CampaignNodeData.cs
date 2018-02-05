@@ -79,15 +79,6 @@ namespace StonehearthEditor
                     node.NodeData.GetRelatedNodes(set);
                 }
             }
-
-            foreach (GameMasterNode node in OrphanedNodes)
-            {
-                if (!set.Contains(node))
-                {
-                    set.Add(node);
-                    node.NodeData.GetRelatedNodes(set);
-                }
-            }
         }
 
         public override NodeData Clone(GameMasterNode nodeFile)
