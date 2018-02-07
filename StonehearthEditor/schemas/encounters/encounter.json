@@ -282,6 +282,19 @@
                "additionalProperties": false
             },
             {
+               "title": "Counter variable check",
+               "description": "Compare the value of an arbitrary counter variable. Counter variables are campaign-wide and set using the set_counters encounter.",
+               "type": "object",
+               "properties": {
+                  "type": { "$ref": "#/definitions/comparison_operator" },
+                  "item": { "enum": ["counter"] },
+                  "key": { "type": "string" },
+                  "value": { }
+               },
+               "required": [ "item", "type", "value", "key" ],
+               "additionalProperties": false
+            },
+            {
                "title": "AND check",
                "description": "Returns true if ALL subtests pass.",
                "type": "object",
