@@ -55,7 +55,8 @@
                "type": "object",
                "properties": {
                   "role": { "enum": [ "pillage"] },
-                  "pillage_radius": { "$ref": "range.json" }
+                  "pillage_radius": { "$ref": "range.json" },
+                  "target": { "$ref": "context_path.json" }
                },
                "required": ["role", "offset", "members", "pillage_radius"]
             }
