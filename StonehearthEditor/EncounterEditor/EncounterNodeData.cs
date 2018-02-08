@@ -129,6 +129,18 @@ namespace StonehearthEditor
                     }
 
                     break;
+                case "delivery_quest":
+                    if (NodeFile.Json.SelectToken("delivery_quest_info.abandon_out_edge") != null)
+                    {
+                        AddOutEdgesRecursive(NodeFile.Json.SelectToken("delivery_quest_info.abandon_out_edge"), mOutEdgeStrings);
+                    }
+                    break;
+                case "dispatch_quest":
+                    if (NodeFile.Json.SelectToken("dispatch_quest_info.abandon_out_edge") != null)
+                    {
+                        AddOutEdgesRecursive(NodeFile.Json.SelectToken("dispatch_quest_info.abandon_out_edge"), mOutEdgeStrings);
+                    }
+                    break;
                 case "dialog_tree":
                     // Go through all the dialog nodes and add ot edges
                     foreach (JToken dialogNode in NodeFile.Json["dialog_tree_info"]["nodes"].Children())
