@@ -211,6 +211,7 @@ namespace StonehearthEditor
                     settings.Icon = Image.FromFile(iconBasePath + "/images/encounter_shop.png");
                     break;
                 case "counter":
+                case "set_counters":
                     settings.Icon = Image.FromFile(iconBasePath + "/images/encounter_counter.png");
                     break;
                 case "destroy_entity":
@@ -220,6 +221,8 @@ namespace StonehearthEditor
                     settings.Icon = Image.FromFile(iconBasePath + "/images/encounter_recipe.png");
                     break;
                 case "collection_quest":
+                case "delivery_quest":
+                case "dispatch_quest":
                     settings.Icon = Image.FromFile(iconBasePath + "/images/encounter_quest.png");
                     break;
                 case "city_raid":
@@ -233,6 +236,7 @@ namespace StonehearthEditor
                     settings.Icon = Image.FromFile(iconBasePath + "/images/encounter_tier_achieved.png");
                     break;
                 case "donation":
+                case "add_citizen":  // Pushing it.
                     settings.Icon = Image.FromFile(iconBasePath + "/images/encounter_loot.png");
                     break;
             }
