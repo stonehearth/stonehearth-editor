@@ -448,6 +448,14 @@ namespace StonehearthEditor
                         {
                             AddOutEdgesRecursive(child, list);
                         }
+                        if (specType == "trigger_one")
+                        {
+                            JToken fallbackEdge = outEdgeSpec["fallback"];
+                            if (fallbackEdge != null)
+                            {
+                                AddOutEdgesRecursive(fallbackEdge, list);
+                            }
+                        }
 
                         break;
                     case "weighted_edge":

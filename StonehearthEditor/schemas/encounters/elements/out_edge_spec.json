@@ -46,7 +46,7 @@
                   ]
                }
             },
-            "repeat_last": {"type": "boolean"}
+            "fallback": {"$ref": "#/definitions/edge_or_finish"}
          },
          "required": ["type", "out_edges"],
          "additionalProperties": false
