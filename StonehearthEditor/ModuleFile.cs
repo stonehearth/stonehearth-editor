@@ -147,8 +147,12 @@ namespace StonehearthEditor
                 return false;
             }
 
-            string newPath = parameters.TransformParameter(ResolvedPath.Replace(sourceModName, targetModName));
-            if (!FileData.Clone(newPath, parameters, alreadyCloned, execute))
+            string modPath = MainForm.kModsDirectoryPath;
+            string relativePath = ResolvedPath.Replace(mModule.Path + "/", "");
+            string newPath = parameters.TransformParameter(relativePath);
+            string fullPath = modPath + "/" + targetModName + "/" + newPath;
+
+            if (!FileData.Clone(fullPath, parameters, alreadyCloned, execute))
             {
                 return false;
             }
@@ -156,7 +160,7 @@ namespace StonehearthEditor
             alreadyCloned.Add(targetModName + ':' + newAlias);
             if (execute)
             {
-                string fileLocation = "file(" + newPath.Replace(mModule.Path.Replace(sourceModName, targetModName) + "/", "") + ")";
+                string fileLocation = "file(" + newPath + ")";
                 ModuleFile file = new ModuleFile(targetModule, newAlias, fileLocation);
                 file.TryLoad();
                 if (file.FileData != null)
