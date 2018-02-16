@@ -163,12 +163,16 @@ namespace StonehearthEditor.Recipes
         public override void ConfigureColumn(DataGridViewColumn gridCol)
         {
             gridCol.ReadOnly = true;
-            gridCol.Frozen = true;
         }
     }
 
     internal class DisplayNameColumnBehavior : ColumnBehavior
     {
+        public override void ConfigureColumn(DataGridViewColumn gridCol)
+        {
+            gridCol.Frozen = true;
+        }
+        
         public override void SaveCell(HashSet<JsonFileData> modifiedFiles, RecipeRow row, object value)
         {
             JsonFileData jsonFileData = row.Item;
@@ -198,6 +202,11 @@ namespace StonehearthEditor.Recipes
 
     internal class NetWorthColumnBehavior : ColumnBehavior
     {
+        public override void ConfigureColumn(DataGridViewColumn gridCol)
+        {
+            gridCol.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
+        }
+        
         public override void SaveCell(HashSet<JsonFileData> modifiedFiles, RecipeRow row, object value)
         {
             JsonFileData jsonFileData = row.Item;
@@ -210,6 +219,11 @@ namespace StonehearthEditor.Recipes
 
     internal class AppealColumnBehavior : ColumnBehavior
     {
+        public override void ConfigureColumn(DataGridViewColumn gridCol)
+        {
+            gridCol.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
+        }
+        
         public override void SaveCell(HashSet<JsonFileData> modifiedFiles, RecipeRow row, object value)
         {
             JsonFileData jsonFileData = row.Item;
@@ -299,7 +313,11 @@ namespace StonehearthEditor.Recipes
 
     internal class EffortColumnBehavior : RecipeColumnBehavior
     {
-
+        public override void ConfigureColumn(DataGridViewColumn gridCol)
+        {
+            gridCol.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
+        }
+        
         public override void SaveCell(HashSet<JsonFileData> modifiedFiles, RecipeRow row, object value)
         {
             JsonFileData jsonFileData = row.Recipe;
@@ -312,6 +330,10 @@ namespace StonehearthEditor.Recipes
 
     internal class WorkUnitsColumnBehavior : RecipeColumnBehavior
     {
+        public override void ConfigureColumn(DataGridViewColumn gridCol)
+        {
+            gridCol.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
+        }
 
         public override void SaveCell(HashSet<JsonFileData> modifiedFiles, RecipeRow row, object value)
         {
@@ -341,6 +363,11 @@ namespace StonehearthEditor.Recipes
 
     internal class LevelRequiredColumnBehavior : RecipeColumnBehavior
     {
+        public override void ConfigureColumn(DataGridViewColumn gridCol)
+        {
+            gridCol.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
+        }
+        
         public override void SaveCell(HashSet<JsonFileData> modifiedFiles, RecipeRow row, object value)
         {
             JsonFileData jsonFileData = row.Recipe;
