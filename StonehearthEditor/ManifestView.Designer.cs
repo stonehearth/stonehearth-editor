@@ -85,7 +85,7 @@
             this.removeFromManifestToolStripMenuItem,
             this.addNewAliasToolStripMenuItem});
             this.aliasContextMenu.Name = "aliasContextMenu";
-            this.aliasContextMenu.Size = new System.Drawing.Size(198, 158);
+            this.aliasContextMenu.Size = new System.Drawing.Size(198, 136);
             this.aliasContextMenu.Opening += new System.ComponentModel.CancelEventHandler(this.aliasContextMenu_Opening);
             // 
             // aliasContextDuplicate
@@ -371,7 +371,7 @@
             // selectJsonFileDialog
             // 
             this.selectJsonFileDialog.DefaultExt = "json";
-            this.selectJsonFileDialog.Filter = "JSON Files|*.json|Lua Files|*.lua";
+            this.selectJsonFileDialog.Filter = "JSON Files|*.json|Lua Files|*.lua|All Files|*.*";
             this.selectJsonFileDialog.RestoreDirectory = true;
             this.selectJsonFileDialog.FileOk += new System.ComponentModel.CancelEventHandler(this.selectJsonFileDialog_FileOk);
             // 
