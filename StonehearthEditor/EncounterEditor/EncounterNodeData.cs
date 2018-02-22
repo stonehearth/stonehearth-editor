@@ -129,6 +129,21 @@ namespace StonehearthEditor
                     }
 
                     break;
+                case "town_founding":
+                    {
+                        var choices = NodeFile.Json.SelectToken("town_founding_info.choices");
+                        if (choices != null)
+                        {
+                            foreach (JToken nodeData in choices.Values())
+                            {
+                                if (nodeData["out_edge"] != null)
+                                {
+                                    AddOutEdgesRecursive(nodeData["out_edge"], mOutEdgeStrings);
+                                }
+                            }
+                        }
+                        break;
+                    }
                 case "delivery_quest":
                     if (NodeFile.Json.SelectToken("delivery_quest_info.abandon_out_edge") != null)
                     {
@@ -242,9 +257,11 @@ namespace StonehearthEditor
                     settings.Icon = Image.FromFile(iconBasePath + "/images/encounter_raid.png");
                     break;
                 case "city_tier_quest":
+                case "town_founding":
                     settings.Icon = Image.FromFile(iconBasePath + "/images/encounter_tier_quest.png");
                     break;
                 case "city_tier_achieved":
+                case "town_upgrade":
                     settings.Icon = Image.FromFile(iconBasePath + "/images/encounter_tier_achieved.png");
                     break;
                 case "donation":
