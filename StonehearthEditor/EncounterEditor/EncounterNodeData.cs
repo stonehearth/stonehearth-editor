@@ -197,6 +197,21 @@ namespace StonehearthEditor
                     }
 
                     break;
+                case "city_tier_quest":
+                    {
+                        var choices = NodeFile.Json.SelectToken("city_tier_quest_info.satisfaction_requirements");
+                        if (choices != null)
+                        {
+                            foreach (JToken nodeData in choices.Values())
+                            {
+                                if (nodeData["out_edge"] != null)
+                                {
+                                    AddOutEdgesRecursive(nodeData["out_edge"], mOutEdgeStrings);
+                                }
+                            }
+                        }
+                        break;
+                    }
             }
         }
 
