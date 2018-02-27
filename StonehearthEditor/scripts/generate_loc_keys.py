@@ -79,7 +79,18 @@ class LocGenerator:
 
       try:
          loc_file = open(loc_file_path + EN_JSON_FILE, 'r+')
-         loc_dictionary = json.load(loc_file, object_pairs_hook=OrderedDict)
+         try:
+            loc_dictionary = json.load(loc_file, object_pairs_hook=OrderedDict)
+         except Exception as ex:
+            print("\n==============")
+            print("Invalid JSON in " + loc_file_path + EN_JSON_FILE)
+            print("")
+            template = "{0} exception. Arguments:\n{1!r}"
+            message = template.format(type(ex).__name__, ex.args)
+            print message
+            print("==============\n")
+           
+            os._exit(777)
       except:
          if not os.path.exists(loc_file_path):
             os.makedirs(loc_file_path)

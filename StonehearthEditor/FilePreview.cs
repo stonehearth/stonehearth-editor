@@ -347,6 +347,19 @@ namespace StonehearthEditor
             }
 
             myProcess.WaitForExit();
+            
+            if(myProcess.ExitCode != 0)
+            {
+                if (myProcess.ExitCode == 777)
+                {
+                    MessageBox.Show(string.Format("Error running generate_loc_keys.py - your en.json has an invalid format.\n\nExit code: {0}", myProcess.ExitCode.ToString()), "Error: Invalid localization JSON Format");
+                }
+                else
+                {
+                    MessageBox.Show(string.Format("Error running generate_loc_keys.py.\n\nExit code: {0}", myProcess.ExitCode.ToString()), "Error");
+                }
+            }
+
             if (mOwner != null)
             {
                 mOwner.Reload();
