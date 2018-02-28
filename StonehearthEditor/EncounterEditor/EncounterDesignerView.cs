@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.IO;
 using System.Windows.Forms;
 using Microsoft.Msagl.Drawing;
 using Microsoft.Msagl.GraphViewerGdi;
@@ -21,6 +22,8 @@ namespace StonehearthEditor
         private DNode mHoveredDNode = null;
         private DEdge mHoveredDEdge = null;
         private ToolTip mHoveredEdgeTooltip = new ToolTip();
+
+        private static string mLastNewNodeDirectory = null;
 
         public EncounterDesignerView()
         {
@@ -504,7 +507,12 @@ namespace StonehearthEditor
             {
                 mSelectedNewScriptNode = clickedItem.Text;
                 encounterGraphContextMenu.Hide();
-                saveNewEncounterNodeDialog.InitialDirectory = System.IO.Path.GetFullPath(GameMasterDataManager.GetInstance().GraphRoot.Directory);
+                if (mLastNewNodeDirectory == null)
+                {
+                    mLastNewNodeDirectory = Path.GetFullPath(GameMasterDataManager.GetInstance().GraphRoot.Directory);
+                }
+
+                saveNewEncounterNodeDialog.InitialDirectory = mLastNewNodeDirectory;
                 saveNewEncounterNodeDialog.ShowDialog(this);
             }
         }
@@ -518,6 +526,9 @@ namespace StonehearthEditor
             }
 
             filePath = JsonHelper.NormalizeSystemPath(filePath);
+
+            mLastNewNodeDirectory = Path.GetDirectoryName(filePath);
+
             GameMasterNode existingNode = GameMasterDataManager.GetInstance().GetGameMasterNode(filePath);
             if (existingNode != null)
             {
@@ -732,6 +743,11 @@ namespace StonehearthEditor
             mSelectedNode.IsModified = true;
             GameMasterDataManager.GetInstance().SaveModifiedFiles();
             GameMasterDataManager.GetInstance().RefreshGraph(this);
+        }
+
+        private void buttonReloadEncounters_Click(object sender, EventArgs e)
+        {
+            this.Reload();
         }
     }
 }

@@ -43,6 +43,7 @@
             this.graphViewer = new Microsoft.Msagl.GraphViewerGdi.GViewer();
             this.editorInfoSplitter = new System.Windows.Forms.SplitContainer();
             this.fileDetailsListBox = new System.Windows.Forms.ListBox();
+            this.buttonReloadEncounters = new System.Windows.Forms.Button();
             this.encounterGraphContextMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.graphEditorSplitter)).BeginInit();
             this.graphEditorSplitter.Panel1.SuspendLayout();
@@ -62,7 +63,7 @@
             this.deleteNodeToolStripMenuItem,
             this.attachEdgeMenuItem});
             this.encounterGraphContextMenu.Name = "encounterGraphContextMenu";
-            this.encounterGraphContextMenu.Size = new System.Drawing.Size(156, 136);
+            this.encounterGraphContextMenu.Size = new System.Drawing.Size(156, 114);
             this.encounterGraphContextMenu.Closed += new System.Windows.Forms.ToolStripDropDownClosedEventHandler(this.encounterGraphContextMenu_Closed);
             this.encounterGraphContextMenu.Opening += new System.ComponentModel.CancelEventHandler(this.encounterGraphContextMenu_Opening);
             this.encounterGraphContextMenu.MouseEnter += new System.EventHandler(this.encounterGraphContextMenu_MouseEnter);
@@ -133,6 +134,7 @@
             // 
             // graphEditorSplitter.Panel1
             // 
+            this.graphEditorSplitter.Panel1.Controls.Add(this.buttonReloadEncounters);
             this.graphEditorSplitter.Panel1.Controls.Add(this.graphViewer);
             this.graphEditorSplitter.Panel1MinSize = 200;
             // 
@@ -220,6 +222,17 @@
             this.fileDetailsListBox.Size = new System.Drawing.Size(94, 98);
             this.fileDetailsListBox.TabIndex = 0;
             // 
+            // buttonReloadEncounters
+            // 
+            this.buttonReloadEncounters.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonReloadEncounters.Location = new System.Drawing.Point(798, 3);
+            this.buttonReloadEncounters.Name = "buttonReloadEncounters";
+            this.buttonReloadEncounters.Size = new System.Drawing.Size(74, 56);
+            this.buttonReloadEncounters.TabIndex = 0;
+            this.buttonReloadEncounters.Text = "Refresh Encounters";
+            this.buttonReloadEncounters.UseVisualStyleBackColor = true;
+            this.buttonReloadEncounters.Click += new System.EventHandler(this.buttonReloadEncounters_Click);
+            // 
             // EncounterDesignerView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -255,5 +268,6 @@
         private System.Windows.Forms.ListBox fileDetailsListBox;
         private System.Windows.Forms.ToolStripMenuItem moveToArcMenuItem;
         private System.Windows.Forms.ToolStripMenuItem attachEdgeMenuItem;
+        private System.Windows.Forms.Button buttonReloadEncounters;
     }
 }
