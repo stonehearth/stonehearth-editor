@@ -188,14 +188,14 @@ class LocGenerator:
             if modified:
                _print_info("modifying file " + f)
                if not args.dry_run:
-                  data_file_str = json.dumps(data, indent=3, separators=(',', ': '))
+                  data_file_str = json.dumps(data, indent=3, separators=(',', ': '), ensure_ascii=False).encode('utf8')
                   data_file.seek(0)
                   data_file.truncate()
                   data_file.write(data_file_str)
 
       loc_file.seek(0)
       loc_file.truncate()
-      json_string = json.dumps(loc_dictionary, indent=3, separators=(',', ': '))
+      json_string = json.dumps(loc_dictionary, indent=3, separators=(',', ': '), ensure_ascii=False).encode('utf8')
       loc_file.write(json_string)
 
       print 'localization key generation complete'
