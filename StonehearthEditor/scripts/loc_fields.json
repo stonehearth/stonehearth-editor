@@ -9,7 +9,11 @@
       "components.stonehearth:renewable_resource_node.harvest_status_text": "renewable_harvest_status_text",
       "components.stonehearth:job.starting_level_title": "job.starting_level_title",
       "components.stonehearth:job.default_level_title": "job.default_level_title",
+      "components.stonehearth:job.default_promote_title": "job.default_promote_title",
+      "components.stonehearth:job.mid_level_title": "job.mid_level_title",
+      "components.stonehearth:job.max_level_title": "job.max_level_title",
       "components.stonehearth:job.default_level_announcement": "job.default_level_announcement",
+      "components.stonehearth:job.default_promote_announcement": "job.default_promote_announcement",
       "components.stonehearth:job.level_data.general_description_desc": "job.general_description_desc",
       "components.stonehearth:job.level_data.attribute_up_desc": "job.attribute_up_desc",
       "components.model_variants.*.unit_info_name": "model_variant.{0}.display_name",
@@ -103,7 +107,11 @@
       "thoughts.*.*.*.*.display_name": "{0}.{1}.{2}.{3}.display_name",
       "thoughts.*.*.*.*.tooltip": "{0}.{1}.{2}.{3}.tooltip",
       "bindings.*.name": "{0}.name",
-      "bindings.*.tooltip": "{0}.description"
+      "bindings.*.tooltip": "{0}.description",
+      "categories.*.display_name": "data.hotkeys.categories.{0}.display_name",
+      "keys.*.display_name": "data.hotkeys.keys.{0}.display_name",
+      "trappable_animals.*.name": "trappable_animals.{0}.name",
+      "trappable_animals.*.description": "trappable_animals.{0}.description"
    },
    "choices": {
       "*.nodes.*.bulletin.choices.*": "{0}.dialog_nodes.{1}.choice_{2}"
