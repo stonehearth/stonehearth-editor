@@ -8,7 +8,8 @@
       { "$ref": "#/definitions/raid_stockpiles_mission" },
       { "$ref": "#/definitions/pillage_mission" },
       { "$ref": "#/definitions/spawn_enemies_mission" },
-      { "$ref": "#/definitions/wander_mission" }
+      { "$ref": "#/definitions/wander_mission" },
+      { "$ref": "#/definitions/raid_crops_mission" }
    ],
 
    "definitions": {
@@ -88,6 +89,19 @@
                   "walk_interval": { "$ref": "duration.json", "description": "Defaults to 30m." }
                },
                "required": ["role", "offset", "members", "wander_radius"]
+            }
+         ]
+      },
+      "raid_crops_mission": {
+         "title": "Raid Crops",
+         "allOf": [
+            { "$ref": "#/definitions/mission_base" },
+            {
+               "type": "object",
+               "properties": {
+                  "role": { "enum": [ "raid_crops" ] }
+               },
+               "required": ["role", "offset", "members"]
             }
          ]
       },
