@@ -918,24 +918,27 @@ PointSkyRgb = Ember.Object.extend({
    bValue: '0.0',
    aValue: '1.0',
    hasA: false,
+   hasPicker: true,
    colorPicker: null,
    _onInit: function () {
       var self = this;
       self.set('id', 'color' + ParameterKindRegistry.getID());
-      Ember.run.scheduleOnce('afterRender', self, function () {
-         var picker = $('#' + self.get('id') + ' .color-picker');
-         self.set('colorPicker', picker);
-         picker.spectrum({
-            color: "#000000",
-            showAlpha: self.get('hasA'),
-            showInput: true,
-            showInitial: true,
-            preferredFormat: "rgb",
-            change: function (color) {
-               self.updateColor(color);
-            }
+      if (this.get('hasPicker')) {
+         Ember.run.scheduleOnce('afterRender', self, function () {
+            var picker = $('#' + self.get('id') + ' .color-picker');
+            self.set('colorPicker', picker);
+            picker.spectrum({
+               color: "#000000",
+               showAlpha: self.get('hasA'),
+               showInput: true,
+               showInitial: true,
+               preferredFormat: "rgb",
+               change: function (color) {
+                  self.updateColor(color);
+               }
+            });
          });
-      });
+      }
    }.on('init'),
    updateColor: function (color) {
       var floatVals = Utils.convertRgbaToFloat(color._r, color._g, color._b, color._a);
@@ -951,9 +954,11 @@ PointSkyRgb = Ember.Object.extend({
       var b = Utils.getEffectValueOrDefault(json.value, 2, '0.0');
       var a = this.get('hasA') ? Utils.getEffectValueOrDefault(json.value, 3, '1.0') : 1.0;
       self.setRgba(r, g, b, a);
-      Ember.run.scheduleOnce('afterRender', this, function () {
-         self.get('colorPicker').spectrum("set", Utils.convertFloatToRgba(r, g, b, 1.0));
-      });
+      if (this.get('hasPicker')) {
+         Ember.run.scheduleOnce('afterRender', this, function () {
+            self.get('colorPicker').spectrum("set", Utils.convertFloatToRgba(r, g, b, a));
+         });
+      }
    },
    toJson: function () {
       var values = [Number(this.rValue), Number(this.gValue), Number(this.bValue)];
@@ -1003,6 +1008,8 @@ SkyRgbCurveProperty = EffectProperty.extend({
    componentName: 'sky-rgb-curve',
    points: null,
    isMissing: false,
+   hasA: false,
+   hasPicker: true,
    _onInit: function () {
       this.set('points', Ember.A());
       var timeChoices = Ember.A();
@@ -1015,7 +1022,7 @@ SkyRgbCurveProperty = EffectProperty.extend({
       var points = Ember.A();
       json = json || [];
       for (var i = 0; i < json.length; i++) {
-         var point = PointSkyRgb.create({});
+         var point = PointSkyRgb.create({ hasA: this.get('hasA'), hasPicker: this.get('hasPicker') });
          point.fromJson(json[i]);
          points.push(point);
       }
@@ -1100,13 +1107,15 @@ CelestialsListProperty = EffectProperty.extend({
             SkyRgbCurveProperty.create({
                name: 'ambient_colors',
             }),
-            SkyRgbCurveProperty.create({  // TODO
+            SkyRgbCurveProperty.create({
                name: 'angles',
                optional: true,
+               hasPicker: false,
             }),
-            SkyRgbCurveProperty.create({  // TODO
+            SkyRgbCurveProperty.create({
                name: 'depth_offset_values',
                optional: true,
+               hasPicker: false,
             }),
          ]),
       });

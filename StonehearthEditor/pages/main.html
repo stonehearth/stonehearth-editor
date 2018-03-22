@@ -487,7 +487,9 @@
                 {{#if model.hasA }}
                   <td>A</td>
                 {{/if }}
-                <td><span class="parameter-property-label-color">Picker</span></td>
+               {{#if model.hasPicker }}
+                  <td><span class="parameter-property-label-color">Picker</span></td>
+               {{/if }}
             </tr>
             {{#each model.points as |point index| }}
                 <tr>
@@ -511,7 +513,9 @@
                            {{ input class="sky-curve-input" type="text" value=point.aValue }}
                         </td>
                      {{/if }}
-                    <td><div id={{ point.id }} class="color-picker-div"><input type="text" class="color-picker" /></div></td>
+                     {{#if model.hasPicker }}
+                        <td><div id={{ point.id }} class="color-picker-div"><input type="text" class="color-picker" /></div></td>
+                     {{/if }}
                 </tr>
             {{/each }}
             <tr>
@@ -525,7 +529,6 @@
             <tr>
                 <td style="text-align: left;">
                   <b>{{ model.name }}</b>
-                  
                 </td>
                 <td><div class="curve-warning">{{ warning-icon message=model.errorMap.[-1] }}</div></td>
             </tr>

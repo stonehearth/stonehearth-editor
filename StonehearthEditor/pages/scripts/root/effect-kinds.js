@@ -511,6 +511,7 @@
                      SkyRgbCurveProperty.create({
                         name: 'height_fog',
                         optional: true,
+                        hasPicker: false,
                      }),
                      SkyRgbCurveProperty.create({
                         name: 'height_fog_color_mult',
@@ -521,6 +522,7 @@
                         name: 'scattering',
                         hasA: true,
                         optional: true,
+                        hasPicker: false,
                      }),
                  ]),
               }),
