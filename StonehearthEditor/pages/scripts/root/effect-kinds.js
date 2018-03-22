@@ -510,6 +510,13 @@
                  children: Ember.A([
                      SkyRgbCurveProperty.create({
                         name: 'height_fog',
+                        hasA: true,
+                        optional: true,
+                        hasPicker: false,
+                     }),
+                     SkyRgbCurveProperty.create({
+                        name: 'height_fog2',
+                        hasA: false,
                         optional: true,
                         hasPicker: false,
                      }),
