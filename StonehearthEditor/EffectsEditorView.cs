@@ -34,6 +34,7 @@ namespace StonehearthEditor
             ModuleDataManager.GetInstance().PopulateTreeView(effectsEditorTreeView, "effects", "/data/effects");
             ModuleDataManager.GetInstance().PopulateTreeView(cubemittersTreeView, "cubemitters", "/data/horde/particles");
             ModuleDataManager.GetInstance().PopulateTreeView(lightsTreeView, "", "/data/horde/animatedlights");
+            ModuleDataManager.GetInstance().PopulateTreeView(skySettingsTreeView, "sky_settings", "");
         }
 
         private IEnumerable<TreeNode> GetAllNodes(TreeView treeView)
@@ -63,6 +64,7 @@ namespace StonehearthEditor
             ModuleDataManager.GetInstance().PopulateTreeView(effectsEditorTreeView, "effects", "/data/effects");
             ModuleDataManager.GetInstance().PopulateTreeView(cubemittersTreeView, "cubemitters", "/data/horde/particles");
             ModuleDataManager.GetInstance().PopulateTreeView(lightsTreeView, "", "/data/horde/animatedlights");
+            ModuleDataManager.GetInstance().PopulateTreeView(skySettingsTreeView, "sky_settings", "");
 
             TreeView treeView = GetTreeView(treeViewTabControl.SelectedIndex);
 
@@ -234,6 +236,47 @@ namespace StonehearthEditor
             lightsTreeView.Focus();
         }
 
+        private void skySettingsTreeView_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+            var tag = skySettingsTreeView.SelectedNode.Tag;
+            string fullPath = null;
+            if (tag is string)
+            {
+                fullPath = tag as string;
+            }
+            else if (tag is JsonFileData)
+            {
+                fullPath = (tag as JsonFileData).Path;
+            }
+            if (fullPath != null && File.Exists(fullPath))
+            {
+                LoadFilePreview(fullPath);
+                FileData fileData = GetFileDataFromPath(fullPath);
+                string jsonString = fileData.FlatFileData;
+                JObject json = null;
+                try
+                {
+                    json = JObject.Parse(jsonString);
+                }
+                catch
+                {
+                    MessageBox.Show("invalid json");
+                    filePreviewTabs.TabPages.Clear();
+                    return;
+                }
+
+                mEffectsChromeBrowser.LoadFromJson("sky", jsonString, j => SaveFile(fullPath, j));
+            }
+            else
+            {
+                // If no file data found, just clear file preview
+                filePreviewTabs.TabPages.Clear();
+                return;
+            }
+
+            skySettingsTreeView.Focus();
+        }
+
         private void effectsEditorTreeView_MouseClick(object sender, MouseEventArgs e)
         {
             effectsEditorTreeView.SelectedNode = effectsEditorTreeView.GetNodeAt(e.X, e.Y);
@@ -253,6 +296,13 @@ namespace StonehearthEditor
             lightsTreeView.SelectedNode = lightsTreeView.GetNodeAt(e.X, e.Y);
             mSelectedNode = lightsTreeView.SelectedNode;
             CheckShowContextMenu(lightsTreeView, e);
+        }
+
+        private void skySettingsTreeView_MouseClick(object sender, MouseEventArgs e)
+        {
+            skySettingsTreeView.SelectedNode = skySettingsTreeView.GetNodeAt(e.X, e.Y);
+            mSelectedNode = skySettingsTreeView.SelectedNode;
+            CheckShowContextMenu(skySettingsTreeView, e);
         }
 
         private void CheckShowContextMenu(TreeView treeView, MouseEventArgs e)
@@ -278,6 +328,8 @@ namespace StonehearthEditor
                     return cubemittersTreeView;
                 case 1:
                     return lightsTreeView;
+                case 2:
+                    return skySettingsTreeView;
                 default:
                     return effectsEditorTreeView;
             }

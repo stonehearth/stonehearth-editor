@@ -492,5 +492,43 @@
                 })
             ])
         });
+    },
+    sky: function () {
+       return ComplexProperty.create({
+          name: null,
+          optional: false,
+          children: Ember.A([
+              StringProperty.create({
+                 name: "sky_gradient",
+              }),
+              CelestialsListProperty.create({
+                 name: "celestials"
+              }),
+              ComplexProperty.create({
+                 name: "params",
+                 children: Ember.A([
+                     SkyRgbCurveProperty.create({
+                        name: 'height_fog',
+                     }),
+                     SkyRgbCurveProperty.create({
+                        name: 'height_fog_color_mult',
+                        hasA: true,
+                     }),
+                     SkyRgbCurveProperty.create({
+                        name: 'scattering',
+                        hasA: true,
+                     }),
+                 ]),
+              }),
+              ComplexProperty.create({
+                 name: "colors",
+                 children: Ember.A([
+                     SkyRgbCurveProperty.create({
+                        name: 'starfield_brightness',
+                     }),
+                 ]),
+              }),
+          ])
+       });
     }
 }

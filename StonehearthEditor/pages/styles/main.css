@@ -191,6 +191,18 @@ select {
     width: 125px;
 }
 
+.day-time-choices {
+    width: 140px;
+}
+
+.sky-curve-input {
+   width: 55px !important;
+}
+
+.celestial-row {
+   border-bottom: 50px grey solid;
+}
+
 button {
     margin-bottom: 0px;
     text-align: center;

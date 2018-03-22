@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -472,6 +472,73 @@
         <span class="parameter-property-label">innerAngle</span>
         {{ input class="sh-input sh-numeric-input" type="text" value=model.innerAngle }}
         {{ warning-icon message=model.invalidValueMessage }}
+    </script>
+    <script type="text/x-handlebars" data-template-name="components/sky-rgb-curve">
+        <table class="curve-rgbTable">
+            <tr>
+                <td colspan="3" style="text-align: left;">
+                  <b>{{ model.name }}</b>
+                  <div class="curve-warning">{{ warning-icon message=model.errorMap.[-1] }}</div>
+                </td>
+                <td>Time</td>
+                <td>R</td>
+                <td>G</td>
+                <td>B</td>
+                {{#if model.hasA }}
+                  <td>A</td>
+                {{/if }}
+                <td><span class="parameter-property-label-color">Picker</span></td>
+            </tr>
+            {{#each model.points as |point index| }}
+                <tr>
+                    <td><div class="curve-warning">{{ warning-icon message=(get model.errorMap (tostr index)) }}</div></td>
+                    <td><button class="curve-button" {{ action 'addAbove' index }}><img src="styles/add_above.png" /></button></td>
+                    <td><button class="curve-button" {{ action 'delete' index }}>✖️</button></td>
+                    <td>
+                        <select class="day-time-choices" onchange={{ action (mut point.time) value="target.value" }}>
+                            {{#each model.timeChoices as |timeChoice| }}
+                            <option value={{ timeChoice }} selected={{ eq point.time timeChoice }}>
+                                {{ timeChoice }}
+                            </option>
+                            {{/each }}
+                        </select>
+                    </td>
+                    <td>{{ input class="sky-curve-input" type="text" value=point.rValue }}</td>
+                    <td>{{ input class="sky-curve-input" type="text" value=point.gValue }}</td>
+                    <td>{{ input class="sky-curve-input" type="text" value=point.bValue }}</td>
+                     {{#if model.hasA }}
+                        <td>
+                           {{ input class="sky-curve-input" type="text" value=point.aValue }}
+                        </td>
+                     {{/if }}
+                    <td><div id={{ point.id }} class="color-picker-div"><input type="text" class="color-picker" /></div></td>
+                </tr>
+            {{/each }}
+            <tr>
+                <td></td>
+                <td><button class="curve-button" {{ action 'add' }}><img src="styles/add_above.png" /></button></td>
+            </tr>
+        </table>
+    </script>
+    <script type="text/x-handlebars" data-template-name="components/celestials-list">
+        <table class="celestials-list">
+            <tr>
+                <td style="text-align: left;">
+                  <b>{{ model.name }}</b>
+                  
+                </td>
+                <td><div class="curve-warning">{{ warning-icon message=model.errorMap.[-1] }}</div></td>
+            </tr>
+            {{#each model.celestials as |celestial index| }}
+                <tr class="celestial-row">
+                    <td><button class="curve-button" {{ action 'delete' index }}>✖️</button></td>
+                    <td>{{ complex-property model=celestial }}</td>
+                </tr>
+            {{/each }}
+            <tr>
+                <td colspan="1"><button class="curve-button" {{ action 'add' }}><img src="styles/add_above.png" /></button></td>
+            </tr>
+        </table>
     </script>
 </head>
 <body>

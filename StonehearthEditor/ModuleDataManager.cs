@@ -137,7 +137,10 @@ namespace StonehearthEditor
                 AddTreeNodesByAlias(effects, alias);
             }
 
-            AddTreeNodesByFolder(effects, folder);
+            if (folder != string.Empty)
+            {
+                AddTreeNodesByFolder(effects, folder);
+            }
 
             treeView.Nodes.AddRange(effects.ToArray());
             treeView.EndUpdate();

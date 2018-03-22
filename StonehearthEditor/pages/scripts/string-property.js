@@ -893,3 +893,221 @@ ParameterProperty = EffectProperty.extend({
         }
     }),
 });
+
+var TIME_CHOICES = [
+   'midnight',
+   'sunrise_start',
+   'sunrise_peak_start',
+   'sunrise_peak_mid',
+   'sunrise_peak_end',
+   'sunrise_end',
+   'midday',
+   'sunset_start',
+   'sunset_peak_start',
+   'sunset_peak_mid',
+   'sunset_peak_end',
+   'sunset_end',
+   'day_length',
+];
+
+PointSkyRgb = Ember.Object.extend({
+   id: '',
+   time: 'midnight',
+   rValue: '0.0',
+   gValue: '0.0',
+   bValue: '0.0',
+   aValue: '1.0',
+   hasA: false,
+   colorPicker: null,
+   _onInit: function () {
+      var self = this;
+      self.set('id', 'color' + ParameterKindRegistry.getID());
+      Ember.run.scheduleOnce('afterRender', self, function () {
+         var picker = $('#' + self.get('id') + ' .color-picker');
+         self.set('colorPicker', picker);
+         picker.spectrum({
+            color: "#000000",
+            showAlpha: self.get('hasA'),
+            showInput: true,
+            showInitial: true,
+            preferredFormat: "rgb",
+            change: function (color) {
+               self.updateColor(color);
+            }
+         });
+      });
+   }.on('init'),
+   updateColor: function (color) {
+      var floatVals = Utils.convertRgbaToFloat(color._r, color._g, color._b, color._a);
+      this.setRgba(floatVals.r, floatVals.g, floatVals.b, floatVals.a);
+   },
+   fromJson: function (json) {
+      var time = Utils.getEffectValueOrDefault(json, 'time', 'midnight');
+      if (time === '0') time = 'midnight';
+      this.set('time', time);
+      var self = this;
+      var r = Utils.getEffectValueOrDefault(json.value, 0, '0.0');
+      var g = Utils.getEffectValueOrDefault(json.value, 1, '0.0');
+      var b = Utils.getEffectValueOrDefault(json.value, 2, '0.0');
+      var a = this.get('hasA') ? Utils.getEffectValueOrDefault(json.value, 3, '1.0') : 1.0;
+      self.setRgba(r, g, b, a);
+      Ember.run.scheduleOnce('afterRender', this, function () {
+         self.get('colorPicker').spectrum("set", Utils.convertFloatToRgba(r, g, b, 1.0));
+      });
+   },
+   toJson: function () {
+      var values = [Number(this.rValue), Number(this.gValue), Number(this.bValue)];
+      if (this.get('hasA')) {
+         values.push(Number(this.aValue));
+      }
+      return {
+         "time": this.time,
+         "value": values
+      };
+   },
+   isValid: Ember.computed('time', 'rValue', 'gValue', 'bValue', 'aValue', function () {
+      return TIME_CHOICES.find(e => e == this.get('time')) && Utils.isNumber(this.rValue) && Utils.isNumber(this.gValue) && Utils.isNumber(this.bValue)
+          && (!this.get('hasA') || Utils.isNumber(this.aValue));
+   }),
+   setRgba: function (r, g, b, a) {
+      this.set('rValue', r);
+      this.set('gValue', g);
+      this.set('bValue', b);
+      this.set('aValue', a);
+   },
+   setPickerColor: function (picker) {
+      this.set('colorPicker', picker);
+   },
+   invalidMessage: Ember.computed('time', 'rValue', 'gValue', 'bValue', 'aValue', function () {
+      if (!TIME_CHOICES.find(e => e == this.get('time'))) {
+         return "Invalid time.";
+      }
+      if (!Utils.isNumber(this.get('rValue'))) {
+         return "Invalid rValue.";
+      }
+      if (!Utils.isNumber(this.get('gValue'))) {
+         return "Invalid gValue.";
+      }
+      if (!Utils.isNumber(this.get('bValue'))) {
+         return "Invalid bValue.";
+      }
+      if (this.get('hasA') && !Utils.isNumber(this.get('aValue'))) {
+         return "Invalid aValue.";
+      }
+
+      return null;
+   }),
+});
+
+SkyRgbCurveProperty = EffectProperty.extend({
+   componentName: 'sky-rgb-curve',
+   points: null,
+   isMissing: false,
+   _onInit: function () {
+      this.set('points', Ember.A());
+      var timeChoices = Ember.A();
+      for (var i = 0; i < TIME_CHOICES.length; i++) {
+         timeChoices.push(TIME_CHOICES[i]);
+      }
+      this.set('timeChoices', timeChoices);
+   }.on('init'),
+   fromJson: function (json) {
+      var points = Ember.A();
+      for (var i = 0; i < json.length; i++) {
+         var point = PointSkyRgb.create({});
+         point.fromJson(json[i]);
+         points.push(point);
+      }
+      this.set('points', points);
+   },
+   toJson: function () {
+      var ret = [];
+      for (var i = 0; i < this.points.length; i++) {
+         ret.push(this.points[i].toJson());
+      }
+      return ret;
+   },
+   errorMap: Ember.computed('points.@each.time', 'points.@each.rValue', 'points.@each.gValue', 'points.@each.bValue', function () {
+      // Returns index -> error message, -1 means overall
+      var ret = {};
+      function addError(index, message) {
+         if (index in ret) {
+            ret[index] += " " + message;
+         } else {
+            ret[index] = message;
+         }
+      }
+
+      var points = this.get('points');
+      if (points === null) {
+         return {};
+      }
+      if (points.length < 2) {
+         addError(-1, "Need at least two points in curve.");
+      }
+      for (var i = 0; i < points.length; i++) {
+         var pointMessage = points[i].get('invalidMessage');
+         if (pointMessage) {
+            addError(i, pointMessage);
+         }
+      }
+
+      return ret;
+   }),
+   isValid: Ember.computed('errorMap', function () {
+      return Object.keys(this.get('errorMap')).length === 0;
+   }),
+});
+
+CelestialsListProperty = EffectProperty.extend({
+   componentName: 'celestials-list',
+   celestials: null,
+   isMissing: false,
+   _onInit: function () {
+      this.set('celestials', Ember.A());
+   }.on('init'),
+   fromJson: function (json) {
+      var celestials = Ember.A();
+      for (var i = 0; i < json.length; i++) {
+         var celestial = this.newCelestial();
+         celestial.fromJson(json[i]);
+         celestials.push(celestial);
+      }
+      this.set('celestials', celestials);
+   },
+   toJson: function () {
+      var ret = [];
+      for (var i = 0; i < this.celestials.length; i++) {
+         ret.push(this.celestials[i].toJson());
+      }
+      return ret;
+   },
+   isValid: function () {
+      return true;
+   },
+   newCelestial: function () {
+      return ComplexProperty.create({
+         name: null,
+         optional: false,
+         children: Ember.A([
+            StringProperty.create({
+               name: "name",
+            }),
+            SkyRgbCurveProperty.create({
+               name: 'light_colors',
+            }),
+            SkyRgbCurveProperty.create({
+               name: 'ambient_colors',
+            }),
+            SkyRgbCurveProperty.create({  // TODO
+               name: 'angles',
+               optional: true,
+            }),
+            SkyRgbCurveProperty.create({  // TODO
+               name: 'depth_offset_values',
+               optional: true,
+            }),
+         ]),
+      });
+   },
+});

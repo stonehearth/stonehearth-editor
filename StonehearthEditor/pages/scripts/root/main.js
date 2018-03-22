@@ -631,6 +631,31 @@ App.BurstParameterPropertyComponent = Ember.Component.extend({
     },
 });
 
+App.SkyRgbCurveComponent = Ember.Component.extend({
+   actions: {
+      add: function () {
+         this.model.points.pushObject(PointSkyRgb.create({}));
+      },
+      addAbove: function (index) {
+         this.model.points.insertAt(index, PointSkyRgb.create({}));
+      },
+      delete: function (index) {
+         this.model.points.removeAt(index);
+      },
+   },
+});
+
+App.CelestialsListComponent = Ember.Component.extend({
+   actions: {
+      add: function () {
+         this.model.celestials.pushObject(this.model.newCelestial());
+      },
+      delete: function (index) {
+         this.model.celestials.removeAt(index);
+      },
+   },
+});
+
 App.IndexController = Ember.Controller.extend({
     init: function () {
         this._super();
