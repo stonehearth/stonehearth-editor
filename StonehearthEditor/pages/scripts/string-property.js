@@ -1013,6 +1013,7 @@ SkyRgbCurveProperty = EffectProperty.extend({
    }.on('init'),
    fromJson: function (json) {
       var points = Ember.A();
+      json = json || [];
       for (var i = 0; i < json.length; i++) {
          var point = PointSkyRgb.create({});
          point.fromJson(json[i]);

@@ -506,17 +506,21 @@
               }),
               ComplexProperty.create({
                  name: "params",
+                 optional: true,
                  children: Ember.A([
                      SkyRgbCurveProperty.create({
                         name: 'height_fog',
+                        optional: true,
                      }),
                      SkyRgbCurveProperty.create({
                         name: 'height_fog_color_mult',
                         hasA: true,
+                        optional: true,
                      }),
                      SkyRgbCurveProperty.create({
                         name: 'scattering',
                         hasA: true,
+                        optional: true,
                      }),
                  ]),
               }),
