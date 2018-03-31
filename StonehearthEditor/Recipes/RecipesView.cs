@@ -217,6 +217,7 @@ namespace StonehearthEditor.Recipes
                     var newColumn = new DataGridViewCheckBoxColumn();
                     newColumn.Name = column.Name;
                     newColumn.DataPropertyName = column.DataPropertyName;
+                    newColumn.SortMode = DataGridViewColumnSortMode.Automatic;
                     replacementColumn = newColumn;
                 }
                 if (replacementColumn != null) {
