@@ -51,6 +51,21 @@ namespace StonehearthEditor.Recipes
             SetGridCell(RecipeTable.kIsVariableQuality, value);
         }
 
+        public void SetShopLvl(int? value)
+        {
+            SetGridCell(RecipeTable.kShopLvl, value);
+        }
+
+        public void SetIsBuyable(bool? value)
+        {
+            SetGridCell(RecipeTable.kIsBuyable, value);
+        }
+
+        public void SetIsSellable(bool? value)
+        {
+            SetGridCell(RecipeTable.kIsSellable, value);
+        }
+
         public void SetEffort(int? value)
         {
             SetGridCell(RecipeTable.kEffort, value);
@@ -66,7 +81,7 @@ namespace StonehearthEditor.Recipes
             SetGridCell(RecipeTable.kAlias, value);
         }
 
-        public void SetNetWorth(int value)
+        public void SetNetWorth(int? value)
         {
             SetGridCell(RecipeTable.kNetWorth, value);
         }

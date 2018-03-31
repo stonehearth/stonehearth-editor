@@ -526,10 +526,17 @@ namespace StonehearthEditor.Recipes
             JToken hasVariableItemQuality = json.SelectToken("entity_data.stonehearth:item_quality.variable_quality");
             row.SetIsVariableQuality(hasVariableItemQuality == null ? null : hasVariableItemQuality.ToObject<bool?>());
 
+            JToken shopLevel = json.SelectToken("entity_data.stonehearth:net_worth.shop_info.shopkeeper_level");
+            row.SetShopLvl(shopLevel == null ? null : shopLevel.ToObject<int?>());
+            JToken isBuyable = json.SelectToken("entity_data.stonehearth:net_worth.shop_info.buyable");
+            row.SetIsBuyable(isBuyable == null ? null : isBuyable.ToObject<bool?>());
+            JToken isSellable = json.SelectToken("entity_data.stonehearth:net_worth.shop_info.sellable");
+            row.SetIsSellable(isSellable == null ? null : isSellable.ToObject<bool?>());
+
             row.SetAlias(alias);
 
             row.Item = jsonFileData;
-            row.SetNetWorth(jsonFileData.NetWorth);
+            row.SetNetWorth(jsonFileData.NetWorth == -1 ? (int?)null : (int?)jsonFileData.NetWorth);
             row.SetDisplayName(GetTranslatedName(GetDisplayName(jsonFileData)));
             row.SetIcon(GetIcon(jsonFileData));
 
@@ -558,18 +565,18 @@ namespace StonehearthEditor.Recipes
             if (colFilter == kAllCol || colFilter.Contains(IngredientColumnGroup.kIngr))
             {
                 Regex matchIng = new Regex(IngredientColumnGroup.kIngr + "\\d");
+                var isFirst = true;
                 for (int i = 0; i < recipesGridView.Columns.Count; i++)
                 {
                     DataGridViewColumn column = recipesGridView.Columns[i];
                     bool isText = column.ValueType == typeof(string) || column.ValueType == typeof(int);
                     bool match = colFilter.Contains(IngredientColumnGroup.kIngr) ? matchIng.IsMatch(column.Name) : isText;
-                    if (match)
-                    {
-                        sb.Append(GetColFilterString(column.Name, searchTerm));
-                        if (i < recipesGridView.Columns.Count - 1)
-                        {
-                            sb.Append(" OR "); // to aggregate multiple columns into the search filter query
+                    if (match) {
+                        if (!isFirst) {
+                            sb.Append(" OR ");
                         }
+                        sb.Append(GetColFilterString(column.Name, searchTerm));
+                        isFirst = false;
                     }
                 }
             }

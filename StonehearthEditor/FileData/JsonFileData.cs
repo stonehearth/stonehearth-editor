@@ -478,6 +478,10 @@ namespace StonehearthEditor
                         {
                             CheckForNoNetWorth();
                         }
+
+                        if (mJson.SelectToken("entity_data.stonehearth:net_worth") != null) {
+                            CheckForNoNetWorth();
+                        }
                     }
 
                     break;

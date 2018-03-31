@@ -200,23 +200,6 @@ namespace StonehearthEditor.Recipes
         }
     }
 
-    internal class NetWorthColumnBehavior : ColumnBehavior
-    {
-        public override void ConfigureColumn(DataGridViewColumn gridCol)
-        {
-            gridCol.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
-        }
-        
-        public override void SaveCell(HashSet<JsonFileData> modifiedFiles, RecipeRow row, object value)
-        {
-            JsonFileData jsonFileData = row.Item;
-            JObject json = jsonFileData.Json;
-            JValue token = json.SelectToken("entity_data.stonehearth:net_worth.value_in_gold") as JValue;
-            token.Value = (int)value;
-            modifiedFiles.Add(jsonFileData);
-        }
-    }
-
     internal class AppealColumnBehavior : ColumnBehavior
     {
         public override void ConfigureColumn(DataGridViewColumn gridCol)
@@ -298,6 +281,179 @@ namespace StonehearthEditor.Recipes
         public override bool TryDeleteCell(RecipeRow row)
         {
             row.SetIsVariableQuality(null);
+            return true;
+        }
+    }
+
+    internal class NetWorthColumnBehavior : ColumnBehavior
+    {
+        public override void ConfigureColumn(DataGridViewColumn gridCol)
+        {
+            gridCol.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
+        }
+
+        public override void SaveCell(HashSet<JsonFileData> modifiedFiles, RecipeRow row, object value)
+        {
+            JsonFileData jsonFileData = row.Item;
+            JObject json = jsonFileData.Json;
+            JValue token = json.SelectToken("entity_data.stonehearth:net_worth.value_in_gold") as JValue;
+            if (value == null || value == DBNull.Value) {
+                if (token != null) {
+                    json.SelectToken("entity_data.stonehearth:net_worth.value_in_gold").Parent.Remove();
+                }
+            } else if (token != null) {
+                token.Value = (int)value;
+            } else {
+                JObject entityData = json["entity_data"] as JObject;
+                if (entityData == null) {
+                    entityData = new JObject();
+                    json["entity_data"] = entityData;
+                }
+
+                JObject netWorthData = entityData["stonehearth:net_worth"] as JObject;
+                if (netWorthData == null) {
+                    netWorthData = new JObject();
+                    json["stonehearth:net_worth"] = netWorthData;
+                }
+
+                netWorthData["value_in_gold"] = (int)value;
+            }
+            modifiedFiles.Add(jsonFileData);
+        }
+    }
+
+    internal class ShopLevelColumnBehavior : ColumnBehavior
+    {
+        public override void SaveCell(HashSet<JsonFileData> modifiedFiles, RecipeRow row, object value)
+        {
+            JsonFileData jsonFileData = row.Item;
+            JObject json = jsonFileData.Json;
+            JValue token = json.SelectToken("entity_data.stonehearth:net_worth.shop_info.shopkeeper_level") as JValue;
+            if (value == null || value == DBNull.Value) {
+                if (token != null) {
+                    json.SelectToken("entity_data.stonehearth:net_worth.shop_info.shopkeeper_level").Parent.Remove();
+                }
+            } else if (token != null) {
+                token.Value = (int)value;
+            } else {
+                JObject entityData = json["entity_data"] as JObject;
+                if (entityData == null) {
+                    entityData = new JObject();
+                    json["entity_data"] = entityData;
+                }
+
+                JObject netWorthData = entityData["stonehearth:net_worth"] as JObject;
+                if (netWorthData == null) {
+                    netWorthData = new JObject();
+                    json["stonehearth:net_worth"] = netWorthData;
+                }
+
+                JObject shopInfo = netWorthData["shop_info"] as JObject;
+                if (shopInfo == null) {
+                    shopInfo = new JObject();
+                    json["shop_info"] = shopInfo;
+                }
+
+                shopInfo["shopkeeper_level"] = (int)value;
+            }
+            modifiedFiles.Add(jsonFileData);
+        }
+
+        public override bool TryDeleteCell(RecipeRow row)
+        {
+            row.SetShopLvl(null);
+            return true;
+        }
+    }
+
+    internal class BuyableColumnBehavior : BooleanColumnBehavior
+    {
+        public override void SaveCell(HashSet<JsonFileData> modifiedFiles, RecipeRow row, object value)
+        {
+            JsonFileData jsonFileData = row.Item;
+            JObject json = jsonFileData.Json;
+            JToken token = json.SelectToken("entity_data.stonehearth:shop_info.buyable");
+
+            if (value == null || value == DBNull.Value) {
+                if (token != null) {
+                    json.SelectToken("entity_data.stonehearth:shop_info.buyable").Parent.Remove();
+                }
+            } else if (token != null) {
+                (token as JValue).Value = (bool)value;
+            } else {
+                JObject entityData = json["entity_data"] as JObject;
+                if (entityData == null) {
+                    entityData = new JObject();
+                    json["entity_data"] = entityData;
+                }
+
+                JObject netWorthData = entityData["stonehearth:net_worth"] as JObject;
+                if (netWorthData == null) {
+                    netWorthData = new JObject();
+                    json["stonehearth:net_worth"] = netWorthData;
+                }
+
+                JObject shopInfo = netWorthData["shop_info"] as JObject;
+                if (shopInfo == null) {
+                    shopInfo = new JObject();
+                    json["shop_info"] = shopInfo;
+                }
+
+                shopInfo["buyable"] = (bool)value;
+            }
+
+            modifiedFiles.Add(jsonFileData);
+        }
+
+        public override bool TryDeleteCell(RecipeRow row)
+        {
+            row.SetIsBuyable(null);
+            return true;
+        }
+    }
+
+    internal class SellableColumnBehavior : BooleanColumnBehavior
+    {
+        public override void SaveCell(HashSet<JsonFileData> modifiedFiles, RecipeRow row, object value)
+        {
+            JsonFileData jsonFileData = row.Item;
+            JObject json = jsonFileData.Json;
+            JToken token = json.SelectToken("entity_data.stonehearth:shop_info.sellable");
+
+            if (value == null || value == DBNull.Value) {
+                if (token != null) {
+                    json.SelectToken("entity_data.stonehearth:shop_info.sellable").Parent.Remove();
+                }
+            } else if (token != null) {
+                (token as JValue).Value = (bool)value;
+            } else {
+                JObject entityData = json["entity_data"] as JObject;
+                if (entityData == null) {
+                    entityData = new JObject();
+                    json["entity_data"] = entityData;
+                }
+
+                JObject netWorthData = entityData["stonehearth:net_worth"] as JObject;
+                if (netWorthData == null) {
+                    netWorthData = new JObject();
+                    json["stonehearth:net_worth"] = netWorthData;
+                }
+
+                JObject shopInfo = netWorthData["shop_info"] as JObject;
+                if (shopInfo == null) {
+                    shopInfo = new JObject();
+                    json["shop_info"] = shopInfo;
+                }
+
+                shopInfo["sellable"] = (bool)value;
+            }
+
+            modifiedFiles.Add(jsonFileData);
+        }
+
+        public override bool TryDeleteCell(RecipeRow row)
+        {
+            row.SetIsSellable(null);
             return true;
         }
     }

@@ -13,7 +13,7 @@ namespace StonehearthEditor.Recipes
         public const string kIcon = "Icon";
         public const string kAlias = "Alias";
         public const string kDisplayName = "Display Name";
-        public const string kNetWorth = "Net Worth";
+        public const string kNetWorth = "Gold Value";
         public const string kAppeal = "Appeal";
         public const string kIsVariableQuality = "Variable Quality";
         public const string kCrafter = "Crafter";
@@ -21,6 +21,9 @@ namespace StonehearthEditor.Recipes
         public const string kEffort = "Effort";
         public const string kWorkUnits = "Work Units";
         public const string kName = "Name";
+        public const string kIsBuyable = "Buyable";
+        public const string kIsSellable = "Sellable";
+        public const string kShopLvl = "Shop Lvl";
 
         private readonly RecipesView mRecipesView;
         private readonly Dictionary<string, ColumnBehavior> mKeyToColumnBehavior = new Dictionary<string, ColumnBehavior>();
@@ -70,7 +73,10 @@ namespace StonehearthEditor.Recipes
             AddDataColumn(kLvlReq, typeof(int), new LevelRequiredColumnBehavior());
             AddDataColumn(kEffort, typeof(int), new EffortColumnBehavior());
             AddDataColumn(kWorkUnits, typeof(int), new WorkUnitsColumnBehavior());
-        }
+            AddDataColumn(kShopLvl, typeof(int), new ShopLevelColumnBehavior());
+            AddDataColumn(kIsBuyable, typeof(bool), new BuyableColumnBehavior());
+            AddDataColumn(kIsSellable, typeof(bool), new SellableColumnBehavior());
+    }
 
         internal IngredientColumnGroup GetOrAddIngredientColumnGroup(int index)
         {
