@@ -129,9 +129,9 @@ namespace StonehearthEditor
                     }
 
                     break;
-                case "town_founding":
+                case "town_upgrade_choice":
                     {
-                        var choices = NodeFile.Json.SelectToken("town_founding_info.choices");
+                        var choices = NodeFile.Json.SelectToken("town_upgrade_choice_info.choices");
                         if (choices != null)
                         {
                             foreach (JToken nodeData in choices.Values())
@@ -272,7 +272,7 @@ namespace StonehearthEditor
                     settings.Icon = Image.FromFile(iconBasePath + "/images/encounter_raid.png");
                     break;
                 case "city_tier_quest":
-                case "town_founding":
+                case "town_upgrade_choice":
                     settings.Icon = Image.FromFile(iconBasePath + "/images/encounter_tier_quest.png");
                     break;
                 case "city_tier_achieved":
