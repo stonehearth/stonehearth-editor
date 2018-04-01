@@ -13,6 +13,7 @@ namespace StonehearthEditor.Recipes
         public const string kIcon = "Icon";
         public const string kAlias = "Alias";
         public const string kDisplayName = "Display Name";
+        public const string kCategory = "Category";
         public const string kNetWorth = "Gold Value";
         public const string kAppeal = "Appeal";
         public const string kIsVariableQuality = "Variable Quality";
@@ -66,6 +67,7 @@ namespace StonehearthEditor.Recipes
             AddDataColumn(kIcon, typeof(Image), new IconColumnBehavior());
             AddDataColumn(kDisplayName, typeof(string), new DisplayNameColumnBehavior());
             AddDataColumn(kAlias, typeof(string), new AliasColumnBehavior());
+            AddDataColumn(kCategory, typeof(string), new CategoryColumnBehavior());
             AddDataColumn(kNetWorth, typeof(int), new NetWorthColumnBehavior());
             AddDataColumn(kAppeal, typeof(int), new AppealColumnBehavior());
             AddDataColumn(kIsVariableQuality, typeof(bool), new IsVariableQualityColumnBehavior());

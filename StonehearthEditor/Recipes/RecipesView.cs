@@ -45,6 +45,7 @@ namespace StonehearthEditor.Recipes
             filterCbx.Items.Add(kAllCol);
             filterCbx.Items.Add(RecipeTable.kAlias);
             filterCbx.Items.Add(RecipeTable.kDisplayName);
+            filterCbx.Items.Add(RecipeTable.kCategory);
             filterCbx.Items.Add(RecipeTable.kCrafter);
             filterCbx.Items.Add(RecipeTable.kLvlReq);
             filterCbx.Items.Add(RecipeTable.kNetWorth);
@@ -539,6 +540,7 @@ namespace StonehearthEditor.Recipes
             row.Item = jsonFileData;
             row.SetNetWorth(jsonFileData.NetWorth == -1 ? (int?)null : (int?)jsonFileData.NetWorth);
             row.SetDisplayName(GetTranslatedName(GetDisplayName(jsonFileData)));
+            row.SetCategory(GetCategoryName(jsonFileData));
             row.SetIcon(GetIcon(jsonFileData));
 
             if (jsonFileData.GetModuleFile() != null && jsonFileData.GetModuleFile().IsDeprecated)
@@ -663,34 +665,36 @@ namespace StonehearthEditor.Recipes
 
         private string GetDisplayName(JsonFileData jsonFileData)
         {
+            return GetCatalogField(jsonFileData, "display_name");
+        }
+
+        private string GetCategoryName(JsonFileData jsonFileData)
+        {
+            return GetCatalogField(jsonFileData, "category");
+        }
+
+        private string GetCatalogField(JsonFileData jsonFileData, String fieldName)
+        {
             JObject entityJson = jsonFileData.Json;
-            JToken displayName = entityJson.SelectToken("entity_data.stonehearth:catalog.display_name");
-            try
-            {
+            JToken result = entityJson.SelectToken("entity_data.stonehearth:catalog." + fieldName);
+            try {
                 JsonFileData mixinsFile = jsonFileData.CreateFileWithMixinsApplied();
-                displayName = mixinsFile.Json.SelectToken("entity_data.stonehearth:catalog.display_name");
-            }
-            catch (Exception e)
-            {
+                result = mixinsFile.Json.SelectToken("entity_data.stonehearth:catalog." + fieldName);
+            } catch (Exception e) {
                 // If could not apply mixin (e.g. if it is a mod json that uses mixintypes),
                 // manually check the ghost for the display name.
-                if (displayName == null)
-                {
+                if (result == null) {
                     JToken entityFormsComponent = entityJson.SelectToken("components.stonehearth:entity_forms");
-                    if (entityFormsComponent != null)
-                    {
+                    if (entityFormsComponent != null) {
                         JToken ghostForm = entityFormsComponent["ghost_form"];
-                        if (ghostForm != null)
-                        {
+                        if (ghostForm != null) {
                             string ghostFilePath = JsonHelper.GetFileFromFileJson(ghostForm.ToString(), jsonFileData.Directory);
                             ghostFilePath = JsonHelper.NormalizeSystemPath(ghostFilePath);
 
-                            foreach (JsonFileData file in jsonFileData.OpenedFiles)
-                            {
+                            foreach (JsonFileData file in jsonFileData.OpenedFiles) {
                                 JObject json = file.Json;
-                                if (file.Path == ghostFilePath)
-                                {
-                                    displayName = json.SelectToken("entity_data.stonehearth:catalog.display_name");
+                                if (file.Path == ghostFilePath) {
+                                    result = json.SelectToken("entity_data.stonehearth:catalog." + fieldName);
                                     break;
                                 }
                             }
@@ -699,7 +703,7 @@ namespace StonehearthEditor.Recipes
                 }
             }
 
-            return displayName == null ? "" : displayName.ToString();
+            return result == null ? "" : result.ToString();
         }
 
         public Image GetIcon(JsonFileData jsonFileData)
