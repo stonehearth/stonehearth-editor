@@ -96,6 +96,11 @@ namespace StonehearthEditor.Recipes
             SetGridCell(RecipeTable.kCategory, value);
         }
 
+        public void SetMaterialTags(string value)
+        {
+            SetGridCell(RecipeTable.kMaterialTags, value);
+        }
+
         public void SetIcon(Image value)
         {
             SetGridCell(RecipeTable.kIcon, value);

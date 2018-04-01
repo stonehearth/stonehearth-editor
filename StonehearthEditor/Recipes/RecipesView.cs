@@ -46,6 +46,7 @@ namespace StonehearthEditor.Recipes
             filterCbx.Items.Add(RecipeTable.kAlias);
             filterCbx.Items.Add(RecipeTable.kDisplayName);
             filterCbx.Items.Add(RecipeTable.kCategory);
+            filterCbx.Items.Add(RecipeTable.kMaterialTags);
             filterCbx.Items.Add(RecipeTable.kCrafter);
             filterCbx.Items.Add(RecipeTable.kLvlReq);
             filterCbx.Items.Add(RecipeTable.kNetWorth);
@@ -541,6 +542,7 @@ namespace StonehearthEditor.Recipes
             row.SetNetWorth(jsonFileData.NetWorth == -1 ? (int?)null : (int?)jsonFileData.NetWorth);
             row.SetDisplayName(GetTranslatedName(GetDisplayName(jsonFileData)));
             row.SetCategory(GetCategoryName(jsonFileData));
+            row.SetMaterialTags(GetMaterialTags(jsonFileData));
             row.SetIcon(GetIcon(jsonFileData));
 
             if (jsonFileData.GetModuleFile() != null && jsonFileData.GetModuleFile().IsDeprecated)
@@ -671,6 +673,11 @@ namespace StonehearthEditor.Recipes
         private string GetCategoryName(JsonFileData jsonFileData)
         {
             return GetCatalogField(jsonFileData, "category");
+        }
+
+        private string GetMaterialTags(JsonFileData jsonFileData)
+        {
+            return GetCatalogField(jsonFileData, "material_tags");
         }
 
         private string GetCatalogField(JsonFileData jsonFileData, String fieldName)

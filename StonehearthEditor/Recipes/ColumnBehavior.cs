@@ -208,6 +208,14 @@ namespace StonehearthEditor.Recipes
         }
     }
 
+    internal class MaterialTagsColumnBehavior : ColumnBehavior
+    {
+        public override void ConfigureColumn(DataGridViewColumn gridCol)
+        {
+            gridCol.Frozen = true;
+        }
+    }
+
     internal class AppealColumnBehavior : ColumnBehavior
     {
         public override void ConfigureColumn(DataGridViewColumn gridCol)
