@@ -51,5 +51,12 @@ namespace StonehearthEditor
                 mCallback = null;
             }
         }
+
+        private void InputDialog_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Escape) {
+                this.Close();
+            }
+        }
     }
 }

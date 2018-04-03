@@ -100,11 +100,14 @@
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.ClientSize = new System.Drawing.Size(471, 93);
             this.Controls.Add(this.flowLayoutPanel1);
+            this.KeyPreview = true;
+            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.Name = "InputDialog";
             this.Padding = new System.Windows.Forms.Padding(5);
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "InputDialog";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.InputDialog_FormClosed);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.InputDialog_KeyDown);
             this.panel1.ResumeLayout(false);
             this.flowLayoutPanel1.ResumeLayout(false);
             this.flowLayoutPanel1.PerformLayout();
