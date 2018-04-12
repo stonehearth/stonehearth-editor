@@ -481,11 +481,11 @@
                   <div class="curve-warning">{{ warning-icon message=model.errorMap.[-1] }}</div>
                 </td>
                 <td>Time</td>
-                <td>R</td>
-                <td>G</td>
-                <td>B</td>
+                <td>{{ model.labels.[0] }}</td>
+                <td>{{ model.labels.[1] }}</td>
+                <td>{{ model.labels.[2] }}</td>
                 {{#if model.hasA }}
-                  <td>A</td>
+                  <td>{{ model.labels.[3] }}</td>
                 {{/if }}
                {{#if model.hasPicker }}
                   <td><span class="parameter-property-label-color">Picker</span></td>

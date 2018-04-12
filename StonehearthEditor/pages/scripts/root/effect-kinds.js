@@ -513,12 +513,14 @@
                         hasA: true,
                         optional: true,
                         hasPicker: false,
+                        labels: ["Height", "Thickness", "Noise Factor", "Distance Factor"],
                      }),
                      SkyRgbCurveProperty.create({
                         name: 'height_fog2',
                         hasA: false,
                         optional: true,
                         hasPicker: false,
+                        labels: ["Noise Scale X", "Noise Scale Z", "Noise Speed", "-"],
                      }),
                      SkyRgbCurveProperty.create({
                         name: 'height_fog_color_mult',
@@ -530,6 +532,7 @@
                         hasA: true,
                         optional: true,
                         hasPicker: false,
+                        labels: ["Hue Shift", "Saturation Factor", "Value Factor", "Sun Brightness"],
                      }),
                  ]),
               }),
@@ -538,6 +541,8 @@
                  children: Ember.A([
                      SkyRgbCurveProperty.create({
                         name: 'starfield_brightness',
+                        hasPicker: false,
+                        labels: ["Brightness", "-", "-", "-"],
                      }),
                  ]),
               }),

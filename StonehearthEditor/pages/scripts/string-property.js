@@ -1010,6 +1010,7 @@ SkyRgbCurveProperty = EffectProperty.extend({
    isMissing: false,
    hasA: false,
    hasPicker: true,
+   labels: ["R", "G", "B", "A"],
    _onInit: function () {
       this.set('points', Ember.A());
       var timeChoices = Ember.A();
@@ -1111,11 +1112,13 @@ CelestialsListProperty = EffectProperty.extend({
                name: 'angles',
                optional: true,
                hasPicker: false,
+               labels: ["X", "Y", "Z"],
             }),
             SkyRgbCurveProperty.create({
                name: 'depth_offset_values',
                optional: true,
                hasPicker: false,
+               labels: ["ShadowOffset", "-", "-"],
             }),
          ]),
       });
