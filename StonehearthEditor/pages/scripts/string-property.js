@@ -1103,7 +1103,7 @@ CelestialsListProperty = EffectProperty.extend({
                name: "name",
             }),
             BooleanProperty.create({
-                name: "shadows_active",
+                name: "shadows_enabled",
             }),
             SkyRgbCurveProperty.create({
                name: 'light_colors',
