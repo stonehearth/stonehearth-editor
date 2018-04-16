@@ -96,7 +96,7 @@ table {
     border: 0px;
     margin: 0px;
     display: inline-block;
-    text-align: center;
+    text-align: left;
 }
 input[type="email"],
 input[type="number"],
@@ -124,7 +124,6 @@ select {
     text-align: left !important;
 }
 .sh-checkbox-input {
-    position: absolute;
     left: 135px;
     transform: scale(1.5);
     height: 20px;
@@ -184,7 +183,7 @@ select {
     color: #000;
     width: 37.5px;
     height: 20px;
-   line-height: 0px;
+    line-height: 0px;
 }
 
 .curve-warning {
@@ -233,7 +232,6 @@ td {
     border: 0px;
     padding: 1px;
     margin: 1px;
-    text-align: center;
 }
 
 body {
