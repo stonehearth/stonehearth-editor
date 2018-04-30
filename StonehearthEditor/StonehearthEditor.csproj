@@ -117,6 +117,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="LoadingSplash.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="LoadingSplash.Designer.cs">
+      <DependentUpon>LoadingSplash.cs</DependentUpon>
+    </Compile>
     <Compile Include="Dialogs\AliasSelectionDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -239,6 +245,9 @@
     <Compile Include="Recipes\RecipesView.Designer.cs">
       <DependentUpon>RecipesView.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="LoadingSplash.resx">
+      <DependentUpon>LoadingSplash.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Dialogs\AliasSelectionDialog.resx">
       <DependentUpon>AliasSelectionDialog.cs</DependentUpon>
     </EmbeddedResource>

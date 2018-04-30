@@ -34,7 +34,11 @@ namespace StonehearthEditor
                 chooseModDirectory();
             }
 
+            var splash = new LoadingSplash();
+            splash.Show();
+            Application.DoEvents();  // Hacky, but whatever.
             LoadModFiles();
+            splash.Hide();
             int initialTab = (int)Properties.Settings.Default["InitialTab"];
             tabControl.SelectedIndex = initialTab;
 
