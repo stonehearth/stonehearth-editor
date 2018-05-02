@@ -38,6 +38,7 @@ namespace StonehearthEditor
             splash.Show();
             Application.DoEvents();  // Hacky, but whatever.
             LoadModFiles();
+            splash.Dispose();
             splash.Hide();
             int initialTab = (int)Properties.Settings.Default["InitialTab"];
             tabControl.SelectedIndex = initialTab;
@@ -140,8 +141,27 @@ namespace StonehearthEditor
                 if (result == DialogResult.OK)
                 {
                     string newPath = dialog.DirectoryPath;
+                    var check = this.checkModsFolder(ref newPath);
 
-                    if (this.checkModsFolder(ref newPath))
+                    if (check == ModFolderCheckResult.ZIPPED) {
+
+                        if (MessageBox.Show("The chosen directory appears to have compressed mods. To use it, the mods must be uncompressed. Would you like to do that?", "Compressed mods directory", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.Yes) {
+
+                            var splash = new LoadingSplash();
+                            splash.Show();
+                            Application.DoEvents();  // Hacky, but whatever.
+                            foreach (var path in Directory.EnumerateFiles(newPath)) {
+                                if (path.EndsWith(".smod")) {
+                                    System.IO.Compression.ZipFile.ExtractToDirectory(path, newPath);
+                                }
+                            }
+                            splash.Hide();
+                            splash.Dispose();
+                            check = ModFolderCheckResult.VALID;
+                        }
+                    }
+
+                    if (check == ModFolderCheckResult.VALID)
                     {
                         kModsDirectoryPath = JsonHelper.NormalizeSystemPath(newPath);
                         Properties.Settings.Default["ModsDirectory"] = kModsDirectoryPath;
@@ -150,7 +170,7 @@ namespace StonehearthEditor
                     }
                     else if (Directory.Exists(newPath))
                     {
-                        // If the directory does exist, but doesn't seem to be valid, make it a user chocie
+                        // If the directory does exist, but doesn't seem to be valid, make it a user choice
                         if (MessageBox.Show("The chosen directory does not appear to be a valid mods directory. Choose it anyway?", "Possibly invalid mods directory", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.Yes)
                             return;
                     }
@@ -169,29 +189,41 @@ namespace StonehearthEditor
             while (true); // repeat until we've got a proper directory or the user aborts
         }
 
+        private enum ModFolderCheckResult
+        {
+            INVALID,
+            VALID,
+            ZIPPED
+        }
+
         /// <summary>
         /// Checks if a folder is likely to be a valid mod folder.
         /// </summary>
         /// <param name="modsFolder">Full path to the folder that is to be checked.</param>
         /// <returns><c>true</c> if the folder is likely a valid mods folder, <c>false</c> otherwise.</returns>
-        private bool checkModsFolder(ref string modsFolder)
+        private ModFolderCheckResult checkModsFolder(ref string modsFolder)
         {
             if (!Directory.Exists(modsFolder))
-                return false;
+                return ModFolderCheckResult.INVALID;
 
             // If there is at least one directory that contains a manifest.json, it's probably a valid directory
-            if (Directory.EnumerateDirectories(modsFolder).Any(subDir => File.Exists(Path.Combine(subDir, "manifest.json"))))
-                return true;
+            if (Directory.EnumerateDirectories(modsFolder).Any(subDir => File.Exists(Path.Combine(subDir, "manifest.json")))) {
+                return ModFolderCheckResult.VALID;
+            }
+
+            if (Directory.EnumerateFiles(modsFolder).Any(file => file.EndsWith(".smod") && !File.Exists(file.Substring(0, file.Length - 5)))) {
+                return ModFolderCheckResult.ZIPPED;
+            }
 
             // Maybe they've selected the SH root folder..?
             var subDirectory = Path.Combine(modsFolder, "mods");
-            if (Directory.Exists(subDirectory) && this.checkModsFolder(ref subDirectory))
+            if (Directory.Exists(subDirectory) && this.checkModsFolder(ref subDirectory) != ModFolderCheckResult.INVALID)
             {
                 modsFolder = subDirectory;
-                return true;
+                return checkModsFolder(ref modsFolder);
             }
 
-            return false;
+            return ModFolderCheckResult.INVALID;
         }
 
         private void changeModDirectoryToolStripMenuItem_Click(object sender, EventArgs e)
