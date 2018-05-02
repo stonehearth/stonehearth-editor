@@ -283,6 +283,10 @@ namespace StonehearthEditor
                 case "add_citizen":  // Pushing it.
                     settings.Icon = Image.FromFile(iconBasePath + "/images/encounter_loot.png");
                     break;
+                case "bulletin":
+                    graphNode.Attr.FillColor = GameMasterNode.kLightGrey;
+                    settings.Icon = Image.FromFile(iconBasePath + "/images/document_16xLG.png");
+                    break;
             }
 
             settings.HasUnsavedChanges = NodeFile.IsModified;
