@@ -12,7 +12,7 @@ namespace StonehearthEditor
 {
     public partial class MainForm : Form
     {
-        public static string kModsDirectoryPath { get; set; }
+        public static string kModsDirectoryPath;
 
         private NetWorthVisualizer mNetWorthVisualizer;
 
@@ -29,9 +29,11 @@ namespace StonehearthEditor
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(kModsDirectoryPath))
+            if (string.IsNullOrWhiteSpace(kModsDirectoryPath) || checkModsFolder(ref kModsDirectoryPath) != ModFolderCheckResult.VALID)
             {
-                chooseModDirectory();
+                if (!chooseModDirectory()) {
+                    Application.Exit();
+                }
             }
 
             var splash = new LoadingSplash();
@@ -124,7 +126,7 @@ namespace StonehearthEditor
             mNetWorthVisualizer.Show(this);
         }
 
-        private void chooseModDirectory()
+        private bool chooseModDirectory()
         {
             var dialog = new FolderSelectDialog()
             {
@@ -146,12 +148,11 @@ namespace StonehearthEditor
                     if (check == ModFolderCheckResult.ZIPPED) {
 
                         if (MessageBox.Show("The chosen directory appears to have compressed mods. To use it, the mods must be uncompressed. Would you like to do that?", "Compressed mods directory", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.Yes) {
-
                             var splash = new LoadingSplash();
                             splash.Show();
                             Application.DoEvents();  // Hacky, but whatever.
                             foreach (var path in Directory.EnumerateFiles(newPath)) {
-                                if (path.EndsWith(".smod")) {
+                                if (path.EndsWith(".smod") && !Directory.Exists(path.Substring(0, path.Length - 5))) {
                                     System.IO.Compression.ZipFile.ExtractToDirectory(path, newPath);
                                 }
                             }
@@ -166,24 +167,27 @@ namespace StonehearthEditor
                         kModsDirectoryPath = JsonHelper.NormalizeSystemPath(newPath);
                         Properties.Settings.Default["ModsDirectory"] = kModsDirectoryPath;
                         Properties.Settings.Default.Save();
-                        return;
+                        return true;
                     }
                     else if (Directory.Exists(newPath))
                     {
                         // If the directory does exist, but doesn't seem to be valid, make it a user choice
-                        if (MessageBox.Show("The chosen directory does not appear to be a valid mods directory. Choose it anyway?", "Possibly invalid mods directory", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.Yes)
-                            return;
+                        if (MessageBox.Show("The chosen directory does not appear to be a valid mods directory. Choose it anyway?", "Possibly invalid mods directory", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.Yes) {
+                            kModsDirectoryPath = JsonHelper.NormalizeSystemPath(newPath);
+                            Properties.Settings.Default["ModsDirectory"] = kModsDirectoryPath;
+                            return true;
+                        }
                     }
                     else
                     {
                         if (MessageBox.Show("Invalid mods directory chosen. Try again?", "Invalid directory", MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.No)
-                            return;
+                            return false;
                     }
                 }
                 else
                 {
                     if (MessageBox.Show("No mods directory selected. Try again?", "No directory selected.", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
-                        return;
+                        return false;
                 }
             }
             while (true); // repeat until we've got a proper directory or the user aborts
@@ -206,13 +210,14 @@ namespace StonehearthEditor
             if (!Directory.Exists(modsFolder))
                 return ModFolderCheckResult.INVALID;
 
+            // Are there zipped mods?
+            if (Directory.EnumerateFiles(modsFolder).Any(file => file.EndsWith(".smod") && !Directory.Exists(file.Substring(0, file.Length - 5)))) {
+                return ModFolderCheckResult.ZIPPED;
+            }
+
             // If there is at least one directory that contains a manifest.json, it's probably a valid directory
             if (Directory.EnumerateDirectories(modsFolder).Any(subDir => File.Exists(Path.Combine(subDir, "manifest.json")))) {
                 return ModFolderCheckResult.VALID;
-            }
-
-            if (Directory.EnumerateFiles(modsFolder).Any(file => file.EndsWith(".smod") && !File.Exists(file.Substring(0, file.Length - 5)))) {
-                return ModFolderCheckResult.ZIPPED;
             }
 
             // Maybe they've selected the SH root folder..?
