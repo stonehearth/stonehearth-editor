@@ -295,6 +295,18 @@
                "additionalProperties": false
             },
             {
+               "title": "Weather check",
+               "description": "Compare the current weather URI.",
+               "type": "object",
+               "properties": {
+                  "type": { "$ref": "#/definitions/comparison_operator" },
+                  "item": { "enum": ["weather"] },
+                  "value": { "$ref": "elements/file.json" }
+               },
+               "required": [ "item", "type", "value" ],
+               "additionalProperties": false
+            },
+            {
                "title": "AND check",
                "description": "Returns true if ALL subtests pass.",
                "type": "object",
