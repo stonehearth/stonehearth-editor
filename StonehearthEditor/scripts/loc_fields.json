@@ -116,7 +116,8 @@
       "categories.*.display_name": "data.hotkeys.categories.{0}.display_name",
       "keys.*.display_name": "data.hotkeys.keys.{0}.display_name",
       "trappable_animals.*.name": "trappable_animals.{0}.name",
-      "trappable_animals.*.description": "trappable_animals.{0}.description"
+      "trappable_animals.*.description": "trappable_animals.{0}.description",
+      "add_citizen_info.notification_title":"notification_title"
    },
    "choices": {
       "*.nodes.*.bulletin.choices.*": "{0}.dialog_nodes.{1}.choice_{2}"
