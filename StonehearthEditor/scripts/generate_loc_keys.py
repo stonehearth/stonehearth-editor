@@ -30,7 +30,8 @@ TRUNCATED_PATHS = {
    "data/gm/campaigns/trader/arcs/encounters": "data/gm/campaigns/trader",
    "data/gm/campaigns/town_progression/arcs/trigger/town_progression/encounters":"data/gm/campaigns/town_progression",
    "data/gm/campaigns/titan_gary/arcs/trigger/titan_gary/encounters":"data/gm/campaigns/titan",
-   "data/gm/campaigns/titan/arcs/trigger/titan/encounters":"data/gm/campaigns/titan"
+   "data/gm/campaigns/titan/arcs/trigger/titan/encounters":"data/gm/campaigns/titan",
+   "data/gm/campaigns/amberstone/arcs/trigger/discovery/encounters":"data/gm/campaigns/amberstone"
 }
 
 INVALID_KEYWORDS = [
