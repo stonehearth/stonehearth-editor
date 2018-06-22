@@ -10,13 +10,14 @@ namespace StonehearthEditor
 {
     public class Module : IDisposable
     {
+        private static bool mShowingManifestModifiedDialog = false; //static so that you only get one popup instead of one per mod
+
         private string mPath;
         private string mName;
         private JObject mManifestJson;
         private FileSystemWatcher mFileWatcher;
         private DateTime mLastReadTime = DateTime.MinValue;
         private JObject mEnglishLocalizationJson;
-        private bool mShowingManifestModifiedDialog = false;
 
         // dictionary of aliases, components, and controllers
         private Dictionary<string, Dictionary<string, ModuleFile>> mModuleFiles = new Dictionary<string, Dictionary<string, ModuleFile>>();
@@ -121,7 +122,7 @@ namespace StonehearthEditor
             if (lastWriteTime != mLastReadTime)
             {
                 mShowingManifestModifiedDialog = true;
-                MessageBox.Show("The manifest for module " + Name + " has changed! You should reload SHED! (Press F5)");
+                MessageBox.Show("The manifest for one or more mods has changed! You should reload SHED! (Press F5)", "SHED Manifest changed - " + Name);
                 mLastReadTime = lastWriteTime;
                 mShowingManifestModifiedDialog = false;
             }
