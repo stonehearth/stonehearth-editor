@@ -2,7 +2,7 @@
    "$schema": "http://json-schema.org/draft-04/schema#",
    "id": "http://stonehearth.net/schemas/encounters/elements/faction.json",
    "title": "Faction",
-   "description": "A player or NPC faction name, typically used to determine hostility and friendliness.",
+   "description": "A player or NPC faction name, typically used to determine hostility and friendliness. Empty string is valid as 'unspecified'.",
    "type": "string",
-   "pattern": "^\\w+$"
+   "pattern": "^\\w*$"
 }
