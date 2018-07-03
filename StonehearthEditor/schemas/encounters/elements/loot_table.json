@@ -1,6 +1,6 @@
 {
    "$schema": "http://json-schema.org/draft-04/schema#",
-   "id": "http://stonehearth.net/schemas/encounters/elements/range.json",
+   "id": "http://stonehearth.net/schemas/encounters/elements/loot_table.json",
    "title": "Loot Table",
    "description": "Selects items to generate and drop on the ground.",
    "type": "object",

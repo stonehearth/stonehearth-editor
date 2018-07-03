@@ -1,0 +1,14 @@
+{
+   "$schema": "http://json-schema.org/draft-04/schema#",
+   "id": "http://stonehearth.net/schemas/encounters/elements/range_attribute.json",
+   "title": "Attribute Range",
+   "description": "A numerical range for a primary attribute, from a minimum to a maximum, usually 1-6.",
+   "type": "object",
+   "properties": {
+      "min": {"type": "integer"},
+      "max": {"type": "integer"}
+   },
+   "required": ["min", "max"],
+   "default": {"min": 1, "max": 6},
+   "additionalProperties": false
+}

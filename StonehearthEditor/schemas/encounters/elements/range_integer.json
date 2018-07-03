@@ -1,0 +1,14 @@
+{
+   "$schema": "http://json-schema.org/draft-04/schema#",
+   "id": "http://stonehearth.net/schemas/encounters/elements/range_integer.json",
+   "title": "Integer  Range",
+   "description": "A numerical range of integers, from a minimum to a maximum.",
+   "type": "object",
+   "properties": {
+      "min": {"type": "integer"},
+      "max": {"type": "integer"}
+   },
+   "required": ["min", "max"],
+   "default": {"min": 0, "max": 10},
+   "additionalProperties": false
+}

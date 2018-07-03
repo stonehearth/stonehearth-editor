@@ -1,6 +1,6 @@
 {
    "$schema": "http://json-schema.org/draft-04/schema#",
-   "id": "http://stonehearth.net/schemas/encounters/elements/range.json",
+   "id": "http://stonehearth.net/schemas/encounters/elements/bulletin.json",
    "title": "Bulletin",
    "description": "The contents of a choice-less popup window shown to the user.",
    "type": "object",

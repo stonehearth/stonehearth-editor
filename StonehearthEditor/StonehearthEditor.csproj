@@ -363,6 +363,8 @@
     <None Include="schemas\encounters\elements\point2.json" />
     <None Include="schemas\encounters\elements\point3.json" />
     <None Include="schemas\encounters\elements\range.json" />
+    <None Include="schemas\encounters\elements\range_attribute.json" />
+    <None Include="schemas\encounters\elements\range_integer.json" />
     <None Include="schemas\encounters\encounter.json" />
     <None Include="scripts\loc_fields.json" />
     <None Include="StonehearthEditor.ruleset" />
