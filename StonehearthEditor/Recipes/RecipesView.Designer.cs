@@ -186,7 +186,7 @@
             this.baseModsButton.Name = "baseModsButton";
             this.baseModsButton.Size = new System.Drawing.Size(113, 22);
             this.baseModsButton.Text = "Hide external mods";
-            this.baseModsButton.ToolTipText = "Click to toggle showing of items from the \"stonehearth\" and \"rayyas_children\" mods";
+            this.baseModsButton.ToolTipText = "Click to toggle showing of items from the \"stonehearth\", \"rayyas_children\", and \"northern_alliance\" mods";
             this.baseModsButton.CheckedChanged += new System.EventHandler(this.baseModsButton_CheckedChanged);
             // 
             // helpButton

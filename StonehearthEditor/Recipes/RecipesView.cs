@@ -654,7 +654,7 @@ namespace StonehearthEditor.Recipes
                 foreach (KeyValuePair<string, JsonFileData> kv in itemJsons)
                 {
                     string modName = mdm.GetModNameFromAlias(kv.Key);
-                    bool shouldIncludeMod = mBaseModsOnly ? (modName == "stonehearth" || modName == "rayyas_children") : true;
+                    bool shouldIncludeMod = mBaseModsOnly ? (modName == "stonehearth" || modName == "rayyas_children" || modName == "northern_alliance") : true;
                     if (shouldIncludeMod)
                     {
                         strings.Add(kv.Key);

@@ -18,7 +18,7 @@ namespace StonehearthEditor
 
         public static bool IsBaseMod(string modName)
         {
-            return modName == "stonehearth" || modName == "rayyas_children";
+            return modName == "stonehearth" || modName == "rayyas_children" || modName == "northern_alliance";
         }
 
         private string mModsDirectoryPath;
