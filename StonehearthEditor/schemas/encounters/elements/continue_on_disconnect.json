@@ -1,0 +1,9 @@
+{
+   "$schema": "http://json-schema.org/draft-04/schema#",
+   "id": "http://stonehearth.net/schemas/encounters/elements/continue_on_disconnect.json",
+   "title": "Continue On Disconnect",
+   "description": "Multiplayer: Should this encounter continue to run while its player is disconnected? Default: false (i.e. pause encounter while disconnected)",
+   "type": "boolean",
+   "default": true,
+   "additionalProperties": false
+}

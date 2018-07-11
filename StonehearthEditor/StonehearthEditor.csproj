@@ -349,6 +349,7 @@
     </None>
     <None Include="schemas\encounters\elements\amenity.json" />
     <None Include="schemas\encounters\elements\bulletin.json" />
+    <None Include="schemas\encounters\elements\continue_on_disconnect.json" />
     <None Include="schemas\encounters\elements\display_string.json" />
     <None Include="schemas\encounters\elements\duration.json" />
     <None Include="schemas\encounters\elements\edge.json" />
