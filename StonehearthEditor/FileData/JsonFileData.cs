@@ -205,31 +205,35 @@ namespace StonehearthEditor
                 if (execute)
                 {
                     JsonFileData recipesList = RelatedFiles[RelatedFiles.Count - 1] as JsonFileData;
-                    JObject json = recipesList.mJson;
-                    JToken foundParent = null;
-                    foreach (JToken token in json["craftable_recipes"].Children())
+                    // Only add the recipe to the recipe index if we're inside the same module
+                    if (recipesList.Path.Contains(parameters.TargetModule))
                     {
-                        if (foundParent != null)
+                        JObject json = recipesList.mJson;
+                        JToken foundParent = null;
+                        foreach (JToken token in json["craftable_recipes"].Children())
                         {
-                            break;
-                        }
-
-                        foreach (JToken recipe in token.First["recipes"].Children())
-                        {
-                            if (recipe.Last.ToString().Contains(FileName))
+                            if (foundParent != null)
                             {
-                                foundParent = token.First["recipes"];
                                 break;
                             }
-                        }
-                    }
 
-                    if (foundParent != null)
-                    {
-                        string recipeFileName = System.IO.Path.GetFileName(newPath);
-                        (foundParent as JObject).Add(newNameToUse, JObject.Parse("{\"recipe\": \"file(" + recipeFileName + ")\"}"));
-                        recipesList.TrySetFlatFileData(recipesList.GetJsonFileString());
-                        recipesList.TrySaveFile();
+                            foreach (JToken recipe in token.First["recipes"].Children())
+                            {
+                                if (recipe.Last.ToString().Contains(FileName))
+                                {
+                                    foundParent = token.First["recipes"];
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (foundParent != null)
+                        {
+                            string recipeFileName = System.IO.Path.GetFileName(newPath);
+                            (foundParent as JObject).Add(newNameToUse, JObject.Parse("{\"recipe\": \"file(" + recipeFileName + ")\"}"));
+                            recipesList.TrySetFlatFileData(recipesList.GetJsonFileString());
+                            recipesList.TrySaveFile();
+                        }
                     }
                 }
             }
@@ -493,15 +497,18 @@ namespace StonehearthEditor
                         // This is a crafter, load its recipes
                         string recipeListLocation = crafter["recipe_list"].ToString();
                         recipeListLocation = JsonHelper.GetFileFromFileJson(recipeListLocation, directory);
-                        JsonFileData recipes = new JsonFileData(recipeListLocation);
-                        recipes.Load();
-                        foreach (FileData recipe in recipes.LinkedFileData.Values)
+                        if (recipeListLocation != null)
                         {
-                            recipes.RelatedFiles.Add(recipe);
-                        }
+                            JsonFileData recipes = new JsonFileData(recipeListLocation);
+                            recipes.Load();
+                            foreach (FileData recipe in recipes.LinkedFileData.Values)
+                            {
+                                recipes.RelatedFiles.Add(recipe);
+                            }
 
-                        OpenedFiles.Add(recipes);
-                        recipes.ReferencedByFileData[GetAliasOrFlatName()] = this;
+                            OpenedFiles.Add(recipes);
+                            recipes.ReferencedByFileData[GetAliasOrFlatName()] = this;
+                        }
                     }
 
                     JObject jobEquipment = mJson["equipment"] as JObject;
@@ -854,7 +861,8 @@ namespace StonehearthEditor
         private string GetAliasOrFlatName()
         {
             ModuleFile moduleFile = GetModuleFile();
-            string flatPath = Path.Replace(ModuleDataManager.GetInstance().ModsDirectoryPath, "");
+            string flatPath = ModuleDataManager.GetInstance().TryReplaceModsDirectory(Path, "", "");
+            flatPath = ModuleDataManager.GetInstance().TryReplaceSteamUploadsDirectory(flatPath, "", "");
             return (moduleFile != null) ? moduleFile.FullAlias : flatPath;
         }
 

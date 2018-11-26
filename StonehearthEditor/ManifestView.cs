@@ -24,7 +24,7 @@ namespace StonehearthEditor
         public void Initialize()
         {
             ThumbnailCache.ClearCache();
-            new ModuleDataManager(MainForm.kModsDirectoryPath);
+            new ModuleDataManager(MainForm.kModsDirectoryPath, MainForm.kSteamUploadsDirectoryPath);
             ModuleDataManager.GetInstance().Load();
             ModuleDataManager.GetInstance().FilterAliasTree(treeView, null);
             searchBox.BackColor = SystemColors.Window;
@@ -56,10 +56,13 @@ namespace StonehearthEditor
                 return; // Don't know how to clone something not module file data
             }
 
-            string manifestEntryType = selectedNode.Parent.Text;
-            string name = moduleFile.GetModuleFile() != null ? moduleFile.GetModuleFile().FullAlias : selectedFileData.FileName;
+            // Get the correct type from any descendant nodes (including grandchildren)
+            string manifestEntryType = selectedNode.FullPath.Split('\\')[1];
+            string sourceModName = selectedNode.FullPath.Split('\\')[0];
+            ModuleFile sourceModule = moduleFile.GetModuleFile();
+            string uri = sourceModule != null ? sourceModule.FullAlias : selectedFileData.FileName;
             CloneAliasCallback callback = new CloneAliasCallback(this, selectedFileData, manifestEntryType);
-            CloneDialog dialog = new CloneDialog(name, selectedFileData.GetNameForCloning());
+            CloneDialog dialog = new CloneDialog(uri, selectedFileData.GetNameForCloning(), sourceModName);
             dialog.SetCallback(callback);
             dialog.ShowDialog();
         }

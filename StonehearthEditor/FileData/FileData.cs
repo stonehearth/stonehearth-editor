@@ -204,7 +204,7 @@ namespace StonehearthEditor
             {
                 string dependencyName = dependencyKV.Key;
                 FileData dependencyFile = dependencyKV.Value;
-                if (ShouldCloneDependency(dependencyName, parameters))
+                if (dependencyFile != null && ShouldCloneDependency(dependencyName, parameters))
                 {
                     // We want to clone this dependency
                     IModuleFileData modFileData = dependencyFile as IModuleFileData;
@@ -223,8 +223,7 @@ namespace StonehearthEditor
                     {
                         // This dependency is just a FileData, clone the fileData.
                         string transformedDependencyName = parameters.TransformModPath(dependencyName);
-                        string linkedPath = ModuleDataManager.GetInstance().ModsDirectoryPath + transformedDependencyName;
-                        string newDependencyPath = ModuleDataManager.GetInstance().ModsDirectoryPath + parameters.TransformParameter(transformedDependencyName);
+                        string newDependencyPath = ModuleDataManager.GetInstance().GetMod(parameters.TargetModule).ParentDirectory + parameters.TransformParameter(transformedDependencyName);
                         if (!alreadyCloned.Contains(newDependencyPath))
                         {
                             alreadyCloned.Add(newDependencyPath);
@@ -279,7 +278,8 @@ namespace StonehearthEditor
 
             foreach (KeyValuePair<string, FileData> file in LinkedFileData)
             {
-                string filePathWithoutBase = file.Key.Replace(ModuleDataManager.GetInstance().ModsDirectoryPath, "");
+                string filePathWithoutBase = ModuleDataManager.GetInstance().TryReplaceModsDirectory(file.Key, "", "");
+                filePathWithoutBase = ModuleDataManager.GetInstance().TryReplaceSteamUploadsDirectory(filePathWithoutBase, "", "");
                 if (!dependencies.ContainsKey(filePathWithoutBase))
                 {
                     dependencies.Add(filePathWithoutBase, file.Value);

@@ -14,6 +14,7 @@ namespace StonehearthEditor
 
         private string mPath;
         private string mName;
+        private string mParentDirectory;
         private JObject mManifestJson;
         private FileSystemWatcher mFileWatcher;
         private DateTime mLastReadTime = DateTime.MinValue;
@@ -35,6 +36,7 @@ namespace StonehearthEditor
         {
             mPath = modPath;
             mName = modPath.Substring(modPath.LastIndexOf('/') + 1);
+            mParentDirectory = modPath.Substring(0, modPath.LastIndexOf('/'));
         }
 
         public ICollection<ModuleFile> GetAliases()
@@ -55,6 +57,11 @@ namespace StonehearthEditor
         public string Path
         {
             get { return mPath; }
+        }
+
+        public string ParentDirectory
+        {
+            get { return mParentDirectory; }
         }
 
         public JObject EnglishLocalizationJson

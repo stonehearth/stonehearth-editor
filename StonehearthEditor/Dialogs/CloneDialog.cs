@@ -15,12 +15,19 @@ namespace StonehearthEditor
 
         private IDialogCallback mCallback;
 
-        public CloneDialog(string clonedObjectName, string initialText)
+        public CloneDialog(string clonedObjectName, string initialText, string sourceMod)
         {
             InitializeComponent();
             Text = "Clone: " + clonedObjectName;
 
-            FillModListDropdown(clonedObjectName);
+            if (sourceMod != String.Empty)
+            {
+                FillModListDropdown(sourceMod);
+            }
+            else
+            {
+                FillModListDropdown(clonedObjectName);
+            }
 
             int index = clonedObjectName.IndexOf(':');
             if (index != -1 && clonedObjectName.Length > index)
@@ -34,7 +41,7 @@ namespace StonehearthEditor
                 }
             }
 
-            sourceModLabel.Text = clonedObjectName.Split(':')[0];
+            sourceModLabel.Text = sourceMod != String.Empty ? sourceMod : clonedObjectName.Split(':')[0];
 
             AddNewRow(initialText);
             AcceptButton = cloneButton;

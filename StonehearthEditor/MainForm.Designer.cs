@@ -33,10 +33,15 @@ namespace StonehearthEditor
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.tabControl = new System.Windows.Forms.TabControl();
             this.manifestTab = new System.Windows.Forms.TabPage();
+            this.manifestView = new StonehearthEditor.ManifestView();
             this.encounterTab = new System.Windows.Forms.TabPage();
+            this.encounterDesignerView = new StonehearthEditor.EncounterDesignerView();
             this.entityBrowserTab = new System.Windows.Forms.TabPage();
+            this.entityBrowserView = new StonehearthEditor.EntityBrowserView();
             this.effectsEditorTab = new System.Windows.Forms.TabPage();
+            this.effectsEditorView = new StonehearthEditor.EffectsEditorView();
             this.recipesTab = new System.Windows.Forms.TabPage();
+            this.recipesView = new StonehearthEditor.Recipes.RecipesView();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mainFormMenu = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -46,11 +51,8 @@ namespace StonehearthEditor
             this.changeModDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.netWorthVisualizerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.manifestView = new StonehearthEditor.ManifestView();
-            this.encounterDesignerView = new StonehearthEditor.EncounterDesignerView();
-            this.entityBrowserView = new StonehearthEditor.EntityBrowserView();
-            this.effectsEditorView = new StonehearthEditor.EffectsEditorView();
-            this.recipesView = new StonehearthEditor.Recipes.RecipesView();
+            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabControl.SuspendLayout();
             this.manifestTab.SuspendLayout();
             this.encounterTab.SuspendLayout();
@@ -86,6 +88,15 @@ namespace StonehearthEditor
             this.manifestTab.Text = "Manifest";
             this.manifestTab.UseVisualStyleBackColor = true;
             // 
+            // manifestView
+            // 
+            this.manifestView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.manifestView.Location = new System.Drawing.Point(3, 3);
+            this.manifestView.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.manifestView.Name = "manifestView";
+            this.manifestView.Size = new System.Drawing.Size(1109, 542);
+            this.manifestView.TabIndex = 0;
+            // 
             // encounterTab
             // 
             this.encounterTab.Controls.Add(this.encounterDesignerView);
@@ -96,6 +107,15 @@ namespace StonehearthEditor
             this.encounterTab.TabIndex = 1;
             this.encounterTab.Text = "Encounter Designer";
             this.encounterTab.UseVisualStyleBackColor = true;
+            // 
+            // encounterDesignerView
+            // 
+            this.encounterDesignerView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.encounterDesignerView.Location = new System.Drawing.Point(3, 3);
+            this.encounterDesignerView.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.encounterDesignerView.Name = "encounterDesignerView";
+            this.encounterDesignerView.Size = new System.Drawing.Size(1109, 542);
+            this.encounterDesignerView.TabIndex = 0;
             // 
             // entityBrowserTab
             // 
@@ -108,6 +128,15 @@ namespace StonehearthEditor
             this.entityBrowserTab.Text = "Entity Stats Browser";
             this.entityBrowserTab.UseVisualStyleBackColor = true;
             // 
+            // entityBrowserView
+            // 
+            this.entityBrowserView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.entityBrowserView.Location = new System.Drawing.Point(3, 3);
+            this.entityBrowserView.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.entityBrowserView.Name = "entityBrowserView";
+            this.entityBrowserView.Size = new System.Drawing.Size(1109, 542);
+            this.entityBrowserView.TabIndex = 0;
+            // 
             // effectsEditorTab
             // 
             this.effectsEditorTab.Controls.Add(this.effectsEditorView);
@@ -118,6 +147,15 @@ namespace StonehearthEditor
             this.effectsEditorTab.TabIndex = 3;
             this.effectsEditorTab.Text = "Effects Editor";
             this.effectsEditorTab.UseVisualStyleBackColor = true;
+            // 
+            // effectsEditorView
+            // 
+            this.effectsEditorView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.effectsEditorView.Location = new System.Drawing.Point(3, 3);
+            this.effectsEditorView.Margin = new System.Windows.Forms.Padding(4);
+            this.effectsEditorView.Name = "effectsEditorView";
+            this.effectsEditorView.Size = new System.Drawing.Size(1109, 542);
+            this.effectsEditorView.TabIndex = 0;
             // 
             // recipesTab
             // 
@@ -130,6 +168,16 @@ namespace StonehearthEditor
             this.recipesTab.Text = "Recipe Editor";
             this.recipesTab.UseVisualStyleBackColor = true;
             // 
+            // recipesView
+            // 
+            this.recipesView.AutoSize = true;
+            this.recipesView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.recipesView.Location = new System.Drawing.Point(3, 3);
+            this.recipesView.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.recipesView.Name = "recipesView";
+            this.recipesView.Size = new System.Drawing.Size(1109, 542);
+            this.recipesView.TabIndex = 0;
+            // 
             // saveToolStripMenuItem
             // 
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
@@ -140,7 +188,8 @@ namespace StonehearthEditor
             this.mainFormMenu.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.mainFormMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
-            this.viewToolStripMenuItem});
+            this.viewToolStripMenuItem,
+            this.helpToolStripMenuItem});
             this.mainFormMenu.Location = new System.Drawing.Point(0, 0);
             this.mainFormMenu.Name = "mainFormMenu";
             this.mainFormMenu.Size = new System.Drawing.Size(1123, 28);
@@ -206,51 +255,20 @@ namespace StonehearthEditor
             this.netWorthVisualizerToolStripMenuItem.Text = "Net Worth Visualizer";
             this.netWorthVisualizerToolStripMenuItem.Click += new System.EventHandler(this.netWorthVisualizerToolStripMenuItem_Click);
             // 
-            // manifestView
+            // helpToolStripMenuItem
             // 
-            this.manifestView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.manifestView.Location = new System.Drawing.Point(3, 3);
-            this.manifestView.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.manifestView.Name = "manifestView";
-            this.manifestView.Size = new System.Drawing.Size(1109, 542);
-            this.manifestView.TabIndex = 0;
+            this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.aboutToolStripMenuItem});
+            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(53, 24);
+            this.helpToolStripMenuItem.Text = "Help";
             // 
-            // encounterDesignerView
+            // aboutToolStripMenuItem
             // 
-            this.encounterDesignerView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.encounterDesignerView.Location = new System.Drawing.Point(3, 3);
-            this.encounterDesignerView.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.encounterDesignerView.Name = "encounterDesignerView";
-            this.encounterDesignerView.Size = new System.Drawing.Size(1109, 542);
-            this.encounterDesignerView.TabIndex = 0;
-            // 
-            // entityBrowserView
-            // 
-            this.entityBrowserView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.entityBrowserView.Location = new System.Drawing.Point(3, 3);
-            this.entityBrowserView.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.entityBrowserView.Name = "entityBrowserView";
-            this.entityBrowserView.Size = new System.Drawing.Size(1109, 542);
-            this.entityBrowserView.TabIndex = 0;
-            // 
-            // effectsEditorView
-            // 
-            this.effectsEditorView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.effectsEditorView.Location = new System.Drawing.Point(3, 3);
-            this.effectsEditorView.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.effectsEditorView.Name = "effectsEditorView";
-            this.effectsEditorView.Size = new System.Drawing.Size(1109, 542);
-            this.effectsEditorView.TabIndex = 0;
-            // 
-            // recipesView
-            // 
-            this.recipesView.AutoSize = true;
-            this.recipesView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.recipesView.Location = new System.Drawing.Point(3, 3);
-            this.recipesView.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.recipesView.Name = "recipesView";
-            this.recipesView.Size = new System.Drawing.Size(1109, 542);
-            this.recipesView.TabIndex = 0;
+            this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(181, 26);
+            this.aboutToolStripMenuItem.Text = "About";
+            this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -304,5 +322,7 @@ namespace StonehearthEditor
         private EffectsEditorView effectsEditorView;
         private System.Windows.Forms.TabPage recipesTab;
         private RecipesView recipesView;
+        private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
     }
 }

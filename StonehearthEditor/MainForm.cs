@@ -13,18 +13,23 @@ namespace StonehearthEditor
     public partial class MainForm : Form
     {
         public static string kModsDirectoryPath;
+        public static string kSteamUploadsDirectoryPath;
 
         private NetWorthVisualizer mNetWorthVisualizer;
 
-        public MainForm(string path)
+        public MainForm(string path, string steamUploadsPath)
         {
+            InitializeComponent();
             if (path != null)
             {
                 path = path.Trim();
                 kModsDirectoryPath = JsonHelper.NormalizeSystemPath(path);
             }
-
-            InitializeComponent();
+            if (steamUploadsPath != null)
+            {
+                steamUploadsPath = steamUploadsPath.Trim();
+                kSteamUploadsDirectoryPath = JsonHelper.NormalizeSystemPath(steamUploadsPath);
+            }
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -81,6 +86,11 @@ namespace StonehearthEditor
 
         public void Reload()
         {
+            // Show the splash on reload too since it takes a while
+            var splash = new LoadingSplash();
+            splash.Show();
+            Application.DoEvents();  // Hacky, but whatever.
+
             manifestView.Reload();
             entityBrowserView.Reload();
             encounterDesignerView.Reload();
@@ -91,6 +101,9 @@ namespace StonehearthEditor
             {
                 mNetWorthVisualizer.UpdateNetWorthData();
             }
+
+            splash.Dispose();
+            splash.Hide();
         }
 
         private void MainForm_Resize(object sender, EventArgs e)
@@ -233,7 +246,17 @@ namespace StonehearthEditor
 
         private void changeModDirectoryToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            chooseModDirectory();
+            ChangePathsCallback callback = new ChangePathsCallback(this);
+            string oldModsPath = kModsDirectoryPath;
+            string oldSteamUploadsPath = kSteamUploadsDirectoryPath;
+            ModDirectorySettingsDialog dialog = new ModDirectorySettingsDialog(kModsDirectoryPath, kSteamUploadsDirectoryPath);
+            dialog.SetCallback(callback);
+            DialogResult result = dialog.ShowDialog();
+            if (result == DialogResult.OK)
+            {
+                // Reload as long as the user clicked on the Apply and reload button
+                Reload();
+            }
         }
 
         private void createNewMod()
@@ -329,6 +352,118 @@ namespace StonehearthEditor
 
                 return isValid;
             }
+        }
+
+        private class ChangePathsCallback : ModDirectorySettingsDialog.IDialogCallback
+        {
+            private MainForm form = null;
+
+            public ChangePathsCallback(MainForm formInstance)
+            {
+                form = formInstance;
+            }
+
+            public void OnCancelled()
+            {
+                // Do nothing. user cancelled
+            }
+
+            public bool OnAccept(string newBaseModsPath, string newSteamUploadsPath)
+            {
+                bool modsPathAccepted = false;
+                // First check that the mods directory is valid (we require it)
+                var check = form.checkModsFolder(ref newBaseModsPath);
+                if (check == ModFolderCheckResult.ZIPPED)
+                {
+                    if (UnzipMods(newBaseModsPath))
+                    {
+                        check = ModFolderCheckResult.VALID;
+                    }
+                }
+
+                if (check == ModFolderCheckResult.VALID)
+                {
+                    kModsDirectoryPath = JsonHelper.NormalizeSystemPath(newBaseModsPath);
+                    Properties.Settings.Default["ModsDirectory"] = kModsDirectoryPath;
+                    Properties.Settings.Default.Save();
+                    modsPathAccepted = true;
+                }
+                else if (Directory.Exists(newBaseModsPath))
+                {
+                    // If the directory does exist, but doesn't seem to be valid, make it a user choice
+                    if (MessageBox.Show("The chosen directory does not appear to be a valid mods directory. It should contain the uncompressed stonehearth mod. Choose it anyway?", "Possibly invalid mods directory", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.Yes)
+                    {
+                        kModsDirectoryPath = JsonHelper.NormalizeSystemPath(newBaseModsPath);
+                        Properties.Settings.Default["ModsDirectory"] = kModsDirectoryPath;
+                        modsPathAccepted = true;
+                    }
+                }
+                else
+                {
+                    if (MessageBox.Show("Invalid mods directory chosen. Try again?", "Invalid directory", MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.No)
+                        modsPathAccepted = false;
+                }
+
+                // Check the steam_uploads directory (can be empty if the user is developing in the mods folder)
+                var check2 = form.checkModsFolder(ref newSteamUploadsPath);
+                if (check2 == ModFolderCheckResult.ZIPPED)
+                {
+                    if (UnzipMods(newSteamUploadsPath))
+                    {
+                        check2 = ModFolderCheckResult.VALID;
+                    }
+                }
+
+                if (check2 == ModFolderCheckResult.VALID)
+                {
+                    kSteamUploadsDirectoryPath = JsonHelper.NormalizeSystemPath(newSteamUploadsPath);
+                    Properties.Settings.Default["SteamUploadsDirectory"] = kSteamUploadsDirectoryPath;
+                    Properties.Settings.Default.Save();
+                }
+                else if (Directory.Exists(newSteamUploadsPath))
+                {
+                    // If the directory does exist, but doesn't seem to be valid, make it a user choice
+                    if (MessageBox.Show("The chosen directory does not appear to be a valid mods directory. Choose it anyway?", "Possibly invalid additional mods directory", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.Yes)
+                    {
+                        kSteamUploadsDirectoryPath = JsonHelper.NormalizeSystemPath(newSteamUploadsPath);
+                        Properties.Settings.Default["SteamUploadsDirectory"] = kSteamUploadsDirectoryPath;
+                    }
+                }
+                else if (newSteamUploadsPath == string.Empty)
+                {
+                    // Accept cleaning the additional path to not show the mods in there
+                    kSteamUploadsDirectoryPath = JsonHelper.NormalizeSystemPath(newSteamUploadsPath);
+                    Properties.Settings.Default["SteamUploadsDirectory"] = kSteamUploadsDirectoryPath;
+                }
+                return modsPathAccepted;
+            }
+
+            private bool UnzipMods(string modsPath)
+            {
+                if (MessageBox.Show("The chosen directory (" + modsPath + ") \nappears to have compressed mods. To use it, the mods must be uncompressed. Would you like to do that?", "Compressed mods directory", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.Yes)
+                {
+                    var splash = new LoadingSplash();
+                    splash.Show();
+                    Application.DoEvents();  // Hacky, but whatever.
+                    foreach (var path in Directory.EnumerateFiles(modsPath))
+                    {
+                        if (path.EndsWith(".smod") && !Directory.Exists(path.Substring(0, path.Length - 5)))
+                        {
+                            System.IO.Compression.ZipFile.ExtractToDirectory(path, modsPath);
+                        }
+                    }
+                    splash.Hide();
+                    splash.Dispose();
+                    return true;
+                }
+                return false;
+            }
+        }
+
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Dialogs.AboutDialog dialog = new Dialogs.AboutDialog();
+            dialog.Show();
         }
     }
 }
