@@ -12,14 +12,19 @@ namespace StonehearthEditor
         private static void Main(string[] args)
         {
             string path = (string)Properties.Settings.Default["ModsDirectory"];
+            string steamUploadsPath = (string)Properties.Settings.Default["SteamUploadsDirectory"];
             if (args.Length > 0)
             {
                 path = args[0];
             }
+            if (args.Length > 1)
+            {
+                steamUploadsPath = args[1];
+            }
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new MainForm(path));
+            Application.Run(new MainForm(path, steamUploadsPath));
         }
     }
 }

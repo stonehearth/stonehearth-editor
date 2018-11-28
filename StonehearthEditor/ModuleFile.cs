@@ -147,7 +147,7 @@ namespace StonehearthEditor
                 return false;
             }
 
-            string modPath = MainForm.kModsDirectoryPath;
+            string modPath = targetModule.ParentDirectory;
             string relativePath = ResolvedPath.Replace(mModule.Path + "/", "");
             string newPath = parameters.TransformParameter(relativePath);
             string fullPath = modPath + "/" + targetModName + "/" + newPath;

@@ -78,5 +78,15 @@ namespace StonehearthEditor
                 mCallback = null;
             }
         }
+
+        private void checkAllCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            bool checkStatus = checkAllCheckbox.Checked; // This is the current status after checked changed
+
+            for (int i = 0; i < dependenciesListBox.Items.Count; i++)
+            {
+                dependenciesListBox.SetItemChecked(i, checkStatus);
+            }
+        }
     }
 }

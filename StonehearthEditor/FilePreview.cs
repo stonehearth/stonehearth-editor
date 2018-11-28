@@ -84,7 +84,16 @@ namespace StonehearthEditor
             this.configureScintilla();
 
             localizeFile.Visible = textBox.Lexer == ScintillaNET.Lexer.Json;
-            previewMixinsButton.Visible = (textBox.Lexer == ScintillaNET.Lexer.Json) && (mFileData as JsonFileData)?.Json.SelectToken("mixins") != null;
+            bool hasMixins = false;
+            if ((mFileData as JsonFileData) != null)
+            {
+                if ((mFileData as JsonFileData).Json != null)
+                {
+                    hasMixins = (mFileData as JsonFileData).Json.SelectToken("mixins") != null;
+                }
+            }
+
+            previewMixinsButton.Visible = (textBox.Lexer == ScintillaNET.Lexer.Json) && hasMixins;
         }
 
         /// <summary> 
@@ -335,7 +344,10 @@ namespace StonehearthEditor
             string generateLocPythonFile = Application.StartupPath + "/scripts/generate_loc_keys.py";
             start.FileName = generateLocPythonFile;
             string filePath = mFileData.Path;
-            string modsRoot = ModuleDataManager.GetInstance().ModsDirectoryPath;
+            string modName = ModuleDataManager.GetInstance().TryReplaceModsDirectory(mFileData.Path, "", "");
+            modName = ModuleDataManager.GetInstance().TryReplaceSteamUploadsDirectory(modName, "", "");
+            modName = modName.Split('/')[1];
+            string modsRoot = ModuleDataManager.GetInstance().GetParentDirectoryByModName(modName);
             start.Arguments = string.Format("-r {0} {1}", modsRoot, filePath);
             ////MessageBox.Show("executing command: " + generateLocPythonFile + " -r " + modsRoot + " " + filePath);
 

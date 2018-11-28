@@ -329,6 +329,8 @@ namespace StonehearthEditor
                 case 1:
                     return lightsTreeView;
                 case 2:
+                    return effectsEditorTreeView;
+                case 3:
                     return skySettingsTreeView;
                 default:
                     return effectsEditorTreeView;
@@ -348,8 +350,16 @@ namespace StonehearthEditor
             }
 
             FileData selectedFileData = GetFileDataFromPath(filePath);
+            char separator = '\\';
+            if (!selectedNode.FullPath.Contains('\\'))
+            {
+                // For cubemitters the paths were being retrieved as filepaths, not nodepaths
+                // so do this to retrieve the source mod name correctly
+                separator = '/';
+            }
+            string sourceModName = selectedNode.FullPath.Split(separator)[0];
             CloneEffectFileCallback callback = new CloneEffectFileCallback(this, selectedFileData);
-            CloneDialog dialog = new CloneDialog(selectedFileData.FileName, selectedFileData.GetNameForCloning());
+            CloneDialog dialog = new CloneDialog(selectedFileData.FileName, selectedFileData.GetNameForCloning(), sourceModName);
             dialog.SetCallback(callback);
             dialog.ShowDialog();
         }

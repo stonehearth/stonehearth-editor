@@ -189,18 +189,25 @@ namespace StonehearthEditor
             {
                 if (startedWithFile)
                 {
-                    string mod = parentPath.Replace(MainForm.kModsDirectoryPath + '/', "");
+                    // We don't know where the mod is, so replace both directories just in case
+                    string mod = ModuleDataManager.GetInstance().TryReplaceModsDirectory(parentPath, "", "/");
+                    mod = ModuleDataManager.GetInstance().TryReplaceSteamUploadsDirectory(mod, "", "/");
                     int firstSlash = mod.IndexOf('/');
                     if (firstSlash >= 0)
                     {
                         mod = mod.Substring(0, firstSlash);
                     }
 
-                    fullPath = ModuleDataManager.GetInstance().ModsDirectoryPath + '/' + mod + fullPath;
+                    fullPath = ModuleDataManager.GetInstance().GetParentDirectoryByModName(mod) + '/' + mod + fullPath;
                 }
                 else
                 {
-                    fullPath = ModuleDataManager.GetInstance().ModsDirectoryPath + fullPath;
+                    // This is likely a recipe or similar. Assume the first word is the mod namespace
+                    string mod = fullPath;
+                    mod = mod.Substring(1); // Remove the first slash
+                    int firstSlash = mod.IndexOf('/');
+                    mod = mod.Substring(0, firstSlash);
+                    fullPath = ModuleDataManager.GetInstance().GetParentDirectoryByModName(mod) + fullPath;
                 }
             }
             else

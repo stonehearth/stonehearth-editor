@@ -418,21 +418,24 @@ namespace StonehearthEditor.Recipes
         private void LoadMaterialImages()
         {
             Module sh = ModuleDataManager.GetInstance().GetMod("stonehearth");
-            ModuleFile resourceConstants = sh.GetAliasFile("data:resource_constants");
-            if (resourceConstants != null)
+            if (sh != null)
             {
-                JsonFileData jsonFileData = resourceConstants.FileData as JsonFileData;
-                JObject resourceConstantsJson = jsonFileData.Json;
-                JObject resourceJson = resourceConstantsJson["resources"] as JObject;
-
-                foreach (JProperty resource in resourceJson.Properties())
+                ModuleFile resourceConstants = sh.GetAliasFile("data:resource_constants");
+                if (resourceConstants != null)
                 {
-                    string name = resource.Name;
-                    string iconLocation = resource.Value["icon"].ToString();
-                    string path = JsonHelper.GetFileFromFileJson(iconLocation, jsonFileData.Directory);
-                    if (path != "" && System.IO.File.Exists(path))
+                    JsonFileData jsonFileData = resourceConstants.FileData as JsonFileData;
+                    JObject resourceConstantsJson = jsonFileData.Json;
+                    JObject resourceJson = resourceConstantsJson["resources"] as JObject;
+
+                    foreach (JProperty resource in resourceJson.Properties())
                     {
-                        mMaterialImages.Add(name, path);
+                        string name = resource.Name;
+                        string iconLocation = resource.Value["icon"].ToString();
+                        string path = JsonHelper.GetFileFromFileJson(iconLocation, jsonFileData.Directory);
+                        if (path != "" && System.IO.File.Exists(path))
+                        {
+                            mMaterialImages.Add(name, path);
+                        }
                     }
                 }
             }

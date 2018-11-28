@@ -1,10 +1,11 @@
 {
    "info" : {
       "name": "TestMod",
-      "version": 2
+      "namespace" : "test_mod",
+      "version": 3
    },
    "default_locale" : "en",
-   "aliases" : {      
+   "aliases" : {
    },
    "mixintos" : {
    },

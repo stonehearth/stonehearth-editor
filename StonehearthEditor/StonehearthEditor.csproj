@@ -118,6 +118,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Dialogs\AboutDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Dialogs\AboutDialog.Designer.cs">
+      <DependentUpon>AboutDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\ModDirectorySettingsDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Dialogs\ModDirectorySettingsDialog.Designer.cs">
+      <DependentUpon>ModDirectorySettingsDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="LoadingSplash.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -246,6 +258,12 @@
     <Compile Include="Recipes\RecipesView.Designer.cs">
       <DependentUpon>RecipesView.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="Dialogs\AboutDialog.resx">
+      <DependentUpon>AboutDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dialogs\ModDirectorySettingsDialog.resx">
+      <DependentUpon>ModDirectorySettingsDialog.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="LoadingSplash.resx">
       <DependentUpon>LoadingSplash.cs</DependentUpon>
     </EmbeddedResource>
@@ -371,7 +389,9 @@
     <None Include="StonehearthEditor.ruleset" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5.2">

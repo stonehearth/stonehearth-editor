@@ -79,6 +79,9 @@ namespace StonehearthEditor
                 newString = newString.Replace(replacement.Key, replacement.Value);
             }
 
+            // Make sure to replace the mod name too when transforming an alias
+            newString = newString.Replace(SourceModule, TargetModule);
+
             return newString;
         }
 

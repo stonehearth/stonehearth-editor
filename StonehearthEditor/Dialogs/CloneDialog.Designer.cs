@@ -37,11 +37,11 @@
             this.panel2 = new System.Windows.Forms.Panel();
             this.parametersTable = new System.Windows.Forms.TableLayoutPanel();
             this.panel3 = new System.Windows.Forms.Panel();
-            this.cloneButton = new System.Windows.Forms.Button();
-            this.cloneFromLabel = new System.Windows.Forms.Label();
-            this.sourceModLabel = new System.Windows.Forms.Label();
-            this.cloneToModLabel = new System.Windows.Forms.Label();
             this.modListDropdown = new System.Windows.Forms.ComboBox();
+            this.cloneToModLabel = new System.Windows.Forms.Label();
+            this.sourceModLabel = new System.Windows.Forms.Label();
+            this.cloneFromLabel = new System.Windows.Forms.Label();
+            this.cloneButton = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.parametersTable.SuspendLayout();
@@ -54,7 +54,7 @@
             this.textReplacementsLabel.Dock = System.Windows.Forms.DockStyle.Left;
             this.textReplacementsLabel.Location = new System.Drawing.Point(5, 5);
             this.textReplacementsLabel.Name = "textReplacementsLabel";
-            this.textReplacementsLabel.Size = new System.Drawing.Size(148, 13);
+            this.textReplacementsLabel.Size = new System.Drawing.Size(197, 17);
             this.textReplacementsLabel.TabIndex = 2;
             this.textReplacementsLabel.Text = "Clone this object by replacing:";
             // 
@@ -86,7 +86,7 @@
             this.label3.AutoSize = true;
             this.label3.Location = new System.Drawing.Point(263, 0);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(107, 13);
+            this.label3.Size = new System.Drawing.Size(140, 17);
             this.label3.TabIndex = 6;
             this.label3.Text = "with replacement text";
             // 
@@ -95,7 +95,7 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(3, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(78, 13);
+            this.label1.Size = new System.Drawing.Size(104, 17);
             this.label1.TabIndex = 4;
             this.label1.Text = "original text . . .";
             // 
@@ -141,6 +141,42 @@
             this.panel3.Size = new System.Drawing.Size(520, 35);
             this.panel3.TabIndex = 0;
             // 
+            // modListDropdown
+            // 
+            this.modListDropdown.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.modListDropdown.FormattingEnabled = true;
+            this.modListDropdown.Location = new System.Drawing.Point(304, 8);
+            this.modListDropdown.Name = "modListDropdown";
+            this.modListDropdown.Size = new System.Drawing.Size(130, 24);
+            this.modListDropdown.TabIndex = 4;
+            // 
+            // cloneToModLabel
+            // 
+            this.cloneToModLabel.AutoSize = true;
+            this.cloneToModLabel.Location = new System.Drawing.Point(257, 11);
+            this.cloneToModLabel.Name = "cloneToModLabel";
+            this.cloneToModLabel.Size = new System.Drawing.Size(64, 17);
+            this.cloneToModLabel.TabIndex = 3;
+            this.cloneToModLabel.Text = "Clone to:";
+            // 
+            // sourceModLabel
+            // 
+            this.sourceModLabel.AutoSize = true;
+            this.sourceModLabel.Location = new System.Drawing.Point(67, 11);
+            this.sourceModLabel.Name = "sourceModLabel";
+            this.sourceModLabel.Size = new System.Drawing.Size(86, 17);
+            this.sourceModLabel.TabIndex = 2;
+            this.sourceModLabel.Text = "source_mod";
+            // 
+            // cloneFromLabel
+            // 
+            this.cloneFromLabel.AutoSize = true;
+            this.cloneFromLabel.Location = new System.Drawing.Point(5, 11);
+            this.cloneFromLabel.Name = "cloneFromLabel";
+            this.cloneFromLabel.Size = new System.Drawing.Size(80, 17);
+            this.cloneFromLabel.TabIndex = 1;
+            this.cloneFromLabel.Text = "Clone from:";
+            // 
             // cloneButton
             // 
             this.cloneButton.Dock = System.Windows.Forms.DockStyle.Right;
@@ -151,42 +187,6 @@
             this.cloneButton.Text = "Clone!";
             this.cloneButton.UseVisualStyleBackColor = true;
             this.cloneButton.Click += new System.EventHandler(this.cloneDialogButton_Click);
-            // 
-            // cloneFromLabel
-            // 
-            this.cloneFromLabel.AutoSize = true;
-            this.cloneFromLabel.Location = new System.Drawing.Point(5, 11);
-            this.cloneFromLabel.Name = "cloneFromLabel";
-            this.cloneFromLabel.Size = new System.Drawing.Size(60, 13);
-            this.cloneFromLabel.TabIndex = 1;
-            this.cloneFromLabel.Text = "Clone from:";
-            // 
-            // sourceModLabel
-            // 
-            this.sourceModLabel.AutoSize = true;
-            this.sourceModLabel.Location = new System.Drawing.Point(67, 11);
-            this.sourceModLabel.Name = "sourceModLabel";
-            this.sourceModLabel.Size = new System.Drawing.Size(65, 13);
-            this.sourceModLabel.TabIndex = 2;
-            this.sourceModLabel.Text = "source_mod";
-            // 
-            // cloneToModLabel
-            // 
-            this.cloneToModLabel.AutoSize = true;
-            this.cloneToModLabel.Location = new System.Drawing.Point(257, 11);
-            this.cloneToModLabel.Name = "cloneToModLabel";
-            this.cloneToModLabel.Size = new System.Drawing.Size(49, 13);
-            this.cloneToModLabel.TabIndex = 3;
-            this.cloneToModLabel.Text = "Clone to:";
-            // 
-            // modListDropdown
-            // 
-            this.modListDropdown.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.modListDropdown.FormattingEnabled = true;
-            this.modListDropdown.Location = new System.Drawing.Point(304, 8);
-            this.modListDropdown.Name = "modListDropdown";
-            this.modListDropdown.Size = new System.Drawing.Size(130, 21);
-            this.modListDropdown.TabIndex = 4;
             // 
             // CloneDialog
             // 

@@ -21,7 +21,8 @@ namespace StonehearthEditor
             return modName == "stonehearth" || modName == "rayyas_children" || modName == "northern_alliance";
         }
 
-        private string mModsDirectoryPath;
+        private string mModsDirectoryPath = string.Empty;
+        private string mSteamUploadsDirectoryPath = string.Empty;
         private Dictionary<string, Module> mModules = new Dictionary<string, Module>();
 
         private HashSet<FileData> mFilesWithErrors = new HashSet<FileData>();
@@ -30,7 +31,7 @@ namespace StonehearthEditor
         private Dictionary<string, int> mAverageMaterialCost = new Dictionary<string, int>();
         public HashSet<string> StockpileFilters = new HashSet<string>();
 
-        public ModuleDataManager(string modsDirectoryPath)
+        public ModuleDataManager(string modsDirectoryPath, string extraModsDirectoryPath)
         {
             if (sInstance != null)
             {
@@ -40,11 +41,65 @@ namespace StonehearthEditor
 
             mModsDirectoryPath = JsonHelper.NormalizeSystemPath(modsDirectoryPath);
             sInstance = this;
+            // The additional mods directory path can be empty if modder develops inside the mods folder
+            if (extraModsDirectoryPath != string.Empty)
+            {
+                mSteamUploadsDirectoryPath = JsonHelper.NormalizeSystemPath(extraModsDirectoryPath);
+            }
         }
 
         public string ModsDirectoryPath
         {
             get { return mModsDirectoryPath; }
+        }
+
+        public string SteamUploadsDirectoryPath
+        {
+            get { return mSteamUploadsDirectoryPath; }
+        }
+
+        public bool ModsDirectoryPathPathExists()
+        {
+            return mModsDirectoryPath != string.Empty;
+        }
+
+        public bool SteamUploadsDirectoryPathExists()
+        {
+            return mSteamUploadsDirectoryPath != string.Empty;
+        }
+
+        /// <summary>
+        /// Replaces the value of ModsDirectoryPath (if it exists) in a string
+        /// </summary>
+        /// <param name="oldValue">string that potentially contains the ModsDirectoryPath that we want to replace</param>
+        /// <param name="newValue">string that we want to replace the ModsDirectoryPath with</param>
+        /// <param name="appendToPath">string to append to ModsDirectoryPath for the replacement, e.g. a slash, or an empty string</param>
+        /// <returns>Returns the same string (oldValue) if the ModsDirectoryPath was empty, or the replaced string if it was found.</returns>
+        public string TryReplaceModsDirectory(string oldValue, string newValue, string appendToPath)
+        {
+            if (ModsDirectoryPathPathExists())
+            {
+                return oldValue.Replace(ModsDirectoryPath + appendToPath, newValue);
+            }
+
+            return oldValue;
+        }
+
+        /// <summary>
+        /// Replaces the value of SteamUploadsDirectoryPath (if it exists) in a string
+        /// </summary>
+        /// <param name="oldValue">string that potentially contains the SteamUploadsDirectoryPath that we want to replace</param>
+        /// <param name="newValue">string that we want to replace the SteamUploadsDirectoryPath with</param>
+        /// <param name="appendToPath">string to append to SteamUploadsDirectoryPath for the replacement, e.g. a slash, or an empty string</param>
+        /// <returns>Returns the same string (oldValue) if the SteamUploadsDirectoryPath was empty, or the replaced string if it was found.</returns>
+        public string TryReplaceSteamUploadsDirectory(string oldValue, string newValue, string appendToPath)
+        {
+            if (SteamUploadsDirectoryPathExists())
+            {
+                return oldValue.Replace(SteamUploadsDirectoryPath + appendToPath, newValue);
+            }
+
+            return oldValue;
         }
 
         public bool HasErrors
@@ -87,9 +142,28 @@ namespace StonehearthEditor
             foreach (string modPath in modFolders)
             {
                 string formatted = JsonHelper.NormalizeSystemPath(modPath);
-                Module module = new Module(formatted);
-                module.InitializeFromManifest();
-                mModules.Add(module.Name, module);
+                if (!mModules.Keys.Contains(formatted))
+                {
+                    Module module = new Module(formatted);
+                    module.InitializeFromManifest();
+                    mModules.Add(module.Name, module);
+                }
+            }
+
+            // Append modules from the additional folder (e.g. steam_uploads) at the end of the list
+            if (SteamUploadsDirectoryPathExists())
+            {
+                string[] customModsFolders = Directory.GetDirectories(mSteamUploadsDirectoryPath);
+                foreach (string customModPath in customModsFolders)
+                {
+                    string formatted = JsonHelper.NormalizeSystemPath(customModPath);
+                    if (!mModules.Keys.Contains(formatted))
+                    {
+                        Module module = new Module(formatted);
+                        module.InitializeFromManifest();
+                        mModules.Add(module.Name, module);
+                    }
+                }
             }
 
             foreach (Module module in mModules.Values)
@@ -193,6 +267,44 @@ namespace StonehearthEditor
                 {
                     treeNodes.Add(modNode);
                     modNode.ExpandAll();
+                }
+            }
+
+            // Repeat but for steam uploads directory
+            if (SteamUploadsDirectoryPathExists())
+            {
+                string[] moreModFolders = Directory.GetDirectories(mSteamUploadsDirectoryPath);
+                if (moreModFolders == null)
+                {
+                    return;
+                }
+
+                // check all the mod folders
+                foreach (string modPath in moreModFolders)
+                {
+                    string modName = System.IO.Path.GetFileName(modPath);
+                    TreeNode modNode = new TreeNode(modName);
+                    bool hasChildren = false;
+                    string searchDirectoryPath = JsonHelper.NormalizeSystemPath(modPath) + folderName;
+                    if (Directory.Exists(searchDirectoryPath))
+                    {
+                        // check all the folders
+                        foreach (string folderPath in Directory.EnumerateDirectories(searchDirectoryPath))
+                        {
+                            hasChildren = true;
+                            string rootFolderName = System.IO.Path.GetFileName(folderPath);
+                            TreeNode root = new TreeNode(rootFolderName);
+                            modNode.Nodes.Add(root); // Add effect folder node under mod name node
+                            AppendTreeNodes(root, folderPath); // Append tree nodes from nested folders and files
+                            root.ExpandAll(); // Expand the top level
+                        }
+                    }
+
+                    if (hasChildren)
+                    {
+                        treeNodes.Add(modNode);
+                        modNode.ExpandAll();
+                    }
                 }
             }
         }
@@ -376,6 +488,20 @@ namespace StonehearthEditor
             return null;
         }
 
+        public string GetParentDirectoryByModName(string name)
+        {
+            string result = string.Empty;
+            if (name != string.Empty && mModules.Keys.Contains(name))
+            {
+                if (mModules[name].ParentDirectory != null)
+                {
+                    result = mModules[name].ParentDirectory;
+                }
+            }
+
+            return result;
+        }
+
         /// <summary>
         /// Attempts to resolve a reference.
         /// </summary>
@@ -402,7 +528,10 @@ namespace StonehearthEditor
                     return false; // Not a valid file => we don't stand a chance to begin with
 
                 // Cut away the unrequired bits
-                var simplifiedFileName = fileName.Replace(ModuleDataManager.GetInstance().ModsDirectoryPath, "").TrimStart(System.IO.Path.DirectorySeparatorChar, System.IO.Path.AltDirectorySeparatorChar);
+                string temp = ModuleDataManager.GetInstance().TryReplaceModsDirectory(fileName, "", "");
+                temp = ModuleDataManager.GetInstance().TryReplaceSteamUploadsDirectory(temp, "", "");
+                temp = temp.TrimStart(System.IO.Path.DirectorySeparatorChar, System.IO.Path.AltDirectorySeparatorChar);
+                var simplifiedFileName = temp;
 
                 // Split it into mod/path within mod
                 var parts = simplifiedFileName.Split(new[] { System.IO.Path.DirectorySeparatorChar, System.IO.Path.AltDirectorySeparatorChar }, 2);
@@ -517,6 +646,24 @@ namespace StonehearthEditor
             return module.Clone(parameters, unwantedItems, true);
         }
 
+        /// <summary>
+        /// Will do stringReplacements on the path, as well as adjust the path to the target module path
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
+        public string TransformPath(string path, CloneObjectParameters parameters)
+        {
+            string newPath = string.Empty;
+            string oldSourcePath = GetMod(parameters.SourceModule).ParentDirectory;
+            string newTargetPath = GetMod(parameters.TargetModule).ParentDirectory;
+            string cleanPath = path.Replace(oldSourcePath, "");
+            cleanPath = cleanPath.Replace(parameters.SourceModule, parameters.TargetModule);
+            newPath = newTargetPath + cleanPath; // Do it this way to avoid weirdness while developing from stonehearth_data
+            newPath = parameters.TransformParameter(newPath); // and finally apply the string replacements
+            return newPath;
+        }
+
         public bool ExecuteClone(FileData file, CloneObjectParameters parameters, HashSet<string> unwantedItems)
         {
             ModuleFile owningFile = (file as IModuleFileData).GetModuleFile();
@@ -525,7 +672,7 @@ namespace StonehearthEditor
                 return ExecuteClone(owningFile, parameters, unwantedItems);
             }
 
-            string newPath = parameters.TransformParameter(file.Path);
+            string newPath = TransformPath(file.Path, parameters);
             return file.Clone(newPath, parameters, unwantedItems, true);
         }
 
@@ -545,7 +692,7 @@ namespace StonehearthEditor
             }
 
             HashSet<string> alreadyCloned = new HashSet<string>();
-            string newPath = cloneParameters.TransformParameter(file.Path);
+            string newPath = TransformPath(file.Path, cloneParameters);
             // Code will only get here if owningFile is null, so calling the below will cause a null ref exception when indexing the owningFile
             // .Replace(owningFile.Module.Name, cloneParameters.TargetModule);
 
