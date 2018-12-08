@@ -7,7 +7,7 @@
    "enum": [
       "stonehearth:kingdoms:ascendancy",
       "rayyas_children:kingdoms:rayyas_children",
-      "stonehearth:kingdoms:northern_alliance",
+      "northern_alliance:kingdoms:northern_alliance",
       "stonehearth:kingdoms:human_npcs",
       "stonehearth:kingdoms:animals",
       "stonehearth:kingdoms:forest",
